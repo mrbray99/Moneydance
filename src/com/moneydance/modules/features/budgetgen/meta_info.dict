@@ -1,0 +1,11 @@
+{
+  "vendor" = "Mike Bray"
+  "module_build" = "3009"
+  "minbuild" = "1820"
+  "vendor.url" = "http://bitbucket.org/mikerb/moneydance-2015wiki/Home/"
+  "module_name" = "Budget Generator"
+  "module_desc" = "<html><body><title>Budget Generator</title>><p>Generates entries for the new style budgets from budget lines based on period of expense, amount and first date of payment
+</body></html>"
+  "desc" = "Takes entries for each expense category and calculates when payments will be made.\n Creates budget entries to match the selected budget period.\n"
+
+}

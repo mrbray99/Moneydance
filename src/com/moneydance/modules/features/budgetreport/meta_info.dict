@@ -1,0 +1,11 @@
+{
+  "vendor" = "Mike Bray"
+  "module_build" = "3009"
+   "minbuild" = "1820"
+  "vendor.url" = "http://bitbucket.org/mikerb/moneydance-2015wiki/Home/"
+  "module_name" = "Budget Report"
+  "module_desc" = "<html><body><title>Budget Report</title>><p>Displays actuals verses budgets with the ability to roll up figures into parent categories
+</body></html>"
+  "desc" = "Takes budgeted amounts from the chosen budget and chosen categories and displays them with the actual amounts.\n  Shows the difference using colour to show whether you are over or under budget.\n If selected it will roll up figures into parent categories."
+
+}

@@ -1,0 +1,18 @@
+{"build":"2120"}
+[
+  {
+    "pseudo": "GBX",
+    "multiplier": 0.01,
+    "replacement": "GBP"
+  },
+  {
+    "pseudo": "ZAX",
+    "multiplier": 0.01,
+    "replacement": "ZAR"
+  },
+  {
+    "pseudo": "ZAc",
+    "multiplier": 0.01,
+    "replacement": "ZAR"
+  }
+]

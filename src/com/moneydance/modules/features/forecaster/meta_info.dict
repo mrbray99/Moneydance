@@ -1,0 +1,10 @@
+{
+  "vendor" = "Mike Bray"
+  "module_build" = "1"
+  "minbuild" = "1251"
+  "vendor.url" = "http://bitbucket.org/mikerb/moneydance2015"
+  "module_name" = "Net Worth and Cash Flow Forecaster"
+  "module_desc" = "<html><body><title>Budget Generator</title>><p>Forecasts cash flow by account and overall networth.
+</body></html>"
+  "desc" = "Uses budgets, reminders and historical transactions to predict future movements on each account.\n"
+}
