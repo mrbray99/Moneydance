@@ -1,0 +1,42 @@
+<project name="forecaster" basedir=".">
+	<target name="forecaster">
+	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
+	      classpathref="classpath"  destdir="${build}"
+	      includes="com/moneydance/modules/features/forecaster/**"/>
+
+	    <jar destfile="${dist}/forecaster.mxt">
+	      <fileset dir="${src}" includes="
+	             com/moneydance/modules/features/forecaster/meta_info.dict
+	              com/moneydance/modules/features/forecaster/*.gif
+	             com/moneydance/modules/features/forecaster/*.jpg
+                 com/moneydance/modules/features/forecaster/*.png
+	             com/moneydance/modules/features/forecaster/*.jpeg"/>
+	      <fileset dir="${build}" includes="com/moneydance/modules/features/forecaster/**"/>
+	      <zipgroupfileset  dir="${lib}" includes="**/mrbutil.jar" />
+	    </jar>
+
+	    <java newenvironment="true" 
+	      classpathref="classpath"
+	      classname="com.moneydance.admin.KeyAdmin">
+	      <arg value="signextjar"/>
+	      <arg value="${privkeyfile}"/>
+	      <arg value="${privkeyid}"/>
+	      <arg value="forecaster"/>
+	      <arg line="${dist}/forecaster.mxt"/>
+	    </java>
+	    <delete file="${dist}/forecaster.mxt" verbose="true"
+	failonerror="false" />
+	    <move file="./s-forecaster.mxt" tofile="${dist}/forecaster.mxt"
+	verbose="true" failonerror="false" />
+	    <copy file="${dist}/forecaster.mxt" tofile="${install}/forecaster.mxt"
+	verbose="true" failonerror="false" /> 
+		<echo>the current time is ${TODAY_UK}</echo>
+	 	</target>
+	<target name="cleanforecaster">
+		<delete>
+			<fileset dir="${build}">
+			    <include name="com/moneydance/modules/features/forecaster/*.class"/>
+			</fileset>
+		</delete>
+	</target>
+	 	</project>

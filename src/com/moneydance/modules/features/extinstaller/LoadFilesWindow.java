@@ -16,18 +16,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.SortedMap;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
+
 import com.moneydance.apps.md.view.gui.MoneydanceGUI;
 import com.moneydance.awt.GridC;
 import com.moneydance.modules.features.mrbutil.HelpMenu;
@@ -60,8 +50,6 @@ public class LoadFilesWindow extends JFrame implements ActionListener{
 	private JScrollPane modulePane;
 	private Main main;
 	private com.moneydance.apps.md.controller.Main mainObj;
-	private FontMetrics defaultFont;
-	private FontMetrics currentFont;
 	private double multiplier;
 	private int quoteLoader = 0;
 	private SortedMap<String,Extension> listExtensions;
@@ -69,10 +57,8 @@ public class LoadFilesWindow extends JFrame implements ActionListener{
 		
 		main = mainp;
 		mainObj = com.moneydance.apps.md.controller.Main.mainObj;
-		defaultFont = ((MoneydanceGUI)mainObj.getUI()).getFonts().defaultSystemMetrics;
-		currentFont = ((MoneydanceGUI)mainObj.getUI()).getFonts().registerMetrics;
-		double def = defaultFont.getHeight();
-		double cur = currentFont.getHeight();
+		double def = UIManager.getFont("Label.font" ).getSize2D();
+		double cur = UIManager.getFont("List.font").getSize2D();
 		multiplier =cur/def;
 		Main.debugInst.debug("loadPricesWindow", "construct", MRBDebug.DETAILED, def+"/"+cur+"/"+multiplier);
 		/*
