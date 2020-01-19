@@ -1,0 +1,5 @@
+out
+src/build
+src/user.properties
+dist
+lib/moneydance-2019full.jar

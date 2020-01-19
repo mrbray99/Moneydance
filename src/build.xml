@@ -1,0 +1,91 @@
+<!--
+build file for ant
+http://jakarta.apache.org/ant/index.html
+-->
+ 
+<project name="moneydance" basedir=".">
+  <property file="./user.properties" />
+  <property name="version"  value="2.2"/>
+  <property name="src" value="."/>
+  <property name="build" value="./build"/>
+  <property name="build.compiler" value="modern" />
+  <property name="target" value="11" />
+  <property name="srccode" value="11" />
+  <property name="lib" value="../lib"/>
+	<property environment="env" />
+  <property name="javafx" value="c:/program files/java/javafx-sdk-11.0.1/lib"/>
+  <property name="jasper" value="c:/users/mrbmo/workspace/jasperreports-6.7.0/dist"/>
+  <property name="privkeyfile" value="${src}/priv_key"/>
+  <property name="pubkeyfile" value="${src}/pub_key"/>
+  <property name="privkeyid" value="99"/>
+  <property name="build.compiler"  value="classic"/>
+  <property name="build.compiler.fulldepend"  value="true"/>
+  <property name="build.sysclasspath" value="ignore" /> <!-- suppress ridiculous "includeantruntime not set" messages from ant -->
+  <property name="build.includeantruntime" value="false"/>
+  <property name="dist"  value="../dist"/>
+  <property name="tmp"  value="../tmp"/>
+  <property name="debug"  value="on"/>
+  <property name="optimize"  value="off"/>
+  <property name="install" value="C:\Users\mrbmo\.moneydance\fmodules"/>
+
+	  <path id="classpath">
+	    <pathelement path="${lib}/extadmin.jar"/>
+	    <pathelement path="${lib}/moneydance-dev.jar"/>
+	  	<pathelement path="${lib}/jfreechart-1.0.13.jar"/>
+	  	<pathelement path="${lib}/jython-2_7.jar"/>
+	  	<pathelement path="${lib}/jcommon-1.0.16.jar"/>
+	  	<pathelement path="${lib}/httpclient-4.5.6.jar"/>
+	  	<pathelement path="${lib}/httpcore-4.4.12.jar"/>
+	   	<pathelement path="${lib}/httpmime-4.5.6.jar"/>
+	  	<pathelement path="${lib}/gson-2.5.jar"/>
+		<pathelement path="${lib}/jsoup-1.11.3.jar"/>
+	  	<pathelement path="${lib}/mrbutil.jar"/>
+		<pathelement path="${lib}/jackson-core-2.7.4.jar"/>
+		<pathelement path="${lib}/jackson-databind-2.7.4.jar"/>
+		<pathelement path="${lib}/jackson-dataformat-xml-2.7.4.jar"/>
+		<pathelement path="${lib}/jackson-annotations-2.7.4.jar"/>
+	  	<pathelement path="${lib}/exp4j-0.4.8.jar"/>
+	  	<pathelement path="${lib}/org.apache.commons.io.jar"/>	  	
+	  	<pathelement path="${javafx}/javafx.base.jar"/>
+	  	<pathelement path="${javafx}/javafx.controls.jar"/>
+	  	<pathelement path="${javafx}/javafx.fxml.jar"/>
+	  	<pathelement path="${javafx}/javafx.graphics.jar"/>
+	  	<pathelement path="${javafx}/javafx.media.jar"/>
+	  	<pathelement path="${javafx}/javafx.properties.jar"/>
+	  	<pathelement path="${javafx}/javafx.swing.jar"/>
+	  	<pathelement path="${javafx}/javafx.web.jar"/>
+	  	<pathelement path="${javafx}/javafx-swt.jar"/>
+	  </path>
+	<target name="init">
+		<mkdir dir="${dist}" />
+		<mkdir dir="${build}" />
+	</target>
+	<tstamp>
+		<format property="TODAY_UK" pattern="HH:mm:ss:sss zzz" locale="en,UK" />
+	</tstamp>
+	<import file="filedisplaybuild.xml"/>
+	<import file="budgetgenbuild.xml"/>
+	<import file="budgetreportbuild.xml"/>
+	<import file="extinstallerbuild.xml"/>
+	<import file="forecasterbuild.xml"/>
+	<import file="loadsectransbuild.xml"/>
+	<import file="securityhistoryloadbuild.xml"/>
+	<import file="securitypriceloadbuild.xml"/>
+	<import file="mrbtestbuild.xml"/>
+	<import file="mrbutilbuild.xml"/>
+	<import file="qifloaderbuild.xml"/>
+	<import file="securityquoteloadbuild.xml"/>
+	<import file="jasperreportsbuild.xml"/>
+	<target name="genkeys">
+		<java classpathref="classpath" classname="com.moneydance.admin.KeyAdmin">
+			<arg value="genkey" />
+			<arg value="${privkeyfile}" />
+			<arg value="${pubkeyfile}" />
+		</java>
+	</target>
+ <target name="cleanall" depends="cleanmrbutil, cleanbudgetgen, cleanbudgetreport, cleanfiledisplay, cleanextinstaller,cleanloadsectrans, cleansecurityhistoryload, cleansecuritypriceload,cleansecurityquoteload">
+ </target>
+	 <target name="all" depends="init, mrbutil, budgetgen, budgetreport, extinstaller, filedisplay, loadsectrans, securityhistoryload, securitypriceload, securityquoteload">
+	 </target>
+	
+</project>
