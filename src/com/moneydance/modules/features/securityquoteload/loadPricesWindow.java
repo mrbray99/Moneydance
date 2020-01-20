@@ -158,6 +158,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	private JButton getPricesBtn;
 	private JButton getRatesBtn;
 	private JButton exportBtn;
+	private JButton autoResetBtn;
     private JLabel fileName;
     private JComboBox<Integer> decimalComBo;
 	private JComboBox<String> timeCombo;
@@ -167,7 +168,6 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	private MyCheckBox currencyCB;
 	private MyCheckBox selectCB;
 	private MyCheckBox addVolumeCB;
-	private MyCheckBox roundPriceCB;
 	private HelpMenu menu;
 	private JMenuItem onlineMenu = new JMenuItem("Online Help");
 	private JMenu debugMenu = new JMenu("Turn Debug on/off");
@@ -572,6 +572,21 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 					curNextRunDate.setDateInt(newDate);
 			}
 		});
+		autoResetBtn = new JButton("Reset Auto Run");
+		autoResetBtn.setToolTipText("Click to restart the Auto Run facility after changing the Auto Run fields");
+		autoResetBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.CHECKAUTOCMD);
+					}
+				});
+				
+			}
+		});
+		
 		JLabel runLbl = new JLabel("Automatic Run Types");
 		JLabel timeLbl = new JLabel("Time of Run");
 		gridX=0;
@@ -602,6 +617,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		panTop.add(secDateLbl, GridC.getc(gridX++,gridY).insets(5,10,5,10));
 		panTop.add(secNextRunDate, GridC.getc(gridX++,gridY).insets(5,10,5,10));
 		panTop.add(menu, GridC.getc(gridX,gridY++).insets(5,10,5,10));
+		gridX=0;
+		panTop.add(autoResetBtn,GridC.getc(gridX,gridY).insets(5,10,5,10));
 		gridX=3;
 		JLabel curRunLbl = new JLabel("(Currencies)");
 		panTop.add(curRunLbl, GridC.getc(gridX++,gridY).insets(0,10,5,10));
@@ -772,7 +789,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		 */
 		getRatesBtn = new JButton("Get Exchange Rates");
 		panBot.add(getRatesBtn,GridC.getc(gridX++,gridY).west().insets(10,10,10,10));
-		getRatesBtn.setToolTipText("Retrieve the exchange rates from Internet");
+		getRatesBtn.setToolTipText("Retrieve the exchange rates from the Internet");
 		getRatesBtn.addActionListener(new ActionListener () {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -786,7 +803,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		 */
 		getPricesBtn = new JButton("Get Prices");
 		panBot.add(getPricesBtn,GridC.getc(gridX++,gridY).west().insets(10,10,10,10));
-		getPricesBtn.setToolTipText("Retrieve the quotes from Internet");
+		getPricesBtn.setToolTipText("Retrieve the quotes from the Internet");
 		getPricesBtn.addActionListener(new ActionListener () {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -800,7 +817,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		 */
 		saveBtn = new JButton("Save Parameters");
 		panBot.add(saveBtn, GridC.getc(gridX++,gridY).insets(10,10,10,10));
-		saveBtn.setToolTipText("Save the parameter settings to '{data directory}/securityquoteload.bpam'");
+		saveBtn.setToolTipText("Save the parameter settings to '{data directory}/securityquoteload.bpam2'");
 		saveBtn.addActionListener(new ActionListener () {
 			@Override
 			public void actionPerformed(ActionEvent e) {

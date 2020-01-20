@@ -14,7 +14,6 @@ http://jakarta.apache.org/ant/index.html
   <property name="lib" value="../lib"/>
 	<property environment="env" />
   <property name="javafx" value="c:/program files/java/javafx-sdk-11.0.1/lib"/>
-  <property name="jasper" value="c:/users/mrbmo/workspace/jasperreports-6.7.0/dist"/>
   <property name="privkeyfile" value="${src}/priv_key"/>
   <property name="pubkeyfile" value="${src}/pub_key"/>
   <property name="privkeyid" value="99"/>
@@ -72,7 +71,6 @@ http://jakarta.apache.org/ant/index.html
 	<import file="mrbutilbuild.xml"/>
 	<import file="qifloaderbuild.xml"/>
 	<import file="securityquoteloadbuild.xml"/>
-	<import file="jasperreportsbuild.xml"/>
 	<target name="genkeys">
 		<java classpathref="classpath" classname="com.moneydance.admin.KeyAdmin">
 			<arg value="genkey" />
