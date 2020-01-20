@@ -66,12 +66,9 @@ http://jakarta.apache.org/ant/index.html
 	<import file="filedisplaybuild.xml"/>
 	<import file="budgetgenbuild.xml"/>
 	<import file="budgetreportbuild.xml"/>
-	<import file="extinstallerbuild.xml"/>
-	<import file="forecasterbuild.xml"/>
 	<import file="loadsectransbuild.xml"/>
 	<import file="securityhistoryloadbuild.xml"/>
 	<import file="securitypriceloadbuild.xml"/>
-	<import file="mrbtestbuild.xml"/>
 	<import file="mrbutilbuild.xml"/>
 	<import file="qifloaderbuild.xml"/>
 	<import file="securityquoteloadbuild.xml"/>
@@ -83,9 +80,9 @@ http://jakarta.apache.org/ant/index.html
 			<arg value="${pubkeyfile}" />
 		</java>
 	</target>
- <target name="cleanall" depends="cleanmrbutil, cleanbudgetgen, cleanbudgetreport, cleanfiledisplay, cleanextinstaller,cleanloadsectrans, cleansecurityhistoryload, cleansecuritypriceload,cleansecurityquoteload">
+ <target name="cleanall" depends="cleanmrbutil, cleanbudgetgen, cleanbudgetreport, cleanfiledisplay, cleanloadsectrans, cleansecurityhistoryload, cleansecuritypriceload,cleansecurityquoteload">
  </target>
-	 <target name="all" depends="init, mrbutil, budgetgen, budgetreport, extinstaller, filedisplay, loadsectrans, securityhistoryload, securitypriceload, securityquoteload">
+	 <target name="all" depends="init, mrbutil, budgetgen, budgetreport,filedisplay, loadsectrans, securityhistoryload, securitypriceload, securityquoteload">
 	 </target>
 	
 </project>
