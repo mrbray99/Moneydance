@@ -450,8 +450,10 @@ public class Main extends FeatureModule
 					            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
 				        		closeConsole();
 					        }
-				        else
+				        else {
+				        	resetAutoRun();
 				        	return;
+				        }
 					}
 				}
 				if (secRunAuto && !curRunAuto) runtype = Constants.SECAUTORUN;

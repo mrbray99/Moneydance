@@ -235,22 +235,24 @@ public class GetFTQuote extends GetQuoteTask {
 		}
 		String dateText = dateElement.text();
 		int asof = dateText.indexOf("as of ");
-		if (asof < 0) {
-			throw new IOException("Cannot find 'as of'");
-		}
-		asof += 6;   // length 'as of '
-		String dateString = dateText.substring(asof);
 		SimpleDateFormat simpleFormat = new SimpleDateFormat("MMM dd yyyy HH:ss z");
-		try {
-			date=simpleFormat.parse(dateString);
+		if (asof < 0) {
+			date=new Date();
 		}
-		catch (ParseException e) {
-			simpleFormat = new SimpleDateFormat("MMM dd yyyy'.'");
+		else {
+			asof += 6;   // length 'as of '
+			String dateString = dateText.substring(asof);
 			try {
 				date=simpleFormat.parse(dateString);
 			}
-			catch (ParseException e2) {
-				throw new IOException("Trade Date parse error "+e2.getMessage());
+			catch (ParseException e) {
+				simpleFormat = new SimpleDateFormat("MMM dd yyyy'.'");
+				try {
+					date=simpleFormat.parse(dateString);
+				}
+				catch (ParseException e2) {
+					throw new IOException("Trade Date parse error "+e2.getMessage());
+				}
 			}
 		}
 		simpleFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");

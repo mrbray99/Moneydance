@@ -158,6 +158,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	private JButton getPricesBtn;
 	private JButton getRatesBtn;
 	private JButton exportBtn;
+	private JButton autoResetBtn;
     private JLabel fileName;
     private JComboBox<Integer> decimalComBo;
 	private JComboBox<String> timeCombo;
@@ -167,7 +168,6 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	private MyCheckBox currencyCB;
 	private MyCheckBox selectCB;
 	private MyCheckBox addVolumeCB;
-	private MyCheckBox roundPriceCB;
 	private HelpMenu menu;
 	private JMenuItem onlineMenu = new JMenuItem("Online Help");
 	private JMenu debugMenu = new JMenu("Turn Debug on/off");
@@ -317,7 +317,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		detMItem.addActionListener(this);
 		group.add(detMItem);
 		debugMenu.add(detMItem);
-		exportMenu = new HelpMenu("Export Settings");
+		exportMenu = new HelpMenu("CSV Settings");
 		exportSaveItem = new JCheckBoxMenuItem("Export on Save");
 		exportSaveItem.setSelected(params.isExport());
 		exportSaveItem.addActionListener(this);
@@ -572,6 +572,21 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 					curNextRunDate.setDateInt(newDate);
 			}
 		});
+		autoResetBtn = new JButton("Reset Auto Run");
+		autoResetBtn.setToolTipText("Click to restart the Auto Run facility after changing the Auto Run fields");
+		autoResetBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.CHECKAUTOCMD);
+					}
+				});
+				
+			}
+		});
+		
 		JLabel runLbl = new JLabel("Automatic Run Types");
 		JLabel timeLbl = new JLabel("Time of Run");
 		gridX=0;
@@ -602,6 +617,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		panTop.add(secDateLbl, GridC.getc(gridX++,gridY).insets(5,10,5,10));
 		panTop.add(secNextRunDate, GridC.getc(gridX++,gridY).insets(5,10,5,10));
 		panTop.add(menu, GridC.getc(gridX,gridY++).insets(5,10,5,10));
+		gridX=0;
+		panTop.add(autoResetBtn,GridC.getc(gridX,gridY).insets(5,10,5,10));
 		gridX=3;
 		JLabel curRunLbl = new JLabel("(Currencies)");
 		panTop.add(curRunLbl, GridC.getc(gridX++,gridY).insets(0,10,5,10));
@@ -772,7 +789,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		 */
 		getRatesBtn = new JButton("Get Exchange Rates");
 		panBot.add(getRatesBtn,GridC.getc(gridX++,gridY).west().insets(10,10,10,10));
-		getRatesBtn.setToolTipText("Retrieve the exchange rates from Internet");
+		getRatesBtn.setToolTipText("Retrieve the exchange rates from the Internet");
 		getRatesBtn.addActionListener(new ActionListener () {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -786,7 +803,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		 */
 		getPricesBtn = new JButton("Get Prices");
 		panBot.add(getPricesBtn,GridC.getc(gridX++,gridY).west().insets(10,10,10,10));
-		getPricesBtn.setToolTipText("Retrieve the quotes from Internet");
+		getPricesBtn.setToolTipText("Retrieve the quotes from the Internet");
 		getPricesBtn.addActionListener(new ActionListener () {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -800,7 +817,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		 */
 		saveBtn = new JButton("Save Parameters");
 		panBot.add(saveBtn, GridC.getc(gridX++,gridY).insets(10,10,10,10));
-		saveBtn.setToolTipText("Save the parameter settings to '{data directory}/securityquoteload.bpam'");
+		saveBtn.setToolTipText("Save the parameter settings to '{data directory}/securityquoteload.bpam2'");
 		saveBtn.addActionListener(new ActionListener () {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -812,8 +829,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		/*
 		 * Export
 		 */
-		exportBtn = new JButton("Export Prices");
-		exportBtn.setToolTipText("Set up Export Parameters");
+		exportBtn = new JButton("Create Prices CSV");
+		exportBtn.setToolTipText("Output selected prices to a .csv file");
 		exportBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1021,8 +1038,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 
 	}
 	private void export() {
-		BufferedWriter exportFile = setupExportFile();
-		if (exportFile == null ) {
+		String exportFolder = params.getExportFolder();
+		if (exportFolder== null || exportFolder.isEmpty()) {
 			JOptionPane.showMessageDialog(null, "Export folder has not been set");
 			return;
 		}
@@ -1032,6 +1049,17 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			JOptionPane.showMessageDialog(null, "No prices have been downloaded.  Use Get Exchange Rates or Get Prices");
 			return;
 		}
+		for (int i=0;i<iRows;i++){
+			if((Boolean)pricesModel.getValueAt(i,0)) {
+				iRowCount++;
+			}
+		}
+		if (iRowCount < 1){
+			JOptionPane.showMessageDialog(null, "No prices have been selected.  Select individual lines or Select All.");
+			return;
+		}
+		BufferedWriter exportFile = setupExportFile();
+		iRowCount=0;
 		for (int i=0;i<iRows;i++){
 			if(pricesModel.updateLine(i,exportFile,true)) {
 				iRowCount++;
@@ -1043,19 +1071,11 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		if (iRowCount < 1){
-			JOptionPane.showMessageDialog(null, "No prices have been selected.  Select individual lines or Select All.");
-			return;
-		}
 		JOptionPane.showMessageDialog(null, "Prices Exported.");
 
 
 	}
 	private BufferedWriter setupExportFile() {
-		String exportFolder = params.getExportFolder();
-		if (exportFolder== null || exportFolder.isEmpty()) {
-			return null;
-		}
 		FileOutputStream exportFile;
 		OutputStreamWriter exportWriter;
 		BufferedWriter exportBuffer;
@@ -1067,6 +1087,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			exportWriter = new OutputStreamWriter(exportFile,"UTF-8");
 			exportBuffer = new BufferedWriter(exportWriter);
 			exportWriter.write(Constants.EXPORTHEADER);
+			debugInst.debug("loadPricesWindow", "setupExportFile", MRBDebug.DETAILED, "Created export file"+filename);                
 		} catch (IOException e) {
 			exportBuffer = null;
 		}
