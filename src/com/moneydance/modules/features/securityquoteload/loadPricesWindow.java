@@ -317,7 +317,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		detMItem.addActionListener(this);
 		group.add(detMItem);
 		debugMenu.add(detMItem);
-		exportMenu = new HelpMenu("Export Settings");
+		exportMenu = new HelpMenu("CSV Settings");
 		exportSaveItem = new JCheckBoxMenuItem("Export on Save");
 		exportSaveItem.setSelected(params.isExport());
 		exportSaveItem.addActionListener(this);
@@ -829,8 +829,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		/*
 		 * Export
 		 */
-		exportBtn = new JButton("Export Prices");
-		exportBtn.setToolTipText("Set up Export Parameters");
+		exportBtn = new JButton("Create Prices CSV");
+		exportBtn.setToolTipText("Output selected prices to a .csv file");
 		exportBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1038,8 +1038,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 
 	}
 	private void export() {
-		BufferedWriter exportFile = setupExportFile();
-		if (exportFile == null ) {
+		String exportFolder = params.getExportFolder();
+		if (exportFolder== null || exportFolder.isEmpty()) {
 			JOptionPane.showMessageDialog(null, "Export folder has not been set");
 			return;
 		}
@@ -1049,6 +1049,17 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			JOptionPane.showMessageDialog(null, "No prices have been downloaded.  Use Get Exchange Rates or Get Prices");
 			return;
 		}
+		for (int i=0;i<iRows;i++){
+			if((Boolean)pricesModel.getValueAt(i,0)) {
+				iRowCount++;
+			}
+		}
+		if (iRowCount < 1){
+			JOptionPane.showMessageDialog(null, "No prices have been selected.  Select individual lines or Select All.");
+			return;
+		}
+		BufferedWriter exportFile = setupExportFile();
+		iRowCount=0;
 		for (int i=0;i<iRows;i++){
 			if(pricesModel.updateLine(i,exportFile,true)) {
 				iRowCount++;
@@ -1060,19 +1071,11 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		if (iRowCount < 1){
-			JOptionPane.showMessageDialog(null, "No prices have been selected.  Select individual lines or Select All.");
-			return;
-		}
 		JOptionPane.showMessageDialog(null, "Prices Exported.");
 
 
 	}
 	private BufferedWriter setupExportFile() {
-		String exportFolder = params.getExportFolder();
-		if (exportFolder== null || exportFolder.isEmpty()) {
-			return null;
-		}
 		FileOutputStream exportFile;
 		OutputStreamWriter exportWriter;
 		BufferedWriter exportBuffer;
@@ -1084,6 +1087,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			exportWriter = new OutputStreamWriter(exportFile,"UTF-8");
 			exportBuffer = new BufferedWriter(exportWriter);
 			exportWriter.write(Constants.EXPORTHEADER);
+			debugInst.debug("loadPricesWindow", "setupExportFile", MRBDebug.DETAILED, "Created export file"+filename);                
 		} catch (IOException e) {
 			exportBuffer = null;
 		}
