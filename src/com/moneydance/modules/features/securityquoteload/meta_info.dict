@@ -1,6 +1,6 @@
 {
   "vendor" = "Mike Bray"
-  "module_build" = "3020"
+  "module_build" = "3021"
   "minbuild" = "1820"
   "vendor.url" = "http://bitbucket.org/mikerb/wiki/Home"
   "module_name" = "Price Load"
