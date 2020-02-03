@@ -1,10 +1,10 @@
 {
   "vendor" = "Mike Bray"
-  "module_build" = "3021"
+  "module_build" = "3022"
   "minbuild" = "1820"
-  "vendor.url" = "http://bitbucket.org/mikerb/wiki/Home"
-  "module_name" = "Price Load"
-  "module_desc" = "<html><body><title>Price Load</title>><p>Loads the price of securities directly from an online source
+  "vendor.url" = "https://bitbucket.org/mikerb/moneydance-2019/wiki/Quote%20Loader"
+  "module_name" = "Quote Loader
+  "module_desc" = "<html><body><title>Quote Loader</title>><p>Loads the price of securities directly from an online source
 </body></html>"
   "desc" = "Obtains the current price from either Yahoo Finance or Financial Times.\n"
 
