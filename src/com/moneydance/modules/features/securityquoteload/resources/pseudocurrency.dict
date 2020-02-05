@@ -1,7 +1,12 @@
-{"build":"2120"}
+{"build":"3023"}
 [
   {
     "pseudo": "GBX",
+    "multiplier": 0.01,
+    "replacement": "GBP"
+  },
+  {
+    "pseudo": "GBp",
     "multiplier": 0.01,
     "replacement": "GBP"
   },
