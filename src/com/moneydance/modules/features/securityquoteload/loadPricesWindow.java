@@ -1367,7 +1367,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 					listener.started(price.getTicker(),yahooUUID);
 			}
 			Main.context.showURL(url);		
-			debugInst.debug("loadPrices", "getPrices", MRBDebug.INFO, "URI "+url);
+			debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.INFO, "URI "+url);
 		}
 		if (yahooHistStocksList.size() > 0) {
 			String url=null;
@@ -1400,7 +1400,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 					listener.started(price.getTicker(),yahooHistUUID);
 			}
 			Main.context.showURL(url);		
-			debugInst.debug("loadPrices", "getPrices", MRBDebug.INFO, "URI "+url);
+			debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.INFO, "URI "+url);
 		}
 		if (ftStocksList.size() > 0) {
 			String url=null;
@@ -1433,7 +1433,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 					listener.started(price.getTicker(),ftUUID);
 			}
 			Main.context.showURL(url);
-			debugInst.debug("loadPrices", "getPrices", MRBDebug.INFO, "URI "+url);
+			debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.INFO, "URI "+url);
 		}
 	}
 
@@ -1452,12 +1452,13 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		return "&"+queries;
 	}
 	public void testTicker(String url){
-		debugInst.debug("loadPrices", "testTicker", MRBDebug.INFO, "URI "+url);
+		debugInst.debug("loadPricesWindow", "testTicker", MRBDebug.INFO, "URI "+url);
 		URI uri=null;
+		String convUrl = url.replace("^", "%5E");
 		try {
-			uri = new URI(url.trim());
+			uri = new URI(convUrl.trim());
 		} catch (URISyntaxException e) {
-			debugInst.debug("loadPrices", "testTicker", MRBDebug.DETAILED, "URI invalid "+url);
+			debugInst.debug("loadPricesWindow", "testTicker", MRBDebug.DETAILED, "URI invalid "+convUrl);
 			e.printStackTrace();
 			return;
 		}
@@ -1476,7 +1477,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			String tid = UUID.randomUUID().toString();
 			testTicker = ticker;
 			String testurl=newPriceUrl(source,tid,ticker,Constants.STOCKTYPE);
-			debugInst.debug("loadPrices", "testTicker", MRBDebug.DETAILED, "URI "+testurl);
+			debugInst.debug("loadPricesWindow", "testTicker", MRBDebug.DETAILED, "URI "+testurl);
 			Main.context.showURL(testurl);
 		}
 	}
@@ -1484,10 +1485,12 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		String uuid = "";
 		debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.INFO, "URI "+url);
 		URI uri=null;
+		String convUrl = url.replace("^", "%5E");
 		try {
-			uri = new URI(url.trim());
+			
+			uri = new URI(convUrl.trim());
 		} catch (URISyntaxException e) {
-			debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.DETAILED, "URI invalid "+url);
+			debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.DETAILED, "URI invalid "+convUrl);
 			e.printStackTrace();
 			return;
 		}
@@ -1725,10 +1728,11 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			return;
 		}
 		URI uri=null;
+		String convUrl = url.replace("^", "%5E");
 		try {
-			uri = new URI(url.trim());
+			uri = new URI(convUrl.trim());
 		} catch (URISyntaxException e) {
-			debugInst.debug("loadPricesWindow", "failedQuote", MRBDebug.SUMMARY, "URI invalid "+url);
+			debugInst.debug("loadPricesWindow", "failedQuote", MRBDebug.SUMMARY, "URI invalid "+convUrl);
 			e.printStackTrace();
 			return;
 		}
@@ -1817,7 +1821,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	@Override
 	public synchronized void  TasksCompleted () {
 		if (!completed){
-			debugInst.debug("loadPrices", "TaskCompleted", MRBDebug.INFO, "Tasks Completed");
+			debugInst.debug("loadPricesWindow", "TaskCompleted", MRBDebug.INFO, "Tasks Completed");
 			completed=true;
 			if (runtype == Constants.MANUALRUN) {
 				tasksProgress.setValue(100);
@@ -1849,14 +1853,14 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	}
 	@Override
 	public synchronized void Update() {
-		debugInst.debug("loadPrices", "Update", MRBDebug.DETAILED, "Progress Bar Updated");
+		debugInst.debug("loadPricesWindow", "Update", MRBDebug.DETAILED, "Progress Bar Updated");
 		pricesModel.fireTableDataChanged();			 
 		this.revalidate();	
 	}
 	public synchronized boolean checkProgress() {
 		for (Entry<String,Integer> status : tickerStatus.entrySet()){
 			if (status.getValue() == Constants.TASKSTARTED){
-				debugInst.debug("loadPrices", "checkProgress", MRBDebug.SUMMARY, "Quote "+status.getKey()+" has not finished");
+				debugInst.debug("loadPricesWindow", "checkProgress", MRBDebug.SUMMARY, "Quote "+status.getKey()+" has not finished");
 				return false;
 			}
 		}

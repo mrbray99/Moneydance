@@ -55,7 +55,7 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 		URI uri=null;
 		try {
 			uri= new URI(url.trim());
-			debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "Processing  "+ticker);		
+			debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "Processing  "+ticker+" URI:"+uri.toASCIIString());		
 			HttpGet httpGet = new HttpGet(uri);
 			response = httpClient.execute(httpGet);
 			quotePrice=null; 

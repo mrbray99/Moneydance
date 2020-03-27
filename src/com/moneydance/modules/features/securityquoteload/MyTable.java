@@ -523,9 +523,11 @@ public class MyTable extends JTable {
 	  	       		displayExchangeTicker(row);
 	  	       	}
 	  	       	else {
-	   	           	Rectangle rect = tc.getCellRect(tc.getSelectedRow(), exchangeCol, false);
-	   	           	Point p2 = new Point(rect.x+rect.width,rect.y+rect.width);
-	   	 	        showExchangePopup(tc.getSelectedRow(),p2);
+	  	       		if (e.getClickCount() == 2) {
+		   	           	Rectangle rect = tc.getCellRect(tc.getSelectedRow(), exchangeCol, false);
+		   	           	Point p2 = new Point(rect.x+rect.width,rect.y+rect.width);
+		   	 	        showExchangePopup(tc.getSelectedRow(),p2);
+	  	       		}
 	  	       	}
 			}
 	    }

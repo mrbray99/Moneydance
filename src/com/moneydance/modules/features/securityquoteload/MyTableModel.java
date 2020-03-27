@@ -320,7 +320,6 @@ public class MyTableModel extends DefaultTableModel {
     public boolean isCellEditable(int row, int col) {
  		switch (col) {
  		case 0:
- 		case 2:
  		case 4:
  		case 7:
  		case 8:

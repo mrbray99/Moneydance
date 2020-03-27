@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import java.time.Instant;
@@ -62,10 +63,12 @@ public class GetYahooQuote extends GetQuoteTask {
 	private String yahooCurrURL = "https://finance.yahoo.com/quote/";
 	public GetYahooQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep, String tidp) {
 		super(tickerp, listenerp, httpClientp, tickerTypep,  tidp);
+		String convTicker = ticker.replace("^", "%5E");
 		if (tickerType == Constants.STOCKTYPE)
-			url = yahooSecURL+ticker+"?p="+ticker;
+			url = yahooSecURL+convTicker+"?p="+convTicker;
 		if (tickerType == Constants.CURRENCYTYPE)
-			url = yahooCurrURL+ticker+"?p="+ticker;
+			url = yahooCurrURL+convTicker+"?p="+convTicker;
+		debugInst.debug("GetYahooQuote","GetYahooQuote",MRBDebug.DETAILED,"Executing :"+url);
 	}
 	@Override
 	public QuotePrice analyseResponse(CloseableHttpResponse response) throws IOException {
