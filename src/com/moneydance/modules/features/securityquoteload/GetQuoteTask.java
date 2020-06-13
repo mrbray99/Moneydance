@@ -72,6 +72,22 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 					doneUrl += "&"+Constants.TRADECURRTYPE+"="+quotePrice.getCurrency();
 					doneUrl += "&"+Constants.VOLUMETYPE+"="+quotePrice.getVolume();
 					Main.context.showURL(doneUrl);
+					if (!quotePrice.getHistory().isEmpty()) {
+						for (HistoryPrice history : quotePrice.getHistory()) {
+							doneUrl ="moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.LOADHISTORYCMD+"?"+Constants.TIDCMD+"="+tid+"&";
+							if (tickerType == Constants.STOCKTYPE)
+								doneUrl+=Constants.STOCKTYPE;
+							else
+								doneUrl+=Constants.CURRENCYTYPE;
+							doneUrl += "="+ticker+"&p="+String.format("%.8f",history.getPrice());
+							doneUrl += "&"+Constants.TRADEDATETYPE+"="+history.getDate();
+							doneUrl += "&"+Constants.TRADECURRTYPE+"="+quotePrice.getCurrency();
+							if (Main.params.getAddVolume() && quotePrice.getVolume() > 0L)
+								doneUrl += "&"+Constants.VOLUMETYPE+"="+history.getVolume();
+							Main.context.showURL(doneUrl);
+				
+						}
+					}
 					listener.doneReturned(ticker);
 				}
 				catch (IOException e) {

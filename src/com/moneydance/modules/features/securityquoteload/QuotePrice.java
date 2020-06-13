@@ -34,12 +34,20 @@
  */
 package com.moneydance.modules.features.securityquoteload;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class QuotePrice {
 	private String ticker;
 	private Double price=0.0d;
 	private String currency="XXX";
 	private String tradeDate="1900-01-01T00:00:00";
+	private Integer tradeDateInt;
 	private Long volume=0L;
+	private List<HistoryPrice> history;
+	public QuotePrice() {
+		history = new ArrayList<HistoryPrice>();
+	}
 	public String getTicker() {
 		return ticker;
 	}
@@ -69,6 +77,19 @@ public class QuotePrice {
 	}
 	public void setVolume(Long volume) {
 		this.volume = volume;
+	}
+	public void addHistory(Integer datep, Double pricep, Long volumep) {
+		HistoryPrice line = new HistoryPrice(datep, pricep, volumep);
+		history.add(line);
+	}
+	public List<HistoryPrice> getHistory(){
+		return history;
+	}
+	public Integer getTradeDateInt() {
+		return tradeDateInt;
+	}
+	public void setTradeDateInt(Integer tradeDateInt) {
+		this.tradeDateInt = tradeDateInt;
 	}
 	
 }

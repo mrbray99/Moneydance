@@ -41,6 +41,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -59,6 +61,7 @@ public class QuoteManager implements QuoteListener {
 	private String source;
 	private String tid;
 	private List<String> stocks;
+	private SortedMap<String, Integer> lastPriceDate;
 	private List<String> currencies;
 	private ExecutorService threadPool;
 	private CloseableHttpClient httpClient;
@@ -72,6 +75,7 @@ public class QuoteManager implements QuoteListener {
 	 
 	public void getQuotes(String request) {
 		stocks = new ArrayList<String>();
+		lastPriceDate = new TreeMap<String,Integer>();
 		currencies = new ArrayList<String>();
 		debugInst.debug("QuoteManager", "getQuotes", MRBDebug.INFO, "URI "+request);
 		URI uri=null;
@@ -84,6 +88,7 @@ public class QuoteManager implements QuoteListener {
 		}
 		List<NameValuePair> results = URLEncodedUtils.parse(uri, charSet);
 		source="";
+		String ticker="";
 		for (NameValuePair item : results) {
 			switch (item.getName()) {
 			case Constants.SOURCETYPE :
@@ -93,12 +98,15 @@ public class QuoteManager implements QuoteListener {
 				tid=item.getValue();
 				break;
 			case Constants.STOCKTYPE:
+				ticker = item.getValue();
 				stocks.add(item.getValue());
 				break;
 			case Constants.CURRENCYTYPE :
 				currencies.add(item.getValue());
 				break;
-				
+			case Constants.LASTPRICEDATETYPE :
+				lastPriceDate.put(ticker,Integer.valueOf(item.getValue()));
+				break;
 			}
 		}
 		httpClient = HttpClients.createDefault();
@@ -134,6 +142,50 @@ public class QuoteManager implements QuoteListener {
                 try {
                     future.get();
                     debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,"FT task completed");
+              } catch (InterruptedException e) {
+                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+                } catch (ExecutionException e) {
+                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+                } finally {
+                }
+            }
+			String doneUrl ="moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.DONEQUOTECMD+"?"+Constants.TIDCMD+"="+tid;
+			doneUrl += "&"+Constants.TOTALTYPE+"="+totalQuotes;
+			doneUrl += "&"+Constants.OKTYPE +"="+successful;
+			doneUrl += "&" + Constants.ERRTYPE+"="+failed;
+			Main.context.showURL(doneUrl);
+		}
+		if (source.equals(Constants.SOURCEFTHIST)) {
+			for (String stock : stocks) {
+				GetQuoteTask task = new GetFTHDQuote(stock, this, httpClient,Constants.STOCKTYPE,tid,lastPriceDate.get(stock));
+				tasks.add(task);
+				totalQuotes++;
+			}
+			for (String currency : currencies) {
+				GetQuoteTask task = new GetFTHDQuote(currency, this, httpClient,Constants.CURRENCYTYPE,tid,null);
+				tasks.add(task);
+				totalQuotes++;
+			}
+          List<Future<QuotePrice>> futures = null;
+           try {
+                futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
+                debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT History Tasks invoked "+tasks.size());
+            } catch (InterruptedException e) {
+                debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
+            }
+
+            if (futures == null) {
+                debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT History Failed to invokeAll");
+                return;
+            }
+            for (Future<QuotePrice> future : futures) {
+                if (future.isCancelled()) {
+                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT History One of the tasks has timeout.");
+                    continue;
+                }
+                try {
+                    future.get();
+                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,"FT History task completed");
               } catch (InterruptedException e) {
                     debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
                 } catch (ExecutionException e) {
@@ -193,12 +245,12 @@ public class QuoteManager implements QuoteListener {
 		}
 		if (source.equals(Constants.SOURCEYAHOOHIST)) {
 			for (String stock : stocks) {
-				GetQuoteTask task = new GetYahooHistQuote(stock, this, httpClient,Constants.STOCKTYPE,tid);
+				GetQuoteTask task = new GetYahooHistQuote(stock, this, httpClient,Constants.STOCKTYPE,tid,lastPriceDate.get(stock));
 				tasks.add(task);
 				totalQuotes++;
 			}
 			for (String currency : currencies) {
-				GetQuoteTask task = new GetYahooHistQuote(currency, this, httpClient,Constants.CURRENCYTYPE,tid);
+				GetQuoteTask task = new GetYahooHistQuote(currency, this, httpClient,Constants.CURRENCYTYPE,tid,0);
 				tasks.add(task);
 				totalQuotes++;
 			}

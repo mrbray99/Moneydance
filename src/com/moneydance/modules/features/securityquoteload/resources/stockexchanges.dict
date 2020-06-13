@@ -1,4 +1,4 @@
-{"build":"2101"}
+{"build":"3025"}
 [{"exchange":"ASE",	"name":"American Stock Exchange",	"ftPrefix":"",	"ftSuffix":":ASE",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
 {"exchange":"Athens",	"name":"Athens Exchange",	"ftPrefix":"",	"ftSuffix":":ATH",	"yahooPrefix":"",	"yahooSuffix":".AT",	"multiplier":"1"},
 {"exchange":"ASX",	"name":"Australian Stock Exchange",	"ftPrefix":"",	"ftSuffix":":ASX",	"yahooPrefix":"",	"yahooSuffix":".AX",	"multiplier":"1"},
@@ -41,7 +41,7 @@
 {"exchange":"KRX",	"name":"Korea Exchange",	"ftPrefix":"",	"ftSuffix":"",	"yahooPrefix":"",	"yahooSuffix":".KS",	"multiplier":"1"},
 {"exchange":"KOSDAQ",	"name":"KOSDAQ",	"ftPrefix":"",	"ftSuffix":"",	"yahooPrefix":"",	"yahooSuffix":".KQ",	"multiplier":"1"},
 {"exchange":"Ljubljana",	"name":"Ljubljana Stock Exchange",	"ftPrefix":"",	"ftSuffix":":LJE",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
-{"exchange":"LSE",	"name":"London Stock Exchange",	"ftPrefix":"",	"ftSuffix":"",	"yahooPrefix":"",	"yahooSuffix":".L",	"multiplier":"1"},
+{"exchange":"LSE",	"name":"London Stock Exchange",	"ftPrefix":"",	"ftSuffix":":LSE",	"yahooPrefix":"",	"yahooSuffix":".L",	"multiplier":"1"},
 {"exchange":"LuxSE",	"name":"Luxembourg Stock Exchange",	"ftPrefix":"",	"ftSuffix":":LUX",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
 {"exchange":"Madrid Fixed",	"name":"Madrid Fixed Income Market",	"ftPrefix":"",	"ftSuffix":"",	"yahooPrefix":"",	"yahooSuffix":".MF",	"multiplier":"1"},
 {"exchange":"Madrid SE",	"name":"Madrid SE C.A.T.S.",	"ftPrefix":"",	"ftSuffix":"",	"yahooPrefix":"",	"yahooSuffix":".MC",	"multiplier":"1"},

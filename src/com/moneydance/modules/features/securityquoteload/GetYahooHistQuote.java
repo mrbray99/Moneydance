@@ -38,14 +38,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.http.HttpEntity;
@@ -55,6 +54,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.infinitekind.util.DateUtil;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 
 public class GetYahooHistQuote extends GetQuoteTask {
@@ -62,8 +62,10 @@ public class GetYahooHistQuote extends GetQuoteTask {
 	private String yahooSecURL = "https://finance.yahoo.com/quote/";
 	private String yahooCurrURL = "https://finance.yahoo.com/quote/";
 	private String currencyID="";
-	public GetYahooHistQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep, String tidp) {
+	private Integer lastPriceDate;
+	public GetYahooHistQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep, String tidp,Integer lastPriceDatep) {
 		super(tickerp, listenerp, httpClientp, tickerTypep,  tidp);
+		lastPriceDate = lastPriceDatep;
 		String convTicker = ticker.replace("^", "%5E");
 		if (tickerType == Constants.STOCKTYPE)
 			url = yahooSecURL+convTicker+"/history?p="+convTicker;
@@ -84,12 +86,12 @@ public class GetYahooHistQuote extends GetQuoteTask {
 				parseDoc(nodes, quotePrice);
 			}
 			catch (IOException a) {
-				debugInst.debug("GetQuoteTask","analyseResponse",MRBDebug.INFO,"IOException "+a.getMessage());
+				debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"IOException "+a.getMessage());
 				throw new IOException(a);
 			}
 		}
 		catch (UnsupportedOperationException e) {
-			debugInst.debug("GetQuoteTask","analyseResponse",MRBDebug.INFO,"IOException "+e.getMessage());
+			debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"IOException "+e.getMessage());
 			throw new IOException(e);
 		}
 		catch (MalformedURLException e) {
@@ -142,43 +144,116 @@ public class GetYahooHistQuote extends GetQuoteTask {
 	}
 	private void parseDoc(JsonNode nodes, QuotePrice quotePrice) throws IOException {
 		JsonNode tempNode;
+		String timezone;
+		Long marketTime; 
+		TimeZone zone=null;
+		Instant time=null;
+		ZoneId zoneId=null;
+		ZonedDateTime dateTime=null;
+		DateTimeFormatter formatTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 		try {
 			JsonNode priceNode = nodes.findPath("prices");
+			JsonNode marketPrice;
+			JsonNode volumeNode;
+			JsonNode marketTimeNode;
 			if (priceNode.isMissingNode())
 				throw new IOException("Prices node not found");
-			JsonNode marketPrice = priceNode.findPath("close");
-			if (marketPrice.isMissingNode()) 
-				throw new IOException("Market Price not found");
-			quotePrice.setPrice(marketPrice.asDouble());	
-			JsonNode volumeNode = priceNode.findPath("volume");
-			if (volumeNode.isMissingNode()) 
-				quotePrice.setVolume(0l);
-			else
-				quotePrice.setVolume(volumeNode.asLong());	
-			quotePrice.setCurrency(currencyID);
-			JsonNode marketTimeNode = priceNode.findPath("date");
-			if (marketTimeNode.isMissingNode()) {
-				quotePrice.setTradeDate("19000101T00:00");
-				return;
-			}
-			Long marketTime = marketTimeNode.asLong();
 			JsonNode quoteStoreNode = nodes.findPath("QuoteSummaryStore");
-			if (quoteStoreNode.isMissingNode()|| (tempNode = quoteStoreNode.path("quoteType")).isMissingNode()) {
-				quotePrice.setTradeDate("19000101T00:00");
+			if (quoteStoreNode.isMissingNode()|| (tempNode = quoteStoreNode.path("quoteType")).isMissingNode()) 
+				zoneId = null;
+			else {
+				JsonNode queryNode = tempNode.findPath("exchangeTimezoneName");
+				if (queryNode.isMissingNode()) 
+					zoneId = null;
+				else {
+					timezone = queryNode.asText();
+					zone= TimeZone.getTimeZone(timezone);
+					zoneId = zone.toZoneId();
+				}
+			}
+			if (!priceNode.isArray()) {
+				debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"No table ");
+				marketPrice = priceNode.findPath("close");
+				if (marketPrice.isMissingNode()) 
+					throw new IOException("Market Price not found");
+				quotePrice.setPrice(marketPrice.asDouble());	
+				volumeNode = priceNode.findPath("volume");
+				if (volumeNode.isMissingNode()) 
+					quotePrice.setVolume(0l);
+				else
+					quotePrice.setVolume(volumeNode.asLong());	
+				quotePrice.setCurrency(currencyID);
+				marketTimeNode = priceNode.findPath("date");
+				if (marketTimeNode.isMissingNode()) 
+					quotePrice.setTradeDate("19000101T00:00");
+				else {
+					marketTime = marketTimeNode.asLong();
+					time = Instant.ofEpochSecond(marketTime);
+					if (zoneId == null)
+						quotePrice.setTradeDate("19000101T00:00");
+					else {
+						dateTime = ZonedDateTime.ofInstant(time, zoneId);
+						quotePrice.setTradeDate(formatTime.format(dateTime));
+					}
+				}
 				return;
 			}
-			JsonNode queryNode = tempNode.findPath("exchangeTimezoneName");
-			if (queryNode.isMissingNode()) {
-				quotePrice.setTradeDate("19000101T00:00");
-				return;
+			boolean priceFound = false;
+			QuotePrice historyPrice = new QuotePrice();
+			for (final JsonNode objNode :priceNode) {
+				JsonNode typeNode = objNode.findPath("type");
+				if (!typeNode.isMissingNode() && typeNode.asText().contentEquals("DIVIDEND"))
+					continue;
+				marketPrice = objNode.findPath("close");
+				if (marketPrice.isMissingNode()  || marketPrice.isNull()) {
+					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"missing price");
+					continue;
+				}
+				if (priceFound) {
+					if(!Main.params.getHistory() || lastPriceDate ==null || zone==null) 
+						break;
+					historyPrice.setPrice(marketPrice.asDouble());	
+					volumeNode = objNode.findPath("volume");
+					if (volumeNode.isMissingNode()) 
+						historyPrice.setVolume(0l);
+					else
+						historyPrice.setVolume(volumeNode.asLong());	
+					historyPrice.setCurrency(currencyID);
+					marketTimeNode = objNode.findPath("date");
+					if (marketTimeNode.isMissingNode()) 
+						break;
+					marketTime = marketTimeNode.asLong();
+					time = Instant.ofEpochSecond(marketTime);
+					dateTime = ZonedDateTime.ofInstant(time, zoneId);
+					historyPrice.setTradeDate(formatTime.format(dateTime));
+					historyPrice.setTradeDateInt(DateUtil.convertDateToInt(Date.from(time)));
+					if (historyPrice.getTradeDateInt()<= lastPriceDate)
+						break;
+					quotePrice.addHistory(historyPrice.getTradeDateInt(), historyPrice.getPrice(),historyPrice.getVolume());
+				}
+				else {
+					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Price found");
+					quotePrice.setPrice(marketPrice.asDouble());	
+					volumeNode = objNode.findPath("volume");
+					if (volumeNode.isMissingNode()) 
+						quotePrice.setVolume(0l);
+					else
+						quotePrice.setVolume(volumeNode.asLong());	
+					quotePrice.setCurrency(currencyID);
+					marketTimeNode = objNode.findPath("date");
+					if (marketTimeNode.isMissingNode()) 
+						break;
+					marketTime = marketTimeNode.asLong();
+					time = Instant.ofEpochSecond(marketTime);
+					dateTime = ZonedDateTime.ofInstant(time, zoneId);
+					quotePrice.setTradeDate(formatTime.format(dateTime));
+					quotePrice.setTradeDateInt(DateUtil.convertDateToInt(Date.from(time)));
+					priceFound = true;
+					if(Main.params.getHistory() && lastPriceDate !=null && zone!=null) {
+						debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Getting history up to "+lastPriceDate);
+					}
+				}
 			}
-			String timezone = queryNode.asText();
-			TimeZone zone= TimeZone.getTimeZone(timezone);
-			Instant time = Instant.ofEpochSecond(marketTime);
-			ZoneId zoneId = zone.toZoneId();
-			ZonedDateTime dateTime = ZonedDateTime.ofInstant(time, zoneId);
-			DateTimeFormatter formatTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-			quotePrice.setTradeDate(formatTime.format(dateTime));
 			return;
 		} catch (IOException e) {
 			throw new IOException("Cannot parse response for symbol=" + ticker + e.getMessage(),e);

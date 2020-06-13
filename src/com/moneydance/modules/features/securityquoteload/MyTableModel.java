@@ -59,6 +59,7 @@ public class MyTableModel extends DefaultTableModel {
     private SortedMap<String,Integer>accountSource;
     private SortedMap<String,String>selectedExchanges;
     private List<Entry<String,CurrencyType>> listCurrencies;
+	private SortedMap<String,List<HistoryPrice>> historyTab;
  	private List<Entry<String,Integer>> listDates;
     private List<Entry<String,DummyAccount>> listAccounts;
     private List<Entry<String,Double>> listCurrent;
@@ -123,7 +124,7 @@ public class MyTableModel extends DefaultTableModel {
 		dfNumbers = new DecimalFormat(strDec,dfSymbols);
 
 	}
-	public void ResetData(SortedMap<String, Double> mapCurrentp,
+	public void resetData(SortedMap<String, Double> mapCurrentp,
 			SortedMap<String,Integer> mapDatesp, SortedMap<String,DummyAccount> mapAccountsp,
 			SortedMap<String,CurrencyType> mapCurrenciesp,
 			SortedMap<String, Double>newPricesTabp,
@@ -144,6 +145,9 @@ public class MyTableModel extends DefaultTableModel {
 		for (int i=0;i<arrSelect.length;i++)
 			arrSelect[i] = false;
 		resetNumberFormat();
+	}
+	public void resetHistory(SortedMap<String,List<HistoryPrice>> historyTabp) {
+		historyTab = historyTabp;
 	}
 	public void resetPrices() {
 		for (Entry<String,Double>priceEntry : newPricesTab.entrySet() ){
@@ -281,7 +285,10 @@ public class MyTableModel extends DefaultTableModel {
 				return "";
 			if (newTradeDate.get(key)==0)
 				return "";
-			return Main.cdate.format(newTradeDate.get(key));
+			String dateString = Main.cdate.format(newTradeDate.get(key));
+			if (historyTab !=null && historyTab.containsKey(key))
+				dateString +="++";
+			return dateString;
 			/*
 			 * trade currency
 			 */
@@ -429,7 +436,10 @@ public class MyTableModel extends DefaultTableModel {
 			    if (i>= listAccounts.size() && source == Constants.YAHOOHISTINDEX)
 			    	params.updateAccountSource(key, Constants.YAHOOINDEX);
 			    else
-					params.updateAccountSource(key, source);
+				    if (i>= listAccounts.size() && source == Constants.FTHISTINDEX)
+				    	params.updateAccountSource(key, Constants.FTINDEX);
+				    else	    	
+				    	params.updateAccountSource(key, source);
 				debugInst.debug("MyTableModel","setValueAt",MRBDebug.DETAILED, "Source updated "+key+" "+source);
 				i++;
 			}
@@ -518,6 +528,24 @@ public class MyTableModel extends DefaultTableModel {
 		objSnap.syncItem();
 		ctTicker.syncItem();
 		arrSelect[iRow] = false;
+		if (historyTab != null && historyTab.containsKey(ticker)) {
+			List<HistoryPrice>historyList = historyTab.get(ticker);
+			ctTicker.setEditingMode();
+			for (HistoryPrice priceItem : historyList) {
+				dRate = priceItem.getPrice();
+				dViewRate = 1.0;
+				dRate = dRate*dViewRate*dCurRate;
+				Double multiplier = Math.pow(10.0,Double.valueOf(params.getDecimal()));
+				dRate = Math.round(dRate*multiplier)/multiplier;
+				dRate =1/Util.safeRate(dRate);
+				objSnap = ctTicker.setSnapshotInt(priceItem.getDate(),  dRate, ctRelative);
+				if (params.getAddVolume()) {
+					objSnap.setDailyVolume(priceItem.getVolume());
+				}
+				objSnap.syncItem();
+			}
+			ctTicker.syncItem();
+		}
 		return true;
 	}
 	/*

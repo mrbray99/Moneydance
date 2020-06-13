@@ -73,6 +73,7 @@ public class Main extends FeatureModule
 	public static UserPreferences up;
 	private static MRBDebug debugInst;
 	public static Main extension;
+	public static Parameters params;
 	public static String buildNo;
 	private Image selectedBlack=null;
 	private Image selectedLight;
@@ -520,6 +521,18 @@ public class Main extends FeatureModule
 					@Override
 					public void run() {
 						frame.updatePrices(uri);
+					}
+				});
+			}
+		}
+		if (command.equals(Constants.LOADHISTORYCMD)){
+			if (frame != null){
+				timeoutCount = 0;
+				debugInst.debug("Main","processCommand",MRBDebug.DETAILED,"updating history "+uri);
+				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						frame.updateHistory(uri);
 					}
 				});
 			}

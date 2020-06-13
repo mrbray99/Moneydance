@@ -44,10 +44,12 @@ public abstract class Constants {
 	public static final String YAHOO ="Yahoo";
 	public static final String YAHOOHIST ="Yahoo HD";
 	public static final String FT ="FT";
+	public static final String FTHIST ="FT HD";
 	public static String DONOTLOAD ="Do not load";
 	public static final Integer YAHOOINDEX = 1;
 	public static final Integer FTINDEX = 2;
 	public static final Integer YAHOOHISTINDEX = 3;
+	public static final Integer FTHISTINDEX = 4;
 	public static final String[] AUTOTEXT = {"Manual Only","Daily","Weekly","Monthly","Quarterly","Yearly"};
 	public static final String[] TIMETEXT = {"At Start Up","09:00","11:00","13:00","15:00","17:00","19:00","21:00","22:00"};
 	public static final String CALENDARIMAGE = "calendar.png";
@@ -73,6 +75,7 @@ public abstract class Constants {
 	public static final String GETQUOTECMD = "getQuote";
 	public static final String TIDCMD = "tid";
 	public static final String CURRENCYTYPE = "y";
+	public static final String LASTPRICEDATETYPE = "ld";
 	public static final String STOCKTYPE = "s";
 	public static final String SOURCETYPE = "qs";
 	public static final String TRADEDATETYPE = "d";
@@ -85,7 +88,8 @@ public abstract class Constants {
 	public static final String SOURCEYAHOOHIST = "yh";	
 	public static final String SOURCEYAHOO = "yahoo";
 	public static final String SOURCEFT = "ft";
-	public static final String[] SOURCES = {SOURCEYAHOO,SOURCEFT,SOURCEYAHOOHIST};
+	public static final String SOURCEFTHIST = "fth";
+	public static final String[] SOURCES = {SOURCEYAHOO,SOURCEFT,SOURCEYAHOOHIST,SOURCEFTHIST};
 	public static final Long TIMEOUT=10L;
 	public static final Long OVERALLTIMEOUT=10L;
 	public static final int TIMEOUTCOUNT=6;
@@ -93,6 +97,7 @@ public abstract class Constants {
 	public static final String HELLOCMD = "showconsole";
 	public static final String IAMHERECMD = "iamhere";
 	public static final String LOADPRICECMD = "loadPrice";
+	public static final String LOADHISTORYCMD = "loadHistory";
 	public static final String ERRORQUOTECMD = "errorQuote";
 	public static final String DONEQUOTECMD = "doneQuote";
 	public static final String TIMEOUTCMD = "timeout";

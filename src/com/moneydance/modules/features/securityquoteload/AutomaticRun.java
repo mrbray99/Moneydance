@@ -44,6 +44,7 @@ public class AutomaticRun extends loadPricesWindow{
 			errorTickers = new ArrayList<>();
 			main = mainp;
 			params = new Parameters();
+			Main.params=params;
 			/*
 			 * set up internal tables
 			 */

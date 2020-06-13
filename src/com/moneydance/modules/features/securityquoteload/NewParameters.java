@@ -39,6 +39,7 @@ public class NewParameters {
 	private boolean includeZero;
 	private boolean includeCurrency;
 	private boolean addVolume;
+	private boolean history;
 	private boolean export;
 	private boolean exportAuto;
 	private boolean roundPrices;
@@ -71,6 +72,12 @@ public class NewParameters {
 	 */
 	public boolean isAddVolume() {
 		return addVolume;
+	}
+	/**
+	 * @return the history
+	 */
+	public boolean isHistory() {
+		return history;
 	}
 	/**
 	 * @return the includeCurrency
@@ -113,6 +120,12 @@ public class NewParameters {
 	 */
 	public void setAddVolume(boolean addVolume) {
 		this.addVolume = addVolume;
+	}
+	/**
+	 * @param history the history to set
+	 */
+	public void setHistory(boolean history) {
+		this.history = history;
 	}
 	public boolean isExport() {
 		return export;

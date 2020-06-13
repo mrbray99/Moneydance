@@ -88,6 +88,7 @@ public class MyTable extends JTable {
 	private JMenuItem sourceYahoo;
 	private JMenuItem sourceYahooHist;
 	private JMenuItem sourceFT;
+	private JMenuItem sourceFTHD;
 	private JComboBox<String> allSources;
 	private JComboBox<String> currencySources;
 	public static int selectCol = 0;
@@ -281,12 +282,16 @@ public class MyTable extends JTable {
 					dm.updateAllSources(0);
 					return;
 				}
-				if (strAction.contains("HD")){
+				if (strAction.contains("Yahoo HD")){
 					dm.updateAllSources(3);
 					return;
 				}
 				if (strAction.contains("Yahoo")){
 					dm.updateAllSources(1);
+					return;
+				}
+				if (strAction.contains("FT HD")){
+					dm.updateAllSources(4);
 					return;
 				}
 				if (strAction.contains("FT")){
@@ -312,6 +317,10 @@ public class MyTable extends JTable {
 		sourceFT.setText("Set all to FT");
 		sourcePopup.add(sourceFT);
 		sourceFT.addActionListener(popupListener);
+		sourceFTHD = new JMenuItem();
+		sourceFTHD.setText("Set all to FT HD");
+		sourcePopup.add(sourceFTHD);
+		sourceFTHD.addActionListener(popupListener);
 	}
 	@Override
 	public TableCellEditor getCellEditor(int row, int column) {
@@ -372,6 +381,10 @@ public class MyTable extends JTable {
 		if (source.equals(Constants.FT)) {
 			sourceid = Constants.FTINDEX;
 			tickerSource = Constants.SOURCEFT;
+		}
+		if (source.equals(Constants.FTHIST)) {
+			sourceid = Constants.FTHISTINDEX;
+			tickerSource = Constants.SOURCEFTHIST;
 		}
 		if (!exchange.isEmpty())
 			ticker = params.getNewTicker(ticker, exchange, sourceid);

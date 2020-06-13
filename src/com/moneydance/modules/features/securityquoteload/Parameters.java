@@ -71,7 +71,7 @@ public class Parameters implements Serializable{
 	public transient static String [] maximums = {"No Limit","6","7","8","9"};
 	private transient SortedMap<String, Integer> mapAccountsList;
 	private transient MRBDebug debugInst = MRBDebug.getInstance();
-	private transient String[] arrSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT,Constants.YAHOOHIST};
+	private transient String[] arrSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT,Constants.YAHOOHIST,Constants.FTHIST};
 	private transient String[] curSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT};
 	private transient List<NewAccountLine>listNewAccounts;
 	private transient NewParameters newParams;
@@ -81,6 +81,7 @@ public class Parameters implements Serializable{
 	private transient SortedMap<String,PseudoCurrency> pseudoCurrencies;
 	private transient SortedMap<String,String>mapExchangeSelect;
 	private transient Boolean addVolume;
+	private transient Boolean history;
 	private transient boolean export;
 	private transient boolean exportAuto;
 	private transient String exportFolder;
@@ -263,6 +264,7 @@ public class Parameters implements Serializable{
 		this.listAccounts= new ArrayList<>();
 		this.listNewAccounts = newParams.getListAccounts();
 		this.addVolume = newParams.isAddVolume();
+		this.history = newParams.isHistory();
 		this.export = newParams.isExport();
 		this.exportAuto = newParams.isExportAuto();
 		this.exportFolder = newParams.getExportFolder();
@@ -396,6 +398,16 @@ public class Parameters implements Serializable{
 		addVolume = addVolumep;
 		isDirty=true;
 	}
+	/*
+	 * include history
+	 */
+	public boolean getHistory() {
+		return history;
+	}
+	public void setHistory(boolean historyp){
+		history = historyp;
+		isDirty=true;
+	}
 	public boolean isExport() {
 		return export;
 	}
@@ -487,7 +499,7 @@ public class Parameters implements Serializable{
 		if (line!=  null) {
 			if (source == Constants.YAHOOINDEX || source == Constants.YAHOOHISTINDEX)
 				newTicker = line.getYahooPrefix()+ticker+line.getYahooSuffix();
-			if (source == Constants.FTINDEX)
+			if (source == Constants.FTINDEX || source ==Constants.FTHISTINDEX)
 				newTicker = line.getFtPrefix()+ticker+line.getFtSuffix();
 		}
 		return newTicker;
@@ -553,6 +565,7 @@ public class Parameters implements Serializable{
 		newParams.setNoDecimals(noDecimals);
 		newParams.setNewNoDecimals(newNoDecimals);
 		newParams.setAddVolume(addVolume);
+		newParams.setHistory(history);
 		newParams.setExportAuto(exportAuto);
 		newParams.setExportFolder(exportFolder);
 		newParams.setExport(export);
