@@ -433,13 +433,10 @@ public class MyTableModel extends DefaultTableModel {
 		 int i=0;
 		   for (Entry<String, Double> entry : listCurrent) {
 			    String key = entry.getKey();
-			    if (i>= listAccounts.size() && source == Constants.YAHOOHISTINDEX)
-			    	params.updateAccountSource(key, Constants.YAHOOINDEX);
-			    else
-				    if (i>= listAccounts.size() && source == Constants.FTHISTINDEX)
-				    	params.updateAccountSource(key, Constants.FTINDEX);
-				    else	    	
-				    	params.updateAccountSource(key, source);
+			    if (i>= listAccounts.size() && source == Constants.FTHISTINDEX)
+			    	params.updateAccountSource(key, Constants.FTINDEX);
+			    else	    	
+			    	params.updateAccountSource(key, source);
 				debugInst.debug("MyTableModel","setValueAt",MRBDebug.DETAILED, "Source updated "+key+" "+source);
 				i++;
 			}
@@ -588,8 +585,18 @@ public class MyTableModel extends DefaultTableModel {
 		if(tradeDate >= lastDate)
 			ctTicker.setRate(dRate,null);  // MD 2019 change
 		objSnap.syncItem();
-		ctTicker.syncItem();
 		arrSelect[iRow] = false;
+		String ticker = listCurrent.get(iRow).getKey();
+		if (historyTab != null && historyTab.containsKey(ticker)) {
+			List<HistoryPrice>historyList = historyTab.get(ticker);
+			ctTicker.setEditingMode();
+			for (HistoryPrice priceItem : historyList) {
+				dRate = priceItem.getPrice();
+				objSnap = ctTicker.setSnapshotInt(priceItem.getDate(),  dRate);
+				objSnap.syncItem();
+			}
+		}
+		ctTicker.syncItem();
 		return true;
 	}
 	  /** 

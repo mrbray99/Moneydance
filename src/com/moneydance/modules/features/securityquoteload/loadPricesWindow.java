@@ -1417,7 +1417,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 						ticker = currency+baseCurrencyID;
 					else
 						ticker = baseCurrencyID+currency+Constants.CURRENCYTICKER;
-					oldTicker = ticker;
+					oldTicker = price.getTicker();
 				}
 				else {
 					type = Constants.STOCKTYPE;
@@ -1816,6 +1816,20 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			if (price.getName().compareToIgnoreCase(Constants.STOCKTYPE) == 0) {
 				newPrice = new SecurityPrice(price.getValue());
 			}
+			if (price.getName().compareToIgnoreCase(Constants.CURRENCYTYPE) == 0) {
+				String ticker = price.getValue();
+				if (ticker.endsWith(Constants.CURRENCYTICKER))
+					ticker = Constants.CURRENCYID+ticker.substring(3, ticker.indexOf(Constants.CURRENCYTICKER));
+				else {
+					if (ticker.contains("-")) {
+						ticker = Constants.CURRENCYID+ticker.substring(0, ticker.indexOf('-')+1);
+					}
+					else
+						ticker = Constants.CURRENCYID+ticker.substring(3);
+				}
+
+				newPrice = new SecurityPrice(ticker);
+			}
 			if (price.getName().compareToIgnoreCase(Constants.PRICETYPE) == 0) {
 				if (newPrice != null) {
 					String priceStr = price.getValue();
@@ -1927,6 +1941,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		}
 		if (stockPrice != 0.0) {
 			stockPrice = stockPrice*dRate;
+			if (newPrice.isCrypto())
+				stockPrice = 1/Util.safeRate(stockPrice);
 			List<HistoryPrice> historyList = historyTab.get(newPrice.getTicker());
 			if (historyList == null) {
 				historyList = new ArrayList<HistoryPrice>();

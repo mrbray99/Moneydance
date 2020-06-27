@@ -102,6 +102,7 @@ public class QuoteManager implements QuoteListener {
 				stocks.add(item.getValue());
 				break;
 			case Constants.CURRENCYTYPE :
+				ticker = item.getValue();
 				currencies.add(item.getValue());
 				break;
 			case Constants.LASTPRICEDATETYPE :
@@ -250,7 +251,7 @@ public class QuoteManager implements QuoteListener {
 				totalQuotes++;
 			}
 			for (String currency : currencies) {
-				GetQuoteTask task = new GetYahooHistQuote(currency, this, httpClient,Constants.CURRENCYTYPE,tid,0);
+				GetQuoteTask task = new GetYahooHistQuote(currency, this, httpClient,Constants.CURRENCYTYPE,tid,lastPriceDate.get(currency));
 				tasks.add(task);
 				totalQuotes++;
 			}

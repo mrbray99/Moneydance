@@ -72,7 +72,7 @@ public class Parameters implements Serializable{
 	private transient SortedMap<String, Integer> mapAccountsList;
 	private transient MRBDebug debugInst = MRBDebug.getInstance();
 	private transient String[] arrSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT,Constants.YAHOOHIST,Constants.FTHIST};
-	private transient String[] curSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT};
+	private transient String[] curSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.YAHOOHIST,Constants.FT};
 	private transient List<NewAccountLine>listNewAccounts;
 	private transient NewParameters newParams;
 	private transient ExchangeList exchanges;

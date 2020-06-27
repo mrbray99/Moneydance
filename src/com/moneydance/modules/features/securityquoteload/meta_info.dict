@@ -1,7 +1,8 @@
 {
   "vendor" = "Mike Bray"
-  "module_build" = "3025"
+  "module_build" = "3026"
   "minbuild" = "1820"
+  "maxbuild" = "1904"
   "vendor.url" = "https://bitbucket.org/mikerb/moneydance-2019/wiki/Quote%20Loader"
   "module_name" = "Quote Loader"
   "module_desc" = "<html><body><title>Quote Loader</title>><p>Loads the price of securities and currencies directly from an online source.
