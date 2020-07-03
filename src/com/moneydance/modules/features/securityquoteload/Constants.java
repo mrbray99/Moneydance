@@ -90,9 +90,9 @@ public abstract class Constants {
 	public static final String SOURCEFT = "ft";
 	public static final String SOURCEFTHIST = "fth";
 	public static final String[] SOURCES = {SOURCEYAHOO,SOURCEFT,SOURCEYAHOOHIST,SOURCEFTHIST};
-	public static final Long TIMEOUT=10L;
-	public static final Long OVERALLTIMEOUT=10L;
-	public static final int TIMEOUTCOUNT=6;
+	public static final Long TIMEOUT=20L;
+	public static final Long OVERALLTIMEOUT=20L;
+	public static final int TIMEOUTCOUNT=12;
 	public static final String SHOWCONSOLECMD = "showconsole";
 	public static final String HELLOCMD = "showconsole";
 	public static final String IAMHERECMD = "iamhere";
