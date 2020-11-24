@@ -56,7 +56,7 @@ import org.jsoup.select.Elements;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 
 public class GetFTQuote extends GetQuoteTask {
-	private MRBDebug debugInst = MRBDebug.getInstance();
+	private MRBDebug debugInst = Main.debugInst;
 	private String ftSecURL = "https://markets.ft.com/data/equities/tearsheet/summary?";
 	private String ftCurrURL = "https://markets.ft.com/data/currencies/tearsheet/summary?";
 	public GetFTQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep,String tidp) {

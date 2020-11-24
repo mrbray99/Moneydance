@@ -44,13 +44,12 @@ import javax.swing.JProgressBar;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 
 
-
 final class GetQuotesProgressMonitor {
 
 	private AtomicInteger subTaskSize = new AtomicInteger(0);
 	private AtomicInteger completedTasks = new AtomicInteger(0);
 	private JProgressBar progressBar = null;
-	private MRBDebug debugInst = MRBDebug.getInstance();
+	private MRBDebug debugInst = Main.debugInst;
 	private TaskListener window;
 	private SortedMap<String,TaskCounts> uuidStatus;
 	private AtomicBoolean completed;

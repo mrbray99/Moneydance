@@ -50,6 +50,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -57,7 +59,7 @@ import com.moneydance.modules.features.mrbutil.MRBDebug;
 
 public class QuoteManager implements QuoteListener {
 	private Charset charSet = Charset.forName("UTF-8");
-	private MRBDebug debugInst = MRBDebug.getInstance();
+	private MRBDebug debugInst = Main.debugInst;
 	private String source;
 	private String tid;
 	private List<String> stocks;
@@ -69,8 +71,7 @@ public class QuoteManager implements QuoteListener {
 	private int successful=0;
 	private int failed=0;
 	public QuoteManager () {
-		threadPool = Executors.newFixedThreadPool(4);
-		
+		threadPool = Executors.newFixedThreadPool(4);		
 	}
 	 
 	public void getQuotes(String request) {
@@ -110,7 +111,10 @@ public class QuoteManager implements QuoteListener {
 				break;
 			}
 		}
-		httpClient = HttpClients.createDefault();
+		httpClient = HttpClients.custom()
+		        .setDefaultRequestConfig(RequestConfig.custom()
+		                .setCookieSpec(CookieSpecs.STANDARD).build())
+		        .build();;
 		List<GetQuoteTask> tasks = new ArrayList<GetQuoteTask>();
 		if (source.equals(Constants.SOURCEFT)) {
 			for (String stock : stocks) {

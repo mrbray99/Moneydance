@@ -17,7 +17,6 @@ import com.moneydance.apps.md.controller.FeatureModuleContext;
 
 public class MRBPreferences2 {
 	private transient static MRBPreferences2 preferences = null;
-	private transient MRBDebug debugInst=MRBDebug.getInstance();
 	private transient FeatureModuleContext context;
 	private transient AccountBook acctBook;
 	private transient String fileName;
@@ -48,7 +47,6 @@ public class MRBPreferences2 {
 			reader.close();
 		}
 		catch (JsonParseException e) {
-			debugInst.debug("MRBPreferences2", "construct", MRBDebug.DETAILED, "Parse Exception "+e.getMessage());
 			createFile = true;
 		}
 		catch (IOException e){

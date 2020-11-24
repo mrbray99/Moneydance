@@ -52,7 +52,7 @@ public class MyCurrencyEditor extends DefaultCellEditor {
 	  /**
 	 * 
 	 */
-	private MRBDebug debugInst = MRBDebug.getInstance();
+	private MRBDebug debugInst = Main.debugInst;
 	private static final long serialVersionUID = 1L;
 	private Parameters params;
 	  private MyTextField ftf;

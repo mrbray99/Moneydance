@@ -48,7 +48,7 @@ public class TaskExecutor
     Main myTask;
     volatile boolean isStopIssued;
     private LocalDateTime lastSet=null;;
-    MRBDebug debugInst = MRBDebug.getInstance();
+    MRBDebug debugInst = Main.debugInst;
 
     public TaskExecutor(Main myTask$) 
     {
@@ -60,7 +60,7 @@ public class TaskExecutor
     {
  //   	if (lastSet!= null) {
  //   		if (!lastSet.isAfter(when)) {
- //   			debugInst.debug("TaskExecutor", "startExecutionAt", MRBDebug.DETAILED, "Execution ignored "+when.getHour()+" "+when.getMinute());
+ //   			rwDebugInst.debug("TaskExecutor", "startExecutionAt", MRBDebug.DETAILED, "Execution ignored "+when.getHour()+" "+when.getMinute());
  //   			return;
  //   		}
 //    	}

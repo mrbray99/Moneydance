@@ -51,7 +51,7 @@ public class Main extends FeatureModule {
 	public static FeatureModuleContext context;
 	public UserPreferences up = null;
 	public static Image imgIcon;
-	private static MRBDebug debugInst;
+	public static MRBDebug debugInst;
 	public static String buildNum;
 
 	@Override
@@ -63,7 +63,7 @@ public class Main extends FeatureModule {
 			imgIcon = getIcon("/com/moneydance/modules/features/budgetgen/mrb icon2.png");
 			context.registerFeature(this, "showconsole", getIcon("budgetgen"),
 					getName());
-			debugInst = MRBDebug.getInstance();
+			debugInst = new MRBDebug();
 			debugInst.setDebugLevel(MRBDebug.SUMMARY);
 			debugInst.setExtension("Budget Gen");
 		} catch (Exception e) {

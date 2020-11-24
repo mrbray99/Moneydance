@@ -50,7 +50,7 @@ public class CalculateRunDate {
 	int todayLastDayMonth;
 	int todayYear;
 	int todayMonth;
-	MRBDebug debugInst = MRBDebug.getInstance();
+	MRBDebug debugInst = Main.debugInst;
 
 	Calendar.Builder builder;
 	Calendar tempDate;

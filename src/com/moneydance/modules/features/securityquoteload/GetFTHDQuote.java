@@ -51,18 +51,17 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import com.infinitekind.util.DateUtil;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 
 public class GetFTHDQuote extends GetQuoteTask {
-	private MRBDebug debugInst = MRBDebug.getInstance();
+	private MRBDebug debugInst = Main.debugInst;
 	private String ftSecURL = "https://markets.ft.com/data/etfs/tearsheet/historical?";
 	private Integer lastPriceDate;
 	public GetFTHDQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep,String tidp,Integer lastPriceDatep) {
-		super(tickerp, listenerp, httpClientp,tickerTypep,tidp);
+		super(tickerp, listenerp, httpClientp,tickerTypep,tidp);			
 		lastPriceDate = lastPriceDatep;
 		if (tickerType == Constants.STOCKTYPE)
 			url = ftSecURL+"s="+ticker;
@@ -254,7 +253,7 @@ public class GetFTHDQuote extends GetQuoteTask {
 	private void findDate(Element topDiv, QuotePrice quotePrice) throws IOException {
 		Date date;
 		String dateText = topDiv.child(0).child(0).text();
-		SimpleDateFormat simpleFormat = new SimpleDateFormat("EEE, MMM dd,yyyy");
+		SimpleDateFormat simpleFormat = new SimpleDateFormat("EEE, MMM dd,yyyy", Locale.ENGLISH);
 		try {
 			date=simpleFormat.parse(dateText);
 		}

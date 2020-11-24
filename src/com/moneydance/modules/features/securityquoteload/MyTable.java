@@ -80,7 +80,7 @@ public class MyTable extends JTable {
 	private MyTable tableObj;
 	private MyTableModel dm;
 	private JTableHeader header;
-	private MRBDebug debugInst = MRBDebug.getInstance();
+	private MRBDebug debugInst = Main.debugInst;
 	private boolean isColumnWidthChanged;
 	private int[] columnWidths;
 	private JPopupMenu sourcePopup;

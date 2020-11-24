@@ -71,7 +71,7 @@ public class Main extends FeatureModule
 	public static char decimalChar;
 	public static FeatureModuleContext context;
 	public static UserPreferences up;
-	private static MRBDebug debugInst;
+	public static MRBDebug debugInst;
 	public static Main extension;
 	public static Parameters params;
 	public static String buildNo;
@@ -117,7 +117,7 @@ public class Main extends FeatureModule
 		int iBuild = getBuild();
 		buildNo = String.valueOf(iBuild);  
 		up = UserPreferences.getInstance();
-		debugInst = MRBDebug.getInstance();
+		debugInst = new MRBDebug();
 		String dateFormatStr;
 		dateFormatStr = up.getSetting(UserPreferences.DATE_FORMAT);
 		cdate = new CustomDateFormat(dateFormatStr);

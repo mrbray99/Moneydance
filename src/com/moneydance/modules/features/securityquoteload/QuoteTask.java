@@ -34,6 +34,8 @@
 package com.moneydance.modules.features.securityquoteload;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.concurrent.Callable;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -42,15 +44,22 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 
 public abstract class QuoteTask<V> implements Callable<V> {
-	protected MRBDebug debugInst = MRBDebug.getInstance();
+	protected MRBDebug debugInst = Main.debugInst;
 	protected String ticker;
 	protected QuoteListener listener;
 	protected CloseableHttpClient httpClient;
 	protected String url;
 	protected String tickerType;
 	protected String tid;
+	protected String rawTicker = "";
 	public QuoteTask(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp, String tickerTypep,String tidp) {
-		ticker = tickerp;
+		try {
+			rawTicker = tickerp;
+			ticker = URLEncoder.encode(tickerp,"UTF-8");
+		}
+		catch (UnsupportedEncodingException e ) {
+			ticker = "";
+		}
 		listener = listenerp;
 		httpClient = httpClientp;
 		tickerType = tickerTypep;

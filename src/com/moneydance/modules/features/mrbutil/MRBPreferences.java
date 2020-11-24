@@ -24,7 +24,6 @@ import com.moneydance.apps.md.controller.FeatureModuleContext;
 
 public class MRBPreferences implements java.io.Serializable {
 	private transient static MRBPreferences objPref = null;
-	private transient MRBDebug debugInst = MRBDebug.getInstance();
 	private transient FeatureModuleContext conCurrentCon;
 	private transient AccountBook abCurAcctBook;
 	private transient String strFileName = MRBConstants.PARAMETERFILE;
@@ -61,7 +60,6 @@ public class MRBPreferences implements java.io.Serializable {
 			this.mapData = objTemp.mapData;
 			fiCurInFile.close();
 		} catch (IOException | ClassNotFoundException ioException) {
-			debugInst.debug("MRBPReferences", "construct", MRBDebug.INFO, "error reading preferences file "+ioException.getMessage());
 			/*
 			 * file does not exist
 			 * if MacOS or Unix try to use '\' in file name

@@ -27,7 +27,7 @@ public class Parameters implements Serializable{
 	public transient static Integer [] arDecimal = {4,5,6,7,8};
 	public transient static String [] arMaximums = {"No Limit","5","6","7","8","9"};
 	public transient static String strDoNotLoad ="Do not load";
-	private transient MRBDebug debugInst = MRBDebug.getInstance();
+	private transient MRBDebug debugInst = Main.debugInst;
 	/*
      * The following fields are stored
      */

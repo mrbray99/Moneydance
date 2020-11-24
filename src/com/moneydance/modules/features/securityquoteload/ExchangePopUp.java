@@ -61,7 +61,7 @@ public class ExchangePopUp extends JDialog
     private final MyTableModel dm; 
     private final Parameters params;
     private final ExchangeData model;
-    MRBDebug debugInst = MRBDebug.getInstance();
+    MRBDebug debugInst = Main.debugInst;
     
 
     public ExchangePopUp(int row,Parameters paramsp, MyTableModel priceModel)

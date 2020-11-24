@@ -98,7 +98,6 @@ public class BudgetParameters implements java.io.Serializable {
     private transient int iPriorStart;
     private transient int iPriorEnd;
     private transient List<String> missing;
-	private transient MRBDebug objDebug;
     /*
      * Table to link budget intervals item intervals
      */
@@ -126,8 +125,8 @@ public class BudgetParameters implements java.io.Serializable {
 	 */
 	public BudgetParameters(FeatureModuleContext context, BudgetExtend objBudget,JDateField jdtFiscalStart,
 			int iTypep, String strFileNamep) throws MRBInconsistencyException {
-		objDebug = MRBDebug.getInstance();
-		objDebug.debug("BudgetParameters","Constructor",MRBDebug.SUMMARY, "Budget Parameters Created");
+
+		Main.debugInst.debug("BudgetParameters","Constructor",MRBDebug.SUMMARY, "Budget Parameters Created");
         mapAccounts = new TreeMap<String,AccountDetails>();
         mapAcctName = new TreeMap<String,String>();
         mapIndentName = new TreeMap<String,String>();
@@ -196,7 +195,7 @@ public class BudgetParameters implements java.io.Serializable {
 			/*
 			 * file exists, copy temporary object to this object
 			 */
-			objDebug.debug("BudgetParameters","loadParameters",MRBDebug.SUMMARY, "Parameter File "+strFullFileName + " Exists");
+			Main.debugInst.debug("BudgetParameters","loadParameters",MRBDebug.SUMMARY, "Parameter File "+strFullFileName + " Exists");
 			BudgetParameters objTemp = (BudgetParameters) ois.readObject();
 			this.iStartDate = objTemp.iStartDate;
 			this.iEndDate = objTemp.iEndDate;
@@ -218,12 +217,12 @@ public class BudgetParameters implements java.io.Serializable {
 				if (mapIndentName.get(objLine.getCategoryIndent())== null) {
 					missing.add("The Category "+objLine.getCategoryIndent()+" is no longer in the file.  It has been dropped.");
 					itLine.remove();
-					objDebug.debug("BudgetParameters","loadParameters",MRBDebug.SUMMARY, "Account not in file ="+objLine.getCategoryIndent());					
+					Main.debugInst.debug("BudgetParameters","loadParameters",MRBDebug.SUMMARY, "Account not in file ="+objLine.getCategoryIndent());					
 				}
 				else {
 					if (mapAccounts.get(mapIndentName.get(objLine.getCategoryIndent())) == null) {
 						missing.add("Account not found="+objLine.getCategoryIndent());
-						objDebug.debug("BudgetParameters","loadParameters",MRBDebug.DETAILED, "Account not found="+objLine.getCategoryIndent());					
+						Main.debugInst.debug("BudgetParameters","loadParameters",MRBDebug.DETAILED, "Account not found="+objLine.getCategoryIndent());					
 						objLine.setCategory(null);
 					}
 					else {
@@ -232,7 +231,7 @@ public class BudgetParameters implements java.io.Serializable {
 						objLine.setStartDate(objLine.getStartDate());
 						objLine.setParent(objDetail.getParent());
 						objDetail.setLine(objLine);
-						objDebug.debug("BudgetParameters","loadParameters",MRBDebug.DETAILED, "Account in parameters="+objLine.getCategoryIndent());
+						Main.debugInst.debug("BudgetParameters","loadParameters",MRBDebug.DETAILED, "Account in parameters="+objLine.getCategoryIndent());
 				    }
 					/*
 					 * remove from the mapMissing map to leave a list of those not in budgetlines
@@ -258,10 +257,10 @@ public class BudgetParameters implements java.io.Serializable {
 			        iter.remove();
 			    }
 			}
-			objDebug.debug("BudgetParameters","loadParameters",MRBDebug.DETAILED, "iStartDate="+iStartDate);
-			objDebug.debug("BudgetParameters","loadParameters",MRBDebug.DETAILED, "iEndDate="+iEndDate);
-			objDebug.debug("BudgetParameters","loadParameters",MRBDebug.DETAILED, "dRPI="+dRPI);
-			objDebug.debug("BudgetParameters","loadParameters",MRBDebug.DETAILED, "iDatePer="+iDatePer);
+			Main.debugInst.debug("BudgetParameters","loadParameters",MRBDebug.DETAILED, "iStartDate="+iStartDate);
+			Main.debugInst.debug("BudgetParameters","loadParameters",MRBDebug.DETAILED, "iEndDate="+iEndDate);
+			Main.debugInst.debug("BudgetParameters","loadParameters",MRBDebug.DETAILED, "dRPI="+dRPI);
+			Main.debugInst.debug("BudgetParameters","loadParameters",MRBDebug.DETAILED, "iDatePer="+iDatePer);
 			fiCurInFile.close();
 		}
 		catch (IOException | ClassNotFoundException ioException) {
@@ -402,7 +401,7 @@ public class BudgetParameters implements java.io.Serializable {
 	 */
 	public void addCategory(String strCategory) {
 		if (mapMissing.containsKey(strCategory)) {
-			objDebug.debug("BudgetParameters","addCategory",MRBDebug.DETAILED, "Category added="+strCategory);
+			Main.debugInst.debug("BudgetParameters","addCategory",MRBDebug.DETAILED, "Category added="+strCategory);
 			AccountDetails acct = mapMissing.get(strCategory);
 			mapMissing.remove(strCategory);
 			BudgetLine objLine = new BudgetLine(Constants.CHILD_LINE,mapAcctName.get(strCategory),acct.getAccount(),iStartDate,Constants.mapDatePeriod.get(iBudgetPer));

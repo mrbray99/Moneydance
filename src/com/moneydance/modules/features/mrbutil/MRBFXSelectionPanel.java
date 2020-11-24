@@ -1,5 +1,7 @@
 package com.moneydance.modules.features.mrbutil;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javafx.collections.FXCollections;
@@ -9,30 +11,27 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
-public class MRBFXSelectionPanel {
-	private ListView<String> listDisplayMissing;
-	private ListView<String> listDisplaySelect;
-	private ObservableList<String> missingModel;
-	private ObservableList<String> selectModel;
-	private List<String> missing;
-	private List<String> selected;
-	private Button selectBtn;
-	private Button deselectBtn;
+public class MRBFXSelectionPanel implements Callback<Object, String> {
+	private TableView<MRBFXSelectionRow> table;
+	private ObservableList<MRBFXSelectionRow> listModel;
+	private List<String> selected=new ArrayList<String>();
+	private List<MRBFXSelectionRow> list;
 	private Stage stage;
 	private Scene scene;
 	private GridPane panDisplay;
-	public MRBFXSelectionPanel (List<String> missingp,List<String>selectedp) {
-		missing = missingp;
-		selected = selectedp;
-		missingModel = FXCollections.observableArrayList(missing);
-		selectModel = FXCollections.observableArrayList(selected);
+	public MRBFXSelectionPanel (List<MRBFXSelectionRow> listp) {
+		list = listp;
 	}
 	public void display() {
 		stage = new Stage();
@@ -40,60 +39,34 @@ public class MRBFXSelectionPanel {
 		panDisplay = new GridPane();
 		scene = new Scene(panDisplay,600,500);
 		stage.setScene(scene);
-		listDisplayMissing= new ListView<>(missingModel);
-		listDisplayMissing.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		listDisplaySelect = new ListView<>(selectModel);
-		listDisplaySelect.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		listModel = FXCollections.observableList(list);
+		for (MRBFXSelectionRow row : listModel)
+			row.setPanel(this);
+		table= new TableView<MRBFXSelectionRow>();
+		table.setItems(listModel);
+		TableColumn<MRBFXSelectionRow,CheckBox> col1 = new TableColumn<MRBFXSelectionRow,CheckBox>("");
+		TableColumn<MRBFXSelectionRow,HBox> col2 = new TableColumn<MRBFXSelectionRow,HBox>("");
+		table.getColumns().addAll(Arrays.asList(col1,col2));
+		col1.setCellValueFactory(new PropertyValueFactory<MRBFXSelectionRow,CheckBox>("col1"));
+		col1.setPrefWidth(30);
+		col2.setCellValueFactory(new PropertyValueFactory<MRBFXSelectionRow,HBox>("col2"));
+		col2.prefWidthProperty().bind(panDisplay.widthProperty().subtract(50));
+		GridPane.setHgrow(table, Priority.ALWAYS);
+		table.prefWidthProperty().bind(panDisplay.widthProperty());
 		int ix=0;
 		int iy=0;
-		Label lblAccmis = new Label("Available Items");
-		panDisplay.add(lblAccmis, ix,iy);
-		ix=+2;
-		Label lblAccsel = new Label("Included Items");
-		panDisplay.add(lblAccsel, ix,iy);
-		/*
-		 * Accounts Available
-		 */
-		ix = 0;
-		iy++;
-		panDisplay.add(listDisplayMissing, ix,iy);
-		GridPane.setRowSpan(listDisplayMissing, 2);
-		GridPane.setMargin(listDisplayMissing,new Insets(0, 0, 0, 10) );
-		/*
-		 * Account Buttons
-		 */
-		ix=1;
-		selectBtn = new Button("Sel");
-		selectBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				accountSelect();
-			}
-		});
-		panDisplay.add(selectBtn,ix,iy);
-		GridPane.setMargin(selectBtn,new Insets(40, 5, 5, 5));
-		deselectBtn = new Button("Des");
-		deselectBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				accountDeselect();
-			}
-		});
-		panDisplay.add(deselectBtn,ix,iy+1);
-		GridPane.setMargin(deselectBtn,new Insets(0, 5, 5, 5));
-		/*
-		 * Accounts Selected
-		 */
-		ix=2;
-		panDisplay.add(listDisplaySelect,ix,iy);
-		GridPane.setRowSpan(listDisplaySelect,2);
-		GridPane.setMargin(listDisplaySelect, new Insets(0, 0, 0, 10));
+		panDisplay.add(table, ix,iy,4,1);
 		Button okBtn = new Button("OK");
 		okBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-			stage.close();
-		}
+				selected.clear();
+				for (MRBFXSelectionRow row : list) {
+					if (row.isSelected())
+						selected.add(row.getRowId());
+				}
+				stage.close();
+			}
 		});
 		Button cancelBtn = new Button("Cancel");
 		cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -102,51 +75,75 @@ public class MRBFXSelectionPanel {
 				stage.close();
 			}
 		});
+		Button selectAllBtn = new Button("Select All");
+		selectAllBtn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				selectAll();
+			}
+		});
+		Button deSelectAllBtn = new Button("Deselect All");
+		deSelectAllBtn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				deSelectAll();
+			}
+		});
+		
 		ix=0;
-		iy=4;
-		panDisplay.add(okBtn, ix++, iy);
+		iy=2;
+		panDisplay.add(selectAllBtn, ix++, iy,1,1);
+		GridPane.setMargin(selectAllBtn, new Insets(10,10,10,10));
+		panDisplay.add(deSelectAllBtn, ix++, iy,1,1);
+		GridPane.setMargin(deSelectAllBtn, new Insets(10,10,10,10));
+		panDisplay.add(okBtn, ix++, iy,1,1);
 		GridPane.setMargin(okBtn, new Insets(10,10,10,10));
-		panDisplay.add(cancelBtn,ix++, iy);
-		GridPane.setMargin(cancelBtn, new Insets(10,10,10,10));		
+		panDisplay.add(cancelBtn,ix++, iy,1,1);
+		GridPane.setMargin(cancelBtn, new Insets(10,10,10,10));
+		HBox.setHgrow(table, Priority.ALWAYS);
 		stage.showAndWait();
-
 	}
-	public List<String> getSelected() {
+	@Override
+	public String call(Object lineItem) {
+		return "";
+	}
+	public List<String> getSelected(){
 		return selected;
 	}
-	private void accountSelect() {
-		ObservableList<String> selectedItems = listDisplayMissing.getSelectionModel().getSelectedItems();
-		if (selectedItems.size() != 0) {
-			for (String temp : selectedItems) {
-				selected.add(temp);
-				missing.remove(temp);
+	private void selectAll() {
+		for (MRBFXSelectionRow row : listModel) {
+			row.setSelected(true);
+		}
+		table.refresh();
+	}
+	private void deSelectAll() {
+		for (MRBFXSelectionRow row : listModel) {
+			row.setSelected(false);
+		}
+		table.refresh();
+	}
+	public void setChildren(MRBFXSelectionRow rowSelected, Boolean select) {
+		Boolean found=false;
+		Integer depthSelected=0;
+		for (MRBFXSelectionRow row :listModel) {
+			if (row == rowSelected) {
+				found = true;
+				depthSelected = row.getDepth();
+			}
+			else {
+				if (found) {
+					if (row.getDepth() > depthSelected)
+						row.setSelected(select);
+					else
+					{
+						found=false;
+						break;
+					}
+				}
 			}
 		}
-		resetLists();
-	}
-
-	/*
-	 * Account Deselect - move selected account lines to available
-	 */
-	private void accountDeselect() {
-		ObservableList<String> selectedItems = listDisplaySelect.getSelectionModel().getSelectedItems();
-		if (selectedItems.size() != 0) {
-			for (String temp : selectedItems) {
-				missing.add(temp);
-				selected.remove(temp);
-			}
-		}
-		resetLists();
-	}
-	private void resetLists() {
-		missingModel = FXCollections.observableArrayList(missing);
-		selectModel = FXCollections.observableArrayList(selected);
-		listDisplayMissing.getSelectionModel().clearSelection();
-		listDisplayMissing.getItems().clear();
-		listDisplayMissing.setItems(missingModel);
-		listDisplaySelect.getSelectionModel().clearSelection();
-		listDisplaySelect.getItems().clear();
-		listDisplaySelect.setItems(selectModel);
+		table.refresh();
 	}
 
 }
+

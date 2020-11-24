@@ -1,6 +1,6 @@
 {
   "vendor" = "Mike Bray"
-  "module_build" = "3011"
+  "module_build" = "3027"
 "minbuild" = "1820"
   "vendor.url" = "http://bitbucket.org/mikerb/wiki/Home"
   "module_name" = "Load QIF Transactions"

@@ -55,7 +55,7 @@ public class PseudoList {
 	public PseudoList getData(){
 
 
-		MRBDebug debugInst = MRBDebug.getInstance();
+		MRBDebug debugInst = Main.debugInst;
 		mapCurrencies = new TreeMap<>();
 		/*
 		 * Determine if the new file exists

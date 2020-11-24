@@ -42,8 +42,6 @@ import com.moneydance.modules.features.mrbutil.HelpMenu;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.Platform;
 
-
-
 public class FileSelectWindow extends JPanel implements ActionListener{
 	  private static final long serialVersionUID = 1L;
 	  private JTextField txtFileName;
@@ -75,7 +73,7 @@ public class FileSelectWindow extends JPanel implements ActionListener{
 	  private Map<Object,String> mapDelete;
 	  private Map<Object,String> mapPrefixes;
 	  private Map<Object,String> mapPrefDelete;
-	  private MRBDebug objDebug = MRBDebug.getInstance();
+	  private MRBDebug objDebug = Main.debugInst;
 	  private HelpMenu hmMenu;
 	  private JMenuItem miOnline = new JMenuItem("Online Help");
 	  private JMenu mDebug = new JMenu("Turn Debug on/off");

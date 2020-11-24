@@ -53,7 +53,7 @@ public class  loadPricesWindow extends JFrame{
     private String baseCurrencyID;
     private String baseCurrencyPrefix;
     private String baseCurrencySuffix;
-    private MRBDebug debugInst = MRBDebug.getInstance();
+    private MRBDebug debugInst = Main.debugInst;
 	/*
 	 * Preferences and window sizes
 	 */

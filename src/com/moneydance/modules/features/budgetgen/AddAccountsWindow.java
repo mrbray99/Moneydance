@@ -54,10 +54,8 @@ public class AddAccountsWindow extends JPanel {
 	private Map<String,AccountDetails> mapAccounts;
 	private BudgetParameters objParams;
 	private AddAccountsTable tabAccounts;
-	private MRBDebug objDebug;
  	public AddAccountsWindow(BudgetParameters objParamsp ) {
 		objParams = objParamsp;
-		objDebug = MRBDebug.getInstance();
 		/*
 		 * get list of categories in the file but not in the parameters
 		 */
@@ -109,7 +107,7 @@ public class AddAccountsWindow extends JPanel {
 	public void addSelected(){
 		for (int i=0;i<modAccounts.getRowCount();i++) {
 			if ((Boolean) modAccounts.getValueAt(i,0)) {
-				objDebug.debug("AddAccountsWindow","addSelected",MRBDebug.DETAILED, "Account added ="+(String)modAccounts.getValueAt(i,1));					
+				Main.debugInst.debug("AddAccountsWindow","addSelected",MRBDebug.DETAILED, "Account added ="+(String)modAccounts.getValueAt(i,1));					
 				objParams.addCategory((String)modAccounts.getValueAt(i,1));
 			}
 		}

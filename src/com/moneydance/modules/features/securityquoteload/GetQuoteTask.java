@@ -52,11 +52,17 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 	public QuotePrice call() throws Exception {
 		QuotePrice quotePrice = null;
 		CloseableHttpResponse response = null;
+		if (ticker.isBlank()) {
+			debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "Invalid Ticker "+rawTicker);
+			sendError();		
+		}
+			
 		URI uri=null;
 		try {
 			uri= new URI(url.trim());
 			debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "Processing  "+ticker+" URI:"+uri.toASCIIString());		
 			HttpGet httpGet = new HttpGet(uri);
+			httpGet.addHeader("Accept-Language","en");
 			response = httpClient.execute(httpGet);
 			quotePrice=null; 
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {

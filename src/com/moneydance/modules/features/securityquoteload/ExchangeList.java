@@ -56,7 +56,7 @@ public class ExchangeList {
 	public ExchangeList getData(){
 
 
-		MRBDebug debugInst = MRBDebug.getInstance();
+		MRBDebug debugInst = Main.debugInst;
 		mapExchangeLines = new TreeMap<>();
 		/*
 		 * Determine if the new file exists

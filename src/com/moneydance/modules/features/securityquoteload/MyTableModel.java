@@ -70,7 +70,7 @@ public class MyTableModel extends DefaultTableModel {
 	Double multiplier;
 	private boolean[] arrSelect;
 	private String [] arrSource;
-	private MRBDebug debugInst = MRBDebug.getInstance();
+	private MRBDebug debugInst = Main.debugInst;
 	private static String[] arrColumns = {"Select","Ticker","Exch Mod","Name","Source","Last Price","Price Date","New Price","Trade Date","Trade Currency","Volume"};
 
 	public MyTableModel(Parameters paramsp,SortedMap<String,Double> pricesp,

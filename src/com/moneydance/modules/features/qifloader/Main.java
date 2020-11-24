@@ -79,6 +79,7 @@ extends FeatureModule
 	private Image unselectedLight;
 	public ImageIcon selectedIcon;
 	public ImageIcon unselectedIcon;
+	public static MRBDebug debugInst;
 
 	private JPanel panScreen;
 
@@ -87,7 +88,8 @@ extends FeatureModule
 		// the first thing we will do is register this module to be invoked
 		// via the application toolbar
 		extension = this;
-		MRBDebug.getInstance().setDebugLevel(MRBDebug.DETAILED);
+		debugInst = new MRBDebug();
+		debugInst.setDebugLevel(MRBDebug.DETAILED);
 		context = getContext();
 		try {
 			context.registerFeature(this, "showconsole",
@@ -155,21 +157,21 @@ extends FeatureModule
 				}
 				if (darkness > 0.5) {
 					if (selectedBlack != null) {
-						MRBDebug.getInstance().debug("qifloader", "Invoke", MRBDebug.DETAILED, "selected black icon loaded");
+						debugInst.debug("qifloader", "Invoke", MRBDebug.DETAILED, "selected black icon loaded");
 						selectedIcon = new ImageIcon(selectedBlack.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
 					}
 					if (unselectedBlack != null) {
-						MRBDebug.getInstance().debug("qifloader", "Invoke", MRBDebug.DETAILED, "unselected black icon loaded");
+						debugInst.debug("qifloader", "Invoke", MRBDebug.DETAILED, "unselected black icon loaded");
 						unselectedIcon = new ImageIcon(unselectedBlack.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
 					}
 				}
 				else {
 					if (selectedLight != null) {
-						MRBDebug.getInstance().debug("qifloader", "Invoke", MRBDebug.DETAILED, "selected light icon loaded");
+						debugInst.debug("qifloader", "Invoke", MRBDebug.DETAILED, "selected light icon loaded");
 						selectedIcon = new ImageIcon(selectedLight.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
 					}
 					if (unselectedLight != null) {
-						MRBDebug.getInstance().debug("qifloader", "Invoke", MRBDebug.DETAILED, "unselected light icon loaded");
+						debugInst.debug("qifloader", "Invoke", MRBDebug.DETAILED, "unselected light icon loaded");
 						unselectedIcon = new ImageIcon(unselectedLight.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
 					}
 				}

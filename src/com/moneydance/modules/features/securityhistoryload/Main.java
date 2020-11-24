@@ -56,7 +56,7 @@ public class Main
   public static FeatureModuleContext context;
   public static UserPreferences up;
   public static Main extension;
-  private static MRBDebug debugInst;
+  public static MRBDebug debugInst;
   public static String buildStr;
   private static int buildNum;
   private static JPanel panScreen;
@@ -71,7 +71,7 @@ public void init() {
       context.registerFeature(this, "showconsole",
     	    getIcon("securityhistoryload"),
     	    getName());
-		debugInst = MRBDebug.getInstance();
+		debugInst = new MRBDebug();
 		debugInst.setDebugLevel(MRBDebug.OFF);
 		debugInst.setExtension("Security History Load");
    }

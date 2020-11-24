@@ -25,7 +25,6 @@ public class MRBLocale{
 	private  String fullFileName;
 	private  UserPreferences userPref;
 	private  Locale locale;
-	private MRBDebug debugInst = MRBDebug.getInstance();
 	private InputStream inputStream;
 	private InputStreamReader reader;
 	private Map<String, String> mapData;
@@ -38,14 +37,12 @@ public class MRBLocale{
 	 */
 
 	public MRBLocale(Object obj,String strFileName) {
-		debugInst.debug("MRBLocale", "MRBLocale",MRBDebug.DETAILED, "Started "+ obj.getClass().getName());
 		userPref = UserPreferences.getInstance();
 		locale = userPref.getLocale();	
 		mapData = new HashMap<String,String>();
 		fullFileName = strFileName;
 		if (locale != null && locale.getLanguage()!= "en")
 			fullFileName = fullFileName.replace("_en.", "_"+locale.getLanguage()+".");
-		debugInst.debug("MRBLocale", "MRBLocale",MRBDebug.DETAILED, "Looking for "+fullFileName);
 		try {
 			reader = getFile(obj,fullFileName, MRBConstants.LOCALEFILE);
 		}
@@ -54,7 +51,6 @@ public class MRBLocale{
 		}
 		if (reader !=null)
 			try {
-				debugInst.debug("MRBLocale", "MRBLocale",MRBDebug.DETAILED, "Reading data");
 
 				readCoding();
 			}
@@ -66,21 +62,15 @@ public class MRBLocale{
 		inputStream = obj.getClass().getResourceAsStream(strFileName);
 		InputStreamReader objRdr = null;
 		if (inputStream == null) {
-			debugInst.debug("MRBLocale", "getFile",MRBDebug.DETAILED, "Not found "+fullFileName);
-			debugInst.debug("MRBLocale", "getFile",MRBDebug.DETAILED, "Looking for "+strDefaultFileName);
 			inputStream = obj.getClass().getResourceAsStream(strDefaultFileName);
 			if (inputStream == null) {
-				debugInst.debug("MRBLocale", "getFile",MRBDebug.DETAILED, "Not Found "+strDefaultFileName);
-
 				return null;
 			}
 		}
 		try {
-			debugInst.debug("MRBLocale", "getFile",MRBDebug.DETAILED, "Obtaining Reader");
 			objRdr = new InputStreamReader(inputStream, "UTF8");
 			}
 		catch (UnsupportedEncodingException e) {
-			debugInst.debug("MRBLocale", "getFile",MRBDebug.DETAILED, "Encoding Error");
 			
 		}
 		return objRdr;

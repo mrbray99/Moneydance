@@ -54,7 +54,7 @@ public class Main
   public static CustomDateFormat cdate;
   public static FeatureModuleContext context;
   public static UserPreferences up;
-  private static MRBDebug debugInst;
+  public static MRBDebug debugInst;
   public static Main extension;
   private static int buildNum;
   public static String buildStr;
@@ -70,7 +70,7 @@ public void init() {
       context.registerFeature(this, "showconsole",
     	    getIcon("securitypriceload"),
     	    getName());
-		debugInst = MRBDebug.getInstance();
+		debugInst = new MRBDebug();
 		debugInst.setDebugLevel(MRBDebug.OFF);
 		debugInst.setExtension("Security Price Load");
     }

@@ -13,7 +13,6 @@ import com.infinitekind.moneydance.model.CurrencyType;
 import com.moneydance.apps.md.controller.Util;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 
-
 public class MyTableModel extends DefaultTableModel {
 	private Parameters objParms;
     private SortedMap<String,Double> mapPrices;
@@ -26,7 +25,7 @@ public class MyTableModel extends DefaultTableModel {
     private List<Entry<String,Double>> listCurrent;
     private CurrencyType ctBaseCurrency;
 	private boolean[] arrSelect;
-	private MRBDebug objDebug = MRBDebug.getInstance();
+	private MRBDebug objDebug = Main.debugInst;
 	private static String[] arrColumns = {"Select","Ticker","Name","Last Update","Last Price","New Price","High","Low","Volume"};
 
 	public MyTableModel(Parameters objParmsp,SortedMap<String,Double> mapPricesp,

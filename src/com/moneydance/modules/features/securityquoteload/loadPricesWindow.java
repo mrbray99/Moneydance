@@ -191,7 +191,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	 * Shared
 	 */
 	protected Parameters params;
-	protected MRBDebug debugInst = MRBDebug.getInstance();
+	protected MRBDebug debugInst = Main.debugInst;
 	protected Main main;
 	protected int closeBtnx=0;
 	protected int closeBtny=0;
@@ -1735,7 +1735,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 					 * assume security is same as base currency, trade currency is different For 2019 do not multiply
 					 */
 //					dRate = CurrencyUtil.getUserRate(tradeCurType, baseCurrency,currencyDate);							
-//					debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.DETAILED, "quote to base rate "+dRate);
+//					rwDebugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.DETAILED, "quote to base rate "+dRate);
 //				}
 			}
 		}

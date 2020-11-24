@@ -28,7 +28,7 @@ public class MyTableModel extends DefaultTableModel {
     private List<Entry<String,Double>> listPrices;
     private CurrencyTable ctCurrencies;
     private CurrencyType ctBaseCurrency;
-    private MRBDebug objDebug = MRBDebug.getInstance();
+    private MRBDebug objDebug = Main.debugInst;
     private boolean[] arrSelect;
 	private static String[] arrColumns = {"Select","Ticker","Date","Name","Last Update","Last Price","New Price","High","Low","Volume"};
 

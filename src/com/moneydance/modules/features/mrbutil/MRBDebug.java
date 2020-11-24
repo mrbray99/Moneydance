@@ -5,25 +5,12 @@ import java.time.format.DateTimeFormatter;
 
 public class MRBDebug {
 	private int iLevel = 0;
-	public static final int  OFF = 0;
-	public static final int INFO = 1;
-	public static final int SUMMARY = 2;
-	 public static int DETAILED = 3;
-	private static MRBDebug debugInst = null;
-	private static DateTimeFormatter dtf =DateTimeFormatter.ofPattern("HH:mm:ss"); 
+	public  static final int  OFF = 0;
+	public  static final int INFO = 1;
+	public  static final int SUMMARY = 2;
+	public static int DETAILED = 3;
+	private DateTimeFormatter dtf =DateTimeFormatter.ofPattern("HH:mm:ss"); 
 	private String extensionName = "";
-	public MRBDebug() {
-		debugInst = this;
-	}
-	public static MRBDebug getInstance() {
-		if (debugInst == null)
-			debugInst = new MRBDebug();
-		return debugInst;
-			
-	}
-	public void dispose() {
-		debugInst = null;
-	}
 	public int getDebugLevel () {
 		return iLevel;
 	}

@@ -70,7 +70,7 @@ public class Parameters implements Serializable{
 	public transient static Integer [] decimals = {2,3,4,5,6,7,8};
 	public transient static String [] maximums = {"No Limit","6","7","8","9"};
 	private transient SortedMap<String, Integer> mapAccountsList;
-	private transient MRBDebug debugInst = MRBDebug.getInstance();
+	private transient MRBDebug debugInst = Main.debugInst;
 	private transient String[] arrSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT,Constants.YAHOOHIST,Constants.FTHIST};
 	private transient String[] curSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.YAHOOHIST,Constants.FT};
 	private transient List<NewAccountLine>listNewAccounts;
