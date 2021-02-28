@@ -36,9 +36,7 @@ package com.moneydance.modules.features.securityquoteload;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
@@ -114,7 +112,7 @@ public class QuoteManager implements QuoteListener {
 		httpClient = HttpClients.custom()
 		        .setDefaultRequestConfig(RequestConfig.custom()
 		                .setCookieSpec(CookieSpecs.STANDARD).build())
-		        .build();;
+		        .build();
 		List<GetQuoteTask> tasks = new ArrayList<GetQuoteTask>();
 		if (source.equals(Constants.SOURCEFT)) {
 			for (String stock : stocks) {

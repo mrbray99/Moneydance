@@ -52,6 +52,9 @@ public class MRBPreferences2 {
 		catch (IOException e){
 			createFile = true;
 		}
+		catch (Exception e) {
+			createFile = true;
+		}
 		if (createFile) {
 			mapData = new HashMap<>();
 			/*
@@ -63,7 +66,7 @@ public class MRBPreferences2 {
 			   String jsonString = new Gson().toJson(this);
 			   writer2.write(jsonString);
 			   writer2.close();	
-			} catch (IOException i) {
+			} catch (Exception i) {
 				i.printStackTrace();
 			}
 		}

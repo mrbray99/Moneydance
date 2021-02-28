@@ -61,6 +61,7 @@ public class GetYahooQuote extends GetQuoteTask {
 
 	private String yahooSecURL = "https://finance.yahoo.com/quote/";
 	private String yahooCurrURL = "https://finance.yahoo.com/quote/";
+	private String currencyID="";
 	public GetYahooQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep, String tidp) {
 		super(tickerp, listenerp, httpClientp, tickerTypep,  tidp);
 		String convTicker = ticker.replace("^", "%5E");
@@ -112,6 +113,11 @@ public class GetYahooQuote extends GetQuoteTask {
 			reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
 			String buffer;
 			while ((buffer = reader.readLine()) !=null) {
+				if(buffer.contains("Currency in")) {
+					String currency = buffer.substring(buffer.indexOf("Currency in"), buffer.indexOf("Currency in")+15);
+					if (!currency.contains("{"))
+						currencyID = currency.substring(12, 15);
+				}		
 				if (buffer.startsWith("root.App.main")) {
 					result = buffer;
 					break;
@@ -145,9 +151,13 @@ public class GetYahooQuote extends GetQuoteTask {
 				throw new IOException("Market Price not found");
 			quotePrice.setPrice(tempNode.asDouble());	
 			JsonNode currencyNode = priceNode.findPath("currency");
-			if (currencyNode.isMissingNode()) 
-				throw new IOException("Currency not found");
-			quotePrice.setCurrency(currencyNode.asText());	
+			if (currencyNode.isMissingNode()) {
+				if (currencyID.isEmpty())
+					throw new IOException("Currency not found");
+				quotePrice.setCurrency(currencyID);
+			}
+			else
+				quotePrice.setCurrency(currencyNode.asText());	
 			JsonNode volumeNode = priceNode.findPath("regularMarketVolume");
 			if (volumeNode.isMissingNode() || (tempNode = volumeNode.path("raw")).isMissingNode()) 
 				quotePrice.setVolume(0l);

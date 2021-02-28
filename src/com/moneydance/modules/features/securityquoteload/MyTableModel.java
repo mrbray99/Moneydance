@@ -417,6 +417,8 @@ public class MyTableModel extends DefaultTableModel {
 		return;
 	}
 	public String getRowType(int row){
+		if (row<0 || row >= listCurrent.size())
+			return "";
 		String strKey = listCurrent.get(row).getKey();
 		if (strKey.startsWith(Constants.CURRENCYID)) 
 			return Constants.CURRENCYTYPE;

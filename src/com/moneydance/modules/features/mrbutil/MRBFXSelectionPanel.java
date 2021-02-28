@@ -1,8 +1,11 @@
 package com.moneydance.modules.features.mrbutil;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,6 +18,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -27,11 +32,35 @@ public class MRBFXSelectionPanel implements Callback<Object, String> {
 	private ObservableList<MRBFXSelectionRow> listModel;
 	private List<String> selected=new ArrayList<String>();
 	private List<MRBFXSelectionRow> list;
+	private String inActiveStr;
+	private Button inActiveBtn;
 	private Stage stage;
 	private Scene scene;
 	private GridPane panDisplay;
-	public MRBFXSelectionPanel (List<MRBFXSelectionRow> listp) {
-		list = listp;
+	private String title;
+	public Image cancelImg = null;
+	public Image okImg = null;
+	public MRBFXSelectionPanel (List<MRBFXSelectionRow> list, String inActiveStr, String title) {
+		this.list = list;
+		this.inActiveStr = inActiveStr;
+		this.title=title;
+		InputStream streamOk = getClass().getResourceAsStream("/com/moneydance/modules/features/mrbutil/resources/ok_32px.png");
+		if (streamOk != null) {
+				okImg = new Image(streamOk);
+			try {
+				streamOk.close();
+			}
+			catch (IOException e) {}
+		}
+		InputStream streamCancel = getClass().getResourceAsStream("/com/moneydance/modules/features/mrbutil/resources/cancel_32px.png");
+		if (streamCancel != null) {
+			cancelImg = new Image(streamCancel);
+			try {
+				streamCancel.close();
+			}
+			catch (IOException e) {}
+		}
+		
 	}
 	public void display() {
 		stage = new Stage();
@@ -39,6 +68,7 @@ public class MRBFXSelectionPanel implements Callback<Object, String> {
 		panDisplay = new GridPane();
 		scene = new Scene(panDisplay,600,500);
 		stage.setScene(scene);
+		stage.setTitle(title);
 		listModel = FXCollections.observableList(list);
 		for (MRBFXSelectionRow row : listModel)
 			row.setPanel(this);
@@ -55,8 +85,12 @@ public class MRBFXSelectionPanel implements Callback<Object, String> {
 		table.prefWidthProperty().bind(panDisplay.widthProperty());
 		int ix=0;
 		int iy=0;
-		panDisplay.add(table, ix,iy,4,1);
-		Button okBtn = new Button("OK");
+		panDisplay.add(table, ix,iy,5,1);
+		Button okBtn = new Button();
+		if (okImg == null)
+			okBtn.setText("OK");
+		else
+			okBtn.setGraphic(new ImageView(okImg));
 		okBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -68,7 +102,11 @@ public class MRBFXSelectionPanel implements Callback<Object, String> {
 				stage.close();
 			}
 		});
-		Button cancelBtn = new Button("Cancel");
+		Button cancelBtn = new Button();
+		if (cancelImg == null)
+			cancelBtn.setText("Cancel");
+		else
+			cancelBtn.setGraphic(new ImageView(cancelImg));
 		cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -89,13 +127,25 @@ public class MRBFXSelectionPanel implements Callback<Object, String> {
 				deSelectAll();
 			}
 		});
-		
+		if (inActiveStr != null && !inActiveStr.isEmpty()) {
+			inActiveBtn = new Button(inActiveStr);
+			inActiveBtn.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent e) {
+					selectInactive();
+				}
+			});
+		}
 		ix=0;
 		iy=2;
 		panDisplay.add(selectAllBtn, ix++, iy,1,1);
 		GridPane.setMargin(selectAllBtn, new Insets(10,10,10,10));
 		panDisplay.add(deSelectAllBtn, ix++, iy,1,1);
 		GridPane.setMargin(deSelectAllBtn, new Insets(10,10,10,10));
+		if (inActiveStr != null && !inActiveStr.isEmpty()) {
+			panDisplay.add(inActiveBtn, ix++, iy,1,1);
+			GridPane.setMargin(inActiveBtn, new Insets(10,10,10,10));
+		}
 		panDisplay.add(okBtn, ix++, iy,1,1);
 		GridPane.setMargin(okBtn, new Insets(10,10,10,10));
 		panDisplay.add(cancelBtn,ix++, iy,1,1);
@@ -119,6 +169,12 @@ public class MRBFXSelectionPanel implements Callback<Object, String> {
 	private void deSelectAll() {
 		for (MRBFXSelectionRow row : listModel) {
 			row.setSelected(false);
+		}
+		table.refresh();
+	}
+	private void selectInactive() {
+		for (MRBFXSelectionRow row : listModel) {
+			row.setSelected(!row.isInActive());
 		}
 		table.refresh();
 	}

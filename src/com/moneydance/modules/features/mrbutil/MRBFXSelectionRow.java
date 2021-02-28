@@ -19,6 +19,7 @@ public class MRBFXSelectionRow {
 	private Integer depth;
 	private MRBFXSelectionRow thisRow;
 	private MRBFXSelectionPanel panel;
+	private BooleanProperty inActive= new SimpleBooleanProperty(false);
 	public MRBFXSelectionRow(String rowIdp,String textp, String typep, Boolean selectedp) {
 		rowId=rowIdp;
 		text = textp;
@@ -67,6 +68,13 @@ public class MRBFXSelectionRow {
 	public void setDepth(Integer depth) {
 		this.depth = depth;
 	}
+	
+	public boolean isInActive() {
+		return inActive.get();
+	}
+	public void setInActive(boolean inActive) {
+		this.inActive.set(inActive);
+	}
 	public CheckBox getCol1() {
 		CheckBox check = new CheckBox();
 		check.setSelected(selected.get());
@@ -89,4 +97,5 @@ public class MRBFXSelectionRow {
 		listRow.getChildren().addAll(textLbl,region1,typeLbl);
 		return listRow;
 	}
+	
 }
