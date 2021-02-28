@@ -1,0 +1,52 @@
+<project name="reportwriter" basedir=".">
+	<target name="reportwriter">
+		<javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}" classpathref="classpath" destdir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
+		<jar destfile="${dist}/reportwriter.mxt">
+			<fileset dir="${src}" includes="
+	             com/moneydance/modules/features/reportwriter/meta_info.dict
+	             com/moneydance/modules/features/reportwriter/resources/*.gif
+	             com/moneydance/modules/features/reportwriter/resources/*.jpg
+                 com/moneydance/modules/features/reportwriter/resources/*.png
+	               com/moneydance/modules/features/reportwriter/resources/*.css
+                com/moneydance/modules/features/reportwriter/resources/*.jarsav
+	             com/moneydance/modules/features/reportwriter/resources/*.db
+	             com/moneydance/modules/features/reportwriter/resources/*.xml
+	             com/moneydance/modules/features/reportwriter/resources/*.jpeg" />
+			<fileset dir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
+			<zipgroupfileset dir="${lib}" includes="**/mrbutil.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/h2-1.4.200.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/opencsv-5.2.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/poi-4.1.2.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/poi.excelant-4.1.2.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/poi-ooxml-4.1.2.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/poi-ooxml-schemas-4.1.2.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/SparseBitSet-1.2.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/commons-codec-1.13.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/commons-collections4-4.4.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/commons-compress-1.19.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/commons-math3-3.6.1.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/jaxb-api-2.3.1.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/jaxb-core-2.3.0.1.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/jaxb-impl-2.3.2.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/org.apache.commons.io.jar" />
+			<zipgroupfileset dir="${lib}" includes="**/xmlbeans-3.1.0.jar" />
+		</jar>
+		<java newenvironment="true" classpathref="classpath" classname="com.moneydance.admin.KeyAdmin">
+			<arg value="signextjar" />
+			<arg value="${privkeyfile}" />
+			<arg value="${privkeyid}" />
+			<arg value="reportwriter" />
+			<arg line="${dist}/reportwriter.mxt" />
+		</java>
+		<delete file="${dist}/reportwriter.mxt" verbose="true" failonerror="false" />
+		<move file="./s-reportwriter.mxt" tofile="${dist}/reportwriter.mxt" verbose="true" failonerror="false" />
+		<copy file="${dist}/reportwriter.mxt" tofile="${install}/reportwriter.mxt" verbose="true" failonerror="false" />
+		<echo>the current time is ${TODAY_UK}</echo>
+	</target>
+	<target name="cleanreportwriter" >
+		<delete>
+			<fileset dir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
+		</delete>
+	</target>	
+
+	</project>
