@@ -6,6 +6,7 @@ import javax.swing.Icon;
 
 import com.infinitekind.moneydance.model.PeriodType;
 import com.moneydance.apps.md.controller.UserPreferences;
+import com.moneydance.apps.md.view.gui.MDStrings;
 import com.moneydance.apps.md.view.resources.MDResourceProvider;
 import com.moneydance.apps.md.view.resources.Resources;
 
@@ -41,6 +42,11 @@ public class MRBGUI implements MDResourceProvider {
 
 	public String getString(PeriodType type) {
 		return resources.getString(type);
+	}
+	@Override
+	public MDStrings strings() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

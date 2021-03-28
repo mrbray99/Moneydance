@@ -110,6 +110,10 @@ public class InvTranBean extends DataBean {
 	@ColumnName("Price")
 	@FieldType(BEANFIELDTYPE.DOUBLE)
 	public double price;
+	@ColumnTitle("Amount")
+	@ColumnName("Amount")
+	@FieldType(BEANFIELDTYPE.MONEY)
+	public long amount;
 	@ColumnTitle("Parent Value")
 	@ColumnName("ParentValue")
 	@FieldType(BEANFIELDTYPE.MONEY)
@@ -160,6 +164,7 @@ public class InvTranBean extends DataBean {
 			category = invest.category.getAccountName();
 		else
 			category = "";
+		amount=setMoney(invest.amount);
 		prntValue = setMoney(trans.getValue());
 		if (trans.getTransferType().equals(AbstractTxn.TRANSFER_TYPE_BANK))
 			spltValue = -prntValue;

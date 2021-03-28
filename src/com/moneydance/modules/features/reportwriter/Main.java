@@ -110,7 +110,7 @@ import javafx.scene.Scene;
 
 public class Main extends FeatureModule implements AccountListener, BudgetListener, CurrencyListener
 {
-	public static String minorBuildNo = "14";
+	public static String minorBuildNo = "00";
 	public static String databaseChanged = "20210121";
 	private static MyJarLauncher launcher=null;
 	private static MyJarLauncher dbLauncher=null;

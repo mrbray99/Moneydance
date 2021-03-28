@@ -100,9 +100,9 @@ public class CurrencyRateBean extends DataBean {
 		prefix = setString(currency.getPrefix());
 		suffix = setString(currency.getSuffix());
 		dateInt = setDate(Utilities.getSQLDate(snapshot.getDateInt()));
-		dailyHigh = setDouble(1 / Util.safeRate(snapshot.getDailyHigh()));
-		dailyLow = setDouble(1 / Util.safeRate(snapshot.getDailyLow()));
-		rate = setDouble(1 / Util.safeRate(snapshot.getRate()));
+		dailyHigh = setDouble(1 / Util.safeRate(snapshot.getUserDailyHigh()));
+		dailyLow = setDouble(1 / Util.safeRate(snapshot.getUserDailyLow()));
+		rate = setDouble(1 / Util.safeRate(snapshot.getUserRate()));
 		dailyVolume = setLong(snapshot.getDailyVolume());
 
 	}

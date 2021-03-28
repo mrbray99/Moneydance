@@ -131,6 +131,14 @@ public class TransactionBean extends DataBean {
 	@ColumnTitle("Category")
 	@FieldType(BEANFIELDTYPE.STRING)
 	public String category;
+	@ColumnName("ParentCategory")
+	@ColumnTitle("Parent Category")
+	@FieldType(BEANFIELDTYPE.STRING)
+	public String parCategory;
+	@ColumnName("CategoryFull")
+	@ColumnTitle("Category Full Name")
+	@FieldType(BEANFIELDTYPE.STRING)
+	public String categoryFullName;
 	@ColumnTitle("Transfer Account")
 	@ColumnName("TransAcct")
 	@FieldType(BEANFIELDTYPE.STRING)
@@ -171,8 +179,12 @@ public class TransactionBean extends DataBean {
 		Account splitAcct = split.getAccount();
 		if (splitAcct != null) {
 			if (split.getAccount().getAccountType() == AccountType.EXPENSE
-					|| split.getAccount().getAccountType() == AccountType.INCOME)
-				category = setString(split.getAccount().getAccountName());
+					|| split.getAccount().getAccountType() == AccountType.INCOME) {
+				Account tempCat=split.getAccount();
+				category = setString(tempCat.getAccountName());
+				categoryFullName = setString(tempCat.getFullAccountName());
+				parCategory = setString (tempCat.getParentAccount().getAccountName());
+			}
 			else
 				transAcct = setString(split.getAccount() == null ? "" : parent.getAccount().getAccountName());
 			CurrencyType splitCur = split.getAccount().getCurrencyType();
