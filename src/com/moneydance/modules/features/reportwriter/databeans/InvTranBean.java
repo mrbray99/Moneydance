@@ -31,6 +31,7 @@
 package com.moneydance.modules.features.reportwriter.databeans;
 
 import com.infinitekind.moneydance.model.AbstractTxn;
+import com.infinitekind.moneydance.model.CurrencyUtil;
 import com.infinitekind.moneydance.model.ParentTxn;
 import com.infinitekind.moneydance.model.InvestFields;
 import com.moneydance.apps.md.controller.Util;
@@ -182,7 +183,8 @@ public class InvTranBean extends DataBean {
 			feeAcct = "";
 		}
 		if (invest.hasPrice)
-			price = setDouble(100 / Util.safeRate(invest.price));
+			price = setDouble(1.0/CurrencyUtil.getUserRate(invest.curr,invest.secCurr,invest.price));
+//			price = setDouble(100 / Util.safeRate(invest.price));
 		else
 			price = 0.0;
 		if (invest.hasSecurity) {
