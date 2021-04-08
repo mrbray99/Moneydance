@@ -522,8 +522,12 @@ public class MyTableModel extends DefaultTableModel {
 			if (volumes.containsKey(ticker))
 			objSnap.setDailyVolume(volumes.get(ticker));
 		}
-		if (tradeDate>= lastDate)
-			ctTicker.setRate(dRate, ctRelative);
+		long txnLongDate = DateUtil.convertIntDateToLong(tradeDate).getTime();
+		boolean updateCurrentPrice = ctTicker.getLongParameter("price_date", 0) <= txnLongDate;
+		if(updateCurrentPrice && tradeDate >= lastDate) {
+		  ctTicker.setRate(Util.safeRate(dRate), ctRelative);
+		  ctTicker.setParameter("price_date", Math.min(System.currentTimeMillis(), txnLongDate));
+		}
 		objSnap.syncItem();
 		ctTicker.syncItem();
 		arrSelect[iRow] = false;
@@ -584,8 +588,12 @@ public class MyTableModel extends DefaultTableModel {
 			lastDate = snapShots.get(0).getDateInt();
 		ctTicker.setEditingMode();
 		objSnap = ctTicker.setSnapshotInt(tradeDate,dRate);
-		if(tradeDate >= lastDate)
-			ctTicker.setRate(dRate,null);  // MD 2019 change
+		long txnLongDate = DateUtil.convertIntDateToLong(tradeDate).getTime();
+		boolean updateCurrentPrice = ctTicker.getLongParameter("price_date", 0) <= txnLongDate;
+		if(updateCurrentPrice && tradeDate >= lastDate) {
+		  ctTicker.setRate(Util.safeRate(dRate), null);
+		  ctTicker.setParameter("price_date", Math.min(System.currentTimeMillis(), txnLongDate));
+		}
 		objSnap.syncItem();
 		arrSelect[iRow] = false;
 		String ticker = listCurrent.get(iRow).getKey();

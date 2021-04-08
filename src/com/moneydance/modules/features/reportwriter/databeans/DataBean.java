@@ -198,7 +198,7 @@ public abstract class DataBean {
 			case MONEY:
 				try {
 					if (field.get(this) == null || field.getLong(this) == Constants.MISSINGLONG)
-						columns.add("");
+						columns.add("0.0");
 					else {
 						Double amt = ((Long) field.getLong(this)).doubleValue() / 100.0;
 						columns.add(amt.toString());
@@ -211,11 +211,11 @@ public abstract class DataBean {
 			case PERCENT:
 				try {
 					if (field.get(this) == null || field.getDouble(this) == Constants.MISSINGDOUBLE)
-						columns.add("");
+						columns.add("0.0");
 					else
 						columns.add(String.valueOf(field.getDouble(this)));
 				} catch (IllegalAccessException e) {
-					columns.add("0");
+					columns.add("0.0");
 				}
 				break;
 			default:
