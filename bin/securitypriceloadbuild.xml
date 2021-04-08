@@ -1,0 +1,40 @@
+<project name="securitypriceload"  basedir=".">
+	<target name="securitypriceload" >
+	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
+	      classpathref="classpath"  destdir="${build}"
+	      includes="com/moneydance/modules/features/securitypriceload/**"/>
+
+	    <jar destfile="${dist}/securitypriceload.mxt">
+	      <fileset dir="${src}" includes="
+	             com/moneydance/modules/features/securitypriceload/meta_info.dict
+	             com/moneydance/modules/features/securitypriceload/*.gif
+	              com/moneydance/modules/features/securitypriceload/*.jpg
+	             com/moneydance/modules/features/securitypriceload/*.jpeg"/>
+	      <fileset dir="${build}" includes="com/moneydance/modules/features/securitypriceload/**"/>
+	      <zipgroupfileset  dir="${lib}" includes="**/mrbutil.jar" />
+	    </jar>
+
+	    <java newenvironment="true" 
+	      classpathref="classpath"
+	      classname="com.moneydance.admin.KeyAdmin">
+	      <arg value="signextjar"/>
+	      <arg value="${privkeyfile}"/>
+	      <arg value="${privkeyid}"/>
+	      <arg value="securitypriceload"/>
+	      <arg line="${dist}/securitypriceload.mxt"/>
+	    </java>
+	    <delete file="${dist}/securitypriceload.mxt" verbose="true" failonerror="false" />
+	    <move file="./s-securitypriceload.mxt" tofile="${dist}/securitypriceload.mxt"
+	verbose="true" failonerror="false" />
+	    <copy file="${dist}/securitypriceload.mxt" tofile="${install}/securitypriceload.mxt"
+	verbose="true" failonerror="false" /> 
+		<echo>the current time is ${TODAY_UK}</echo>
+	 	</target> 
+	<target name="cleansecuritypriceload">
+		<delete>
+			<fileset dir="${build}">
+			    <include name="com/moneydance/modules/features/securitypriceload/*.class"/>
+			</fileset>
+		</delete>
+	</target>
+</project>

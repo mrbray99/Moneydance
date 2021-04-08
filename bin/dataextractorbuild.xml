@@ -1,0 +1,42 @@
+<project name="dataextractor" basedir=".">
+	<target name="dataextractor" >
+	    <javac target="1.7" source="1.7" srcdir="${src}" debug="${debug}" optimize="${optimize}"
+	      classpathref="classpath"  destdir="${build}"
+	      includes="com/moneydance/modules/features/dataextractor/**"/>
+
+	    <jar destfile="${dist}/dataextractor.mxt">
+	      <fileset dir="${src}" includes="
+	             com/moneydance/modules/features/dataextractor/meta_info.dict
+		         com/moneydance/modules/features/dataextractor/strings/*.dict
+	             com/moneydance/modules/features/dataextractor/resources/*.gif
+ 	             com/moneydance/modules/features/dataextractor/resources/*.jpg
+   		         com/moneydance/modules/features/dataextractor/resources/*.png
+	             com/moneydance/modules/features/dataextractor/resources/*.jpeg"/>
+	      <fileset dir="${build}" includes="com/moneydance/modules/features/dataextractor/**"/>
+		      <zipgroupfileset  dir="${lib}" includes="**/mrbutil.jar" />
+		      <zipgroupfileset  dir="${lib}" includes="**/exp4j-0.4.8.jar" />
+		</jar>
+	    <java newenvironment="true" 
+	      classpathref="classpath"
+	      classname="com.moneydance.admin.KeyAdmin">
+	      <arg value="signextjar"/>
+	      <arg value="${privkeyfile}"/>
+	      <arg value="${privkeyid}"/>
+	      <arg value="dataextractor"/>
+	      <arg line="${dist}/dataextractor.mxt"/>
+	    </java>
+	    <delete file="${dist}/dataextractor.mxt" verbose="true" failonerror="false" />
+	    <move file="./s-dataextractor.mxt" tofile="${dist}/dataextractor.mxt"
+	verbose="true" failonerror="false" />
+	    <copy file="${dist}/dataextractor.mxt" tofile="${install}/dataextractor.mxt"
+	verbose="true" failonerror="false" /> 
+		<echo>the current time is ${TODAY_UK}</echo>
+	 	</target> 	
+	<target name="cleandataextractor">
+		<delete>
+			<fileset dir="${build}">
+			    <include name="com/moneydance/modules/features/dataextractor/*.class"/>
+			</fileset>
+		</delete>
+	</target>
+	</project>

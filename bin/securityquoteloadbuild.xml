@@ -1,0 +1,48 @@
+<project name="securityquoteload"  basedir=".">
+	<target name="securityquoteload">
+	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
+	      classpathref="classpath"  destdir="${build}"
+	      includes="com/moneydance/modules/features/securityquoteload/**"/>
+
+	    <jar destfile="${dist}/securityquoteload.mxt">
+	      <fileset dir="${src}" includes="
+	             com/moneydance/modules/features/securityquoteload/meta_info.dict
+		         com/moneydance/modules/features/securityquoteload/resources/stockexchanges.dict
+	           	 com/moneydance/modules/features/securityquoteload/resources/pseudocurrency.dict
+	             com/moneydance/modules/features/securityquoteload/resources/*.gif
+	             com/moneydance/modules/features/securityquoteload/resources/*.jpg
+                 com/moneydance/modules/features/securityquoteload/resources/*.png
+	             com/moneydance/modules/features/securityquoteload/resources/*.jpeg"/>
+	      <fileset dir="${build}" includes="com/moneydance/modules/features/securityquoteload/**"/>
+		      <zipgroupfileset  dir="${lib}" includes="**/mrbutil.jar" />
+		      <zipgroupfileset  dir="${lib}" includes="**/jsoup-1.11.3.jar" />
+		      <zipgroupfileset  dir="${lib}" includes="**/jackson-core-2.7.4.jar" />
+		      <zipgroupfileset  dir="${lib}" includes="**/jackson-databind-2.7.4.jar" />
+		      <zipgroupfileset  dir="${lib}" includes="**/jackson-dataformat-xml-2.7.4.jar" />
+		      <zipgroupfileset  dir="${lib}" includes="**/jackson-annotations-2.7.4.jar" />
+		</jar>
+	    <java newenvironment="true" 
+	      classpathref="classpath"
+	      classname="com.moneydance.admin.KeyAdmin">
+	      <arg value="signextjar"/>
+	      <arg value="${privkeyfile}"/>
+	      <arg value="${privkeyid}"/>
+	      <arg value="securityquoteload"/>
+	      <arg line="${dist}/securityquoteload.mxt"/>
+	    </java>
+	    <delete file="${dist}/securityquoteload.mxt" verbose="true" failonerror="false" />
+	    <move file="./s-securityquoteload.mxt" tofile="${dist}/securityquoteload.mxt"
+	verbose="true" failonerror="false" />
+	    <copy file="${dist}/securityquoteload.mxt" tofile="${install}/securityquoteload.mxt"
+	verbose="true" failonerror="false" /> 
+		<echo>the current time is ${TODAY_UK}</echo>
+	</target> 
+	<target name="cleansecurityquoteload">
+		<delete>
+			<fileset dir="${build}">
+			    <include name="com/moneydance/modules/features/securityquoteload/*.class"/>
+			</fileset>
+		</delete>
+	</target>
+
+</project>

@@ -1,0 +1,42 @@
+<project name="budgetgen" basedir=".">
+	<target name="budgetgen" >
+	    <javac target="11" source="11" srcdir="${src}" debug="${debug}" optimize="${optimize}"
+	      classpathref="classpath"  destdir="${build}"
+	      includes="com/moneydance/modules/features/budgetgen/**"/>
+
+	    <jar destfile="${dist}/budgetgen.mxt">
+	      <fileset dir="${src}" includes="
+	             com/moneydance/modules/features/budgetgen/meta_info.dict
+	              com/moneydance/modules/features/budgetgen/*.gif
+	             com/moneydance/modules/features/budgetgen/*.jpg
+                 com/moneydance/modules/features/budgetgen/*.png
+	             com/moneydance/modules/features/budgetgen/*.jpeg"/>
+	      <fileset dir="${build}" includes="com/moneydance/modules/features/budgetgen/**"/>
+	      <zipgroupfileset  dir="${lib}" includes="**/mrbutil.jar" />
+	    </jar>
+
+	    <java newenvironment="true" 
+	      classpathref="classpath"
+	      classname="com.moneydance.admin.KeyAdmin">
+	      <arg value="signextjar"/>
+	      <arg value="${privkeyfile}"/>
+	      <arg value="${privkeyid}"/>
+	      <arg value="budgetgen"/>
+	      <arg line="${dist}/budgetgen.mxt"/>
+	    </java>
+	    <delete file="${dist}/budgetgen.mxt" verbose="true"
+	failonerror="false" />
+	    <move file="./s-budgetgen.mxt" tofile="${dist}/budgetgen.mxt"
+	verbose="true" failonerror="false" />
+	    <copy file="${dist}/budgetgen.mxt" tofile="${install}/budgetgen.mxt"
+	verbose="true" failonerror="false" /> 
+		<echo>the current time is ${TODAY_UK}</echo>
+	 	</target>
+	<target name="cleanbudgetgen">
+		<delete>
+			<fileset dir="${build}">
+			    <include name="com/moneydance/modules/features/budgetgen/*.class"/>
+			</fileset>
+		</delete>
+	</target>
+	 	</project>

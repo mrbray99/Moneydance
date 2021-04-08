@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Javafx">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/extadmin.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/jackson-annotations-2.7.4.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/jackson-databind-2.7.4.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/jackson-dataformat-xml-2.7.4.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/jsoup-1.11.3.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/mrbutil.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/org.apache.commons.io.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/h2-1.4.200.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/poi-4.1.2.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/poi-excelant-4.1.2.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/poi-ooxml-4.1.2.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/poi-ooxml-schemas-4.1.2.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/json_simple-1.1.jar"/>
+	<classpathentry kind="lib" path="D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib/jackson-core-2.7.4.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/activation.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/antlr-3.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/appsrc.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/bcprov-jdk16-146.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/commons-lang3-3.5.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/darcula.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/dropbox-core-sdk-3.0.11.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/gson-2.5.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/httpclient-4.5.6.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/httpcore-4.4.10.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/httpmime-4.5.6.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/i4jruntime.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/jackson-core-2.7.4.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/jcommon-1.0.16.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/jfreechart-1.0.13.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/json_simple-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/junit-4.10.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/mdpython.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/moneydance.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/natty-0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/PDFRenderer.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/sqlitejdbc-v056.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/swingx-core-1.6.2.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Moneydance2006/lib/TableLayout-bin-jdk1.5-2007-04-21.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
