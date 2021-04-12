@@ -80,6 +80,8 @@ public abstract class Constants {
 	public static final String SOURCETYPE = "qs";
 	public static final String TRADEDATETYPE = "d";
 	public static final String PRICETYPE = "p";
+	public static final String HIGHTYPE = "ht";
+	public static final String LOWTYPE = "lt";
 	public static final String VOLUMETYPE = "v";
 	public static final String OKTYPE = "ok";
 	public static final String ERRTYPE = "err";

@@ -39,6 +39,8 @@ import java.util.List;
 
 public class QuotePrice {
 	private String ticker;
+	private Double highPrice = 0.0d;
+	private Double lowPrice =0.0d;
 	private Double price=0.0d;
 	private String currency="XXX";
 	private String tradeDate="1900-01-01T00:00:00";
@@ -60,6 +62,19 @@ public class QuotePrice {
 	public void setPrice(Double price) {
 		this.price = price;
 	}
+	
+	public Double getHighPrice() {
+		return highPrice;
+	}
+	public void setHighPrice(Double highPrice) {
+		this.highPrice = highPrice;
+	}
+	public Double getLowPrice() {
+		return lowPrice;
+	}
+	public void setLowPrice(Double lowPrice) {
+		this.lowPrice = lowPrice;
+	}
 	public String getCurrency() {
 		return currency;
 	}
@@ -78,8 +93,8 @@ public class QuotePrice {
 	public void setVolume(Long volume) {
 		this.volume = volume;
 	}
-	public void addHistory(Integer datep, Double pricep, Long volumep) {
-		HistoryPrice line = new HistoryPrice(datep, pricep, volumep);
+	public void addHistory(Integer datep, Double pricep, Double highp, Double lowp, Long volumep) {
+		HistoryPrice line = new HistoryPrice(datep, pricep, highp, lowp, volumep);
 		history.add(line);
 	}
 	public List<HistoryPrice> getHistory(){

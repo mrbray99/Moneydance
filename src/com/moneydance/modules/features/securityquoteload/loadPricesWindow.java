@@ -123,7 +123,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	protected SortedMap<String,PseudoCurrency> pseudoCurrencies;
 	protected SortedMap<String,String>selectedExchanges;
 	protected SortedMap<String,String>alteredTickers;
-	protected SortedMap<String,Long>volumes;
+	protected SortedMap<String,ExtraFields>volumes;
 	protected List<SecurityPrice> yahooStocksList;
 	protected List<SecurityPrice> yahooHistStocksList;
 	protected List<SecurityPrice> ftStocksList;
@@ -1626,7 +1626,28 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			if (price.getName().compareToIgnoreCase(Constants.VOLUMETYPE) == 0) {
 				newPrice.setVolume(Long.parseLong(price.getValue()));
 			}
-			
+			if(price.getName().compareToIgnoreCase(Constants.HIGHTYPE)==0) {
+				String priceStr = price.getValue();
+				ParsePosition pos = new ParsePosition(0);
+				Number newNum = nf.parse(priceStr,pos);
+				if (pos.getIndex() != priceStr.length()) {
+					debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.INFO, "Invalid high price returned for "+newPrice.getTicker()+" "+priceStr);
+					newPrice.setHighPrice(0.0);
+				}
+				else
+					newPrice.setHighPrice(newNum.doubleValue());
+			}
+			if(price.getName().compareToIgnoreCase(Constants.LOWTYPE)==0) {
+				String priceStr = price.getValue();
+				ParsePosition pos = new ParsePosition(0);
+				Number newNum = nf.parse(priceStr,pos);
+				if (pos.getIndex() != priceStr.length()) {
+					debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.INFO, "Invalid low price returned for "+newPrice.getTicker()+" "+priceStr);
+					newPrice.setLowPrice(0.0);
+				}
+				else
+					newPrice.setLowPrice(newNum.doubleValue());
+			}
 		}
 		/*
 		 * data extracted test for test ticker
@@ -1775,10 +1796,11 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				quotePrice.replace(ticker, newPrice.getSecurityPrice());
 			else
 				quotePrice.put(ticker, newPrice.getSecurityPrice());
+			ExtraFields extra = new ExtraFields(newPrice.getVolume(),newPrice.getHighPrice(),newPrice.getLowPrice());
 			if (volumes.containsKey(ticker))
-				volumes.replace(ticker, newPrice.getVolume());
+				volumes.replace(ticker, extra);
 			else
-				volumes.put(ticker, newPrice.getVolume());
+				volumes.put(ticker, extra);
 		}
 		if (listener !=null)
 			listener.ended(newPrice.getTicker(),uuid);
@@ -1856,7 +1878,28 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			if (price.getName().compareToIgnoreCase(Constants.VOLUMETYPE) == 0) {
 				newPrice.setVolume(Long.parseLong(price.getValue()));
 			}
-			
+			if (price.getName().compareToIgnoreCase(Constants.HIGHTYPE) == 0) {
+				String priceStr = price.getValue();
+				ParsePosition pos = new ParsePosition(0);
+				Number newNum = nf.parse(priceStr,pos);
+				if (pos.getIndex() != priceStr.length()) {
+					debugInst.debug("loadPricesWindow", "updateHistory", MRBDebug.INFO, "Invalid high price returned for "+newPrice.getTicker()+" "+priceStr);
+					newPrice.setHighPrice(0.0);
+				}
+				else
+					newPrice.setHighPrice(newNum.doubleValue());
+			}
+			if (price.getName().compareToIgnoreCase(Constants.LOWTYPE) == 0) {
+				String priceStr = price.getValue();
+				ParsePosition pos = new ParsePosition(0);
+				Number newNum = nf.parse(priceStr,pos);
+				if (pos.getIndex() != priceStr.length()) {
+					debugInst.debug("loadPricesWindow", "updateHistory", MRBDebug.INFO, "Invalid low price returned for "+newPrice.getTicker()+" "+priceStr);
+					newPrice.setLowPrice(0.0);
+				}
+				else
+					newPrice.setLowPrice(newNum.doubleValue());
+			}
 		}
 		/*
 		 * data extracted test for test ticker
@@ -1948,7 +1991,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				historyList = new ArrayList<HistoryPrice>();
 				historyTab.put(newPrice.getTicker(), historyList);
 			}
-			HistoryPrice history = new HistoryPrice(newPrice.getTradeDate(),stockPrice, newPrice.getVolume());
+			HistoryPrice history = new HistoryPrice(newPrice.getTradeDate(),stockPrice,newPrice.getHighPrice(), newPrice.getLowPrice(), newPrice.getVolume());
 			historyList.add(history);
 			historyTab.replace(newPrice.getTicker(), historyList);
 		}
