@@ -1,6 +1,6 @@
 {
   "vendor" = "Mike Bray"
-  "module_build" = "3027"
+  "module_build" = "3033"
   "minbuild" = "1820"
   "vendor.url" = "http://bitbucket.org/mikerb/moneydance-2015/wiki/Home/"
   "module_name" = "FileDisplay"
