@@ -154,7 +154,7 @@ public class GetFTHDQuote extends GetQuoteTask {
 					findPrice(rowLine,historyPrice);
 					if (historyPrice.getTradeDateInt()<= lastPriceDate)
 						break;
-					quotePrice.addHistory(historyPrice.getTradeDateInt(), historyPrice.getPrice(),0L);
+					quotePrice.addHistory(historyPrice.getTradeDateInt(), historyPrice.getPrice(),0.0,0.0,0L);
 					index++;
 				}
 				

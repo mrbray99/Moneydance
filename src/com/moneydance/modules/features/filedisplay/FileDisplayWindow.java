@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -323,16 +324,13 @@ public class FileDisplayWindow extends JFrame {
 		/*
 		 * Add main panel
 		 */
-		setSize(new Dimension(1000, 800));
+		setPreferredSize(new Dimension(1000, 800));
 		getContentPane().add(panApp);
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		enableEvents(WindowEvent.WINDOW_CLOSING);
 
-		AwtUtil.centerWindow(this);
-
 	}
-
 	/*
 	 * Display the detail based on selected options
 	 */
@@ -352,6 +350,8 @@ public class FileDisplayWindow extends JFrame {
 				includeAllTrans.isSelected(),
 				includeTransbyAccounts.isSelected(), startDateFld.getDateInt(),
 				endDateFld.getDateInt());
+		panTree.setPreferredSize(new Dimension(1000, 400));
+		panTree.setMinimumSize(new Dimension(800, 300));
 		panApp.repaint();
 	}
 

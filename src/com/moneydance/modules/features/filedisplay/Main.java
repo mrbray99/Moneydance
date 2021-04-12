@@ -1,8 +1,11 @@
 package com.moneydance.modules.features.filedisplay;
 
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.ByteArrayOutputStream;
+
+import javax.swing.JFrame;
 
 import com.moneydance.apps.md.controller.FeatureModule;
 import com.moneydance.apps.md.controller.FeatureModuleContext;
@@ -96,8 +99,18 @@ public class Main extends FeatureModule {
 
 	}
 	private synchronized void showConsole() {
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				createAndShowGUI();
+			}
+		});
+	}
+	private void createAndShowGUI() {
 		if (filedisplayWindow == null) {
 			filedisplayWindow = new FileDisplayWindow(this);
+			filedisplayWindow.pack();
+			centreWindow(filedisplayWindow);
 			filedisplayWindow.setVisible(true);
 		} else {
 			filedisplayWindow.setVisible(true);
@@ -108,6 +121,12 @@ public class Main extends FeatureModule {
 
 	FeatureModuleContext getUnprotectedContext() {
 		return getContext();
+	}
+	private static void centreWindow(JFrame window) {
+	    Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+	    int x = (int) ((dimension.getWidth() - window.getWidth()) / 2);
+	    int y = (int) ((dimension.getHeight() - window.getHeight()) / 2);
+	    window.setLocation(x, y);
 	}
 
 	synchronized void closeConsole() {

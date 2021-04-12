@@ -76,6 +76,10 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 					doneUrl += "="+ticker+"&p="+String.format("%.8f",quotePrice.getPrice());
 					doneUrl += "&"+Constants.TRADEDATETYPE+"="+quotePrice.getTradeDate();
 					doneUrl += "&"+Constants.TRADECURRTYPE+"="+quotePrice.getCurrency();
+					if (quotePrice.getHighPrice()!= 0.0)
+						doneUrl += "&"+Constants.HIGHTYPE+"="+quotePrice.getHighPrice();
+					if (quotePrice.getLowPrice()!= 0.0)
+						doneUrl += "&"+Constants.LOWTYPE+"="+quotePrice.getLowPrice();
 					doneUrl += "&"+Constants.VOLUMETYPE+"="+quotePrice.getVolume();
 					Main.context.showURL(doneUrl);
 					if (!quotePrice.getHistory().isEmpty()) {
@@ -86,6 +90,10 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 							else
 								doneUrl+=Constants.CURRENCYTYPE;
 							doneUrl += "="+ticker+"&p="+String.format("%.8f",history.getPrice());
+							if (history.getHighPrice()!= 0.0)
+								doneUrl += "&"+Constants.HIGHTYPE+"="+history.getHighPrice();
+							if (history.getLowPrice()!= 0.0)
+								doneUrl += "&"+Constants.LOWTYPE+"="+history.getLowPrice();
 							doneUrl += "&"+Constants.TRADEDATETYPE+"="+history.getDate();
 							doneUrl += "&"+Constants.TRADECURRTYPE+"="+quotePrice.getCurrency();
 							if (Main.params.getAddVolume() && quotePrice.getVolume() > 0L)

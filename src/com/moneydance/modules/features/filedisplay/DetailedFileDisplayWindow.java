@@ -299,8 +299,9 @@ public class DetailedFileDisplayWindow extends JPanel implements
 
 		// Create the scroll pane and add the tree to it.
 		treeView = new JScrollPane();
-		treeView.setViewportView(tree);
-		treeView.setPreferredSize(new Dimension(MINSCROLLPANE, SCROLLPANEDEPTH));
+		treeView.getViewport().add(tree);
+		treeView.getViewport().setPreferredSize(new Dimension(MINSCROLLPANE, SCROLLPANEDEPTH));
+		tree.setMinimumSize(new Dimension(MINSCROLLPANE, SCROLLPANEDEPTH));
 		this.add(treeView, GridC.getc(0, 0).fillx().colspan(4));
 		// Create the detail table and pane, then hide
 		detailtable = new MyTable(new DefaultTableModel(columnNames, 0));
@@ -339,6 +340,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		this.includeTransbyAccounts = includeTransbyAccountsp;
 		this.startDate = txtStartDatep;
 		this.endDate = txtEndDatep;
+		treeView.remove(tree);
 		nodeTop = new DefaultMutableTreeNode("MoneyDance File");
 		createNodes(nodeTop);
 
@@ -349,8 +351,10 @@ public class DetailedFileDisplayWindow extends JPanel implements
 
 		// Listen for when the selection changes.
 		tree.addTreeSelectionListener(this);
-		treeView.setViewportView(tree);
-
+		treeView.getViewport().add(tree);
+		treeView.getViewport().setPreferredSize(new Dimension(MINSCROLLPANE, SCROLLPANEDEPTH));
+		treeView.getViewport().setMinimumSize(new Dimension(MINSCROLLPANE, SCROLLPANEDEPTH));
+		treeView.repaint();
 	}
 
 	/** Required by TreeSelectionListener interface. */
@@ -364,8 +368,8 @@ public class DetailedFileDisplayWindow extends JPanel implements
 
 		if (node == null)
 			return;
-		treeView.setPreferredSize(new Dimension(MINSCROLLPANE + node.getLevel()
-				* LEVELSCROLLPANE, SCROLLPANEDEPTH));
+//		treeView.setPreferredSize(new Dimension(MINSCROLLPANE + node.getLevel()
+//				* LEVELSCROLLPANE, SCROLLPANEDEPTH));
 		Object nodeInfo = node.getUserObject();
 		lastAcct = null;
 		if (node.isLeaf()) {
@@ -457,7 +461,6 @@ public class DetailedFileDisplayWindow extends JPanel implements
 			}
 			// already expanded
 		}
-
 	}
 
 	/*

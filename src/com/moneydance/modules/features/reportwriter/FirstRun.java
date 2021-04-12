@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -14,11 +13,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.http.util.TextUtils;
 
 import java.io.IOException;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
-import com.moneydance.modules.features.mrbutil.MRBDirectoryUtils;
 import com.moneydance.modules.features.mrbutil.Platform;
 import com.moneydance.modules.features.reportwriter.samples.HttpDownloadUtility;
 import com.moneydance.modules.features.reportwriter.view.MyReport;
@@ -26,7 +23,6 @@ import com.moneydance.modules.features.reportwriter.samples.DownloadException;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -100,7 +96,7 @@ public class FirstRun {
 		dataDirName.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				int width = dataDirName.getText().length();
+				int width = dataDirName.getText()==null?0:dataDirName.getText().length();
 				if (width > maxWidth) {
 					maxWidth = width;
 					dataDirName.setPrefWidth(maxWidth*7);
@@ -141,7 +137,7 @@ public class FirstRun {
 		outputDirName.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				int width = outputDirName.getText().length();
+				int width =outputDirName.getText()==null?0:outputDirName.getText().length();
 				if (width > maxWidth) {
 					maxWidth = width;
 					dataDirName.setPrefWidth(maxWidth*7);
@@ -184,7 +180,7 @@ public class FirstRun {
 		reportDirName.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				int width = reportDirName.getText().length();
+				int width = reportDirName.getText()==null?0:reportDirName.getText().length();
 				if (width > maxWidth) {
 					maxWidth = width;
 					dataDirName.setPrefWidth(maxWidth*7);
@@ -224,7 +220,9 @@ public class FirstRun {
 		sampleBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				if (dataDirName.getText().isEmpty() ||
+				if (dataDirName.getText()==null ||
+						reportDirName.getText()==null ||
+						dataDirName.getText().isEmpty() ||
 						reportDirName.getText().isEmpty()) {
 					Alert alert = new Alert(AlertType.ERROR,"Please set the directories");
 					alert.showAndWait();
@@ -454,10 +452,13 @@ public class FirstRun {
 	 * Select a file
 	 */
 	private String chooseFile() {
-		String strDirectory = Main.preferences.getString(Constants.FIRSTRUNDIR,System.clearProperty("user.home"));
+		String strDirectory = Main.preferences.getString(Constants.FIRSTRUNDIR,System.getProperty("user.home"));
 		directoryChooser = new DirectoryChooser();
-		if (!(strDirectory == "" || strDirectory == null)) {
-			directoryChooser.setInitialDirectory(new File(strDirectory));
+		if (!(strDirectory == null || strDirectory.isEmpty() )) {
+			try {
+				directoryChooser.setInitialDirectory(new File(strDirectory));
+			}
+			catch (Exception e) {}
 		}
 		File directory = directoryChooser.showDialog(stage);
 		if (directory == null)

@@ -155,6 +155,8 @@ public class GetYahooHistQuote extends GetQuoteTask {
 			JsonNode priceNode = nodes.findPath("prices");
 			JsonNode marketPrice;
 			JsonNode volumeNode;
+			JsonNode highNode;
+			JsonNode lowNode;
 			JsonNode marketTimeNode;
 			if (priceNode.isMissingNode())
 				throw new IOException("Prices node not found");
@@ -176,7 +178,17 @@ public class GetYahooHistQuote extends GetQuoteTask {
 				marketPrice = priceNode.findPath("close");
 				if (marketPrice.isMissingNode()) 
 					throw new IOException("Market Price not found");
-				quotePrice.setPrice(marketPrice.asDouble());	
+				quotePrice.setPrice(marketPrice.asDouble());
+				highNode = priceNode.findPath("high");
+				if (highNode.isMissingNode())
+					quotePrice.setHighPrice(quotePrice.getPrice());
+				else
+					quotePrice.setHighPrice(highNode.asDouble());
+				lowNode = priceNode.findPath("low");
+				if (lowNode.isMissingNode())
+					quotePrice.setLowPrice(quotePrice.getPrice());
+				else
+					quotePrice.setLowPrice(lowNode.asDouble());
 				volumeNode = priceNode.findPath("volume");
 				if (volumeNode.isMissingNode()) 
 					quotePrice.setVolume(0l);
@@ -213,6 +225,16 @@ public class GetYahooHistQuote extends GetQuoteTask {
 					if(!Main.params.getHistory() || lastPriceDate ==null || zone==null) 
 						break;
 					historyPrice.setPrice(marketPrice.asDouble());	
+					highNode = objNode.findPath("high");
+					if (highNode.isMissingNode())
+						historyPrice.setHighPrice(historyPrice.getPrice());
+					else
+						historyPrice.setHighPrice(highNode.asDouble());
+					lowNode = objNode.findPath("low");
+					if (lowNode.isMissingNode())
+						historyPrice.setLowPrice(historyPrice.getPrice());
+					else
+						historyPrice.setLowPrice(lowNode.asDouble());
 					volumeNode = objNode.findPath("volume");
 					if (volumeNode.isMissingNode()) 
 						historyPrice.setVolume(0l);
@@ -229,11 +251,21 @@ public class GetYahooHistQuote extends GetQuoteTask {
 					historyPrice.setTradeDateInt(DateUtil.convertDateToInt(Date.from(time)));
 					if (historyPrice.getTradeDateInt()<= lastPriceDate)
 						break;
-					quotePrice.addHistory(historyPrice.getTradeDateInt(), historyPrice.getPrice(),historyPrice.getVolume());
+					quotePrice.addHistory(historyPrice.getTradeDateInt(), historyPrice.getPrice(),historyPrice.getHighPrice(), historyPrice.getLowPrice(),historyPrice.getVolume());
 				}
 				else {
 					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Price found");
 					quotePrice.setPrice(marketPrice.asDouble());	
+					highNode =objNode.findPath("high");
+					if (highNode.isMissingNode())
+						quotePrice.setHighPrice(quotePrice.getPrice());
+					else
+						quotePrice.setHighPrice(highNode.asDouble());
+					lowNode = objNode.findPath("low");
+					if (lowNode.isMissingNode())
+						quotePrice.setLowPrice(quotePrice.getPrice());
+					else
+						quotePrice.setLowPrice(lowNode.asDouble());
 					volumeNode = objNode.findPath("volume");
 					if (volumeNode.isMissingNode()) 
 						quotePrice.setVolume(0l);

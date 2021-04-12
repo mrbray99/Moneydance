@@ -62,7 +62,6 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
@@ -110,7 +109,7 @@ import javafx.scene.Scene;
 
 public class Main extends FeatureModule implements AccountListener, BudgetListener, CurrencyListener
 {
-	public static String minorBuildNo = "00";
+	public static String minorBuildNo = "01";
 	public static String databaseChanged = "20210121";
 	private static MyJarLauncher launcher=null;
 	private static MyJarLauncher dbLauncher=null;

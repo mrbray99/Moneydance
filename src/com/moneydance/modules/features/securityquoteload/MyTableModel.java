@@ -54,7 +54,7 @@ public class MyTableModel extends DefaultTableModel {
     private SortedMap<String,Double> newPricesTab;
     private SortedMap<String,Integer> newTradeDate;
     private SortedMap<String,String> tradeCurr;
-    private SortedMap<String,Long> volumes;
+    private SortedMap<String,ExtraFields> volumes;
     private SortedMap<String,Double> quotePrice;
     private SortedMap<String,Integer>accountSource;
     private SortedMap<String,String>selectedExchanges;
@@ -82,7 +82,7 @@ public class MyTableModel extends DefaultTableModel {
 			SortedMap<String,String> tradeCurrp,
 			SortedMap<String,Double> quotePricep,
 			SortedMap<String,String>selectedExchangesp,
-			SortedMap<String,Long>volumesp){
+			SortedMap<String,ExtraFields>volumesp){
 		super();
 		params = paramsp;
 		newPricesTab = pricesp;
@@ -131,7 +131,7 @@ public class MyTableModel extends DefaultTableModel {
 			SortedMap<String,Integer> newTradeDatep,
 			SortedMap<String,String> tradeCurrp,
 			SortedMap<String,Double> quotePricep,
-			SortedMap<String,Long>volumesp){
+			SortedMap<String,ExtraFields>volumesp){
 		listCurrent = new ArrayList<Entry<String,Double>>(mapCurrentp.entrySet());
 		listDates = new ArrayList<Entry<String,Integer>>(mapDatesp.entrySet());
 		listAccounts = new ArrayList<Entry<String,DummyAccount>>(mapAccountsp.entrySet());
@@ -154,7 +154,7 @@ public class MyTableModel extends DefaultTableModel {
 			newPricesTab.replace(priceEntry.getKey(), 0.0);
 			newTradeDate.replace(priceEntry.getKey(), 0);
 			tradeCurr.replace(priceEntry.getKey(), "");
-			volumes.replace(priceEntry.getKey(), 0L);
+			volumes.replace(priceEntry.getKey(),null);
 		}
 		this.fireTableDataChanged();
 	}
@@ -316,8 +316,8 @@ public class MyTableModel extends DefaultTableModel {
 		default :
 			strKey = listCurrent.get(rowIndex).getKey();
 			if (volumes.containsKey(strKey)) {
-				if (volumes.get(strKey) > 0L) {
-					return Long.toString(volumes.get(strKey));
+				if (volumes.get(strKey).getVolume() > 0L) {
+					return Long.toString(volumes.get(strKey).getVolume());
 				}
 			}
 			return " ";
@@ -519,8 +519,28 @@ public class MyTableModel extends DefaultTableModel {
 		ctTicker.setEditingMode();
 		objSnap = ctTicker.setSnapshotInt(tradeDate,  dRate, ctRelative);
 		if(params.getAddVolume()) {
-			if (volumes.containsKey(ticker))
-			objSnap.setDailyVolume(volumes.get(ticker));
+			if (volumes.containsKey(ticker)) {
+				ExtraFields fields = volumes.get(ticker);
+				objSnap.setDailyVolume(fields.getVolume());
+				if (fields.getHigh() != 0.0) {
+					Double rate = fields.getHigh();
+					Double viewRate = 1.0;
+					rate = rate*viewRate*dCurRate;
+					Double multiplier = Math.pow(10.0,Double.valueOf(params.getDecimal()));
+					rate = Math.round(rate*multiplier)/multiplier;
+					rate =1/Util.safeRate(rate);
+					objSnap.setDailyHigh(rate);
+				}
+				if (fields.getLow() != 0.0) {
+					Double rate = fields.getLow();
+					Double viewRate = 1.0;
+					rate = rate*viewRate*dCurRate;
+					Double multiplier = Math.pow(10.0,Double.valueOf(params.getDecimal()));
+					rate = Math.round(rate*multiplier)/multiplier;
+					rate =1/Util.safeRate(rate);
+					objSnap.setDailyLow(rate);
+				}
+			}
 		}
 		long txnLongDate = DateUtil.convertIntDateToLong(tradeDate).getTime();
 		boolean updateCurrentPrice = ctTicker.getLongParameter("price_date", 0) <= txnLongDate;
@@ -544,6 +564,22 @@ public class MyTableModel extends DefaultTableModel {
 				objSnap = ctTicker.setSnapshotInt(priceItem.getDate(),  dRate, ctRelative);
 				if (params.getAddVolume()) {
 					objSnap.setDailyVolume(priceItem.getVolume());
+					if (priceItem.getHighPrice() != 0.0) {
+						Double rate = priceItem.getHighPrice();
+						Double viewRate = 1.0;
+						rate = rate*viewRate*dCurRate;
+						rate = Math.round(rate*multiplier)/multiplier;
+						rate =1/Util.safeRate(rate);
+						objSnap.setDailyHigh(rate);
+					}
+					if (priceItem.getLowPrice() != 0.0) {
+						Double rate = priceItem.getLowPrice();
+						Double viewRate = 1.0;
+						rate = rate*viewRate*dCurRate;
+						rate = Math.round(rate*multiplier)/multiplier;
+						rate =1/Util.safeRate(rate);
+						objSnap.setDailyLow(rate);
+					}
 				}
 				objSnap.syncItem();
 			}
