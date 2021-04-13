@@ -452,20 +452,24 @@ public class FirstRun {
 	 * Select a file
 	 */
 	private String chooseFile() {
-		String strDirectory = Main.preferences.getString(Constants.FIRSTRUNDIR,System.getProperty("user.home"));
+		String strDirectory = Main.preferences.getString(Constants.PROGRAMNAME+"."+Constants.FIRSTRUNDIR,System.getProperty("user.home"));
 		directoryChooser = new DirectoryChooser();
 		if (!(strDirectory == null || strDirectory.isEmpty() )) {
 			try {
 				directoryChooser.setInitialDirectory(new File(strDirectory));
 			}
-			catch (Exception e) {}
+			catch (Exception e) {
+				Main.rwDebugInst.debug("FirstRun", "chooseFile", MRBDebug.DETAILED, "Error browsing "+strDirectory);
+				e.printStackTrace();
+			}
 		}
 		File directory = directoryChooser.showDialog(stage);
 		if (directory == null)
 			strDirectory = null;
 		else
 			strDirectory = directory.getAbsolutePath();
-		Main.preferences.put(Constants.FIRSTRUNDIR, strDirectory);
+		Main.preferences.put(Constants.PROGRAMNAME+"."+Constants.FIRSTRUNDIR, strDirectory);
+		Main.preferences.isDirty();
 		return strDirectory;
 	}
 

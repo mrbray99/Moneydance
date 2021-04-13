@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -22,6 +23,7 @@ public class MRBPreferences2 {
 	private transient String fileName;
 	private transient File fiCurFolder;
 	private transient boolean dirty = false;
+	private transient Map<String, String> tempMapData;
 	/*
 	 * These fields are saved
 	 */
@@ -329,10 +331,21 @@ public class MRBPreferences2 {
 	 * extension to control when preferences are saved. It is not ideal to do it
 	 * every time an individual value is updated.
 	 */
-	public void isDirty() {
+	public synchronized void isDirty() {
 		if (!dirty)
 			return;
 		try {
+			fileName = fiCurFolder.getAbsolutePath() + "/" + MRBConstants.NEWPARAMETERFILE;
+			JsonReader reader = new JsonReader(new FileReader(fileName));
+			MRBPreferences2 temp = new Gson().fromJson(reader,MRBPreferences2.class);
+			this.tempMapData = temp.getMapData();
+			reader.close();
+			for (Entry<String,String>entry : tempMapData.entrySet()) {
+				if (mapData.containsKey(entry.getKey()))
+					mapData.replace(entry.getKey(),entry.getValue());
+				else
+					mapData.put(entry.getKey(), entry.getValue());
+			}
 			fileName = fiCurFolder.getAbsolutePath() + "/" + MRBConstants.NEWPARAMETERFILE;
 			   FileWriter writer2 = new FileWriter(fileName);
 			   String jsonString = new Gson().toJson(this);
