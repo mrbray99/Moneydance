@@ -86,6 +86,7 @@ public abstract class Constants {
 	public static final String SAMPLESFILE = "rwsamples.zip";
 	public static final String TEMPLATESFILE = "rwtemplates.zip";
 	public static final String TEMPLATELISTFILE = "templateList.txt";
+	public static final String FIRSTRUNTEXT="firstrun.txt";
 	public static final String HELPURL = "https://bitbucket.org/mikerb/moneydance-2019/wiki/Report%20Writer";	
 	public static final String SHOWHELP = "showhelp";
 	public static final String FIRSTRUNDIR = "firstrundir";
@@ -268,5 +269,12 @@ public abstract class Constants {
 		intervaltypes.put(BudgetItem.INTERVAL_TRI_WEEKLY, "Tri-Weekly");
 		intervaltypes.put(BudgetItem.INTERVAL_WEEKLY, "Weekly");
 	}
- 
+	public static String[] INTROTEXT = {"**Welcome to the Report Writer extension by Mike Bray**",
+			"This extension takes the data in your Moneydance file and outputs it into easy to use files. These files can be in Comma Separated Value format, an Excel workbook or an SQL Database.::",
+			"The SQL database is typically used for creating reports using Jasper Reports, a third party tool from JasperSoft.::",
+			"Before the extension can be used you need to tell it where you will store the parameters, the data output and any report templates from Jasper Reports.  These can all be the same folder.::",
+			"To make best use of the extension it is important that you read the Help information. To access this click on the Question Mark at the bottom of the screen and click on 'Show Help'.::",
+			"If you have any questions please post to the General Moneydance Public Discussion and mention me (Mike Bray) and Report Writer in the title of the post.::",
+			"Regards::",
+			"Mike Bray::"};
 }

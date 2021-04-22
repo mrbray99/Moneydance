@@ -1,6 +1,6 @@
 {
   "vendor" = "Mike Bray"
-  "module_build" = "3034"
+  "module_build" = "3035"
 "minbuild" = "1820"
   "vendor.url" = "http://bitbucket.org/mikerb/wiki/Home"
   "module_name" = "Load Security Transactions"

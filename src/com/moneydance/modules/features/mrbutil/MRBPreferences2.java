@@ -341,9 +341,7 @@ public class MRBPreferences2 {
 			this.tempMapData = temp.getMapData();
 			reader.close();
 			for (Entry<String,String>entry : tempMapData.entrySet()) {
-				if (mapData.containsKey(entry.getKey()))
-					mapData.replace(entry.getKey(),entry.getValue());
-				else
+				if (!mapData.containsKey(entry.getKey()))
 					mapData.put(entry.getKey(), entry.getValue());
 			}
 			fileName = fiCurFolder.getAbsolutePath() + "/" + MRBConstants.NEWPARAMETERFILE;

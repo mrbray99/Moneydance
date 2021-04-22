@@ -34,6 +34,7 @@ public class NewParameters {
 	private String dataDirectory;
 	private String outputDirectory;
 	private String reportDirectory;
+	private Boolean introScreen;
 	public  NewParameters(){
 	}
 	public String getDataDirectory() {
@@ -53,6 +54,12 @@ public class NewParameters {
 	}
 	public void setOutputDirectory(String outputDirectory) {
 		this.outputDirectory = outputDirectory;
+	}
+	public Boolean getIntroScreen() {
+		return introScreen;
+	}
+	public void setIntroScreen(Boolean introScreen) {
+		this.introScreen = introScreen;
 	}
 
 }

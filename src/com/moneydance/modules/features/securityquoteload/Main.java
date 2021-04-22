@@ -99,8 +99,7 @@ public class Main extends FeatureModule
 	private TaskExecutor autoRun=null;
 	public static ClassLoader loader;
 	public boolean startUp = true;
-	private boolean installerRequest = false;
-	private String buildNoReturnProgram;
+	private Boolean closingRequested = false;
 	/*
 	 * Called when extension is loaded<p>
 	 * Need to register the feature and the URI command to be called 
@@ -191,16 +190,21 @@ public class Main extends FeatureModule
             handleEventFileOpening();
         } else if (appEvent.compareToIgnoreCase("md:file:opened") == 0) {
             handleEventFileOpened();
-        } else if (appEvent.compareToIgnoreCase("md:file:closed") == 0) {
+        } else if (appEvent.compareToIgnoreCase("md:file:closing") == 0) {
+            handleEventFileClosing();
+        }else if (appEvent.compareToIgnoreCase("md:file:closed") == 0) {
             handleEventFileClosed();
         }
+
     }
 
     protected void handleEventFileOpening() {
 		debugInst.debug("Main","HandleEventFileOpening", MRBDebug.DETAILED, "Opening ");
+		closingRequested = false;
     }
 
     protected void handleEventFileOpened() {
+		closingRequested = false;
 		if (preferences !=null)
 			MRBPreferences2.forgetInstance();
 		MRBPreferences2.loadPreferences(context);
@@ -272,7 +276,17 @@ public class Main extends FeatureModule
 		debugInst.debug("Main", "sendAuto",MRBDebug.INFO, "now "+now.toString()+" next "+dateTime.toString());
 		autoRun.startExecutionAt(dateTime);
     }
+    protected void handleEventFileClosing() {
+		debugInst.debug("Quote Load", "HandleEventFileClosing", MRBDebug.DETAILED, "Closing ");
+		closingRequested = true;
+    	if (autoRun != null) {
+    		autoRun.stop();
+    		autoRun = null;
+    	}
+    	closeConsole();
+    }
     protected void handleEventFileClosed() {
+		closingRequested = true;
 		debugInst.debug("Quote Load", "HandleEventFileClosed", MRBDebug.DETAILED, "Closing ");
     	if (autoRun != null) {
     		autoRun.stop();
@@ -295,6 +309,8 @@ public class Main extends FeatureModule
 	 */
 	@Override
 	public synchronized void invoke(String urip) {
+		if (closingRequested)
+			return;
 		/*
 		 * load JCheckBox icons for Unix due to customised UIManager Look and feel
 		 */
@@ -588,14 +604,6 @@ public class Main extends FeatureModule
 			         "Quote Loader Update Completed");
 			debugInst.debug("Main", "ProcessCommand", MRBDebug.DETAILED, "Auto run done");
 		}
-		if (command.startsWith(Constants.GETBUILDNUM)) {
-			installerRequest = true;
-			String program = command.substring(command.indexOf(",")+1);
-			buildNoReturnProgram = program;
-			debugInst.debug("Main", "ProcessCommand", MRBDebug.DETAILED, "Get Build numbers");
-			debugInst.debug("Main", "ProcessCommand", MRBDebug.DETAILED, "return program "+program);
-			context.showURL("moneydance:fmodule:"+program+":"+Constants.RETURNBUILD+","+buildNo);
-		}
 		
 			
 	}
@@ -700,7 +708,6 @@ public class Main extends FeatureModule
 			frame.dispose();
 			frame=null;
 		}
-		System.gc();
 	}
 		/**
 		 *  @author Mike Bray

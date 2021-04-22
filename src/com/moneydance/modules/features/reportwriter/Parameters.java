@@ -63,6 +63,7 @@ public class Parameters implements Serializable{
 	private File curFolder;
 	private String fileName;
 	private NewParameters newParams;
+	private Boolean introScreen;
 	private String dataDirectory;
 	private String outputDirectory;
 	private String reportDirectory;
@@ -97,6 +98,7 @@ public class Parameters implements Serializable{
 			newParams.setDataDirectory(Constants.NODIRECTORY);
 			newParams.setReportDirectory(Constants.NODIRECTORY);
 			newParams.setOutputDirectory(Constants.NODIRECTORY);
+			newParams.setIntroScreen(true);
 			/*
 			 * create the file
 			 */
@@ -115,6 +117,7 @@ public class Parameters implements Serializable{
 		dataDirectory = newParams.getDataDirectory();
 		outputDirectory = newParams.getOutputDirectory();
 		reportDirectory = newParams.getReportDirectory();
+		introScreen = newParams.getIntroScreen();
 		templateList = new ArrayList<>();
 		dataList = new ArrayList<>();
 		selectionList = new ArrayList<>();
@@ -135,8 +138,8 @@ public class Parameters implements Serializable{
 		selectionList.clear();
 		File folder = new File(dataDirectory);
 		File [] files = folder.listFiles();
-		Arrays.sort(files);
 		if (files != null && files.length > 0) {
+			Arrays.sort(files);
 			for (int i=0;i<files.length;i++) {
 				if (files[i].isFile()) {
 					String fileName = files[i].getName();
@@ -199,6 +202,8 @@ public class Parameters implements Serializable{
 				}
 			}
 		}
+		else
+			dataDirectory = Constants.NODIRECTORY;
 	}
 	public void setReportTemplates() {
 		Main.rwDebugInst.debugThread("Parameters", "setReportTemplates", MRBDebug.SUMMARY, "Report Directory "+reportDirectory);
@@ -222,6 +227,8 @@ public class Parameters implements Serializable{
 				}
 			}
 		}
+		else
+			reportDirectory=Constants.NODIRECTORY;
 	}
 	
 	public String getDataDirectory() {
@@ -375,6 +382,7 @@ public class Parameters implements Serializable{
 		newParams.setDataDirectory(dataDirectory);
 		newParams.setReportDirectory(reportDirectory);
 		newParams.setOutputDirectory(outputDirectory);
+		newParams.setIntroScreen(introScreen);
 
 		try {
 			   FileWriter writer2 = new FileWriter(fileName);
@@ -401,5 +409,14 @@ public class Parameters implements Serializable{
 		}
 		return false;
 	}
+	public Boolean getIntroScreen() {
+		if (introScreen == null)
+			introScreen=true;
+		return introScreen;
+	}
+	public void setIntroScreen(Boolean introScreen) {
+		this.introScreen = introScreen;
+	}
+	
 
 }

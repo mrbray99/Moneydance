@@ -37,13 +37,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.MRBDirectoryUtils;
@@ -64,10 +58,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
@@ -140,6 +132,9 @@ public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
 		});
 
 		params = new Parameters();
+		if(params.getIntroScreen()) {
+			IntroScreen intro = new IntroScreen(params);
+		}
 		if (params.getDataDirectory() == null || params.getDataDirectory().equals(Constants.NODIRECTORY)
 				|| params.getReportDirectory() == null || params.getReportDirectory().equals(Constants.NODIRECTORY)
 				|| params.getOutputDirectory() == null || params.getOutputDirectory().equals(Constants.NODIRECTORY)) {
@@ -228,7 +223,7 @@ public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						new HelpScreen();
+						new HelpScreen(params);
 					}
 				});
 			}
