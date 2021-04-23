@@ -19,34 +19,38 @@ public class MRBGUI implements MDResourceProvider {
 		resources = userPref.getResources();
 	}
 	@Override
-	public Icon getIcon(String arg0) {
+	public
+	Icon getIcon(String arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Image getImage(String arg0) {
+	public
+	Image getImage(String arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Resources getResources() {
+	public
+	Resources getResources() {
 		return resources;
 	}
 
 	@Override
-	public String getStr(String strKey) {
+	public
+	String getStr(String strKey) {
 		return resources.getString(strKey);
 	}
 
 	public String getString(PeriodType type) {
 		return resources.getString(type);
 	}
-	@Override
 	public MDStrings strings() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }

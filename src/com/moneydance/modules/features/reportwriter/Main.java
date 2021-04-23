@@ -34,6 +34,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -64,6 +65,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import com.infinitekind.moneydance.model.Account;
@@ -160,6 +162,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	private static Scene scene;
 	public int SCREENWIDTH;
 	public int SCREENHEIGHT;
+	public static Font labelFont;
 	private boolean extensionOpen = false;
 	/*
 	 * Called when extension is loaded<p>
@@ -198,6 +201,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		now = new Date();
 		decimalChar = up.getDecimalChar();
 		loadedIcons = new Images();
+		labelFont = UIManager.getFont("Label.font");
 		/*
 		 * Need to ensure Jasper Server is available in the .moneydance/fmodule/.reportwriter folder
 		 * 
