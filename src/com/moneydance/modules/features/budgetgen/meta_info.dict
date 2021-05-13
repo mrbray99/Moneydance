@@ -1,6 +1,6 @@
 {
   "vendor" = "Mike Bray"
-  "module_build" = "3035"
+  "module_build" = "3036"
   "minbuild" = "1820"
   "vendor.url" = "http://bitbucket.org/mikerb/moneydance-2015wiki/Home/"
   "module_name" = "Budget Generator"

@@ -46,7 +46,6 @@ public class MRBListModel extends DefaultListModel<String> {
 	private List<MRBMyEntry> lines;
 	private SortedMap<String,MRBListItem> accounts;
 	private int type;
-	private MRBGUI gui = new MRBGUI();
 	private AccountType [] acctType;
 	private String [] acctTypeCodes;
 	private String [] acctTypeNames;
@@ -63,7 +62,7 @@ public class MRBListModel extends DefaultListModel<String> {
 			acctTypeNames = new String[acctType.length];
 			for (int i=0; i< acctType.length;i++) {
 				acctTypeCodes[i] = "acct_type"+acctType[i].code()+"s";
-				acctTypeNames[i] = gui.getStr(acctTypeCodes[i]);
+				acctTypeNames[i] = acctTypeCodes[i].toString();
 			}
 			update(accounts);
 	}

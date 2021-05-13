@@ -65,7 +65,6 @@ import com.infinitekind.moneydance.model.PeriodType;
 import com.moneydance.apps.md.controller.FeatureModuleContext;
 import com.moneydance.awt.AwtUtil;
 import com.moneydance.awt.GridC;
-import com.moneydance.modules.features.mrbutil.MRBGUI;
 import com.moneydance.modules.features.mrbutil.MRBPreferences2;
 
 /*
@@ -80,7 +79,6 @@ public class BudgetSelectWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private Main extension;
 	private FeatureModuleContext context;
-	private MRBGUI gui;
 	private AccountBook acctBook;
 	private BudgetList budgets;
 	private BudgetListExtend budgetList;
@@ -121,7 +119,6 @@ public class BudgetSelectWindow extends JFrame {
 	public BudgetSelectWindow(Main ext) {
 		super("Budget Generator");
 		errorFnd = false;
-		gui=new MRBGUI();
 		fileChooser = new JFileChooser();
 		this.extension = ext;
 		context = extension.getUnprotectedContext();
@@ -293,10 +290,10 @@ public class BudgetSelectWindow extends JFrame {
 		types = PeriodType.all();
 		String[] typeStrings = new String[types.length];
 		for (int i=0;i<types.length;i++) {
-			typeStrings[i] = gui.getString(types[i]);
+			typeStrings[i] = types[i].name();
 		}
 		budgetTypesCB = new JComboBox<String>(typeStrings);
-		budgetTypesCB.setSelectedItem(gui.getString(PeriodType.MONTH));
+		budgetTypesCB.setSelectedItem(PeriodType.MONTH.name());
 		JLabel periodLbl = new JLabel("Period Type");
 		panNewBudget.add(budgetNameLbl,GridC.getc(ix++,iy).west().insets(5,5,5,5));
 		panNewBudget.add(budgetNameFld,GridC.getc(ix,iy++).west().insets(5,5,5,5));
