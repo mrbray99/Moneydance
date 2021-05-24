@@ -71,7 +71,7 @@ public class MyTableModel extends DefaultTableModel {
 	private boolean[] arrSelect;
 	private String [] arrSource;
 	private MRBDebug debugInst = Main.debugInst;
-	private static String[] arrColumns = {"Select","Ticker","Exch Mod","Name","Source","Last Price","Price Date","New Price","Trade Date","Trade Currency","Volume"};
+	private static String[] arrColumns = {"Select","Ticker","Exch Mod","Name","Source","Last Price","Price Date","New Price","% chg","Trade Date","Trade Currency","Volume"};
 
 	public MyTableModel(Parameters paramsp,SortedMap<String,Double> pricesp,
 			SortedMap<String,Integer> newTradeDatep,
@@ -249,7 +249,6 @@ public class MyTableModel extends DefaultTableModel {
 			if (strKey.startsWith(Constants.CURRENCYID)) {
 				return dfNumbers.format(listCurrent.get(rowIndex).getValue()); 
 			}
-
 			cellCur = baseCurrency;
 			Double dValue = listCurrent.get(rowIndex).getValue();
 			if (listAccounts.get(rowIndex).getValue().getDifferentCur()) {
@@ -277,9 +276,41 @@ public class MyTableModel extends DefaultTableModel {
 			Double newValue = Math.round(newPricesTab.get(strKey)*multiplier)/multiplier;
 			return dfNumbers.format(newValue);
 			/*
-			 * Trade Date
+			 * % Change
 			 */
 		case 8:
+			strKey = listCurrent.get(rowIndex).getKey();
+			if (newPricesTab.get(strKey) == null)
+				return "";
+			if (!accountSource.containsKey(strKey) ) {
+				return "";
+			}
+			Double newPrice;
+			Double oldPriceValue;
+			if (strKey.startsWith(Constants.CURRENCYID)) {
+				newPrice = Math.round(newPricesTab.get(strKey)*multiplier)/multiplier;
+				oldPriceValue =listCurrent.get(rowIndex).getValue(); 
+			}
+			else {
+				 newPrice = Math.round(newPricesTab.get(strKey)*multiplier)/multiplier;
+				cellCur = baseCurrency;
+				oldPriceValue = listCurrent.get(rowIndex).getValue();
+				if (listAccounts.get(rowIndex).getValue().getDifferentCur()) {
+					relativeCur = listAccounts.get(rowIndex).getValue().getRelativeCurrencyType();
+	//				Double dViewRate = CurrencyUtil.getUserRate(baseCurrency,  ctRelative);
+	//				dValue *= dViewRate;
+					cellCur = relativeCur;
+				}
+				oldPriceValue = Math.round(oldPriceValue*multiplier)/multiplier;
+			}
+			Double perChg = (oldPriceValue-newPrice)/oldPriceValue*-100.0;
+			if (perChg == -0.0)
+				perChg = 0.0;
+			return dfNumbers.format(perChg);
+			/*
+			 * Trade Date
+			 */
+		case 9:
 			String key = listCurrent.get(rowIndex).getKey();
 			if (!newTradeDate.containsKey(key))
 				return "";
@@ -292,7 +323,7 @@ public class MyTableModel extends DefaultTableModel {
 			/*
 			 * trade currency
 			 */
-		case 9:
+		case 10:
 			strKey = listCurrent.get(rowIndex).getKey();
 			if (!tradeCurr.containsKey(strKey))
 				return "";
@@ -315,8 +346,8 @@ public class MyTableModel extends DefaultTableModel {
 			 */
 		default :
 			strKey = listCurrent.get(rowIndex).getKey();
-			if (volumes.containsKey(strKey)) {
-				if (volumes.get(strKey).getVolume() > 0L) {
+			if (volumes != null && volumes.containsKey(strKey)) {
+				if (volumes.get(strKey) != null && volumes.get(strKey).getVolume() > 0L) {
 					return Long.toString(volumes.get(strKey).getVolume());
 				}
 			}
@@ -329,7 +360,7 @@ public class MyTableModel extends DefaultTableModel {
  		case 0:
  		case 4:
  		case 7:
- 		case 8:
+ 		case 9:
 			return true;
 		default:
 			return false;
@@ -373,7 +404,7 @@ public class MyTableModel extends DefaultTableModel {
 			if (errorTickers !=null)
 				errorTickers.remove(strKey);
 		}
-		if (col == 8) {
+		if (col ==9) {
 			int date = Main.cdate.parseInt((String)value);
 			if (newTradeDate.containsKey(strKey))
 				newTradeDate.replace(strKey, date);

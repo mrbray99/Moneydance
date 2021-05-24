@@ -42,6 +42,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.SortedMap;
 
 import javax.swing.DefaultCellEditor;
@@ -49,6 +51,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -99,9 +102,10 @@ public class MyTable extends JTable {
 	public static int lastPriceCol = 5;
 	public static int lastDateCol = 6;
 	public static int newPriceCol = 7;
-	public static int tradeDateCol = 8;
-	public static int tradeCurCol = 9;
-	public static int volumeCol = 10;
+	public static int perChangeCol=8;
+	public static int tradeDateCol =9;
+	public static int tradeCurCol = 10;
+	public static int volumeCol = 11;
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private Double screenHeight;
 
@@ -134,6 +138,40 @@ public class MyTable extends JTable {
        			setForeground (UIManager.getColor("TextField.Foreground"));
 	        }
 	        setHorizontalAlignment(JLabel.RIGHT);
+	        return this;
+	    }
+	}
+	public class PerChgRenderer extends DefaultTableCellRenderer {
+	    @Override
+	    public  Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+	    	Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+	    	String sValue = (String) value;
+	    	if (sValue.isEmpty()) {
+        		setOpaque(false);
+       			setForeground (UIManager.getColor("TextField.Foreground"));
+       			return this;
+	    	}
+	    	Double dValue;
+	    	try {
+	    		dValue = DecimalFormat.getNumberInstance().parse(sValue).doubleValue();
+		    	} catch (ParseException e) {
+		    		dValue=0.0;
+	    	}
+	    	if (dValue == 0.0) {
+        		setOpaque(false);
+       			setForeground (UIManager.getColor("TextField.Foreground"));
+       			return this;
+	    	}
+	    	if (dValue < 0.0) {
+	        	setOpaque(true);
+	        	setForeground(Color.BLACK);
+	        	setBackground(Color.RED);
+	    	}
+	    	else {
+	        	setOpaque(true);
+	        	setForeground(Color.BLACK);
+	        	setBackground(Color.GREEN);
+	    	}
 	        return this;
 	    }
 	}
@@ -187,10 +225,20 @@ public class MyTable extends JTable {
 		header = getTableHeader();
 		tickerStatus = tickerStatusp;
 		columnWidths = Main.preferences.getIntArray(Constants.PROGRAMNAME+"."+Constants.CRNTCOLWIDTH);
-		if (columnWidths.length == 0 || columnWidths.length<Constants.NUMTABLECOLS)
+		if (columnWidths.length == 0 || columnWidths.length<Constants.NUMTABLECOLS) 
 			columnWidths = Main.preferences.getIntArray(Constants.CRNTCOLWIDTH);
+		if (columnWidths.length == Constants.NUMTABLECOLS-1) {
+			int [] columnWidths2 = new int [Constants.NUMTABLECOLS] ;
+			for (int i=0;i<8;i++) 
+				columnWidths2[i] = columnWidths[i];
+			columnWidths2[8] = 80;
+			for (int i=9;i<Constants.NUMTABLECOLS;i++)
+				columnWidths2[i] = columnWidths[i-1];
+			columnWidths = columnWidths2;
+		}
 		if (columnWidths.length == 0 || columnWidths.length<Constants.NUMTABLECOLS)
 			columnWidths = Constants.DEFAULTCOLWIDTH;
+		Main.preferences.put(Constants.PROGRAMNAME+"."+Constants.CRNTCOLWIDTH,columnWidths);
 		allSources = new JComboBox<String>(params.getSourceArray());
 		currencySources = new JComboBox<String>(params.getCurSourceArray());
 		currencyEditor = new MyCurrencyEditor(params);
@@ -253,6 +301,12 @@ public class MyTable extends JTable {
 		this.getColumnModel().getColumn(newPriceCol).setCellEditor(currencyEditor);
 		this.getColumnModel().getColumn(newPriceCol).setPreferredWidth(columnWidths[newPriceCol]);
 		this.getColumnModel().getColumn(newPriceCol).setCellRenderer(new PriceRenderer());
+		/*
+		 * % change
+		 */
+		this.getColumnModel().getColumn(perChangeCol).setResizable(true);
+			this.getColumnModel().getColumn(perChangeCol).setPreferredWidth(columnWidths[perChangeCol]);
+		this.getColumnModel().getColumn(perChangeCol).setCellRenderer(new PerChgRenderer());
 		/*
 		 * Trade Date
 		 */
@@ -397,6 +451,11 @@ public class MyTable extends JTable {
 			public void actionPerformed(ActionEvent aeEvent) {
 				String strAction = aeEvent.getActionCommand();
 				if (strAction.contains("Test")){
+					String source = (String)dm.getValueAt(row,sourceCol);
+					if(source.equals(Constants.DONOTLOAD)) {
+						JOptionPane.showMessageDialog(null,"You must select a source before testing");
+						return;
+					}
 					Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.TESTTICKERCMD
 							+"?qs="+sourceFinal+"&s="+tickerFinal);
 				}

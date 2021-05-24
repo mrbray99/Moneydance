@@ -196,6 +196,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	protected int closeBtnx=0;
 	protected int closeBtny=0;
 	protected String testTicker="";
+	protected String testTID="";
 	protected String command;
 	protected boolean errorsFound = false;;
 	protected List<String> errorTickers;
@@ -1553,9 +1554,9 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			}
 		}
 		if (!ticker.isEmpty()){
-			String tid = UUID.randomUUID().toString();
+			testTID = UUID.randomUUID().toString();
 			testTicker = ticker;
-			String testurl=newPriceUrl(source,tid,ticker,Constants.STOCKTYPE,0);
+			String testurl=newPriceUrl(source,testTID,ticker,Constants.STOCKTYPE,0);
 			debugInst.debug("loadPricesWindow", "testTicker", MRBDebug.DETAILED, "URI "+testurl);
 			Main.context.showURL(testurl);
 		}
@@ -1652,9 +1653,10 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		/*
 		 * data extracted test for test ticker
 		 */
-		if (newPrice.getTicker().equals(testTicker)){
+		if (newPrice.getTicker().equals(testTicker) && testTID.equals(uuid)){
 			debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.DETAILED, "Test Ticker returned");                
 			testTicker = "";
+			testTID="";
 			String message = "Test of security "+newPrice.getTicker()+ " was successful. Price "+newPrice.getSecurityPrice()+" Currency "+newPrice.getCurrency();
 			JOptionPane.showMessageDialog(null,message);
 			return;
@@ -1904,8 +1906,9 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		/*
 		 * data extracted test for test ticker
 		 */
-		if (newPrice.getTicker().equals(testTicker)){
+		if (newPrice.getTicker().equals(testTicker)&&testTID.equals(uuid)){
 			testTicker = "";
+			testTID="";
 			return;
 		}
 		/*
@@ -2004,13 +2007,6 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	public synchronized void failedQuote(String url){
 		String uuid = "";
 		debugInst.debug("loadPricesWindow", "failedQuote", MRBDebug.INFO, "URI "+url);
-		/* 
-		 * if completed set, ignore message
-		 */
-		if (completed) {
-			debugInst.debug("loadPricesWindow", "failedQuote", MRBDebug.INFO, "Late message");
-			return;
-		}
 		URI uri=null;
 		String convUrl = url.replace("^", "%5E");
 		try {
@@ -2047,10 +2043,21 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				uuid = price.getValue();
 			}
 		}
-		if (ticker.equals(testTicker)){
+		/*
+		 * if test of ticker, display message and exit
+		 */
+		if (ticker.equals(testTicker) && testTID.equals(uuid)){
 			testTicker = "";
+			testTID="";
 			String message = "Test of security "+ticker+ " failed.";
 			JOptionPane.showMessageDialog(null,message);
+			return;
+		}
+		/* 
+		 * if completed set, ignore message
+		 */
+		if (completed) {
+			debugInst.debug("loadPricesWindow", "failedQuote", MRBDebug.INFO, "Late message");
 			return;
 		}
 		errorsFound = true;

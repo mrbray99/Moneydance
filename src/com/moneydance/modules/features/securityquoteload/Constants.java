@@ -170,8 +170,8 @@ public abstract class Constants {
 	public static final int RUN1900 = 7;
 	public static final int RUN2100 = 8;
 	public static final int RUN2200 = 9;
-	public static final int NUMTABLECOLS = 11; 
-	public static final int[]  DEFAULTCOLWIDTH = {40,100,100,300,80,80,80,80,80,80,80};
+	public static final int NUMTABLECOLS = 12; 
+	public static final int[]  DEFAULTCOLWIDTH = {40,100,100,300,80,80,80,80,80,80,80,80};
 	public static final int FRAMEWIDTH = 800;	
 	public static final int FRAMEHEIGHT = 800;
 	public static final int LOADSCREENWIDTH = 1000;
