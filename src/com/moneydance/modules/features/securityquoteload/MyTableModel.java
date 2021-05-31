@@ -533,7 +533,11 @@ public class MyTableModel extends DefaultTableModel {
 			dViewRate = 1.0;
 			dRate = dRate*dViewRate*dCurRate;
 			if (exportFile != null) {
-				String line = ticker+","+acct.getAccountName()+","+dRate+","+Main.cdate.format(tradeDate)+","+volumes.get(ticker).getVolume()+"\r\n";
+				ExtraFields extra = volumes.get(ticker);
+				String volumeStr="";
+				if (extra!= null)
+					volumeStr = volumes.get(ticker).getVolume().toString();
+				String line = ticker+","+acct.getAccountName()+","+dRate+","+Main.cdate.format(tradeDate)+","+volumeStr+"\r\n";
 				try {
 					exportFile.write(line);
 				} catch (IOException e) {
