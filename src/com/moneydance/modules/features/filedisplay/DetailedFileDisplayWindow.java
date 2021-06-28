@@ -1861,9 +1861,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		try {
 			Long paramValue = Long.decode(param);
 			int intParam=DateUtil.convertLongDateToInt(paramValue);
-			if (DateUtil.convertIntDateToLong(intParam).getTime()==paramValue) {
-				return param+" - "+ String.valueOf(intParam);
-			}
+			return param+" - "+ String.valueOf(intParam);
 		}
 		catch (NumberFormatException e) {
 		}
