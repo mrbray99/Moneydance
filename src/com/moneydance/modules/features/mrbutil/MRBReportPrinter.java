@@ -46,7 +46,7 @@ public class MRBReportPrinter implements MRBPrintable {
 	private boolean pagesCalculated = false;
 	private int numHeaderRows = 1;
 	private int numPagesWide; // number of horizontal pages
-	private String defaultString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!£$%^&*()-+= {}[]";
+	private String defaultString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!$%^&*()-+= {}[]";
 	private double scale = 1.0D;
 	private double totalColumnWidth;
 	/**

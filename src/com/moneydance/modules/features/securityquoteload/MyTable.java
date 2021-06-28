@@ -146,6 +146,7 @@ public class MyTable extends JTable {
 	    public  Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 	    	Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 	    	String sValue = (String) value;
+	        setHorizontalAlignment(JLabel.RIGHT);
 	    	if (sValue.isEmpty()) {
         		setOpaque(false);
        			setForeground (UIManager.getColor("TextField.Foreground"));
@@ -253,6 +254,7 @@ public class MyTable extends JTable {
 		this.getColumnModel().addColumnModelListener(new WidthListener());
 		this.getTableHeader().addMouseListener(new HeaderMouseListener());
 		this.addMouseListener(new TableMouseListener());
+		((DefaultTableCellRenderer)this.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
 		/*
 		 * Select
 		 */
@@ -319,6 +321,7 @@ public class MyTable extends JTable {
 		 */
 		this.getColumnModel().getColumn(tradeCurCol).setResizable(true);
 		this.getColumnModel().getColumn(tradeCurCol).setPreferredWidth(columnWidths[tradeCurCol]);
+		this.getColumnModel().getColumn(tradeCurCol).setCellRenderer(rightRender);
 		/*
 		 * Volume
 		 */

@@ -289,19 +289,19 @@ public class MyTableModel extends DefaultTableModel {
 			Double oldPriceValue;
 			if (strKey.startsWith(Constants.CURRENCYID)) {
 				newPrice = Math.round(newPricesTab.get(strKey)*multiplier)/multiplier;
-				oldPriceValue =listCurrent.get(rowIndex).getValue(); 
+				oldPriceValue =Math.round(listCurrent.get(rowIndex).getValue()*multiplier)/multiplier; 
 			}
 			else {
 				 newPrice = Math.round(newPricesTab.get(strKey)*multiplier)/multiplier;
 				cellCur = baseCurrency;
-				oldPriceValue = listCurrent.get(rowIndex).getValue();
+				oldPriceValue = Math.round(listCurrent.get(rowIndex).getValue()*multiplier)/multiplier;
 				if (listAccounts.get(rowIndex).getValue().getDifferentCur()) {
 					relativeCur = listAccounts.get(rowIndex).getValue().getRelativeCurrencyType();
 	//				Double dViewRate = CurrencyUtil.getUserRate(baseCurrency,  ctRelative);
 	//				dValue *= dViewRate;
 					cellCur = relativeCur;
 				}
-				oldPriceValue = Math.round(oldPriceValue*multiplier)/multiplier;
+	//			oldPriceValue = Math.round(oldPriceValue*multiplier)/multiplier;
 			}
 			Double perChg = (oldPriceValue-newPrice)/oldPriceValue*-100.0;
 			if (perChg == -0.0)
@@ -577,11 +577,10 @@ public class MyTableModel extends DefaultTableModel {
 				}
 			}
 		}
-		long txnLongDate = DateUtil.convertIntDateToLong(tradeDate).getTime();
-		boolean updateCurrentPrice = ctTicker.getLongParameter("price_date", 0) <= txnLongDate;
-		if(updateCurrentPrice && tradeDate >= lastDate) {
+		int priceDate = DateUtil.convertLongDateToInt(ctTicker.getLongParameter("price_date", 0));
+		if(tradeDate >= priceDate) {
 		  ctTicker.setRate(Util.safeRate(dRate), ctRelative);
-		  ctTicker.setParameter("price_date", Math.min(System.currentTimeMillis(), txnLongDate));
+		  ctTicker.setParameter("price_date", Math.min(System.currentTimeMillis(),  DateUtil.convertIntDateToLong(tradeDate).getTime()));
 		}
 		objSnap.syncItem();
 		ctTicker.syncItem();
@@ -659,11 +658,10 @@ public class MyTableModel extends DefaultTableModel {
 			lastDate = snapShots.get(0).getDateInt();
 		ctTicker.setEditingMode();
 		objSnap = ctTicker.setSnapshotInt(tradeDate,dRate);
-		long txnLongDate = DateUtil.convertIntDateToLong(tradeDate).getTime();
-		boolean updateCurrentPrice = ctTicker.getLongParameter("price_date", 0) <= txnLongDate;
-		if(updateCurrentPrice && tradeDate >= lastDate) {
+		int priceDate = DateUtil.convertLongDateToInt(ctTicker.getLongParameter("price_date", 0));
+		if(tradeDate >= priceDate) {
 		  ctTicker.setRate(Util.safeRate(dRate), null);
-		  ctTicker.setParameter("price_date", Math.min(System.currentTimeMillis(), txnLongDate));
+		  ctTicker.setParameter("price_date", Math.min(System.currentTimeMillis(), DateUtil.convertIntDateToLong(tradeDate).getTime()));
 		}
 		objSnap.syncItem();
 		arrSelect[iRow] = false;

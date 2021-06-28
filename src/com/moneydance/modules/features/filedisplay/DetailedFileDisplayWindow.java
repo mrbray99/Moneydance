@@ -52,6 +52,7 @@ import com.infinitekind.moneydance.model.ReportSpecManager;
 import com.infinitekind.moneydance.model.TransactionSet;
 import com.infinitekind.moneydance.model.TxnSet;
 import com.infinitekind.tiksync.SyncRecord;
+import com.infinitekind.util.DateUtil;
 import com.moneydance.awt.GridC;
 import com.moneydance.util.CustomDateFormat;
 
@@ -664,7 +665,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 				String strParm = enAcct.next();
 				Vector<String> vusparm = new Vector<String>();
 				vusparm.add("Parm: "+strParm);
-				vusparm.add(acct.getParameter(strParm));
+				vusparm.add(checkParameter(acct.getParameter(strParm)));
 				detailmodel.addRow(vusparm);
 			}
 
@@ -1017,7 +1018,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 					String strParm = ctAcct.next();
 					Vector<String> vusparm = new Vector<String>();
 					vusparm.add("Parm: "+strParm);
-					vusparm.add(lct.getParameter(strParm));
+					vusparm.add(checkParameter(lct.getParameter(strParm)));
 					detailmodel.addRow(vusparm);
 				}
 
@@ -1384,7 +1385,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 				String strParm = ctAcct.next();
 				Vector<String> vusparm = new Vector<String>();
 				vusparm.add("Parm: "+strParm);
-				vusparm.add(ctitem.getParameter(strParm));
+				vusparm.add(checkParameter(ctitem.getParameter(strParm)));
 				detailmodel.addRow(vusparm);
 			}
 
@@ -1856,5 +1857,16 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		}
 		return "(" + iCount + ")";
 	}
-
+	private String checkParameter(String param) {
+		try {
+			Long paramValue = Long.decode(param);
+			int intParam=DateUtil.convertLongDateToInt(paramValue);
+			if (DateUtil.convertIntDateToLong(intParam).getTime()==paramValue) {
+				return param+" - "+ String.valueOf(intParam);
+			}
+		}
+		catch (NumberFormatException e) {
+		}
+		return param;
+	}
 }
