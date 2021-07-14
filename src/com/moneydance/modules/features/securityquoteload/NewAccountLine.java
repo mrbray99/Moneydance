@@ -85,6 +85,8 @@ public class NewAccountLine{
 	 * @return true/false
 	 */
 	public Boolean isCurrency() {
+		if (currency==null)
+			currency=false;
 		return currency;
 	}
 	public void setName (String namep){

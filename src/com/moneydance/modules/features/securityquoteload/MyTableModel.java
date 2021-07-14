@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -51,6 +52,7 @@ import com.moneydance.modules.features.mrbutil.MRBDebug;
 
 public class MyTableModel extends DefaultTableModel {
 	private Parameters params;
+	private Calendar cal = Calendar.getInstance();
     private SortedMap<String,Double> newPricesTab;
     private SortedMap<String,Integer> newTradeDate;
     private SortedMap<String,String> tradeCurr;
@@ -579,8 +581,12 @@ public class MyTableModel extends DefaultTableModel {
 		}
 		int priceDate = DateUtil.convertLongDateToInt(ctTicker.getLongParameter("price_date", 0));
 		if(tradeDate >= priceDate) {
-		  ctTicker.setRate(Util.safeRate(dRate), ctRelative);
-		  ctTicker.setParameter("price_date", Math.min(System.currentTimeMillis(),  DateUtil.convertIntDateToLong(tradeDate).getTime()));
+			  ctTicker.setRate(Util.safeRate(dRate), ctRelative);
+	  		 synchronized (cal) {
+				 cal.clear();
+				 cal.set(tradeDate / 10000, tradeDate / 100 % 100 - 1, tradeDate % 100, 0, 0, 0);
+				 ctTicker.setParameter("price_date", cal.getTimeInMillis());
+	  		 }
 		}
 		objSnap.syncItem();
 		ctTicker.syncItem();
@@ -661,7 +667,11 @@ public class MyTableModel extends DefaultTableModel {
 		int priceDate = DateUtil.convertLongDateToInt(ctTicker.getLongParameter("price_date", 0));
 		if(tradeDate >= priceDate) {
 		  ctTicker.setRate(Util.safeRate(dRate), null);
-		  ctTicker.setParameter("price_date", Math.min(System.currentTimeMillis(), DateUtil.convertIntDateToLong(tradeDate).getTime()));
+	  		 synchronized (cal) {
+				 cal.clear();
+				 cal.set(tradeDate / 10000, tradeDate / 100 % 100 - 1, tradeDate % 100, 0, 0, 0);
+				 ctTicker.setParameter("price_date", cal.getTimeInMillis());
+	  		 }
 		}
 		objSnap.syncItem();
 		arrSelect[iRow] = false;

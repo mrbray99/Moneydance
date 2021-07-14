@@ -31,6 +31,8 @@
 package com.moneydance.modules.features.securityquoteload;
 
 import java.io.Serializable;
+
+import com.moneydance.modules.features.mrbutil.MRBDebug;
 /**
  * Class to store the source from selected by the user.  It will be stored in the 
  * parameter file
@@ -52,11 +54,20 @@ public class AccountLine implements Serializable{
 	public AccountLine(String namep, int sourcep){
 		name = namep;
 		source = sourcep;
-		if (name.length() > 2 && name.substring(0, 3).equals(Constants.CURRENCYID))
-			currencyFound = true;
-		else
-			currencyFound = false;
-	}
+		currencyFound = false;
+		if (name.length() > 2)
+			if (name.substring(0, 3).equals(Constants.CURRENCYID))
+				currencyFound = true;
+			else 
+				/*
+				 * Double check currencies
+				 */
+					if (name.substring(0,3).equals("???")) {
+						name= Constants.CURRENCYID+name.substring(3);
+						currencyFound =true;
+						Main.debugInst.debug("Parameters","init",MRBDebug.INFO,"currency changed from oldCurrency to new currency");
+				}
+		}
 	/**
 	 * Get the Source
 	 * @return Source

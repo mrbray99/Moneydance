@@ -195,8 +195,12 @@ public abstract class Constants {
 	/*
 	 * Currency identifier
 	 */
-	private static final String strFF = String.valueOf('\u00FF');
-	public static final String CURRENCYID = strFF+strFF+strFF;
+	private static final String str7f = String.valueOf('\u007F');
+	private static final String strEF = String.valueOf('\u00EF');
+	private static final String strBF = String.valueOf('\u00BF');
+	private static final String strBD = String.valueOf('\u00BD');
+	private static final String strC3 = String.valueOf('\u00C3');
+	public static final String CURRENCYID = str7f+str7f+str7f;
 	public static final String CURRENCYTICKER = "=X";
 	/*
 	 * Number preferences

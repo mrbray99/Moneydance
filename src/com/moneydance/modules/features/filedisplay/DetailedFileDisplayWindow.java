@@ -6,16 +6,25 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -68,6 +77,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private DateTimeFormatter format1 = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss",Locale.ENGLISH);
 	private JTree tree;
 	private DefaultMutableTreeNode nodeTop;
 	private JScrollPane treeView;
@@ -752,7 +762,9 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		case '4':
 			// list currencies
 			CurrencyTable lct = objAcctBook.getCurrencies();
-			List<CurrencyType> listCurr = lct.getAllCurrencies();
+			List<CurrencyType> listCurrBase = lct.getAllCurrencies();
+			List<CurrencyType> listCurr = new ArrayList<CurrencyType>(listCurrBase);
+			listCurr.sort((CurrencyType a1,CurrencyType a2)-> a1.getName().compareToIgnoreCase(a2.getName()));
 			long lctc = lct.getCurrencyCount();
 			if (node.isLeaf()) {
 				if (lctc > 0) {
@@ -772,8 +784,12 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		case '5':
 			// list memorized items
 			ReportSpecManager lm = objAcctBook.getMemorizedItems();
-			List<ReportSpec> lmgraphs = lm.getAllGraphs();
-			List<ReportSpec> lmreports = lm.getAllReports();
+			List<ReportSpec> lmgraphsBase = lm.getAllGraphs();
+			List<ReportSpec> lmgraphs =  new ArrayList<ReportSpec>(lmgraphsBase);
+			lmgraphs.sort((ReportSpec a1,ReportSpec a2)-> a1.getName().compareToIgnoreCase(a2.getName()));
+			List<ReportSpec> lmreportsBase = lm.getAllReports();
+			List<ReportSpec> lmreports =  new ArrayList<ReportSpec>(lmreportsBase);
+			lmreports.sort((ReportSpec a1,ReportSpec a2)-> a1.getName().compareToIgnoreCase(a2.getName()));
 			/*
 			 * two types of memorized items, Graphs and Reports
 			 */
@@ -786,7 +802,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 				for (int i = 0; i < lmcgraphs; i++) {
 					if (lmgraphs.get(i).isMemorized()) {
 						myNodeObject mynode = new myNodeObject(
-								EXTRAS_MEMORIZED_GRAPH_ENTRY, lmgraphs.get(i)
+								EXTRAS_MEMORIZED_GRAPH_ENTRY,"(Graph) "+ lmgraphs.get(i)
 										.getName());
 						mynode.setobject(lmgraphs.get(i));
 						dataitem = new DefaultMutableTreeNode(mynode);
@@ -801,7 +817,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 				for (int i = 0; i < lmcreports; i++) {
 					if (lmreports.get(i).isMemorized()) {
 						myNodeObject mynode = new myNodeObject(
-								EXTRAS_MEMORIZED_REPORT_ENTRY, lmreports.get(i)
+								EXTRAS_MEMORIZED_REPORT_ENTRY, "(Report) "+lmreports.get(i)
 										.getName());
 						mynode.setobject(lmreports.get(i));
 						dataitem = new DefaultMutableTreeNode(mynode);
@@ -830,7 +846,9 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		case '7':
 			// list securities
 			CurrencyTable lcts = objAcctBook.getCurrencies();
-			List<CurrencyType> listCurrs = lcts.getAllCurrencies();
+			List<CurrencyType> listCurrsBase = lcts.getAllCurrencies();
+			List<CurrencyType> listCurrs = new ArrayList<CurrencyType>(listCurrsBase);
+			listCurrs.sort((CurrencyType a1,CurrencyType a2)-> a1.getName().compareToIgnoreCase(a2.getName()));
 			long lctcs = lcts.getCurrencyCount();
 			if (node.isLeaf()) {
 				if (lctcs > 0) {
@@ -1694,6 +1712,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		top.add(datatype);
 		if (this.includeBankAccounts) {
 			List<Account> l = accounts.get(Account.AccountType.BANK);
+			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
 			else
@@ -1704,6 +1723,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		}
 		if (this.includeInvestments) {
 			List<Account> l = accounts.get(Account.AccountType.INVESTMENT);
+			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
 			else
@@ -1714,6 +1734,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		}
 		if (this.includeAssets) {
 			List<Account> l = accounts.get(Account.AccountType.ASSET);
+			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
 			else
@@ -1724,6 +1745,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		}
 		if (this.includeCreditCards) {
 			List<Account> l = accounts.get(Account.AccountType.CREDIT_CARD);
+			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
 			else
@@ -1734,6 +1756,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		}
 		if (this.includeLiabilities) {
 			List<Account> l = accounts.get(Account.AccountType.LIABILITY);
+			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
 			else
@@ -1744,6 +1767,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		}
 		if (this.includeLoans) {
 			List<Account> l = accounts.get(Account.AccountType.LOAN);
+			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
 			else
@@ -1757,6 +1781,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		top.add(datatype);
 		if (this.includeIncomecat) {
 			List<Account> l = accounts.get(Account.AccountType.INCOME);
+			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
 			else
@@ -1767,6 +1792,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		}
 		if (this.includeExpensecat) {
 			List<Account> l = accounts.get(Account.AccountType.EXPENSE);
+			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
 			else
@@ -1860,8 +1886,12 @@ public class DetailedFileDisplayWindow extends JPanel implements
 	private String checkParameter(String param) {
 		try {
 			Long paramValue = Long.decode(param);
-			int intParam=DateUtil.convertLongDateToInt(paramValue);
-			return param+" - "+ String.valueOf(intParam);
+			if (paramValue < 39600000L)
+				return param;
+			if (paramValue>10445284800000L)
+				return param;
+			LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochMilli(paramValue), ZoneId.systemDefault());
+			return param+" - "+ format1.format(time);
 		}
 		catch (NumberFormatException e) {
 		}

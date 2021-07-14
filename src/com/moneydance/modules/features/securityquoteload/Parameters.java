@@ -40,12 +40,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
@@ -86,6 +86,8 @@ public class Parameters implements Serializable{
 	private transient boolean exportAuto;
 	private transient String exportFolder;
 	private transient boolean isDirty;
+	private transient char[] HEX_CHARS = "0123456789abcdef".toCharArray();
+
 	/*
      * The following fields are stored
      */
@@ -109,7 +111,7 @@ public class Parameters implements Serializable{
 		case NEW2 :
 			fileName = curFolder.getAbsolutePath()+"/"+Constants.PARAMETERFILE2;
 			try {
-				JsonReader reader = new JsonReader(new FileReader(fileName));
+				JsonReader reader = new JsonReader(new FileReader(fileName,StandardCharsets.UTF_8));
 				debugInst.debug("Parameters", "Parameters", MRBDebug.DETAILED, "Parameters found "+fileName);
 				newParams = new Gson().fromJson(reader,NewParameters.class);
 				listNewAccounts = newParams.getListAccounts();
@@ -161,7 +163,7 @@ public class Parameters implements Serializable{
 		case OLD2 :
 			fileName = curFolder.getAbsolutePath()+"\\"+Constants.PARAMETERFILE2;
 			try {
-				JsonReader reader = new JsonReader(new FileReader(fileName));
+				JsonReader reader = new JsonReader(new FileReader(fileName,StandardCharsets.UTF_8));
 				debugInst.debug("Parameters", "Parameters", MRBDebug.DETAILED, "Parameters found "+fileName);
 				newParams = new Gson().fromJson(reader,NewParameters.class);
 				listNewAccounts = newParams.getListAccounts();
@@ -212,7 +214,29 @@ public class Parameters implements Serializable{
 			createNew = true;
 		
 		}
-
+		boolean currencyChanged = false;
+		if (!createNew) {
+			for (NewAccountLine line:listNewAccounts) {
+				String name = line.getName();
+				String hexstr = asHex(name.getBytes(StandardCharsets.UTF_8));
+				if (line.isCurrency()) {
+					line.setName(Constants.CURRENCYID+name.substring(3));
+					continue;
+				}
+				if (name.length()<3)
+					continue;
+				if (name.substring(0, 2).equals(Constants.CURRENCYID)) {
+					line.setCurrency(true);
+					continue;
+				}
+				if ((hexstr.substring(0,1).compareTo("BB") > 0 && hexstr.substring(2,3).compareTo("BB")>0 && hexstr.substring(4,5).compareTo("BB")>0) ||
+						hexstr.substring(0,6).equalsIgnoreCase("3f3f3f")){
+					line.setName(Constants.CURRENCYID+name.substring(3));
+					line.setCurrency(true);
+					Main.debugInst.debug("Parameters","init",MRBDebug.INFO,"currency changed from "+hexstr.substring(0,6)+ " to new currency");
+				}
+			}
+		}
 		/*
 		 * First time being run change column widths
 		 */
@@ -246,7 +270,7 @@ public class Parameters implements Serializable{
 			 * create the file
 			 */
 			try {
-			   FileWriter writer = new FileWriter(fileName);
+			   FileWriter writer = new FileWriter(fileName,StandardCharsets.UTF_8);
 			   String jsonString = new Gson().toJson(newParams);
 			   writer.write(jsonString);
 			   writer.close();			  
@@ -283,6 +307,18 @@ public class Parameters implements Serializable{
 		pseudoList = new PseudoList();
 		pseudoList.getData();
 		pseudoCurrencies = pseudoList.getList();
+		if (currencyChanged)
+			save();
+	}
+	public  String asHex(byte[] buf)
+	{
+	    char[] chars = new char[2 * buf.length];
+	    for (int i = 0; i < buf.length; ++i)
+	    {
+	        chars[2 * i] = HEX_CHARS[(buf[i] & 0xF0) >>> 4];
+	        chars[2 * i + 1] = HEX_CHARS[buf[i] & 0x0F];
+	    }
+	    return new String(chars);
 	}
 	private Constants.FILEFOUND findFile(File curFolder) {
 		FileInputStream testFile;
@@ -589,7 +625,7 @@ public class Parameters implements Serializable{
 		 */
 		fileName = curFolder.getAbsolutePath()+"/"+Constants.PARAMETERFILE2;
 		try {
-			   FileWriter writer2 = new FileWriter(fileName);
+			   FileWriter writer2 = new FileWriter(fileName,StandardCharsets.UTF_8);
 			   String jsonString = new Gson().toJson(newParams);
 			   writer2.write(jsonString);
 			   writer2.close();			  
