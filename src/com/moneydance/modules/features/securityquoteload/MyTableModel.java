@@ -580,13 +580,23 @@ public class MyTableModel extends DefaultTableModel {
 			}
 		}
 		int priceDate = DateUtil.convertLongDateToInt(ctTicker.getLongParameter("price_date", 0));
-		if(tradeDate >= priceDate) {
+		if (params.isOverridePrice()) {
 			  ctTicker.setRate(Util.safeRate(dRate), ctRelative);
-	  		 synchronized (cal) {
-				 cal.clear();
-				 cal.set(tradeDate / 10000, tradeDate / 100 % 100 - 1, tradeDate % 100, 0, 0, 0);
-				 ctTicker.setParameter("price_date", cal.getTimeInMillis());
-	  		 }
+		  		 synchronized (cal) {
+					 cal.clear();
+					 cal.set(tradeDate / 10000, tradeDate / 100 % 100 - 1, tradeDate % 100, 0, 0, 0);
+					 ctTicker.setParameter("price_date", cal.getTimeInMillis());
+		  		 }			
+		}
+		else {
+			if(tradeDate >= priceDate) {
+				  ctTicker.setRate(Util.safeRate(dRate), ctRelative);
+		  		 synchronized (cal) {
+					 cal.clear();
+					 cal.set(tradeDate / 10000, tradeDate / 100 % 100 - 1, tradeDate % 100, 0, 0, 0);
+					 ctTicker.setParameter("price_date", cal.getTimeInMillis());
+		  		 }
+			}
 		}
 		objSnap.syncItem();
 		ctTicker.syncItem();
@@ -665,13 +675,23 @@ public class MyTableModel extends DefaultTableModel {
 		ctTicker.setEditingMode();
 		objSnap = ctTicker.setSnapshotInt(tradeDate,dRate);
 		int priceDate = DateUtil.convertLongDateToInt(ctTicker.getLongParameter("price_date", 0));
-		if(tradeDate >= priceDate) {
-		  ctTicker.setRate(Util.safeRate(dRate), null);
-	  		 synchronized (cal) {
-				 cal.clear();
-				 cal.set(tradeDate / 10000, tradeDate / 100 % 100 - 1, tradeDate % 100, 0, 0, 0);
-				 ctTicker.setParameter("price_date", cal.getTimeInMillis());
-	  		 }
+		if (params.isOverridePrice()) {
+			  ctTicker.setRate(Util.safeRate(dRate), null);
+		  		 synchronized (cal) {
+					 cal.clear();
+					 cal.set(tradeDate / 10000, tradeDate / 100 % 100 - 1, tradeDate % 100, 0, 0, 0);
+					 ctTicker.setParameter("price_date", cal.getTimeInMillis());
+		  		 }			
+		}
+		else {
+			if(tradeDate >= priceDate) {
+			  ctTicker.setRate(Util.safeRate(dRate), null);
+		  		 synchronized (cal) {
+					 cal.clear();
+					 cal.set(tradeDate / 10000, tradeDate / 100 % 100 - 1, tradeDate % 100, 0, 0, 0);
+					 ctTicker.setParameter("price_date", cal.getTimeInMillis());
+		  		 }
+			}
 		}
 		objSnap.syncItem();
 		arrSelect[iRow] = false;

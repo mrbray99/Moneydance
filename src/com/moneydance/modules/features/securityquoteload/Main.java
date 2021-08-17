@@ -641,13 +641,13 @@ public class Main extends FeatureModule
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 		    @Override
 		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		        if (JOptionPane.showConfirmDialog(frame, 
-		            "Are you sure you want to close Quote Load?", "Close Window?", 
-		            JOptionPane.YES_NO_OPTION,
-		            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
-					debugInst.debug("Main", "createAndShowGUI", MRBDebug.SUMMARY, "Yes");	  
+	//	        if (JOptionPane.showConfirmDialog(frame, 
+	//	            "Are you sure you want to close Quote Load?", "Close Window?", 
+	//	            JOptionPane.YES_NO_OPTION,
+	//	            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+	//				debugInst.debug("Main", "createAndShowGUI", MRBDebug.SUMMARY, "Yes");	  
 		            closeConsole();
-		        }
+	//	        }
 		    }
 		});
 		frame.setVisible(true);

@@ -41,6 +41,8 @@ import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -176,7 +178,7 @@ public class GetYahooHistQuote extends GetQuoteTask {
 			if (!priceNode.isArray()) {
 				debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"No table ");
 				marketPrice = priceNode.findPath("close");
-				if (marketPrice.isMissingNode()) 
+				if (marketPrice.isMissingNode()|| marketPrice.isNull()) 
 					throw new IOException("Market Price not found");
 				quotePrice.setPrice(marketPrice.asDouble());
 				highNode = priceNode.findPath("high");
@@ -254,6 +256,8 @@ public class GetYahooHistQuote extends GetQuoteTask {
 					quotePrice.addHistory(historyPrice.getTradeDateInt(), historyPrice.getPrice(),historyPrice.getHighPrice(), historyPrice.getLowPrice(),historyPrice.getVolume());
 				}
 				else {
+					if (marketPrice.isNull())
+						continue;
 					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Price found");
 					quotePrice.setPrice(marketPrice.asDouble());	
 					highNode =objNode.findPath("high");

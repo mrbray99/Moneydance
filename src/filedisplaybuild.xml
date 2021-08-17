@@ -9,7 +9,8 @@
              com/moneydance/modules/features/filedisplay/meta_info.dict
              com/moneydance/modules/features/filedisplay/*.gif
               com/moneydance/modules/features/filedisplay/*.jpg
-             com/moneydance/modules/features/filedisplay/*.jpeg"/>
+        com/moneydance/modules/features/filedisplay/*.png
+            com/moneydance/modules/features/filedisplay/*.jpeg"/>
       <fileset dir="${build}" includes="com/moneydance/modules/features/filedisplay/**"/>
     </jar>
 
