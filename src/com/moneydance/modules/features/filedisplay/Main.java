@@ -18,6 +18,9 @@ public class Main extends FeatureModule {
 	private FileDisplayWindow filedisplayWindow = null;
 	public static FeatureModuleContext context;
 	public static String buildStr;
+	public static Image openIcon;
+	public static Image closeIcon;
+	public static Image leafIcon;
 	private int buildNum;
 
 	@Override
@@ -27,20 +30,22 @@ public class Main extends FeatureModule {
 		context = getContext();
 		try {
 			context.registerFeature(this, "showconsole",
-					getIcon("filedisplay2"), getName());
+					getIcon("icons8-card-file-box-32.png"), getName());
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
 	    buildNum = getBuild();
 	    buildStr = String.valueOf(buildNum);  
-
+	    openIcon = getIcon("icons8-opened-folder-16.png");
+	    closeIcon = getIcon("icons8-folder-16.png");
+	    leafIcon = getIcon("icons8-square-8.png");
 	}
 
 	private Image getIcon(String action) {
 		try {
 			ClassLoader cl = getClass().getClassLoader();
 			java.io.InputStream in = cl
-					.getResourceAsStream("/com/moneydance/modules/features/filedisplay/iconip.gif");
+					.getResourceAsStream("/com/moneydance/modules/features/filedisplay/"+action);
 			if (in != null) {
 				ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
 				byte buf[] = new byte[256];

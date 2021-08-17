@@ -171,6 +171,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	private MyCheckBox selectCB;
 	private MyCheckBox addVolumeCB;
 	private MyCheckBox historyCB;
+	private MyCheckBox overridePriceCB;
 	private HelpMenu menu;
 	private JMenuItem onlineMenu = new JMenuItem("Online Help");
 	private JMenu debugMenu = new JMenu("Turn Debug on/off");
@@ -782,7 +783,22 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 					params.setHistory(true);
 			}
 		});
-		panCB.add(historyCB);	
+		panCB.add(historyCB);
+		overridePriceCB = new MyCheckBox();
+		overridePriceCB.setToolTipText("Select to override the current prices with the retrieved prices");
+		overridePriceCB.setAlignmentX(LEFT_ALIGNMENT);
+		overridePriceCB.setText("Override Current Price");
+		overridePriceCB.setSelected(params.isOverridePrice());
+		overridePriceCB.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.DESELECTED)
+					params.setOverridePrice(false);
+				else
+					params.setOverridePrice(true);
+			}
+		});
+		panCB.add(overridePriceCB);
 		panMid.add(panCB,BorderLayout.PAGE_END);
 		panScreen.add(panMid,BorderLayout.CENTER);
 		/*
@@ -1748,19 +1764,6 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 					debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.DETAILED, "quote to security rate "+dRate);
 				}
 			}
-			else {
-				/*
-				 * following code commented out for MD 2019, no longer stored in base rate
-				 */
-//			if(tradeCurType != null &&
-//						!tradeCurType.equals(baseCurrency)) {
-					/*
-					 * assume security is same as base currency, trade currency is different For 2019 do not multiply
-					 */
-//					dRate = CurrencyUtil.getUserRate(tradeCurType, baseCurrency,currencyDate);							
-//					rwDebugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.DETAILED, "quote to base rate "+dRate);
-//				}
-			}
 		}
 		else
 			stockPrice= newPrice.getSecurityPrice();
@@ -1798,7 +1801,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				quotePrice.replace(ticker, newPrice.getSecurityPrice());
 			else
 				quotePrice.put(ticker, newPrice.getSecurityPrice());
-			ExtraFields extra = new ExtraFields(newPrice.getVolume(),newPrice.getHighPrice(),newPrice.getLowPrice());
+			ExtraFields extra = new ExtraFields(newPrice.getVolume(),newPrice.getHighPrice()*dRate,newPrice.getLowPrice()*dRate);
 			if (volumes.containsKey(ticker))
 				volumes.replace(ticker, extra);
 			else
@@ -1994,7 +1997,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				historyList = new ArrayList<HistoryPrice>();
 				historyTab.put(newPrice.getTicker(), historyList);
 			}
-			HistoryPrice history = new HistoryPrice(newPrice.getTradeDate(),stockPrice,newPrice.getHighPrice(), newPrice.getLowPrice(), newPrice.getVolume());
+			HistoryPrice history = new HistoryPrice(newPrice.getTradeDate(),stockPrice,newPrice.getHighPrice()*dRate, newPrice.getLowPrice()*dRate, newPrice.getVolume());
 			historyList.add(history);
 			historyTab.replace(newPrice.getTicker(), historyList);
 		}

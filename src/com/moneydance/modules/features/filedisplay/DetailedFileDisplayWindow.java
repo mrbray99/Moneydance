@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -39,6 +40,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -304,7 +306,10 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		tree = new JTree(nodeTop);
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
-
+		DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer)tree.getCellRenderer();
+		renderer.setOpenIcon(new ImageIcon(Main.openIcon));
+		renderer.setClosedIcon(new ImageIcon(Main.closeIcon));
+		renderer.setLeafIcon(new ImageIcon(Main.leafIcon));
 		// Listen for when the selection changes.
 		tree.addTreeSelectionListener(this);
 
@@ -359,6 +364,10 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		tree = new JTree(nodeTop);
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
+		DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer)tree.getCellRenderer();
+		renderer.setOpenIcon(new ImageIcon(Main.openIcon));
+		renderer.setClosedIcon(new ImageIcon(Main.closeIcon));
+		renderer.setLeafIcon(new ImageIcon(Main.leafIcon));
 
 		// Listen for when the selection changes.
 		tree.addTreeSelectionListener(this);

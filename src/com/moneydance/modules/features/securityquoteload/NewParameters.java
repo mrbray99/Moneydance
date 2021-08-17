@@ -43,6 +43,7 @@ public class NewParameters {
 	private boolean export;
 	private boolean exportAuto;
 	private boolean roundPrices;
+	private boolean overridePrice;
 	private String exportFolder;
 	private List<NewAccountLine> listAccounts;
 
@@ -53,6 +54,7 @@ public class NewParameters {
 		includeZero = false;
 		includeCurrency = false;
 		addVolume = false;
+		overridePrice= false;
 		listAccounts = new ArrayList<>();
 	}
 	/**
@@ -157,5 +159,12 @@ public class NewParameters {
 	public void setRoundPrices(boolean roundPrices) {
 		this.roundPrices = roundPrices;
 	}
+	public boolean isOverridePrice() {
+		return overridePrice;
+	}
+	public void setOverridePrice(boolean overridePrice) {
+		this.overridePrice = overridePrice;
+	}
+	
 	
 }

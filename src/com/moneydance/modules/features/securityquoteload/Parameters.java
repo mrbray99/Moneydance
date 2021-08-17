@@ -86,6 +86,7 @@ public class Parameters implements Serializable{
 	private transient boolean exportAuto;
 	private transient String exportFolder;
 	private transient boolean isDirty;
+	private transient boolean overridePrice;
 	private transient char[] HEX_CHARS = "0123456789abcdef".toCharArray();
 
 	/*
@@ -144,6 +145,7 @@ public class Parameters implements Serializable{
 				newParams.setIncludeZero(tempParams.includeZero);
 				newParams.setIncludeCurrency(tempParams.includeCurrency);
 				newParams.setNoDecimals (tempParams.noDecimals);
+				newParams.setOverridePrice(tempParams.isOverridePrice());
 				listNewAccounts = new ArrayList<>();
 				for (AccountLine line : tempParams.getAccountsList()){
 					NewAccountLine newLine = new NewAccountLine();
@@ -194,6 +196,7 @@ public class Parameters implements Serializable{
 				newParams.setIncludeZero(tempParams.includeZero);
 				newParams.setIncludeCurrency(tempParams.includeCurrency);
 				newParams.setNoDecimals (tempParams.noDecimals);
+				newParams.setOverridePrice(tempParams.isOverridePrice());
 				listNewAccounts = new ArrayList<>();
 				for (AccountLine line : tempParams.getAccountsList()){
 					NewAccountLine newLine = new NewAccountLine();
@@ -293,6 +296,7 @@ public class Parameters implements Serializable{
 		this.exportAuto = newParams.isExportAuto();
 		this.exportFolder = newParams.getExportFolder();
 		this.roundPrices = newParams.isRoundPrices();
+		this.overridePrice = newParams.isOverridePrice();
 		mapExchangeSelect = new TreeMap<>();
 		for (NewAccountLine line : listNewAccounts){
 			AccountLine newLine = new AccountLine(line.getName(),line.getSource());
@@ -495,8 +499,16 @@ public class Parameters implements Serializable{
 		currencyDate = currencyDatep;
 		isDirty=true;
 	}
-	
-	
+	/*
+	 * override Price flag
+	 */
+
+	public boolean isOverridePrice() {
+		return overridePrice;
+	}
+	public void setOverridePrice(boolean overridePrice) {
+		this.overridePrice = overridePrice;
+	}
 	public String [] getSourceArray() {
 		return arrSource;
 	}
@@ -606,6 +618,7 @@ public class Parameters implements Serializable{
 		newParams.setExportFolder(exportFolder);
 		newParams.setExport(export);
 		newParams.setRoundPrices(roundPrices);
+		newParams.setOverridePrice(overridePrice);
 		listNewAccounts = new ArrayList<>();
 		for (AccountLine line : listAccounts){
 			NewAccountLine newLine = new NewAccountLine();
