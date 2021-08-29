@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map.Entry;
@@ -62,6 +63,7 @@ public class MyTableModel extends DefaultTableModel {
     private SortedMap<String,String>selectedExchanges;
     private List<Entry<String,CurrencyType>> listCurrencies;
 	private SortedMap<String,List<HistoryPrice>> historyTab;
+	private SortedMap<String,Integer> tickerStatus;
  	private List<Entry<String,Integer>> listDates;
     private List<Entry<String,DummyAccount>> listAccounts;
     private List<Entry<String,Double>> listCurrent;
@@ -108,6 +110,9 @@ public class MyTableModel extends DefaultTableModel {
 		resetNumberFormat ();
 
 	}
+	public void setTickerStatus(SortedMap<String, Integer> tickerStatus) {
+		this.tickerStatus = tickerStatus;
+	}
 	private void resetNumberFormat() {
 		multiplier = Math.pow(10.0,Double.valueOf(params.getDecimal()));
 		String strDec = "#,##0.00";
@@ -127,7 +132,8 @@ public class MyTableModel extends DefaultTableModel {
 
 	}
 	public void resetData(SortedMap<String, Double> mapCurrentp,
-			SortedMap<String,Integer> mapDatesp, SortedMap<String,DummyAccount> mapAccountsp,
+			SortedMap<String,Integer> mapDatesp, 
+			SortedMap<String,DummyAccount> mapAccountsp,
 			SortedMap<String,CurrencyType> mapCurrenciesp,
 			SortedMap<String, Double>newPricesTabp,
 			SortedMap<String,Integer> newTradeDatep,
@@ -239,6 +245,8 @@ public class MyTableModel extends DefaultTableModel {
 			 * Price Source
 			 */
 			strKey = listCurrent.get(rowIndex).getKey();
+			if (strKey.contains(Constants.TICKEREXTID))
+				return "Copy from primary";
 			if (accountSource.containsKey(strKey)) {
 				return arrSource [accountSource.get(strKey)];
 			}
@@ -284,7 +292,7 @@ public class MyTableModel extends DefaultTableModel {
 			strKey = listCurrent.get(rowIndex).getKey();
 			if (newPricesTab.get(strKey) == null)
 				return "";
-			if (!accountSource.containsKey(strKey) ) {
+			if (!accountSource.containsKey(strKey) && !strKey.contains(Constants.TICKEREXTID)) {
 				return "";
 			}
 			Double newPrice;
@@ -316,7 +324,7 @@ public class MyTableModel extends DefaultTableModel {
 			String key = listCurrent.get(rowIndex).getKey();
 			if (!newTradeDate.containsKey(key))
 				return "";
-			if (newTradeDate.get(key)==0)
+			if (newTradeDate.get(key) == null || newTradeDate.get(key)==0)
 				return "";
 			String dateString = Main.cdate.format(newTradeDate.get(key));
 			if (historyTab !=null && historyTab.containsKey(key))
@@ -334,7 +342,7 @@ public class MyTableModel extends DefaultTableModel {
 				return tradeCurr.get(listCurrent.get(rowIndex).getKey()); 
 			}
 			String quoteCurrency = tradeCurr.get(strKey);
-			if (quoteCurrency.equals(""))
+			if (quoteCurrency == null || quoteCurrency.equals(""))
 				return "";
 			CurrencyType securityCurrency = listAccounts.get(rowIndex).getValue().getRelativeCurrencyType();
 			if (securityCurrency == null)
@@ -359,11 +367,17 @@ public class MyTableModel extends DefaultTableModel {
 	@Override
     public boolean isCellEditable(int row, int col) {
  		switch (col) {
- 		case 0:
- 		case 4:
+		case 0:
+			return true;
  		case 7:
  		case 9:
-			return true;
+		case 4:
+ 			if (row > listAccounts.size())
+ 				return true;
+ 			String strKey = listCurrent.get(row).getKey();
+ 			if (strKey.contains(Constants.TICKEREXTID))
+ 				return false;
+ 			return true;
 		default:
 			return false;
  		}
@@ -372,6 +386,11 @@ public class MyTableModel extends DefaultTableModel {
 	public void setValueAt(Object value, int row, int col){
 		DecimalFormat dfNumbers = new DecimalFormat("#0.0000");
 		String strKey = listCurrent.get(row).getKey();
+		int iCurrentRow;
+		if(row > listAccounts.size())
+			iCurrentRow = row - listAccounts.size();
+		else
+			iCurrentRow = row;
 
 		if (value == null)
 			return;
@@ -405,6 +424,18 @@ public class MyTableModel extends DefaultTableModel {
 			}
 			if (errorTickers !=null)
 				errorTickers.remove(strKey);
+			for (Entry<String, DummyAccount>entry:listAccounts) {
+				if (!entry.getKey().contains(Constants.TICKEREXTID))
+					continue;
+				String extTicker = entry.getKey();
+				String primTicker =extTicker.substring(0,entry.getKey().indexOf(Constants.TICKEREXTID));
+				if (tickerStatus.get(extTicker)!= Constants.TASKCOMPLETED)
+					continue;
+				if (primTicker.equals(strKey)){
+					newPricesTab.put(extTicker,newPricesTab.get(strKey));
+					newTradeDate.put(extTicker,newTradeDate.get(strKey));
+				}
+			}
 		}
 		if (col ==9) {
 			int date = Main.cdate.parseInt((String)value);
@@ -412,9 +443,22 @@ public class MyTableModel extends DefaultTableModel {
 				newTradeDate.replace(strKey, date);
 			else
 				newTradeDate.put(strKey, date);
+			if (errorTickers !=null)
+				errorTickers.remove(strKey);
+			for (Entry<String, DummyAccount>entry:listAccounts) {
+				if (!entry.getKey().contains(Constants.TICKEREXTID))
+					continue;
+				String extTicker = entry.getKey();
+				String primTicker =extTicker.substring(0,entry.getKey().indexOf(Constants.TICKEREXTID)); 
+				if (tickerStatus.get(extTicker)!= Constants.TASKCOMPLETED)
+					continue;
+				if (primTicker.equals(strKey)){
+					newTradeDate.put(extTicker,newTradeDate.get(strKey));
+				}
+			}
 		}
-		if (errorTickers !=null)
-			errorTickers.remove(strKey);
+
+
 	}
 	public int getNumAccounts() {
 		return listAccounts.size();
@@ -441,6 +485,8 @@ public class MyTableModel extends DefaultTableModel {
 		String strKey;
 		for (int i=0;i<getRowCount();i++){
 			strKey = listCurrent.get(i).getKey();
+			if (strKey.contains(Constants.TICKEREXTID))
+				continue;
 			if (exchange.isEmpty())
 				params.setExchange(strKey, null);
 			else
@@ -468,6 +514,8 @@ public class MyTableModel extends DefaultTableModel {
 		 int i=0;
 		   for (Entry<String, Double> entry : listCurrent) {
 			    String key = entry.getKey();
+			    if (key.contains(Constants.TICKEREXTID))
+				    continue;
 			    if (i>= listAccounts.size() && source == Constants.FTHISTINDEX)
 			    	params.updateAccountSource(key, Constants.FTINDEX);
 			    else	    	

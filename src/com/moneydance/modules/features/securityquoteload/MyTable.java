@@ -411,7 +411,10 @@ public class MyTable extends JTable {
 	} 
 	private void showExchangePopup(int row, Point p){
     	debugInst.debug("MyTable", "showExchangePopup", MRBDebug.SUMMARY, "displaying exchange popup ");
-    	ExchangePopUp popup = new ExchangePopUp(row,params,dm);
+	String ticker = (String) dm.getValueAt(row,tickerCol);
+	if (ticker.contains(Constants.TICKEREXTID))
+		return;
+   	ExchangePopUp popup = new ExchangePopUp(row,params,dm);
     	Dimension popupSize = popup.getSize();
     	if (p.getY()+popupSize.getHeight()> screenHeight){
     		int dy = (int) Math.round(screenHeight-p.getY()-popupSize.getHeight()-20);
@@ -421,8 +424,10 @@ public class MyTable extends JTable {
     	popup.setVisible(true);
 	}
 	private void displayExchangeTicker(int row){
-	    debugInst.debug("MouseListener", "displayExchangeTicker", MRBDebug.SUMMARY, "on ro "+row );    
+	    debugInst.debug("MouseListener", "displayExchangeTicker", MRBDebug.SUMMARY, "on row "+row );    
 		String ticker = (String) dm.getValueAt(row,tickerCol);
+		if (ticker.contains(Constants.TICKEREXTID))
+			return;
 		String exchange = (String)dm.getValueAt(row,exchangeCol);
 		String source = (String)dm.getValueAt(row,sourceCol);
 		int sourceid = 0;
