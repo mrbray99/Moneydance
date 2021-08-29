@@ -55,6 +55,9 @@ public class DummyAccount {
 	public String getAccountName (){
 		return accountName;
 	}
+	public void setDifferentCur(Boolean differentCur) {
+		this.differentCur = differentCur;
+	}
 	/**
 	 * Returns the CurrencyType record that can represent an actual currency
 	 * or a security

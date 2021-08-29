@@ -55,6 +55,8 @@ final class GetQuotesProgressMonitor {
 	private AtomicBoolean completed;
 	private SortedMap<String, Integer> tickerStatus;
 	private SortedMap<String,String>tids;
+	private Integer successfulCount=0;
+	private Integer failedCount=0;
 	public GetQuotesProgressMonitor(JProgressBar progressBar, TaskListener objWindow, SortedMap<String,Integer> tickerStatusp) {
 		this.progressBar = progressBar;
 		this.window = objWindow;
@@ -101,6 +103,7 @@ final class GetQuotesProgressMonitor {
 					TaskCounts counts = uuidStatus.get(uuid.toString());
 					counts.incFailed();
 				}
+				failedCount++;
 			}
 		}
 
@@ -120,6 +123,7 @@ final class GetQuotesProgressMonitor {
 					TaskCounts counts = uuidStatus.get(uuid.toString());
 					counts.incSuccess();
 				}
+				successfulCount++;
 			}
 		}
 		updateProgress();
@@ -170,6 +174,14 @@ final class GetQuotesProgressMonitor {
 		this.subTaskSize.set(size);
 		this.completedTasks.set(0);
 		completed.set(false);
+	}
+	public Integer getSuccessful() {
+		return successfulCount;
+		
+	}
+	public Integer getFailed() {
+		return failedCount;
+		
 	}
 	private class TaskCounts {
 		private Integer total;

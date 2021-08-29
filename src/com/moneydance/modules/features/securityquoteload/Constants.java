@@ -116,6 +116,7 @@ public abstract class Constants {
 	public static final int CURAUTORUN = 3;
 	public static final int BOTHAUTORUN = 4;
 	public static final String EXPORTHEADER = "Ticker,Name,Price,Date,Volume\r\n";
+	public static final String TICKEREXTID="#";
 	/*
 	 * Scheduling parameters
 	 */

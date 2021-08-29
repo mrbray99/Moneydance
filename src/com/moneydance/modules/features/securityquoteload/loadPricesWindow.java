@@ -287,6 +287,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				selectedExchanges,
 				volumes);
 		pricesDisplayTab = new MyTable (params,pricesModel,tickerStatus);
+		pricesModel.setTickerStatus(tickerStatus);
 		/*
 		 * set up menus
 		 */
@@ -2117,9 +2118,68 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		if (!completed){
 			debugInst.debug("loadPricesWindow", "TaskCompleted", MRBDebug.INFO, "Tasks Completed");
 			completed=true;
+			boolean extensionError = false;
+			boolean currencyError = false;
+			for (Entry<String, DummyAccount>entry:accountsTab.entrySet()) {
+				String entryTicker = entry.getKey();
+				if (!entryTicker.contains(Constants.TICKEREXTID)) 
+					continue;
+				String primTicker = entryTicker.substring(0,entryTicker.indexOf(Constants.TICKEREXTID));
+				if (!newPricesTab.containsKey(primTicker)) {
+					debugInst.debug("LoadPricesWindow", "TasksCompleted", MRBDebug.DETAILED, "Ticker "+entryTicker+" does not have an entry for "+primTicker);		
+					extensionError=true;
+					if (tickerStatus.containsKey(entry.getKey()))
+						tickerStatus.replace(entry.getKey(), Constants.TASKFAILED);
+					else
+						tickerStatus.put(entry.getKey(), Constants.TASKFAILED);						
+					continue;
+				}
+				CurrencyType extCur = baseCurrency;
+				CurrencyType tickerCur=baseCurrency;
+				if (entry.getValue().getDifferentCur())
+					extCur =entry.getValue().getRelativeCurrencyType();
+				if (accountsTab.get(primTicker).getDifferentCur())
+					tickerCur= accountsTab.get(primTicker).getRelativeCurrencyType();
+				
+				if (extCur != null && extCur != tickerCur) {
+					debugInst.debug("LoadPricesWindow", "TasksCompleted", MRBDebug.DETAILED, "Ticker "+entryTicker+" has a different currency");		
+					currencyError = true;
+					if (tickerStatus.containsKey(entry.getKey()))
+						tickerStatus.replace(entry.getKey(), Constants.TASKFAILED);
+					else
+						tickerStatus.put(entry.getKey(), Constants.TASKFAILED);						
+					continue;
+				}
+				if (tickerStatus.containsKey(entry.getKey()))
+					tickerStatus.replace(entry.getKey(), Constants.TASKCOMPLETED);
+				else
+					tickerStatus.put(entry.getKey(), Constants.TASKCOMPLETED);						
+				newPricesTab.put(entry.getKey(),newPricesTab.get(primTicker));
+				newTradeDate.put(entry.getKey(),newTradeDate.get(primTicker));
+				tradeCurr.put(entry.getKey(),tradeCurr.get(primTicker));
+				if (quotePrice.containsKey(primTicker))
+					quotePrice.put(entry.getKey(), quotePrice.get(primTicker));
+				if (historyTab.containsKey(primTicker))
+					historyTab.put(entry.getKey(), historyTab.get(primTicker));
+				if (volumes.containsKey(primTicker))
+					volumes.put(entry.getKey(), volumes.get(primTicker));
+			}
+			
 			if (runtype == Constants.MANUALRUN) {
 				tasksProgress.setValue(100);
-				JOptionPane.showMessageDialog(null,"Prices Loaded");	
+				String mess="";
+				if (listener != null)
+					mess += listener.getSuccessful();
+				mess += " Prices Loaded";
+				if (listener!=null) {
+					if (listener.getFailed()>0 )
+						mess += " "+listener.getFailed()+" errors";
+				}
+				if (extensionError)
+					mess += ", prices missing for extended Tickers";
+				if (currencyError)
+					mess += ", extended ticker has different currency";
+				JOptionPane.showMessageDialog(null,mess);	
 				tasksProgress.setVisible(false);
 				panBot.remove(tasksProgress);
 				getPricesBtn.setEnabled(true);
