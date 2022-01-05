@@ -71,7 +71,7 @@ public class QuoteManager implements QuoteListener {
 	public QuoteManager () {
 		threadPool = Executors.newFixedThreadPool(4);		
 	}
-	 
+
 	public void getQuotes(String request) {
 		stocks = new ArrayList<String>();
 		lastPriceDate = new TreeMap<String,Integer>();
@@ -110,9 +110,9 @@ public class QuoteManager implements QuoteListener {
 			}
 		}
 		httpClient = HttpClients.custom()
-		        .setDefaultRequestConfig(RequestConfig.custom()
-		                .setCookieSpec(CookieSpecs.STANDARD).build())
-		        .build();
+				.setDefaultRequestConfig(RequestConfig.custom()
+						.setCookieSpec(CookieSpecs.STANDARD).build())
+				.build();
 		List<GetQuoteTask> tasks = new ArrayList<GetQuoteTask>();
 		if (source.equals(Constants.SOURCEFT)) {
 			for (String stock : stocks) {
@@ -125,33 +125,33 @@ public class QuoteManager implements QuoteListener {
 				tasks.add(task);
 				totalQuotes++;
 			}
-          List<Future<QuotePrice>> futures = null;
-           try {
-                futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
-                debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT Tasks invoked "+tasks.size());
-            } catch (InterruptedException e) {
-                debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
-            }
+			List<Future<QuotePrice>> futures = null;
+			try {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT Tasks invoking "+tasks.size() + " queries");
+				futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
+			}
 
-            if (futures == null) {
-                debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT Failed to invokeAll");
-                return;
-            }
-            for (Future<QuotePrice> future : futures) {
-                if (future.isCancelled()) {
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT One of the tasks has timeout.");
-                    continue;
-                }
-                try {
-                    future.get();
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,"FT task completed");
-              } catch (InterruptedException e) {
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
-                } catch (ExecutionException e) {
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
-                } finally {
-                }
-            }
+			if (futures == null) {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT Failed to invokeAll");
+				return;
+			}
+			for (Future<QuotePrice> future : futures) {
+				if (future.isCancelled()) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT One of the tasks has timeout.");
+					continue;
+				}
+				try {
+					future.get();
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,"FT task completed");
+				} catch (InterruptedException e) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+				} catch (ExecutionException e) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+				} finally {
+				}
+			}
 			String doneUrl ="moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.DONEQUOTECMD+"?"+Constants.TIDCMD+"="+tid;
 			doneUrl += "&"+Constants.TOTALTYPE+"="+totalQuotes;
 			doneUrl += "&"+Constants.OKTYPE +"="+successful;
@@ -169,33 +169,33 @@ public class QuoteManager implements QuoteListener {
 				tasks.add(task);
 				totalQuotes++;
 			}
-          List<Future<QuotePrice>> futures = null;
-           try {
-                futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
-                debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT History Tasks invoked "+tasks.size());
-            } catch (InterruptedException e) {
-                debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
-            }
+			List<Future<QuotePrice>> futures = null;
+			try {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT History Tasks invoking "+tasks.size()+" queries");
+				futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
+			}
 
-            if (futures == null) {
-                debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT History Failed to invokeAll");
-                return;
-            }
-            for (Future<QuotePrice> future : futures) {
-                if (future.isCancelled()) {
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT History One of the tasks has timeout.");
-                    continue;
-                }
-                try {
-                    future.get();
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,"FT History task completed");
-              } catch (InterruptedException e) {
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
-                } catch (ExecutionException e) {
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
-                } finally {
-                }
-            }
+			if (futures == null) {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT History Failed to invokeAll");
+				return;
+			}
+			for (Future<QuotePrice> future : futures) {
+				if (future.isCancelled()) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT History One of the tasks has timeout.");
+					continue;
+				}
+				try {
+					future.get();
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,"FT History task completed");
+				} catch (InterruptedException e) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+				} catch (ExecutionException e) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+				} finally {
+				}
+			}
 			String doneUrl ="moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.DONEQUOTECMD+"?"+Constants.TIDCMD+"="+tid;
 			doneUrl += "&"+Constants.TOTALTYPE+"="+totalQuotes;
 			doneUrl += "&"+Constants.OKTYPE +"="+successful;
@@ -213,33 +213,33 @@ public class QuoteManager implements QuoteListener {
 				tasks.add(task);
 				totalQuotes++;
 			}
-          List<Future<QuotePrice>> futures = null;
-           try {
-                futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
-                debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo Tasks invoked "+tasks.size());
-            } catch (InterruptedException e) {
-                debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
-            }
+			List<Future<QuotePrice>> futures = null;
+			try {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo Tasks invoking "+tasks.size()+" queries");
+				futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
+			}
 
-            if (futures == null) {
-                debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo Failed to invokeAll");
-                return;
-            }
-            for (Future<QuotePrice> future : futures) {
-                if (future.isCancelled()) {
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo One of the tasks has timeout.");
-                    continue;
-                }
-                try {
-                    future.get();
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo task completed");
-                } catch (InterruptedException e) {
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
-                } catch (ExecutionException e) {
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
-                } finally {
-                }
-            }
+			if (futures == null) {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo Failed to invokeAll");
+				return;
+			}
+			for (Future<QuotePrice> future : futures) {
+				if (future.isCancelled()) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo One of the tasks has timeout.");
+					continue;
+				}
+				try {
+					future.get();
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo task completed");
+				} catch (InterruptedException e) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+				} catch (ExecutionException e) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+				} finally {
+				}
+			}
 			String doneUrl ="moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.DONEQUOTECMD+"?"+Constants.TIDCMD+"="+tid;
 			doneUrl += "&"+Constants.TOTALTYPE+"="+totalQuotes;
 			doneUrl += "&"+Constants.OKTYPE +"="+successful;
@@ -257,33 +257,33 @@ public class QuoteManager implements QuoteListener {
 				tasks.add(task);
 				totalQuotes++;
 			}
-          List<Future<QuotePrice>> futures = null;
-           try {
-                futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
-                debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo History Tasks invoked "+tasks.size());
-            } catch (InterruptedException e) {
-                debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
-            }
+			List<Future<QuotePrice>> futures = null;
+			try {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo History Tasks invoking"+tasks.size()+" queries");
+				futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
+			}
 
-            if (futures == null) {
-                debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo History Failed to invokeAll");
-                return;
-            }
-            for (Future<QuotePrice> future : futures) {
-                if (future.isCancelled()) {
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo History One of the tasks has timeout.");
-                    continue;
-                }
-                try {
-                    future.get();
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo History task completed");
-                } catch (InterruptedException e) {
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
-                } catch (ExecutionException e) {
-                    debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
-                } finally {
-                }
-            }
+			if (futures == null) {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo History Failed to invokeAll");
+				return;
+			}
+			for (Future<QuotePrice> future : futures) {
+				if (future.isCancelled()) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo History One of the tasks has timeout.");
+					continue;
+				}
+				try {
+					future.get();
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo History task completed");
+				} catch (InterruptedException e) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+				} catch (ExecutionException e) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+				} finally {
+				}
+			}
 			String doneUrl ="moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.DONEQUOTECMD+"?"+Constants.TIDCMD+"="+tid;
 			doneUrl += "&"+Constants.TOTALTYPE+"="+totalQuotes;
 			doneUrl += "&"+Constants.OKTYPE +"="+successful;
@@ -296,9 +296,9 @@ public class QuoteManager implements QuoteListener {
 		}
 		catch (IOException e) {
 			e.printStackTrace();
-			 debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+			debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
 		}
-		
+
 	}
 	public void errorReturned(String tickerp) {
 		failed++;	

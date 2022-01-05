@@ -603,28 +603,27 @@ public class MyTableModel extends DefaultTableModel {
 		debugInst.debug("MyTableModel", "updateLine", MRBDebug.DETAILED, "cummulative price "+dRate);
 		ctTicker.setEditingMode();
 		objSnap = ctTicker.setSnapshotInt(tradeDate,  dRate, ctRelative);
-		if(params.getAddVolume()) {
-			if (volumes.containsKey(ticker)) {
-				ExtraFields fields = volumes.get(ticker);
+		if (volumes.containsKey(ticker)) {
+			ExtraFields fields = volumes.get(ticker);
+			if(params.getAddVolume()) 
 				objSnap.setDailyVolume(fields.getVolume());
-				if (fields.getHigh() != 0.0) {
-					Double rate = fields.getHigh();
-					Double viewRate = 1.0;
-					rate = rate*viewRate*dCurRate;
-					Double multiplier = Math.pow(10.0,Double.valueOf(params.getDecimal()));
-					rate = Math.round(rate*multiplier)/multiplier;
-					rate =1/Util.safeRate(rate);
-					objSnap.setDailyHigh(rate);
-				}
-				if (fields.getLow() != 0.0) {
-					Double rate = fields.getLow();
-					Double viewRate = 1.0;
-					rate = rate*viewRate*dCurRate;
-					Double multiplier = Math.pow(10.0,Double.valueOf(params.getDecimal()));
-					rate = Math.round(rate*multiplier)/multiplier;
-					rate =1/Util.safeRate(rate);
-					objSnap.setDailyLow(rate);
-				}
+			if (fields.getHigh() != 0.0) {
+				Double rate = fields.getHigh();
+				Double viewRate = 1.0;
+				rate = rate*viewRate*dCurRate;
+				Double multiplier = Math.pow(10.0,Double.valueOf(params.getDecimal()));
+				rate = Math.round(rate*multiplier)/multiplier;
+				rate =1/Util.safeRate(rate);
+				objSnap.setDailyHigh(rate);
+			}
+			if (fields.getLow() != 0.0) {
+				Double rate = fields.getLow();
+				Double viewRate = 1.0;
+				rate = rate*viewRate*dCurRate;
+				Double multiplier = Math.pow(10.0,Double.valueOf(params.getDecimal()));
+				rate = Math.round(rate*multiplier)/multiplier;
+				rate =1/Util.safeRate(rate);
+				objSnap.setDailyLow(rate);
 			}
 		}
 		int priceDate = DateUtil.convertLongDateToInt(ctTicker.getLongParameter("price_date", 0));
@@ -660,24 +659,23 @@ public class MyTableModel extends DefaultTableModel {
 				dRate = Math.round(dRate*multiplier)/multiplier;
 				dRate =1/Util.safeRate(dRate);
 				objSnap = ctTicker.setSnapshotInt(priceItem.getDate(),  dRate, ctRelative);
-				if (params.getAddVolume()) {
+				if (params.getAddVolume()) 
 					objSnap.setDailyVolume(priceItem.getVolume());
-					if (priceItem.getHighPrice() != 0.0) {
-						Double rate = priceItem.getHighPrice();
-						Double viewRate = 1.0;
-						rate = rate*viewRate*dCurRate;
-						rate = Math.round(rate*multiplier)/multiplier;
-						rate =1/Util.safeRate(rate);
-						objSnap.setDailyHigh(rate);
-					}
-					if (priceItem.getLowPrice() != 0.0) {
-						Double rate = priceItem.getLowPrice();
-						Double viewRate = 1.0;
-						rate = rate*viewRate*dCurRate;
-						rate = Math.round(rate*multiplier)/multiplier;
-						rate =1/Util.safeRate(rate);
-						objSnap.setDailyLow(rate);
-					}
+				if (priceItem.getHighPrice() != 0.0) {
+					Double rate = priceItem.getHighPrice();
+					Double viewRate = 1.0;
+					rate = rate*viewRate*dCurRate;
+					rate = Math.round(rate*multiplier)/multiplier;
+					rate =1/Util.safeRate(rate);
+					objSnap.setDailyHigh(rate);
+				}
+				if (priceItem.getLowPrice() != 0.0) {
+					Double rate = priceItem.getLowPrice();
+					Double viewRate = 1.0;
+					rate = rate*viewRate*dCurRate;
+					rate = Math.round(rate*multiplier)/multiplier;
+					rate =1/Util.safeRate(rate);
+					objSnap.setDailyLow(rate);
 				}
 				objSnap.syncItem();
 			}

@@ -60,7 +60,7 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 		URI uri=null;
 		try {
 			uri= new URI(url.trim());
-			debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "Processing  "+ticker+" URI:"+uri.toASCIIString());		
+			debugInst.debugThread("GetQuoteTask", "call", MRBDebug.INFO, "Processing  "+ticker+" URI:"+uri.toASCIIString());		
 			HttpGet httpGet = new HttpGet(uri);
 			httpGet.addHeader("Accept-Language","en");
 			response = httpClient.execute(httpGet);

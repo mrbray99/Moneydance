@@ -343,35 +343,11 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		 */
 		final int startTime = Main.preferences.getInt(Constants.PROGRAMNAME+"."+Constants.STARTTIME,Constants.RUNSTARTUP);
 		timeCombo = new JComboBox<>(Constants.TIMETEXT);
-		switch (startTime){
-			case Constants.RUNSTARTUP :
-				timeCombo.setSelectedIndex(0);
-				break;
-			case Constants.RUN0900 :
-				timeCombo.setSelectedIndex(1);
-				break;	
-			case Constants.RUN1100 :
-				timeCombo.setSelectedIndex(2);
-				break;	
-			case Constants.RUN1300 :
-				timeCombo.setSelectedIndex(3);
-				break;	
-			case Constants.RUN1500 :
-				timeCombo.setSelectedIndex(4);
-				break;	
-			case Constants.RUN1700 :
-				timeCombo.setSelectedIndex(5);
-				break;	
-			case Constants.RUN1900 :
-				timeCombo.setSelectedIndex(6);
-				break;	
-			case Constants.RUN2100 :
-				timeCombo.setSelectedIndex(7);
-				break;	
-			case Constants.RUN2200 :
-				timeCombo.setSelectedIndex(8);
-				break;	
-			}
+//		timeCombo.setSelectedIndex(startTime);
+		for (int i=0;i<Constants.TIMEVALUES.length;i++) {
+			if (Constants.TIMEVALUES[i] == startTime)
+				timeCombo.setSelectedIndex(i);
+		}
 
 		final String secMode = Main.preferences.getString(Constants.PROGRAMNAME+"."+Constants.SECRUNMODE,Constants.MANUALMODE);
 		final String secRunperiod = Main.preferences.getString(Constants.PROGRAMNAME+"."+Constants.SECRUNTYPE,Constants.RUNYEARLY);
@@ -426,36 +402,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> cbRun = (JComboBox<String>) e.getSource();
-				int runTime = Constants.RUNSTARTUP;
-				switch (cbRun.getSelectedIndex()) {
-				case 0 :
-					runTime = Constants.RUNSTARTUP;
-					break;
-				case 1 :
-					runTime = Constants.RUN0900;
-					break;
-				case 2 :
-					runTime = Constants.RUN1100;
-					break;
-				case 3 :
-					runTime = Constants.RUN1300;
-					break;
-				case 4 :
-					runTime = Constants.RUN1500;
-					break;
-				case 5 :
-					runTime = Constants.RUN1700;
-					break;
-				case 6 :
-					runTime = Constants.RUN1900;
-					break;
-				case 7 :
-					runTime = Constants.RUN2100;
-					break;
-				case 8 :
-					runTime = Constants.RUN2200;
-					break;
-				}
+				int runTime = Constants.TIMEVALUES[cbRun.getSelectedIndex()];
+
 				Main.preferences.put(Constants.PROGRAMNAME+"."+Constants.STARTTIME, runTime);;
 				Main.preferences.isDirty();
 			}
@@ -1419,8 +1367,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				if (listener !=null)
 					listener.started(price.getTicker(),yahooUUID);
 			}
-			Main.context.showURL(url);		
 			debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.INFO, "URI "+url);
+			Main.context.showURL(url);		
 		}
 		if (yahooHistStocksList.size() > 0) {
 			String url=null;
@@ -1456,8 +1404,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				if (listener !=null)
 					listener.started(price.getTicker(),yahooHistUUID);
 			}
-			Main.context.showURL(url);		
 			debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.INFO, "URI "+url);
+			Main.context.showURL(url);		
 		}
 		if (ftStocksList.size() > 0) {
 			String url=null;
@@ -1489,8 +1437,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				if (listener !=null)
 					listener.started(price.getTicker(),ftUUID);
 			}
-			Main.context.showURL(url);
 			debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.INFO, "URI "+url);
+			Main.context.showURL(url);
 		}
 		if (ftHistStocksList.size() > 0) {
 			String url=null;
@@ -1526,8 +1474,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				if (listener !=null)
 					listener.started(price.getTicker(),ftHistUUID);
 			}
-			Main.context.showURL(url);
 			debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.INFO, "URI "+url);
+			Main.context.showURL(url);
 		}
 	}
 
@@ -1717,6 +1665,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		CurrencyType securityCur = null;
 		String tradeCur = newPrice.getCurrency();
 		Double stockPrice;
+		Double lowPrice;
+		Double highPrice;
 		/*
 		 * check to see if trade currency is in the pseudocurrency file
 		 */
@@ -1725,12 +1675,19 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.SUMMARY, "Pseudo Currency Detected "+newPrice.getCurrency()+" for "+newPrice.getTicker());
 			Double oldValue = newPrice.getSecurityPrice();
 			stockPrice = oldValue * line.getMultiplier();
+			oldValue = newPrice.getLowPrice();
+			lowPrice = oldValue * line.getMultiplier();
+			oldValue = newPrice.getHighPrice();
+			highPrice = oldValue * line.getMultiplier();
 			tradeCur=line.getReplacement();
 			debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.SUMMARY, "Price changed from "+oldValue+" to "+stockPrice);
 			debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.SUMMARY, "Currency changed from "+line.getPseudo()+" to "+line.getReplacement());
 		}
-		else
+		else {
 			stockPrice = newPrice.getSecurityPrice();
+			lowPrice = newPrice.getLowPrice();
+			highPrice = newPrice.getHighPrice();
+		}
 		/*
 		 * get currency type for trade
 		 */
@@ -1766,8 +1723,11 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				}
 			}
 		}
-		else
+		else {
 			stockPrice= newPrice.getSecurityPrice();
+			lowPrice = newPrice.getLowPrice();
+			highPrice = newPrice.getHighPrice();
+		}
 		/*
 		 * Assume the price will be displayed in the currency of the security
 		 */
@@ -1775,6 +1735,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		if (!newPrice.isCurrency()) {
 			debugInst.debug("loadPricesWindow", "updatePrice", MRBDebug.DETAILED, "before rounding"+stockPrice);
 			stockPrice = Math.round(stockPrice*multiplier)/multiplier;
+			lowPrice = Math.round(lowPrice*multiplier)/multiplier;
+			highPrice = Math.round(highPrice*multiplier)/multiplier;
 			debugInst.debug("loadPricesWindow", "updatePrice", MRBDebug.DETAILED, "after rounding"+stockPrice);
 		}
 		if (stockPrice != 0.0) {
@@ -1802,7 +1764,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				quotePrice.replace(ticker, newPrice.getSecurityPrice());
 			else
 				quotePrice.put(ticker, newPrice.getSecurityPrice());
-			ExtraFields extra = new ExtraFields(newPrice.getVolume(),newPrice.getHighPrice()*dRate,newPrice.getLowPrice()*dRate);
+			ExtraFields extra = new ExtraFields(newPrice.getVolume(),highPrice*dRate,lowPrice*dRate);
 			if (volumes.containsKey(ticker))
 				volumes.replace(ticker, extra);
 			else
@@ -1939,6 +1901,9 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		CurrencyType securityCur = null;
 		String tradeCur = newPrice.getCurrency();
 		Double stockPrice;
+		Double lowPrice;
+		Double highPrice;
+
 		/*
 		 * check to see if trade currency is in the pseudocurrency file
 		 */
@@ -1947,13 +1912,20 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			debugInst.debug("loadPricesWindow", "updateHistory", MRBDebug.SUMMARY, "Pseudo Currency Detected "+newPrice.getCurrency()+" for "+newPrice.getTicker());
 			Double oldValue = newPrice.getSecurityPrice();
 			stockPrice = oldValue * line.getMultiplier();
+			oldValue = newPrice.getLowPrice();
+			lowPrice = oldValue * line.getMultiplier();
+			oldValue = newPrice.getHighPrice();
+			highPrice = oldValue * line.getMultiplier();
 			tradeCur=line.getReplacement();
 			debugInst.debug("loadPricesWindow", "updateHistory", MRBDebug.SUMMARY, "Price changed from "+oldValue+" to "+stockPrice);
 			debugInst.debug("loadPricesWindow", "updateHistory", MRBDebug.SUMMARY, "Currency changed from "+line.getPseudo()+" to "+line.getReplacement());
 		}
 		else
-			stockPrice = newPrice.getSecurityPrice();
-		/*
+		{
+			stockPrice= newPrice.getSecurityPrice();
+			lowPrice = newPrice.getLowPrice();
+			highPrice = newPrice.getHighPrice();
+		}		/*
 		 * get currency type for trade
 		 */
 		CurrencyType tradeCurType = Main.context.getCurrentAccountBook().getCurrencies().getCurrencyByIDString(tradeCur);
@@ -1987,6 +1959,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		if (!newPrice.isCurrency()) {
 			debugInst.debug("loadPricesWindow", "updateHistory", MRBDebug.DETAILED, "before rounding"+stockPrice);
 			stockPrice = Math.round(stockPrice*multiplier)/multiplier;
+			lowPrice = Math.round(lowPrice*multiplier)/multiplier;
+			highPrice = Math.round(highPrice*multiplier)/multiplier;
 			debugInst.debug("loadPricesWindow", "updateHistory", MRBDebug.DETAILED, "after rounding"+stockPrice);
 		}
 		if (stockPrice != 0.0) {
@@ -1998,7 +1972,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				historyList = new ArrayList<HistoryPrice>();
 				historyTab.put(newPrice.getTicker(), historyList);
 			}
-			HistoryPrice history = new HistoryPrice(newPrice.getTradeDate(),stockPrice,newPrice.getHighPrice()*dRate, newPrice.getLowPrice()*dRate, newPrice.getVolume());
+			HistoryPrice history = new HistoryPrice(newPrice.getTradeDate(),stockPrice,highPrice*dRate,lowPrice*dRate, newPrice.getVolume());
 			historyList.add(history);
 			historyTab.replace(newPrice.getTicker(), historyList);
 		}
@@ -2188,7 +2162,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			}
 			if (runtype != Constants.MANUALRUN  && runtype !=0){
 				if (errorsFound){
-					JOptionPane.showMessageDialog(null,"Errors found on automatic run.  Look at 'Price Date' to determine which lines have not been updated");
+					JOptionPane.showMessageDialog(null,"Errors found on automatic run.  Look at 'Price Date' to determine which lines have not been updated","Quote Loader",JOptionPane.ERROR_MESSAGE);
 					errorsFound = false;
 				}
 				debugInst.debug("AutomaticRun", "AutomaticRun", MRBDebug.DETAILED, "set saveall");		
@@ -2227,7 +2201,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 					listener.failed(status.getKey());
 			}
 		}
-		
+
 	}
 
 	/*

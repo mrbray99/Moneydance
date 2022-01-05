@@ -72,7 +72,7 @@ public class GetYahooQuote extends GetQuoteTask {
 		debugInst.debug("GetYahooQuote","GetYahooQuote",MRBDebug.DETAILED,"Executing :"+url);
 	}
 	@Override
-	public QuotePrice analyseResponse(CloseableHttpResponse response) throws IOException {
+	synchronized public QuotePrice analyseResponse(CloseableHttpResponse response) throws IOException {
 		QuotePrice quotePrice = new QuotePrice();
 		HttpEntity entity = response.getEntity();
 		try {
