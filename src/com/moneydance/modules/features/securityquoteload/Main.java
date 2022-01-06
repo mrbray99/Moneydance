@@ -37,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -99,6 +100,7 @@ public class Main extends FeatureModule
 	private TaskExecutor autoRun=null;
 	public static ClassLoader loader;
 	public boolean startUp = true;
+	public static ZoneId defaultZone = ZoneId.systemDefault();
 	private Boolean closingRequested = false;
 	/*
 	 * Called when extension is loaded<p>
@@ -126,7 +128,7 @@ public class Main extends FeatureModule
 		int mdVersionNo = Integer.parseInt(mdVersion.substring(0,4));
 		if (mdVersionNo < Constants.MINIMUMVERSIONNO) {
 			JOptionPane.showMessageDialog(null, "This version of Quote Loader is designed to be run on Moneydance version "+Constants.MINIMUMVERSIONNO.toString()+
-					". You are running version "+mdVersion);
+					". You are running version "+mdVersion,"Quote Loader",JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		try {
@@ -245,31 +247,46 @@ public class Main extends FeatureModule
 		}
 		LocalTime now = LocalTime.now();
 		LocalTime next;
-		if (now.compareTo(LocalTime.of(9,0)) < 0)
-			next = LocalTime.of(9,0);
+		if (now.compareTo(LocalTime.of(2,0)) < 0)
+			next = LocalTime.of(2,0);
 		else
-			if (now.compareTo(LocalTime.of(11,0)) < 0)
-				next = LocalTime.of(11,0);
+			if (now.compareTo(LocalTime.of(4,0)) < 0)
+				next = LocalTime.of(4,0);
 			else
-				if (now.compareTo(LocalTime.of(13,0)) < 0)
-					next = LocalTime.of(13,0);
+				if (now.compareTo(LocalTime.of(6,0)) < 0)
+					next = LocalTime.of(6,0);
 				else
-					if (now.compareTo(LocalTime.of(15,0)) < 0)
-						next = LocalTime.of(15,0);
+					if (now.compareTo(LocalTime.of(8,0)) < 0)
+						next = LocalTime.of(8,0);
 					else
-						if (now.compareTo(LocalTime.of(17,0)) < 0)
-							next = LocalTime.of(17,0);
+						if (now.compareTo(LocalTime.of(9,0)) < 0)
+							next = LocalTime.of(9,0);
 						else
-							if (now.compareTo(LocalTime.of(19,0)) < 0)
-								next = LocalTime.of(19,0);
+							if (now.compareTo(LocalTime.of(11,0)) < 0)
+								next = LocalTime.of(11,0);
 							else
-								if (now.compareTo(LocalTime.of(21,0)) < 0)
-									next = LocalTime.of(21,0);
+								if (now.compareTo(LocalTime.of(13,0)) < 0)
+									next = LocalTime.of(13,0);
 								else
-									if (now.compareTo(LocalTime.of(22,0)) < 0)
-										next = LocalTime.of(22,0);
+									if (now.compareTo(LocalTime.of(15,0)) < 0)
+										next = LocalTime.of(15,0);
 									else
-										next = LocalTime.of(8,30);
+										if (now.compareTo(LocalTime.of(17,0)) < 0)
+											next = LocalTime.of(17,0);
+										else
+											if (now.compareTo(LocalTime.of(19,0)) < 0)
+												next = LocalTime.of(19,0);
+											else
+												if (now.compareTo(LocalTime.of(21,0)) < 0)
+													next = LocalTime.of(21,0);
+												else
+													if (now.compareTo(LocalTime.of(22,0)) < 0)
+														next = LocalTime.of(22,0);
+													else
+														if (now.compareTo(LocalTime.of(23,0)) < 0)
+															next = LocalTime.of(23,0);
+														else
+															next = LocalTime.of(23,59);
 		LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), next);
 		if (dateTime.compareTo(LocalDateTime.now()) < 0)
 			dateTime.plusDays(1l);
@@ -373,7 +390,7 @@ public class Main extends FeatureModule
 		debugInst.debug("Main","invoke",MRBDebug.SUMMARY,"Command "+ command);
 		if(command.equals("showconsole")) {
 			if (frame !=null && runtype != Constants.MANUALRUN){
-				JOptionPane.showMessageDialog(null, "Quote Loader is running an automatic update,please wait");
+				JOptionPane.showMessageDialog(null, "Quote Loader is running an automatic update,please wait","Quote Loader",JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
 			runtype = Constants.MANUALRUN;
@@ -417,42 +434,20 @@ public class Main extends FeatureModule
 			if (secRunAuto || curRunAuto) {
 				if (startTime != Constants.RUNSTARTUP) {
 					LocalTime now = LocalTime.now();
-					LocalTime runTime;
-					switch (startTime) {
-					case Constants.RUN0900 :
-						runTime = LocalTime.of(9, 0);
-						break;
-					case Constants.RUN1100 :
-						runTime = LocalTime.of(11, 0);
-						break;
-					case Constants.RUN1300 :
-						runTime = LocalTime.of(13, 0);
-						break;
-					case Constants.RUN1500 :
-						runTime = LocalTime.of(15, 0);
-						break;
-					case Constants.RUN1700 :
-						runTime = LocalTime.of(17,0);
-						break;
-					case Constants.RUN1900 :
-						runTime = LocalTime.of(19, 0);
-						break;
-					case Constants.RUN2100 :
-						runTime = LocalTime.of(21, 0);
-						break;
-					default:
-						runTime = LocalTime.of(22, 0);
-						break;
+					LocalTime runTime = LocalTime.of(23,59);
+					for(int i=0;i<Constants.TIMEVALUES.length;i++) {
+						if (Constants.TIMEVALUES[i]==startTime) {
+							if (Constants.TIMESTART[i]!= 24)
+								runTime = LocalTime.of(Constants.TIMESTART[i],0);
+						}
 					}
+
 					LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), runTime);
 					if (dateTime.compareTo(LocalDateTime.now()) < 0)
 						dateTime.plusDays(1l);
 					if (!((secRunAuto && secNextrun < today && startUp) ||
 						(curRunAuto && curNextrun < today && startUp))) {
 						if (runTime.isAfter(now)) {
-//							if (autoRun == null)
-//								autoRun = new TaskExecutor(this);
-//							autoRun.startExecutionAt(dateTime);
 							resetAutoRun();
 							return;
 						}
@@ -462,7 +457,7 @@ public class Main extends FeatureModule
 				if (secRunAuto || curRunAuto) {
 					if (frame!=null && runtype == Constants.MANUALRUN) {
 				        if (JOptionPane.showConfirmDialog(frame, 
-					            "Quote Loader is trying to run an Automatic update.  Do you wish to close this window to allow it to run","Close Window", 
+					            "Quote Loader is trying to run an Automatic update.  Do you wish to close this window to allow it to run","Quote Loader", 
 					            JOptionPane.YES_NO_OPTION,
 					            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
 				        		closeConsole();
@@ -585,7 +580,7 @@ public class Main extends FeatureModule
 				else {
 					debugInst.debug("Main", "ProcessCommand", MRBDebug.SUMMARY, "Still Waiting for Backend");
 					if(timeoutCount > Constants.TIMEOUTCOUNT) {
-						JOptionPane.showMessageDialog(null,"Backend has failed to respond");
+						JOptionPane.showMessageDialog(null,"Backend has failed to respond","Quote Loader",JOptionPane.ERROR_MESSAGE);
 						frame.closeQuotes();
 					}
 					else timeoutCount++;
@@ -621,7 +616,7 @@ public class Main extends FeatureModule
 	 */
 	private void createAndShowGUI() {
 		if (context.getCurrentAccountBook().getCurrencies().getBaseType() == null) {
-			JOptionPane.showMessageDialog(null,"The Quote Loader extension depends on the base currency having been set. Please set the base currency before restarting");
+			JOptionPane.showMessageDialog(null,"The Quote Loader extension depends on the base currency having been set. Please set the base currency before restarting","Quote Loader",JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		//Create and set up the window.

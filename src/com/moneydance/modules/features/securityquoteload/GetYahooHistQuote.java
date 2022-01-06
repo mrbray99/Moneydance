@@ -41,8 +41,6 @@ import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -76,7 +74,7 @@ public class GetYahooHistQuote extends GetQuoteTask {
 	    debugInst.debug("GetYahooHistQuote","GetYahooHistQuote",MRBDebug.DETAILED,"Executing :"+url);
 	}
 	@Override
-	public QuotePrice analyseResponse(CloseableHttpResponse response) throws IOException {
+	synchronized public QuotePrice analyseResponse(CloseableHttpResponse response) throws IOException {
 		QuotePrice quotePrice = new QuotePrice();
 		HttpEntity entity = response.getEntity();
 		try {
@@ -150,7 +148,7 @@ public class GetYahooHistQuote extends GetQuoteTask {
 		Long marketTime; 
 		TimeZone zone=null;
 		Instant time=null;
-		ZoneId zoneId=null;
+		ZoneId zoneId=Main.defaultZone;
 		ZonedDateTime dateTime=null;
 		DateTimeFormatter formatTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 		try {
@@ -164,11 +162,11 @@ public class GetYahooHistQuote extends GetQuoteTask {
 				throw new IOException("Prices node not found");
 			JsonNode quoteStoreNode = nodes.findPath("QuoteSummaryStore");
 			if (quoteStoreNode.isMissingNode()|| (tempNode = quoteStoreNode.path("quoteType")).isMissingNode()) 
-				zoneId = null;
+				zoneId = Main.defaultZone;
 			else {
 				JsonNode queryNode = tempNode.findPath("exchangeTimezoneName");
 				if (queryNode.isMissingNode()) 
-					zoneId = null;
+					zoneId =  Main.defaultZone;
 				else {
 					timezone = queryNode.asText();
 					zone= TimeZone.getTimeZone(timezone);
@@ -176,7 +174,7 @@ public class GetYahooHistQuote extends GetQuoteTask {
 				}
 			}
 			if (!priceNode.isArray()) {
-				debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"No table ");
+				debugInst.debugThread("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"No table ");
 				marketPrice = priceNode.findPath("close");
 				if (marketPrice.isMissingNode()|| marketPrice.isNull()) 
 					throw new IOException("Market Price not found");
@@ -198,14 +196,16 @@ public class GetYahooHistQuote extends GetQuoteTask {
 					quotePrice.setVolume(volumeNode.asLong());	
 				quotePrice.setCurrency(currencyID);
 				marketTimeNode = priceNode.findPath("date");
-				if (marketTimeNode.isMissingNode()) 
-					quotePrice.setTradeDate("19000101T00:00");
+				if (marketTimeNode.isMissingNode()) {
+					quotePrice.setTradeDate(formatTime.format(ZonedDateTime.now()));
+					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.INFO,"missing date - set to today");
+				}
 				else {
 					marketTime = marketTimeNode.asLong();
-					time = Instant.ofEpochSecond(marketTime);
-					if (zoneId == null)
-						quotePrice.setTradeDate("19000101T00:00");
+					if (marketTime == 0L)
+						quotePrice.setTradeDate(formatTime.format(ZonedDateTime.now()));
 					else {
+						time = Instant.ofEpochSecond(marketTime);
 						dateTime = ZonedDateTime.ofInstant(time, zoneId);
 						quotePrice.setTradeDate(formatTime.format(dateTime));
 					}
@@ -244,11 +244,15 @@ public class GetYahooHistQuote extends GetQuoteTask {
 						historyPrice.setVolume(volumeNode.asLong());	
 					historyPrice.setCurrency(currencyID);
 					marketTimeNode = objNode.findPath("date");
-					if (marketTimeNode.isMissingNode()) 
-						break;
-					marketTime = marketTimeNode.asLong();
-					time = Instant.ofEpochSecond(marketTime);
-					dateTime = ZonedDateTime.ofInstant(time, zoneId);
+					if (marketTimeNode.isMissingNode()) {
+						debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.INFO,"missing date - set to today");
+						dateTime = ZonedDateTime.now();
+					}
+					else {
+						marketTime = marketTimeNode.asLong();
+						time = Instant.ofEpochSecond(marketTime);
+						dateTime = ZonedDateTime.ofInstant(time, zoneId);
+					}
 					historyPrice.setTradeDate(formatTime.format(dateTime));
 					historyPrice.setTradeDateInt(DateUtil.convertDateToInt(Date.from(time)));
 					if (historyPrice.getTradeDateInt()<= lastPriceDate)
@@ -277,11 +281,19 @@ public class GetYahooHistQuote extends GetQuoteTask {
 						quotePrice.setVolume(volumeNode.asLong());	
 					quotePrice.setCurrency(currencyID);
 					marketTimeNode = objNode.findPath("date");
-					if (marketTimeNode.isMissingNode()) 
-						break;
-					marketTime = marketTimeNode.asLong();
-					time = Instant.ofEpochSecond(marketTime);
-					dateTime = ZonedDateTime.ofInstant(time, zoneId);
+					if (marketTimeNode.isMissingNode()) {
+						debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.INFO,"missing date - set to today");
+						dateTime = ZonedDateTime.now();
+					}
+					else {
+						marketTime = marketTimeNode.asLong();
+						if (marketTime==0L)
+							dateTime = ZonedDateTime.now();
+						else {
+							time = Instant.ofEpochSecond(marketTime);
+							dateTime = ZonedDateTime.ofInstant(time, zoneId);
+						}
+					}
 					quotePrice.setTradeDate(formatTime.format(dateTime));
 					quotePrice.setTradeDateInt(DateUtil.convertDateToInt(Date.from(time)));
 					priceFound = true;
@@ -295,5 +307,4 @@ public class GetYahooHistQuote extends GetQuoteTask {
 			throw new IOException("Cannot parse response for symbol=" + ticker + e.getMessage(),e);
 		}
 	}
-
 }

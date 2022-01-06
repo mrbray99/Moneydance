@@ -45,13 +45,13 @@ public abstract class Constants {
 	public static final String YAHOOHIST ="Yahoo HD";
 	public static final String FT ="FT";
 	public static final String FTHIST ="FT HD";
-	public static String DONOTLOAD ="Do not load";
+	public static final String DONOTLOAD ="Do not load";
 	public static final Integer YAHOOINDEX = 1;
 	public static final Integer FTINDEX = 2;
 	public static final Integer YAHOOHISTINDEX = 3;
 	public static final Integer FTHISTINDEX = 4;
 	public static final String[] AUTOTEXT = {"Manual Only","Daily","Weekly","Monthly","Quarterly","Yearly"};
-	public static final String[] TIMETEXT = {"At Start Up","09:00","11:00","13:00","15:00","17:00","19:00","21:00","22:00"};
+	public static final String[] TIMETEXT = {"At Start Up","02:00","04:00","06:00","08:00","09:00","11:00","13:00","15:00","17:00","19:00","21:00","22:00","23:00","24:00"};
 	public static final String CALENDARIMAGE = "calendar.png";
 	public static final String SELECTEDBLACKIMAGE = "selectedblack.png";
 	public static final String SELECTEDLIGHTIMAGE = "selectedlight.png";
@@ -171,6 +171,14 @@ public abstract class Constants {
 	public static final int RUN1900 = 7;
 	public static final int RUN2100 = 8;
 	public static final int RUN2200 = 9;
+	public static final int RUN2300 = 10;
+	public static final int RUN2400 = 11;
+	public static final int RUN0200 = 12;
+	public static final int RUN0400 = 13;
+	public static final int RUN0600 = 14;
+	public static final int RUN0800 = 15;
+	public static final int[] TIMEVALUES= {RUNSTARTUP,RUN0200,RUN0400,RUN0600,RUN0800,RUN0900,RUN1100,RUN1300,RUN1500,RUN1700,RUN1900,RUN2100,RUN2200,RUN2300,RUN2400};
+	public static final int[] TIMESTART = {0,2,4,6,8,9,11,13,15,17,19,21,22,23,24};
 	public static final int NUMTABLECOLS = 12; 
 	public static final int[]  DEFAULTCOLWIDTH = {40,100,100,300,80,80,80,80,80,80,80,80};
 	public static final int FRAMEWIDTH = 800;	
@@ -197,10 +205,6 @@ public abstract class Constants {
 	 * Currency identifier
 	 */
 	private static final String str7f = String.valueOf('\u007F');
-	private static final String strEF = String.valueOf('\u00EF');
-	private static final String strBF = String.valueOf('\u00BF');
-	private static final String strBD = String.valueOf('\u00BD');
-	private static final String strC3 = String.valueOf('\u00C3');
 	public static final String CURRENCYID = str7f+str7f+str7f;
 	public static final String CURRENCYTICKER = "=X";
 	/*
@@ -209,8 +213,8 @@ public abstract class Constants {
     public static final String PREF_MINIMUM_FRACTION_DIGITS = "minimumFractionDigits";
     public static final int PREF_MINIMUM_FRACTION_DIGITS_DEFAULT = 4;
 
-    public static final String PREF_MAXIMUM_FRACTION_DIGITS = "maximumFractionDigits";
-    public static final int PREF_MAXIMUM_FRACTION_DIGITS_DEFAULT = 8;
+    public static final String PREFMAXIMUMFRACTIONDIGITS = "maximumFractionDigits";
+    public static final int PREFMAXIMUMFRACTIONDIGITS_DEFAULT = 8;
     private static final Class<com.moneydance.modules.features.securityquoteload.Constants> PREFS_CLASS = com.moneydance.modules.features.securityquoteload.Constants.class;
     public static final Preferences PREFS = Preferences.userNodeForPackage(PREFS_CLASS);
     /*
