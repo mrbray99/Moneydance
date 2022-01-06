@@ -618,7 +618,7 @@ public class FileSelectWindow extends JPanel{
 			JOptionPane.showMessageDialog(fTemp,"Please select an account");
 			return;				
 		}
-	    JFrame frame = new JFrame("MoneyDance Load Security Prices");
+	    JFrame frame = new JFrame("Load Security Prices");
 	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    Account acct = mapNames.get(accountsCB.getSelectedItem());
 	    loadTickers(acct);

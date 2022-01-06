@@ -357,7 +357,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		this.startDate = txtStartDatep;
 		this.endDate = txtEndDatep;
 		treeView.remove(tree);
-		nodeTop = new DefaultMutableTreeNode("MoneyDance File");
+		nodeTop = new DefaultMutableTreeNode("Moneydance File");
 		createNodes(nodeTop);
 
 		// Create a tree that allows one selection at a time.

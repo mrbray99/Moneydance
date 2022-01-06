@@ -43,7 +43,7 @@ import com.moneydance.apps.md.controller.UserPreferences;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 
 
-/** MoneyDance extension to load security prices from a file using exchange code as key
+/** Moneydance extension to load security prices from a file using exchange code as key
  * 
  * Main class to create main window
 */
@@ -142,7 +142,7 @@ public String getName() {
   private void createAndShowGUI() {
 
       //Create and set up the window.
-      JFrame frame = new JFrame("MoneyDance Load Security Prices - Build "+buildStr);
+      JFrame frame = new JFrame("Load Security Prices - Build "+buildStr);
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
       panScreen = new FileSelectWindow();
       frame.getContentPane().add(panScreen);

@@ -92,7 +92,7 @@ public class MRBViewTransactions implements TxnSearch {
 	public static final String[] columnNames = {"Field","Value"};
 	private Image imgIcon;
     /*
-     * Table to link MoneyDance transaction types to a string
+     * Table to link Moneydance transaction types to a string
      */
     private static final Map<String, String> txnTypes;
     static
@@ -107,7 +107,7 @@ public class MRBViewTransactions implements TxnSearch {
     	txnTypes.put(AbstractTxn.TRANSFER_TYPE_SHORTCOVER,"Short Cover");
     }
     /*
-     * Table to link MoneyDance transaction status to a string
+     * Table to link Moneydance transaction status to a string
      */
     private static final Map<Byte, String> txnStatus;
     static

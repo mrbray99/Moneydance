@@ -103,7 +103,7 @@ import javafx.scene.Scene;
 
 
 /** 
- * MoneyDance extension to load security prices returned by the back end Rhumba extension
+ * Moneydance extension to load security prices returned by the back end Rhumba extension
  * <p>
  * Main class to create main window
  * @author Mike Bray

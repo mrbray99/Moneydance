@@ -144,7 +144,7 @@ public String getName() {
   private void createAndShowGUI() {
 
       //Create and set up the window.
-      JFrame frame = new JFrame("MoneyDance Load Security History - Build "+buildStr);
+      JFrame frame = new JFrame("Load Security History - Build "+buildStr);
       frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
       panScreen = new FileSelectWindow();
       frame.getContentPane().add(panScreen);

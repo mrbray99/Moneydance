@@ -781,7 +781,7 @@ public class FileSelectWindow extends JPanel implements ActionListener{
 	      //Create and set up the window.
 		  objParms.print();
 		  JFrame frame= new loadPricesWindow(txtFileName, objParms);
-	      frame.setTitle("MoneyDance Load Security Prices - Build "+Main.buildStr);
+	      frame.setTitle("Load Security Prices - Build "+Main.buildStr);
 	      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	      frame.setVisible(true);
 	      return;

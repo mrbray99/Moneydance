@@ -54,7 +54,7 @@ import com.moneydance.modules.features.mrbutil.Platform;
 
 
 
-/** MoneyDance extension to load security transactions from a file and generates 
+/** Moneydance extension to load security transactions from a file and generates 
  * appropriate transactions
  * 
  * Main class to create main window
@@ -192,7 +192,7 @@ extends FeatureModule
 		acctBook = context.getCurrentAccountBook();
 		mapAccounts = new TreeMap<String, Account> ();
 		tranSet = acctBook.getTransactionSet();
-		JFrame frame = new JFrame("MoneyDance Load QIF File - Build "+buildStr);
+		JFrame frame = new JFrame("Load QIF File - Build "+buildStr);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setIconImage(getIcon("mrb icon2.pn"));
 		panScreen = new FileSelectWindow();

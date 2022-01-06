@@ -53,7 +53,7 @@ import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.Platform;
 
 
-/** MoneyDance extension to load security transactions from a file and generates 
+/** Moneydance extension to load security transactions from a file and generates 
  * appropriate transactions
  * 
  * Main class to create main window
@@ -183,7 +183,7 @@ extends FeatureModule
 		acctBook = context.getCurrentAccountBook();
 		mapAccounts = new TreeMap<String, Account> ();
 		tranSet = acctBook.getTransactionSet();
-		JFrame frame = new JFrame("MoneyDance Load Security Transactions - Build "+buildStr);
+		JFrame frame = new JFrame("Load Security Transactions - Build "+buildStr);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		panScreen = new FileSelectWindow();
 		frame.getContentPane().add(panScreen);
