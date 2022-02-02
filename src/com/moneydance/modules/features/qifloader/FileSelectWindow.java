@@ -195,7 +195,7 @@ public class FileSelectWindow extends JPanel{
 			JOptionPane.showMessageDialog(fTemp,"Please select an account");
 			return;				
 		}
-	    JFrame frame = new JFrame("MoneyDance QIF Transactions");
+	    JFrame frame = new JFrame("QIF Transactions");
 	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    Account acct = mapNames.get(accountsCB.getSelectedItem());
 	    loadWindow = new loadPricesWindow(fileName,acct,params,listCategories);

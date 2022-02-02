@@ -61,7 +61,9 @@ public class MyTableModel extends DefaultTableModel {
     private SortedMap<String,Double> quotePrice;
     private SortedMap<String,Integer>accountSource;
     private SortedMap<String,String>selectedExchanges;
+    private SortedMap<String,DummyAccount> accounts;
     private List<Entry<String,CurrencyType>> listCurrencies;
+    private SortedMap<String,CurrencyType> currencies;
 	private SortedMap<String,List<HistoryPrice>> historyTab;
 	private SortedMap<String,Integer> tickerStatus;
  	private List<Entry<String,Integer>> listDates;
@@ -97,7 +99,9 @@ public class MyTableModel extends DefaultTableModel {
 		listCurrent = new ArrayList<Entry<String,Double>>(currentp.entrySet());
 		listDates = new ArrayList<Entry<String,Integer>>(datesp.entrySet());
 		listAccounts = new ArrayList<Entry<String,DummyAccount>>(accountsp.entrySet());
+		accounts=accountsp;
 		listCurrencies = new ArrayList<Entry<String, CurrencyType>>(currenciesp.entrySet());
+		currencies = currenciesp;
 		tradeCurr = tradeCurrp;
 		accountSource = params.getAccountsMap();
 		arrSource = params.getSourceArray();
@@ -143,7 +147,9 @@ public class MyTableModel extends DefaultTableModel {
 		listCurrent = new ArrayList<Entry<String,Double>>(mapCurrentp.entrySet());
 		listDates = new ArrayList<Entry<String,Integer>>(mapDatesp.entrySet());
 		listAccounts = new ArrayList<Entry<String,DummyAccount>>(mapAccountsp.entrySet());
+		accounts=mapAccountsp;
 		listCurrencies = new ArrayList<Entry<String, CurrencyType>>(mapCurrenciesp.entrySet());
+		currencies=mapCurrenciesp;
 		tradeCurr = tradeCurrp;
 		newPricesTab = newPricesTabp;
 		newTradeDate = newTradeDatep;
@@ -503,6 +509,20 @@ public class MyTableModel extends DefaultTableModel {
 			return Constants.CURRENCYTYPE;
 		else
 			return Constants.STOCKTYPE;
+
+	}
+	public DummyAccount getRowAccount(int row){
+		if (row<0 || row >= listCurrent.size())
+			return null;;
+		String strKey = listCurrent.get(row).getKey();
+		return accounts.get(strKey);
+
+	}
+	public CurrencyType getRowCurrency(int row){
+		if (row<0 || row >= listCurrent.size())
+			return null;;
+		String strKey = listCurrent.get(row).getKey();
+		return currencies.get(strKey);
 
 	}
 	/**

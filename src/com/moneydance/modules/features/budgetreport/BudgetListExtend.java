@@ -29,9 +29,9 @@
  */ 
 package com.moneydance.modules.features.budgetreport;
 /*
- * Class to wrapper the MoneyDance BudgetList class
+ * Class to wrapper the Moneydance BudgetList class
  * 
- * This class protects the extension from changes to the MoneyDance data model
+ * This class protects the extension from changes to the Moneydance data model
  */
 
 import java.util.HashMap;

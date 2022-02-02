@@ -776,7 +776,7 @@ public class BudgetValuesWindow extends JFrame {
 	private void generate() {
 		objBudgetReport = new BudgetReport(objParams, objBudget.getName());
 		objReport = objBudgetReport.getReport();
-		JFrame frame = new JFrame("MoneyDance Budget Report");
+		JFrame frame = new JFrame("Budget Report");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		objViewer = new MRBReportViewer(objReport);
 		objViewer.setReport(objReport);

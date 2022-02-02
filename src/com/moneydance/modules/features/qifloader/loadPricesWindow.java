@@ -276,7 +276,7 @@ public class loadPricesWindow extends JPanel implements TableListener {
 	 }
 	 private void generate() {
 	      //Create and set up the window.
-	      JFrame frame = new JFrame("MoneyDance QIF Loader - Build "+Main.buildStr);
+	      JFrame frame = new JFrame("QIF Loader - Build "+Main.buildStr);
 	      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	      generateWindow = new GenerateWindow(transactions,acct,params,categories);
 	      frame.getContentPane().add(generateWindow);

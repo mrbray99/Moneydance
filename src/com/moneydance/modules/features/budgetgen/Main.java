@@ -40,7 +40,7 @@ import com.moneydance.apps.md.controller.UserPreferences;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 
 /**
- * MoneyDance extension to generate budget items for the 'new' type of budgets
+ * Moneydance extension to generate budget items for the 'new' type of budgets
  * 
  * Main class to create main window
  */

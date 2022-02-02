@@ -39,7 +39,7 @@ import com.moneydance.apps.md.controller.FeatureModuleContext;
 import com.moneydance.apps.md.controller.UserPreferences;
 
 /**
- * MoneyDance extension to generate budget items for the 'new' type of budgets
+ * Moneydance extension to generate budget items for the 'new' type of budgets
  * 
  * Main class to create main window
  */

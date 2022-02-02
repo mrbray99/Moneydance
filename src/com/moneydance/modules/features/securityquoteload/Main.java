@@ -60,7 +60,7 @@ import com.moneydance.modules.features.mrbutil.Platform;
 
 
 /** 
- * MoneyDance extension to load security prices returned by the back end  extension
+ * Moneydance extension to load security prices obtained from Yahoo.com and ft.com
  * <p>
  * Main class to create main window
  * @author Mike Bray
@@ -627,7 +627,7 @@ public class Main extends FeatureModule
 		frame = new loadPricesWindow(this,runtype);
 		if (errorTickers !=null)
 			frame.setErrorTickers(errorTickers);
-		frame.setTitle("MoneyDance Quote Loader "+buildNo);
+		frame.setTitle("Quote Loader "+buildNo);
 		frame.setIconImage(getIcon(Constants.QUOTELOADIMAGE));
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		//Display the window.

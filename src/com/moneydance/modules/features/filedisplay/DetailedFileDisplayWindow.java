@@ -185,7 +185,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 	public static final String[] transcolumns = { "ID", "Old ID", "Account",
 			"Description", "Date", "Value", "Type", "P//S", "Cheque", "Status" };
 	/*
-	 * Table to link tree nodes back to MoneyDance account type
+	 * Table to link tree nodes back to Moneydance account type
 	 */
 	private static final Map<Integer, Account.AccountType> nodetypes;
 	static {
@@ -211,7 +211,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		nodetypes.put(EXTRAS_NODE, null);
 	}
 	/*
-	 * Table to link MoneyDance account types to a string
+	 * Table to link Moneydance account types to a string
 	 */
 	private static final Map<Account.AccountType, String> accounttypes;
 	static {
@@ -299,7 +299,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		baseCurr = objAcctBook.getCurrencies().getBaseType();
 
 		// Create the nodes.
-		nodeTop = new DefaultMutableTreeNode("MoneyDance File");
+		nodeTop = new DefaultMutableTreeNode("Moneydance File");
 		createNodes(nodeTop);
 
 		// Create a tree that allows one selection at a time.
@@ -357,7 +357,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		this.startDate = txtStartDatep;
 		this.endDate = txtEndDatep;
 		treeView.remove(tree);
-		nodeTop = new DefaultMutableTreeNode("MoneyDance File");
+		nodeTop = new DefaultMutableTreeNode("Moneydance File");
 		createNodes(nodeTop);
 
 		// Create a tree that allows one selection at a time.

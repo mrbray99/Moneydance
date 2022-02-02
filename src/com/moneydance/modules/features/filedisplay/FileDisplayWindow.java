@@ -3,12 +3,16 @@ package com.moneydance.modules.features.filedisplay;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -17,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.SwingConstants;
 
 import com.infinitekind.util.CustomDateFormat;
 import com.moneydance.awt.AwtUtil;
@@ -61,6 +66,7 @@ public class FileDisplayWindow extends JFrame {
 	private JPanel panTree;
 	private JPanel panButtons;
 	private DetailedFileDisplayWindow detailedWindow;
+	private JButton copyright;
 
 	public FileDisplayWindow(Main extensionp) {
 		super("File Display - Build "+Main.buildStr);
@@ -298,10 +304,22 @@ public class FileDisplayWindow extends JFrame {
 		/*
 		 * Button pane
 		 */
-
-		col= 1;
+		col= 0;
 		row = 0;
 		panButtons = new JPanel(new GridBagLayout());
+		copyright = new JButton("<html><a href=http://icons8.com>Icons couresy of icons8.com</a></html>");
+		    copyright.setHorizontalAlignment(SwingConstants.LEFT);
+		    copyright.setBorderPainted(false);
+		    copyright.setOpaque(false);
+		    copyright.setBackground(Color.WHITE);
+			copyright.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					openIcons();
+				}
+			});
+		panButtons.add(copyright, GridC.getc(col,row).fillx().west().insets(5, 5, 5, 5));
+		col++;
 		closeButton = new JButton("Close");
 		closeButton.addActionListener(new ActionListener() {
 			@Override
@@ -330,6 +348,13 @@ public class FileDisplayWindow extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		enableEvents(WindowEvent.WINDOW_CLOSING);
 
+	}
+	private void openIcons() {
+		   if (Desktop.isDesktopSupported()) {
+			      try {
+			        Desktop.getDesktop().browse(new URI("http://icons8.com"));
+			      } catch (IOException | URISyntaxException e) { /* TODO: error handling */ }
+			    } else { /* TODO: error handling */ }
 	}
 	/*
 	 * Display the detail based on selected options

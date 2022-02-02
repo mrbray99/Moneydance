@@ -68,7 +68,7 @@ import javax.swing.table.TableColumn;
 
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.Platform;
-
+import com.infinitekind.moneydance.model.CurrencyType;
 
 public class MyTable extends JTable {
 	private static final long serialVersionUID = 1L;
@@ -596,6 +596,28 @@ public class MyTable extends JTable {
 			JTable tc = (JTable)e.getSource();
        		Point p = e.getPoint();
        		int row = tc.rowAtPoint(p);
+       		if (tc.getSelectedColumn()==tickerCol) {
+       			if (e.getClickCount()==2) {
+       				if (dm.getRowType(row).equals(Constants.CURRENCYTYPE)) {
+             				CurrencyType curt = dm.getRowCurrency(row);
+             				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+             					@Override
+             					public void run() {
+             						Main.context.showURL("moneydance:showobj?id="+curt.getUUID());
+             					}
+             				});
+       				}
+       				else {
+       				DummyAccount acct = dm.getRowAccount(row);
+       				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+       					@Override
+       					public void run() {
+       						Main.context.showURL("moneydance:showobj?id="+acct.getCurrencyType().getUUID());
+       					}
+       				});
+       				}
+       			}
+       		}
 			if (dm.getRowType(row).equals(Constants.CURRENCYTYPE))
 				return;
 			if (tc.getSelectedColumn() == exchangeCol) {

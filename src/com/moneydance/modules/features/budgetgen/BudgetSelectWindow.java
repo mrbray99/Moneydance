@@ -409,7 +409,7 @@ public class BudgetSelectWindow extends JFrame {
 		}
 		else {
 			expensesFrm = new JFrame(
-					"MoneyDance Budget Generator - Enter Expense Values - Build "+Main.buildNum);
+					"Moneydance Budget Generator - Enter Expense Values - Build "+Main.buildNum);
 			expensesFrm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			panValues = new BudgetValuesWindow(this.extension,
 					budgetName, Constants.EXPENSE_SCREEN, fileName);
@@ -435,7 +435,7 @@ public class BudgetSelectWindow extends JFrame {
 		}
 		else {
 			incomeFrm = new JFrame(
-					"MoneyDance Budget Generator - Enter Income Values- Build "+Main.buildNum);
+					"Moneydance Budget Generator - Enter Income Values- Build "+Main.buildNum);
 			incomeFrm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			panIncomeValues = new BudgetValuesWindow(this.extension,
 					budgetName, Constants.INCOME_SCREEN, fileName);

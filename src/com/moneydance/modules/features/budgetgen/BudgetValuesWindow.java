@@ -891,7 +891,7 @@ public class BudgetValuesWindow extends JPanel {
 
 		// Create and set up the window.
 		JFrame frame = new JFrame(
-				"MoneyDance Budget Generator - Add missing Categories");
+				"Moneydance Budget Generator - Add missing Categories");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setPreferredSize(new Dimension(Constants.ADDSCREENWIDTH,
 				Constants.ADDSCREENHEIGHT));
@@ -1021,7 +1021,7 @@ public class BudgetValuesWindow extends JPanel {
 		}
 		// Create and set up the window.
 		JFrame frame = new JFrame(
-				"MoneyDance Budget Generator - Generated Figures");
+				"Moneydance Budget Generator - Generated Figures");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		panGen = new GenerateWindow(boxYears.getSelectedIndex(), iType,
 				objParams, Constants.GENERATE);
@@ -1046,7 +1046,7 @@ public class BudgetValuesWindow extends JPanel {
 	private void editfigures() {
 		// Create and set up the window.
 		JFrame frame = new JFrame(
-				"MoneyDance Budget Generator - Generated Figures");
+				"Moneydance Budget Generator - Generated Figures");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		panGen = new GenerateWindow(boxYears.getSelectedIndex(), iType,
 				objParams, Constants.MANUAL);

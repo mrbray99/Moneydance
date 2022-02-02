@@ -302,7 +302,7 @@ public class loadPricesWindow extends JPanel implements TableListener {
 	 }
 	 private void generate() {
 	      //Create and set up the window.
-	      JFrame frame = new JFrame("MoneyDance Load Security Prices - Build "+Main.buildStr);
+	      JFrame frame = new JFrame(" Load Security Prices - Build "+Main.buildStr);
 	      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	      generateWindow = new GenerateWindow(setLine,acct,params);
 	      frame.getContentPane().add(generateWindow);

@@ -178,7 +178,7 @@ public class MyCurrencyEditor extends DefaultCellEditor {
 		        debugInst.debug("MyCurrencyEditor","validateCurrency",MRBDebug.DETAILED,"matches"+strFormat);
 	        	return true;
 	        }
-	        int iDecimal = Parameters.decimals[params.getDecimal()];
+	        int iDecimal = Parameters.decimals[params.getDecimal()-2];
 	        if (Main.decimalChar==',')
 		        strFormat = "^\\d+,\\d{1,"+iDecimal+"}$";
 	        else
