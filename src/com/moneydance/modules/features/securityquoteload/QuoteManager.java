@@ -126,9 +126,16 @@ public class QuoteManager implements QuoteListener {
 				totalQuotes++;
 			}
 			List<Future<QuotePrice>> futures = null;
+			Long timeout;
+			if (tasks.size() <100)
+				timeout=120L;
+			else if (tasks.size()>99 && tasks.size() < 200)
+				timeout = 240L;
+			else
+				timeout=360L;
 			try {
 				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT Tasks invoking "+tasks.size() + " queries");
-				futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
+				futures = threadPool.invokeAll(tasks,timeout, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
 				debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
 			}
@@ -169,10 +176,25 @@ public class QuoteManager implements QuoteListener {
 				tasks.add(task);
 				totalQuotes++;
 			}
+			/*
+			 *  invoke get quotes 
+			 *  
+			 *  Timeout set depending on number of quotes:
+			 *     < 100 set to 120 secs
+			 *     >99 <200 set to 240 secs
+			 *     >300 set to 360 secs
+			 */
 			List<Future<QuotePrice>> futures = null;
+			Long timeout;
+			if (tasks.size() <100)
+				timeout=120L;
+			else if (tasks.size()>99 && tasks.size() < 200)
+				timeout = 240L;
+			else
+				timeout=360L;
 			try {
 				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"FT History Tasks invoking "+tasks.size()+" queries");
-				futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
+				futures = threadPool.invokeAll(tasks, timeout, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
 				debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
 			}
@@ -214,9 +236,16 @@ public class QuoteManager implements QuoteListener {
 				totalQuotes++;
 			}
 			List<Future<QuotePrice>> futures = null;
+			Long timeout;
+			if (tasks.size() <100)
+				timeout=120L;
+			else if (tasks.size()>99 && tasks.size() < 200)
+				timeout = 240L;
+			else
+				timeout=360L;
 			try {
 				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo Tasks invoking "+tasks.size()+" queries");
-				futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
+				futures = threadPool.invokeAll(tasks, timeout, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
 				debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
 			}
@@ -258,9 +287,16 @@ public class QuoteManager implements QuoteListener {
 				totalQuotes++;
 			}
 			List<Future<QuotePrice>> futures = null;
+			Long timeout;
+			if (tasks.size() <100)
+				timeout=120L;
+			else if (tasks.size()>99 && tasks.size() < 200)
+				timeout = 240L;
+			else
+				timeout=360L;
 			try {
 				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo History Tasks invoking"+tasks.size()+" queries");
-				futures = threadPool.invokeAll(tasks, 120L, TimeUnit.SECONDS);
+				futures = threadPool.invokeAll(tasks, timeout, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
 				debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
 			}

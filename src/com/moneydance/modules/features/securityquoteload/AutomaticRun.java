@@ -97,6 +97,7 @@ public class AutomaticRun extends loadPricesWindow{
 					securityOnly = false;
 					break;
 			}
+			Main.autoRunning=true;
 			getPrices();
 
 		}

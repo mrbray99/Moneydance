@@ -1,4 +1,4 @@
-{"build":"3025"}
+{"build":"3047"}
 [{"exchange":"ASE",	"name":"American Stock Exchange",	"ftPrefix":"",	"ftSuffix":":ASE",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
 {"exchange":"Athens",	"name":"Athens Exchange",	"ftPrefix":"",	"ftSuffix":":ATH",	"yahooPrefix":"",	"yahooSuffix":".AT",	"multiplier":"1"},
 {"exchange":"ASX",	"name":"Australian Stock Exchange",	"ftPrefix":"",	"ftSuffix":":ASX",	"yahooPrefix":"",	"yahooSuffix":".AX",	"multiplier":"1"},
@@ -53,6 +53,7 @@
 {"exchange":"Nairobi",	"name":"Nairobi Stock Exchange",	"ftPrefix":"",	"ftSuffix":":NAI",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
 {"exchange":"NASDAQ",	"name":"NASDAQ",	"ftPrefix":"",	"ftSuffix":"",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
 {"exchange":"NASDAQ GLO",	"name":"NASDAQ Global Select",	"ftPrefix":"",	"ftSuffix":":NSQ",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
+{"exchange":"NE",  "name":"NEO Exchange Toronto",  "ftPrefix":"",  "ftSuffix":"",  "yahooPrefix":"",   "yahooSuffix":".NE",    "multiplier":"1"},
 {"exchange":"NSE",	"name":"National Stock Exchange of India",	"ftPrefix":"",	"ftSuffix":":NSI",	"yahooPrefix":"",	"yahooSuffix":".NS",	"multiplier":"1"},
 {"exchange":"NYBOT",	"name":"New York Board of Trade",	"ftPrefix":"",	"ftSuffix":"",	"yahooPrefix":"",	"yahooSuffix":".NYB",	"multiplier":"1"},
 {"exchange":"COMEX",	"name":"New York Commodities Exchange",	"ftPrefix":"",	"ftSuffix":"",	"yahooPrefix":"",	"yahooSuffix":".CMX",	"multiplier":"1"},

@@ -1114,6 +1114,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		BufferedWriter exportFile;
 		int iRows = pricesModel.getRowCount();
 		boolean bUpdated = false;
+		Main.isUpdating = true;
 		int iRowCount = 0;
 		if (runtype != Constants.MANUALRUN  && runtype !=0){
 			if (params.isExportAuto()) {
@@ -1216,6 +1217,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			pricesModel.fireTableDataChanged();			 
 			this.revalidate();
 		}
+		Main.isUpdating=false;
 	}
 	protected void getPrices (){
 		tickerStatus.clear();
@@ -1332,7 +1334,8 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		/*
 		 * let main process know we are starting a quote
 		 */
-		Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.STARTQUOTECMD);
+		int totalQuotes= yahooStocksList.size()+yahooHistStocksList.size()+ftStocksList.size()+ftHistStocksList.size();
+		Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.STARTQUOTECMD+"?numquotes="+totalQuotes);
 		String yahooUUID = UUID.randomUUID().toString();
 		String yahooHistUUID = UUID.randomUUID().toString();
 		String ftUUID = UUID.randomUUID().toString();
@@ -2159,6 +2162,13 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				getPricesBtn.setEnabled(true);
 				pricesModel.fireTableDataChanged();
 				this.revalidate();
+				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.MANUALDONECMD);
+					}
+				});
+
 			}
 			if (runtype != Constants.MANUALRUN  && runtype !=0){
 				if (errorsFound){

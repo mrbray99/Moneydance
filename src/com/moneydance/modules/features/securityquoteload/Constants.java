@@ -109,6 +109,7 @@ public abstract class Constants {
 	public static final String RUNAUTOCMD = "runauto";
 	public static final String CHECKAUTOCMD = "checkauto";
 	public static final String AUTODONECMD = "autodone";
+	public static final String MANUALDONECMD = "manualdone";
 	public static final String GETBUILDNUM ="getbuildnum";
 	public static final String RETURNBUILD ="buildnums";
 	public static final int MANUALRUN = 1;

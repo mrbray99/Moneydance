@@ -38,6 +38,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -102,6 +103,11 @@ public class Main extends FeatureModule
 	public boolean startUp = true;
 	public static ZoneId defaultZone = ZoneId.systemDefault();
 	private Boolean closingRequested = false;
+	public static boolean autoRunning=false;
+	public static boolean isUpdating=false;
+	public static boolean isGUIOpen=false;
+	public static boolean isQuotesRunning=false;
+	private int timeoutMax = Constants.TIMEOUTCOUNT;
 	/*
 	 * Called when extension is loaded<p>
 	 * Need to register the feature and the URI command to be called 
@@ -512,9 +518,19 @@ public class Main extends FeatureModule
 		if (command.equals(Constants.TIMEOUTCMD)) {
 			debugInst.debug("Main", "invoke", MRBDebug.SUMMARY, "time out received");
 		}
+		Integer totalQuotes;
 		if (command.equals(Constants.STARTQUOTECMD)){
+			try {
+				totalQuotes =Integer.valueOf(uri.substring(uri.indexOf("?numquotes=")+11));
+			}
+			catch (NumberFormatException e) {
+				totalQuotes=0;
+			}
+			timeoutMax = totalQuotes<100?12:totalQuotes>99&totalQuotes<200?24:36;
+			debugInst.debug("Main","processCommand",MRBDebug.DETAILED,"total quotes="+totalQuotes+ " maximum timeout set to "+timeoutMax);
 			overallTimeout = new Thread(new QuoteTimer());   
 			overallTimeout.start();
+			isQuotesRunning = true;
 		}
 		if (command.equalsIgnoreCase(Constants.TESTTICKERCMD)){
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -579,7 +595,7 @@ public class Main extends FeatureModule
 				}
 				else {
 					debugInst.debug("Main", "ProcessCommand", MRBDebug.SUMMARY, "Still Waiting for Backend");
-					if(timeoutCount > Constants.TIMEOUTCOUNT) {
+					if(timeoutCount > timeoutMax) {
 						JOptionPane.showMessageDialog(null,"Backend has failed to respond","Quote Loader",JOptionPane.ERROR_MESSAGE);
 						frame.closeQuotes();
 					}
@@ -594,12 +610,18 @@ public class Main extends FeatureModule
 			if (frame !=null){
 				frame.dispose();
 				frame = null;
+				autoRunning=false;
+				isQuotesRunning = false;
 			}
 			context.showURL("moneydance:setprogress?meter=0&label=" + 
 			         "Quote Loader Update Completed");
 			debugInst.debug("Main", "ProcessCommand", MRBDebug.DETAILED, "Auto run done");
 		}
-		
+		if (command.equals(Constants.MANUALDONECMD)) {
+			runtype = 0;
+			isQuotesRunning = false;
+		}
+
 			
 	}
 	/**
@@ -671,6 +693,7 @@ public class Main extends FeatureModule
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
+					isGUIOpen = true;
 					createAndShowGUI();
 				}
 			});
@@ -690,6 +713,7 @@ public class Main extends FeatureModule
 	 */
 	synchronized void closeConsole() {
 		debugInst.debug("Quote Load", "closeConsole", MRBDebug.DETAILED, "closing Console ");
+		isGUIOpen=false;
 		if(iamhereTimeout!=null && iamhereTimeout.isAlive()){
 			timerInterrupt.set(true);
 			iamhereTimeout.interrupt();
