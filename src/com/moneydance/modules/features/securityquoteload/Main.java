@@ -95,7 +95,7 @@ public class Main extends FeatureModule
 	public static MRBPreferences2 preferences;
 	private String secMode;
 	private String curMode;
-	public String serverName;
+	public String serverName=Constants.PROGRAMNAME;;
 	public int runtype = 0;
 	public List<String> errorTickers;
 	private TaskExecutor autoRun=null;
