@@ -65,6 +65,7 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 			httpGet.addHeader("Accept-Language","en");
 			response = httpClient.execute(httpGet);
 			quotePrice=null; 
+			debugInst.debugThread("GetQuoteTask", "call", MRBDebug.DETAILED, "Return stats for  "+ticker+" "+response.getStatusLine().getStatusCode() );		
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				try {
 					quotePrice = analyseResponse(response);

@@ -63,23 +63,36 @@ public class GetYahooHistQuote extends GetQuoteTask {
 	private String yahooCurrURL = "https://finance.yahoo.com/quote/";
 	private String currencyID="";
 	private Integer lastPriceDate;
+	private String convTicker="";
 	public GetYahooHistQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep, String tidp,Integer lastPriceDatep) {
 		super(tickerp, listenerp, httpClientp, tickerTypep,  tidp);
 		lastPriceDate = lastPriceDatep;
-		String convTicker = ticker.replace("^", "%5E");
+		convTicker = ticker.replace("^", "%5E");
 		if (tickerType == Constants.STOCKTYPE)
 			url = yahooSecURL+convTicker+"/history?p="+convTicker;
 		if (tickerType == Constants.CURRENCYTYPE)
 			url = yahooCurrURL+convTicker+"/history?p="+convTicker;
 	    debugInst.debug("GetYahooHistQuote","GetYahooHistQuote",MRBDebug.DETAILED,"Executing :"+url);
 	}
+	private String prettyPrintJsonString(JsonNode jsonNode) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			Object json = mapper.readValue(jsonNode.toString(), Object.class);
+			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+		} catch (Exception e) {
+			return "Sorry, pretty print didn't work";
+		}
+	}
 	@Override
 	synchronized public QuotePrice analyseResponse(CloseableHttpResponse response) throws IOException {
+		debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.DETAILED,"Analysing "+convTicker);
 		QuotePrice quotePrice = new QuotePrice();
 		HttpEntity entity = response.getEntity();
 		try {
 			InputStream stream = entity.getContent();
 			String buffer = getJsonString(stream);
+			if (convTicker.equals("TD-PFL.TO"))
+				debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"TD-PFL.TO entry "+buffer);				
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode nodes = mapper.readTree(buffer);
 			try {
@@ -91,14 +104,17 @@ public class GetYahooHistQuote extends GetQuoteTask {
 			}
 		}
 		catch (UnsupportedOperationException e) {
-			debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"IOException "+e.getMessage());
+			debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"Unsupported Operation  "+e.getMessage());
 			throw new IOException(e);
 		}
 		catch (MalformedURLException e) {
+			debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"MalformedURL "+e.getMessage());
 			throw (new IOException (e));
 		} catch (ClientProtocolException e) {
-			throw (new IOException (e));
+			debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"ClientProtocolException "+e.getMessage());
+		throw (new IOException (e));
 		} catch (IOException e) {
+			debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"IOException "+e.getMessage());
 			throw (new IOException (e));
 		} 
 
@@ -130,19 +146,23 @@ public class GetYahooHistQuote extends GetQuoteTask {
 			if (reader !=null) {
 				try {
 					reader.close();
+					debugInst.debug("GetYahooHistQuote","getJsonString",MRBDebug.DETAILED,"Json reader closed ");
 				}
-				finally {
-					
+				catch (Exception e) {
+					debugInst.debug("GetYahooHistQuote","getJsonString",MRBDebug.INFO,"Error closing Json reader "+e.getMessage());
 				}
 			}	
 		}
-		if (result == null)
+		if (result == null) {
+			debugInst.debug("GetYahooHistQuote","getJsonString",MRBDebug.INFO,"Cannot find history price data ");
 			throw new IOException("Cannot find Yahoo history price data");
+		}
 		if (result.indexOf("{") > 0)
 			result = result.substring(result.indexOf("{"));
 		return result;
 	}
 	private void parseDoc(JsonNode nodes, QuotePrice quotePrice) throws IOException {
+		debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.INFO,"Parsing document for  "+convTicker);
 		JsonNode tempNode;
 		String timezone;
 		Long marketTime; 
@@ -158,26 +178,37 @@ public class GetYahooHistQuote extends GetQuoteTask {
 			JsonNode highNode;
 			JsonNode lowNode;
 			JsonNode marketTimeNode;
-			if (priceNode.isMissingNode())
+			
+			if (priceNode.isMissingNode()) {
+				debugInst.debugThread("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Prices node not found");
 				throw new IOException("Prices node not found");
+			}
 			JsonNode quoteStoreNode = nodes.findPath("QuoteSummaryStore");
-			if (quoteStoreNode.isMissingNode()|| (tempNode = quoteStoreNode.path("quoteType")).isMissingNode()) 
+			if (quoteStoreNode.isMissingNode()|| (tempNode = quoteStoreNode.path("quoteType")).isMissingNode()) { 
 				zoneId = Main.defaultZone;
+				debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Time Zone set to default");
+			}
 			else {
 				JsonNode queryNode = tempNode.findPath("exchangeTimezoneName");
-				if (queryNode.isMissingNode()) 
+				if (queryNode.isMissingNode())  {
 					zoneId =  Main.defaultZone;
+					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Time Zone set to default");
+				}
 				else {
 					timezone = queryNode.asText();
 					zone= TimeZone.getTimeZone(timezone);
 					zoneId = zone.toZoneId();
+					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Time Zone set to "+zone.getDisplayName());
 				}
 			}
+			debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Price Node ");
 			if (!priceNode.isArray()) {
 				debugInst.debugThread("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"No table ");
 				marketPrice = priceNode.findPath("close");
-				if (marketPrice.isMissingNode()|| marketPrice.isNull()) 
+				if (marketPrice.isMissingNode()|| marketPrice.isNull()) {
+					debugInst.debugThread("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Market price not found");
 					throw new IOException("Market Price not found");
+				}
 				quotePrice.setPrice(marketPrice.asDouble());
 				highNode = priceNode.findPath("high");
 				if (highNode.isMissingNode())
@@ -210,22 +241,34 @@ public class GetYahooHistQuote extends GetQuoteTask {
 						quotePrice.setTradeDate(formatTime.format(dateTime));
 					}
 				}
+				debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.INFO,"End of processing single entry");
 				return;
 			}
 			boolean priceFound = false;
 			QuotePrice historyPrice = new QuotePrice();
+			debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.INFO,"Table found "+priceNode.size()+ " entries");
 			for (final JsonNode objNode :priceNode) {
+				debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.INFO,"Table entry ");
 				JsonNode typeNode = objNode.findPath("type");
-				if (!typeNode.isMissingNode() && typeNode.asText().contentEquals("DIVIDEND"))
+				if (!typeNode.isMissingNode()) {
+					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"type missing ");
 					continue;
+				}
+				if (typeNode.asText().contentEquals("DIVIDEND")) {
+					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Dividend found");
+					continue;
+				}
 				marketPrice = objNode.findPath("close");
 				if (marketPrice.isMissingNode()  || marketPrice.isNull()) {
 					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"missing price");
 					continue;
 				}
 				if (priceFound) {
-					if(!Main.params.getHistory() || lastPriceDate ==null || zone==null) 
+					if(!Main.params.getHistory() || lastPriceDate ==null || zone==null) {
+						debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Nothing to extract ");			
 						break;
+					}
+					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Processing history entry "+marketPrice.asDouble());
 					historyPrice.setPrice(marketPrice.asDouble());	
 					highNode = objNode.findPath("high");
 					if (highNode.isMissingNode())
@@ -257,12 +300,17 @@ public class GetYahooHistQuote extends GetQuoteTask {
 					historyPrice.setTradeDateInt(DateUtil.convertDateToInt(Date.from(time)));
 					if (historyPrice.getTradeDateInt()<= lastPriceDate)
 						break;
+					if(Main.params.getHistory() && lastPriceDate !=null && zone!=null) {
+						debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Getting history up to "+lastPriceDate);
+					}
 					quotePrice.addHistory(historyPrice.getTradeDateInt(), historyPrice.getPrice(),historyPrice.getHighPrice(), historyPrice.getLowPrice(),historyPrice.getVolume());
 				}
 				else {
-					if (marketPrice.isNull())
+					if (marketPrice.isNull()) {
+						debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.INFO,"No market price for  "+convTicker);
 						continue;
-					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Price found");
+					}
+					debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Price found "+marketPrice.asDouble());
 					quotePrice.setPrice(marketPrice.asDouble());	
 					highNode =objNode.findPath("high");
 					if (highNode.isMissingNode())
@@ -297,14 +345,16 @@ public class GetYahooHistQuote extends GetQuoteTask {
 					quotePrice.setTradeDate(formatTime.format(dateTime));
 					quotePrice.setTradeDateInt(DateUtil.convertDateToInt(Date.from(time)));
 					priceFound = true;
-					if(Main.params.getHistory() && lastPriceDate !=null && zone!=null) {
-						debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.DETAILED,"Getting history up to "+lastPriceDate);
-					}
 				}
 			}
 			return;
 		} catch (IOException e) {
+			debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.INFO,"Cannot parse response for  "+convTicker);
 			throw new IOException("Cannot parse response for symbol=" + ticker + e.getMessage(),e);
+		} catch (Exception e1) {
+			debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.INFO,"Cannot parse response for  "+convTicker+" "+e1.getMessage());
+			throw new IOException("Cannot parse response for symbol=" + ticker + e1.getMessage(),e1);
+			
 		}
 	}
 }

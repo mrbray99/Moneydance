@@ -252,19 +252,14 @@ public class GetFTHDQuote extends GetQuoteTask {
 	}
 	private void findDate(Element topDiv, QuotePrice quotePrice) throws IOException {
 		Date date;
+		ScanDate scanD = new ScanDate();
 		String dateText = topDiv.child(0).child(0).text();
 		SimpleDateFormat simpleFormat = new SimpleDateFormat("EEE, MMM dd,yyyy", Locale.ENGLISH);
 		try {
-			date=simpleFormat.parse(dateText);
+			date=scanD.parseString(dateText);
 		}
-		catch (ParseException e) {
-			simpleFormat = new SimpleDateFormat("MMM dd yyyy'.'");
-			try {
-				date=simpleFormat.parse(dateText);
-				}
-			catch (ParseException e2) {
-					throw new IOException("Trade Date parse error "+e2.getMessage());
-			}
+		catch (IOException e) {
+				throw new IOException("Trade Date parse error "+e.getMessage());
 		}
 		quotePrice.setTradeDateInt(DateUtil.convertDateToInt(date));
 		simpleFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");

@@ -227,6 +227,7 @@ public class GetFTQuote extends GetQuoteTask {
 	}
 	private void findDate(Element topDiv, QuotePrice quotePrice) throws IOException {
 		String cssQuery;
+		ScanDate scanD = new ScanDate();
 		Date date;
 		cssQuery = "div.mod-disclaimer";
 		Elements dateElement = topDiv.select(cssQuery);
@@ -235,24 +236,21 @@ public class GetFTQuote extends GetQuoteTask {
 		}
 		String dateText = dateElement.text();
 		int asof = dateText.indexOf("as of ");
-		SimpleDateFormat simpleFormat = new SimpleDateFormat("MMM dd yyyy HH:ss z");
+		SimpleDateFormat simpleFormat = new SimpleDateFormat("MMM dd yyyy");
 		if (asof < 0) {
 			date=new Date();
 		}
 		else {
 			asof += 6;   // length 'as of '
 			String dateString = dateText.substring(asof);
+/*			String monthStr = dateString.substring(0,3);
+			String dayStr = dateString.substring(4,6);
+			String yearStr = dateString.substring(7,11); */
 			try {
-				date=simpleFormat.parse(dateString);
+				date=scanD.parseString(dateString);
 			}
-			catch (ParseException e) {
-				simpleFormat = new SimpleDateFormat("MMM dd yyyy'.'");
-				try {
-					date=simpleFormat.parse(dateString);
-				}
-				catch (ParseException e2) {
-					throw new IOException("Trade Date parse error "+e2.getMessage());
-				}
+			catch (IOException e) {
+					throw new IOException("Trade Date parse error "+e.getMessage());
 			}
 		}
 		simpleFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
