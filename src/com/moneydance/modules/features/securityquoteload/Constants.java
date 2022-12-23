@@ -58,6 +58,7 @@ public abstract class Constants {
 	public static final String UNSELECTEDBLACKIMAGE = "unselectedblack.png";
 	public static final String UNSELECTEDLIGHTIMAGE = "unselectedlight.png";
 	public static final String QUOTELOADIMAGE = "quote loader.png";
+	public static final String MISSINGDATE="19000101T00:00";
 	
 
     /*
@@ -108,6 +109,7 @@ public abstract class Constants {
 	public static final String TESTTICKERCMD = "testticker";
 	public static final String RUNAUTOCMD = "runauto";
 	public static final String CHECKAUTOCMD = "checkauto";
+	public static final String CHECKAUTOSYNC = "checkautosync";
 	public static final String AUTODONECMD = "autodone";
 	public static final String MANUALDONECMD = "manualdone";
 	public static final String GETBUILDNUM ="getbuildnum";

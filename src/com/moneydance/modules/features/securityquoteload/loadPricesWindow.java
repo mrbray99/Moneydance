@@ -39,6 +39,7 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -46,6 +47,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -56,24 +58,32 @@ import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
+import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -84,6 +94,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import org.apache.http.NameValuePair;
@@ -244,6 +255,9 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			}
 
 		});
+		this.getRootPane().getActionMap().put("close-window", new CloseAction(this));
+ 	      this.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("control W"), "close-window");
+ 	     this.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("meta W"), "close-window");
 		/*
 		 * set up internal tables
 		 */
@@ -1350,8 +1364,12 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 					String currency = price.getCurrency();
 					if (currency.endsWith("-"))
 						ticker = currency+baseCurrencyID;
-					else
-						ticker = baseCurrencyID+currency+Constants.CURRENCYTICKER;
+					else {
+						if (baseCurrencyID.equals("USD"))
+							ticker = currency+Constants.CURRENCYTICKER;
+						else
+							ticker = baseCurrencyID+currency+Constants.CURRENCYTICKER;
+					}
 				}
 				else {
 					type = Constants.STOCKTYPE;
@@ -1503,6 +1521,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		debugInst.debug("loadPricesWindow", "testTicker", MRBDebug.INFO, "URI "+url);
 		URI uri=null;
 		String convUrl = url.replace("^", "%5E");
+		convUrl = convUrl.replace(" ", "%20");
 		try {
 			uri = new URI(convUrl.trim());
 		} catch (URISyntaxException e) {
@@ -1534,6 +1553,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.INFO, "URI "+url);
 		URI uri=null;
 		String convUrl = url.replace("^", "%5E");
+		convUrl = convUrl.replace(" ", "%20");
 		try {
 			
 			uri = new URI(convUrl.trim());
@@ -1555,13 +1575,20 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			if (price.getName().compareToIgnoreCase(Constants.CURRENCYTYPE) == 0) {
 				String ticker = price.getValue();
 				if (ticker.endsWith(Constants.CURRENCYTICKER))
-					ticker = Constants.CURRENCYID+ticker.substring(3, ticker.indexOf(Constants.CURRENCYTICKER));
+					if (baseCurrencyID.equals("USD"))
+						ticker = Constants.CURRENCYID+ticker.substring(0, ticker.indexOf(Constants.CURRENCYTICKER));
+					else
+						ticker = Constants.CURRENCYID+ticker.substring(3, ticker.indexOf(Constants.CURRENCYTICKER));
 				else {
 					if (ticker.contains("-")) {
 						ticker = Constants.CURRENCYID+ticker.substring(0, ticker.indexOf('-')+1);
 					}
-					else
-						ticker = Constants.CURRENCYID+ticker.substring(3);
+					else {
+						if(baseCurrencyID.equals("USD"))
+							ticker = Constants.CURRENCYID+ticker.substring(0,2);
+						else
+							ticker = Constants.CURRENCYID+ticker.substring(3);
+					}
 				}
 
 				newPrice = new SecurityPrice(ticker);
@@ -1581,6 +1608,10 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			}
 			if (price.getName().compareToIgnoreCase(Constants.TRADEDATETYPE) == 0) {
 				String isoDate = price.getValue();
+				if (isoDate.equals(Constants.MISSINGDATE)) {
+					ZonedDateTime today=ZonedDateTime.now(ZoneId.systemDefault());
+					isoDate = today.toString();
+				}
 				String tradeDate = isoDate.substring(0, isoDate.indexOf("T"));
 				tradeDate = tradeDate.replaceAll("-", "");
 				debugInst.debug("loadPricesWindow", "updatePrices", MRBDebug.DETAILED, "Trade Dates Sent="+isoDate+" extracted="+tradeDate);                
@@ -2310,10 +2341,17 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			params.setExportFolder(exportFolder);
 			fileName.setText("Export Folder : "+params.getExportFolder());
 		}
-		
-
-
-
+	}
+	public class CloseAction extends AbstractAction{
+		private Window window;
+		public CloseAction(Window window) {
+			this.window = window;
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (window == null) return;
+			window.dispatchEvent(new WindowEvent(window,WindowEvent.WINDOW_CLOSING));
+		}
 	}
 }
 

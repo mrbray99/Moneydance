@@ -52,6 +52,8 @@
 {"exchange":"Muscat",	"name":"Muscat Securities Market",	"ftPrefix":"",	"ftSuffix":":MUS",	"yahooPrefix":"",	"yahooSuffix":".ON",	"multiplier":"1"},
 {"exchange":"Nairobi",	"name":"Nairobi Stock Exchange",	"ftPrefix":"",	"ftSuffix":":NAI",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
 {"exchange":"NASDAQ",	"name":"NASDAQ",	"ftPrefix":"",	"ftSuffix":"",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
+{"exchange":"NASDAQ CCM",	"name":"Nasdaq Consolidated Capital Market",	"ftPrefix":"",	"ftSuffix":":NAQ",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
+{"exchange":"NASDAQ CLP",	"name":"NASDAQ Consolidated Large Cap",	"ftPrefix":"",	"ftSuffix":":NMQ",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
 {"exchange":"NASDAQ GLO",	"name":"NASDAQ Global Select",	"ftPrefix":"",	"ftSuffix":":NSQ",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
 {"exchange":"NE",  "name":"NEO Exchange Toronto",  "ftPrefix":"",  "ftSuffix":"",  "yahooPrefix":"",   "yahooSuffix":".NE",    "multiplier":"1"},
 {"exchange":"NSE",	"name":"National Stock Exchange of India",	"ftPrefix":"",	"ftSuffix":":NSI",	"yahooPrefix":"",	"yahooSuffix":".NS",	"multiplier":"1"},

@@ -50,6 +50,30 @@ public class ScanDate {
 			return null;
 		}
 	}
+	public int parseYahooDate(String yahooStr) {
+		MonthStr monthEntry;
+		String month = yahooStr.trim().substring(0,3);
+		int dayIn = yahooStr.trim().indexOf(" ");
+		if (dayIn <0)
+			return 19000101;
+		String rest = yahooStr.trim().substring(dayIn);
+		int comma = rest.indexOf(",");
+		if (comma < 1)
+			return 19000101;
+		String day = rest.substring(0,comma).trim();
+		String year = rest.substring(comma+1).trim();
+		monthEntry=MonthStr.findShortMonth(month);
+		int dayInt;
+		int yearInt;
+		try {
+			dayInt = Integer.parseInt(day);
+			yearInt = Integer.parseInt(year);
+		}
+		catch (NumberFormatException e){
+			return 19000101;
+		}
+		return yearInt*10000+(monthEntry.getMonth()+1)*100+dayInt;
+	}
 	public Date parseString(String dateStr) throws IOException{
 		String [] parts= new String[5];
 		String dayOfWeek;

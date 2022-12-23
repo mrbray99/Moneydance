@@ -33,163 +33,118 @@
  */
 package com.moneydance.modules.features.securityquoteload;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
-import java.util.TimeZone;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attributes;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 
 public class GetYahooQuote extends GetQuoteTask {
 
 	private String yahooSecURL = "https://finance.yahoo.com/quote/";
 	private String yahooCurrURL = "https://finance.yahoo.com/quote/";
-	private String currencyID="";
+	private ScanDate scanDate=new ScanDate();
 	public GetYahooQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep, String tidp) {
 		super(tickerp, listenerp, httpClientp, tickerTypep,  tidp);
 		String convTicker = ticker.replace("^", "%5E");
 		if (tickerType == Constants.STOCKTYPE)
-			url = yahooSecURL+convTicker+"?p="+convTicker;
+			url = yahooSecURL+convTicker+"?p="+convTicker+"&.tscr=fin-srch";
 		if (tickerType == Constants.CURRENCYTYPE)
 			url = yahooCurrURL+convTicker+"?p="+convTicker;
 		debugInst.debug("GetYahooQuote","GetYahooQuote",MRBDebug.DETAILED,"Executing :"+url);
 	}
 	@Override
 	synchronized public QuotePrice analyseResponse(CloseableHttpResponse response) throws IOException {
+		
 		QuotePrice quotePrice = new QuotePrice();
 		HttpEntity entity = response.getEntity();
+		InputStream stream = entity.getContent();
+		Document doc = Jsoup.parse(stream, "UTF-8", "http://localhost");
 		try {
-			InputStream stream = entity.getContent();
-			String buffer = getJsonString(stream);
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode nodes = mapper.readTree(buffer);
 			try {
-				parseDoc(nodes, quotePrice);
+				parseDoc(doc, quotePrice);
 			}
 			catch (IOException a) {
 				debugInst.debug("GetQuoteTask","analyseResponse",MRBDebug.INFO,"IOException "+a.getMessage());
 				throw new IOException(a);
 			}
-		}
-		catch (UnsupportedOperationException e) {
-			debugInst.debug("GetQuoteTask","analyseResponse",MRBDebug.INFO,"IOException "+e.getMessage());
-			throw new IOException(e);
-		}
-		catch (MalformedURLException e) {
-			throw (new IOException (e));
-		} catch (ClientProtocolException e) {
-			throw (new IOException (e));
-		} catch (IOException e) {
-			throw (new IOException (e));
-		} 
+	}
+	catch (UnsupportedOperationException e) {
+		throw new IOException(e);
+	}
+	catch (MalformedURLException e) {
+		throw (new IOException (e));
+	} catch (ClientProtocolException e) {
+		throw (new IOException (e));
+	} catch (IOException e) {
+		throw (new IOException (e));
+	} 
 
-		finally {
+	finally {
 
-		}		
+	}		
 
 		return quotePrice;
 	}
-	private String getJsonString(InputStream stream) throws IOException {
-		String result=null;
-		BufferedReader reader = null;
+
+	private void parseDoc(Document doc, QuotePrice quotePrice) throws IOException {
+		String query = null;
+		Element crntLoc = null;
+		Attributes attribs;
 		try {
-			reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-			String buffer;
-			while ((buffer = reader.readLine()) !=null) {
-				if(buffer.contains("Currency in")) {
-					String currency = buffer.substring(buffer.indexOf("Currency in"), buffer.indexOf("Currency in")+15);
-					if (!currency.contains("{"))
-						currencyID = currency.substring(12, 15);
-				}		
-				if (buffer.startsWith("root.App.main")) {
-					result = buffer;
+			String formattedTicker = URLDecoder.decode(ticker,StandardCharsets.UTF_8.name());;
+			query = "fin-streamer[data-symbol=\""+formattedTicker+"\"][data-field=\"regularMarketPrice\"]";
+			crntLoc = doc.selectFirst(query);
+			if (crntLoc == null) {
+				throw new IOException("Cannot find " + query);
+			}		
+			attribs = crntLoc.attributes();
+			String priceStr = attribs.get("value");
+			quotePrice.setPrice(Double.parseDouble(priceStr));
+			quotePrice.setTradeDate(Constants.MISSINGDATE);
+			quotePrice.setTradeDateInt(19000101);
+			Elements spans = doc.getElementsByTag("span");
+			if (spans == null) {
+				throw new IOException("Cannot find Currency");
+			}
+			String cur="";
+			for (int i=0;i<spans.size();i++) {
+				Element elem = spans.get(i);
+				List<TextNode> children = elem.textNodes();
+				for (TextNode text:children) {
+					if (text.text().contains("Currency in")) {
+							int place = text.text().indexOf("Currency in")+12;
+							cur = text.text().substring(place, place+3);
+							break;
+						}
+				}
+				if (!cur.isEmpty())
 					break;
-				}
 			}
-		}
-		finally {
-			if (reader !=null) {
-				try {
-					reader.close();
-				}
-				finally {
-					
-				}
-			}	
-		}
-		if (result == null)
-			throw new IOException("Cannot find Yahoo price data");
-		if (result.indexOf("{") > 0)
-			result = result.substring(result.indexOf("{"));
-		return result;
-	}
-	private void parseDoc(JsonNode nodes, QuotePrice quotePrice) throws IOException {
-		JsonNode tempNode;
-		try {
-			JsonNode priceNode = nodes.findPath("price");
-			if (priceNode.isMissingNode())
-				throw new IOException("Price node not found");
-			JsonNode marketPrice = priceNode.findPath("regularMarketPrice");
-			if (marketPrice.isMissingNode() || (tempNode = marketPrice.path("raw")).isMissingNode()) 
-				throw new IOException("Market Price not found");
-			quotePrice.setPrice(tempNode.asDouble());	
-			JsonNode currencyNode = priceNode.findPath("currency");
-			if (currencyNode.isMissingNode()) {
-				if (currencyID.isEmpty())
-					throw new IOException("Currency not found");
-				quotePrice.setCurrency(currencyID);
-			}
-			else
-				quotePrice.setCurrency(currencyNode.asText());	
-			JsonNode volumeNode = priceNode.findPath("regularMarketVolume");
-			if (volumeNode.isMissingNode() || (tempNode = volumeNode.path("raw")).isMissingNode()) 
-				quotePrice.setVolume(0l);
-			else
-				quotePrice.setVolume(tempNode.asLong());	
-			JsonNode marketTimeNode = priceNode.findPath("regularMarketTime");
-			if (marketTimeNode.isMissingNode()) {
-				quotePrice.setTradeDate("19000101T00:00");
-				return;
-			}
-			Long marketTime = marketTimeNode.asLong();
-			JsonNode quoteStoreNode = nodes.findPath("QuoteSummaryStore");
-			if (quoteStoreNode.isMissingNode()|| (tempNode = quoteStoreNode.path("quoteType")).isMissingNode()) {
-				quotePrice.setTradeDate("19000101T00:00");
-				return;
-			}
-			JsonNode queryNode = tempNode.findPath("exchangeTimezoneName");
-			if (queryNode.isMissingNode()) {
-				quotePrice.setTradeDate("19000101T00:00");
-				return;
-			}
-			String timezone = queryNode.asText();
-			TimeZone zone= TimeZone.getTimeZone(timezone);
-			Instant time = Instant.ofEpochSecond(marketTime);
-			ZoneId zoneId = zone.toZoneId();
-			ZonedDateTime dateTime = ZonedDateTime.ofInstant(time, zoneId);
-			DateTimeFormatter formatTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-			quotePrice.setTradeDate(formatTime.format(dateTime));
-			return;
+			if (cur.isEmpty())
+				throw new IOException("Cannot find Currency");
+			quotePrice.setCurrency(cur);
 		} catch (IOException e) {
 			throw new IOException("Cannot parse response for symbol=" + ticker + e.getMessage(),e);
+		} catch (NullPointerException e2) {
+			throw new IOException("Cannot parse response for symbol=" + ticker + e2.getMessage(),e2);			
+		}  catch (NumberFormatException e3) {
+			throw new IOException("Cannot parse response for symbol=" + ticker + e3.getMessage(),e3);			
 		}
+	
+	return;
 	}
-
 }
