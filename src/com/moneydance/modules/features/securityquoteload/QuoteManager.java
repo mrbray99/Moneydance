@@ -231,7 +231,7 @@ public class QuoteManager implements QuoteListener {
 				totalQuotes++;
 			}
 			for (String currency : currencies) {
-				GetQuoteTask task = new GetYahooQuote(currency, this, httpClient,Constants.CURRENCYTYPE,tid);
+				GetQuoteTask task = new GetYahooTDQuote(currency, this, httpClient,Constants.CURRENCYTYPE,tid);
 				tasks.add(task);
 				totalQuotes++;
 			}
@@ -262,6 +262,57 @@ public class QuoteManager implements QuoteListener {
 				try {
 					future.get();
 					debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo task completed");
+				} catch (InterruptedException e) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+				} catch (ExecutionException e) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
+				} finally {
+				}
+			}
+			String doneUrl ="moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.DONEQUOTECMD+"?"+Constants.TIDCMD+"="+tid;
+			doneUrl += "&"+Constants.TOTALTYPE+"="+totalQuotes;
+			doneUrl += "&"+Constants.OKTYPE +"="+successful;
+			doneUrl += "&" + Constants.ERRTYPE+"="+failed;
+			Main.context.showURL(doneUrl);
+		}
+		if (source.equals(Constants.SOURCEYAHOOTD)) {
+			for (String stock : stocks) {
+				GetQuoteTask task = new GetYahooTDQuote(stock, this, httpClient,Constants.STOCKTYPE,tid);
+				tasks.add(task);
+				totalQuotes++;
+			}
+			for (String currency : currencies) {
+				GetQuoteTask task = new GetYahooTDQuote(currency, this, httpClient,Constants.CURRENCYTYPE,tid);
+				tasks.add(task);
+				totalQuotes++;
+			}
+			List<Future<QuotePrice>> futures = null;
+			Long timeout;
+			if (tasks.size() <100)
+				timeout=120L;
+			else if (tasks.size()>99 && tasks.size() < 200)
+				timeout = 240L;
+			else
+				timeout=360L;
+			try {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo TD Tasks invoking "+tasks.size()+" queries");
+				futures = threadPool.invokeAll(tasks, timeout, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.INFO,e.getMessage());
+			}
+
+			if (futures == null) {
+				debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo TD Failed to invokeAll");
+				return;
+			}
+			for (Future<QuotePrice> future : futures) {
+				if (future.isCancelled()) {
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo TD One of the tasks has timeout.");
+					continue;
+				}
+				try {
+					future.get();
+					debugInst.debug("QuoteManager","getQuotes",MRBDebug.SUMMARY,"Yahoo TD task completed");
 				} catch (InterruptedException e) {
 					debugInst.debug("QuoteManager","getQuotes",MRBDebug.DETAILED,e.getMessage());
 				} catch (ExecutionException e) {

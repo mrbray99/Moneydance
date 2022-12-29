@@ -71,8 +71,8 @@ public class Parameters implements Serializable{
 	public transient static String [] maximums = {"No Limit","6","7","8","9"};
 	private transient SortedMap<String, Integer> mapAccountsList;
 	private transient MRBDebug debugInst = Main.debugInst;
-	private transient String[] arrSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT,Constants.YAHOOHIST,Constants.FTHIST};
-	private transient String[] curSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.YAHOOHIST,Constants.FT};
+	private transient String[] arrSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT,Constants.YAHOOHIST,Constants.FTHIST,Constants.YAHOOTD};
+	private transient String[] curSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.YAHOOHIST,Constants.FT,Constants.YAHOOTD};
 	private transient List<NewAccountLine>listNewAccounts;
 	private transient NewParameters newParams;
 	private transient ExchangeList exchanges;
@@ -545,7 +545,7 @@ public class Parameters implements Serializable{
 		String newTicker = ticker;
 		ExchangeLine line = mapExchangeLines.get(exchange);
 		if (line!=  null) {
-			if (source == Constants.YAHOOINDEX || source == Constants.YAHOOHISTINDEX)
+			if (source == Constants.YAHOOINDEX || source == Constants.YAHOOHISTINDEX|| source==Constants.YAHOOTDINDEX)
 				newTicker = line.getYahooPrefix()+ticker+line.getYahooSuffix();
 			if (source == Constants.FTINDEX || source ==Constants.FTHISTINDEX)
 				newTicker = line.getFtPrefix()+ticker+line.getFtSuffix();

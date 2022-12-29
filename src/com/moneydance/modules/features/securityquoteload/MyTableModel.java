@@ -489,7 +489,7 @@ public class MyTableModel extends DefaultTableModel {
 	 */
 	public void selectAllExchanges(String exchange) {
 		String strKey;
-		for (int i=0;i<getRowCount();i++){
+		for (int i=0;i<listAccounts.size();i++){
 			strKey = listCurrent.get(i).getKey();
 			if (strKey.contains(Constants.TICKEREXTID))
 				continue;

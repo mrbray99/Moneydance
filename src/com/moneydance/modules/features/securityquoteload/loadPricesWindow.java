@@ -58,21 +58,17 @@ import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
-import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -114,6 +110,7 @@ import com.moneydance.awt.JDateField;
 import com.moneydance.modules.features.mrbutil.HelpMenu;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.Platform;
+import com.moneydance.modules.features.securityquoteload.Constants.QuoteSource;
 
 
 public class loadPricesWindow extends JFrame implements ActionListener, TaskListener {
@@ -135,10 +132,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	protected SortedMap<String,String>selectedExchanges;
 	protected SortedMap<String,String>alteredTickers;
 	protected SortedMap<String,ExtraFields>volumes;
-	protected List<SecurityPrice> yahooStocksList;
-	protected List<SecurityPrice> yahooHistStocksList;
-	protected List<SecurityPrice> ftStocksList;
-	protected List<SecurityPrice> ftHistStocksList;
+	protected SortedMap<QuoteSource, List<SecurityPrice>> sourceList;
 	protected JProgressBar tasksProgress;
 	protected GetQuotesProgressMonitor listener;
 	protected MyTableModel pricesModel;
@@ -151,6 +145,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 	protected Boolean addVolume = false;
 	protected int runtype = 0;
 	protected double multiplier;
+
 
 	/*
 	 * Panels, Preferences and window sizes
@@ -1253,16 +1248,19 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			this.listener = new GetQuotesProgressMonitor(null,this,tickerStatus);
 		if (runtype == Constants.MANUALRUN)
 			getPricesBtn.setEnabled(false);
-		yahooStocksList= new ArrayList<>();
-		yahooHistStocksList= new ArrayList<>();
-		ftStocksList= new ArrayList<>();
-		ftHistStocksList= new ArrayList<>();
+		sourceList = new TreeMap<QuoteSource,List<SecurityPrice>>();
+		for (Integer srce:Constants.SOURCELIST) {
+			QuoteSource.findSource(srce).setUuid(UUID.randomUUID().toString());
+			sourceList.put(QuoteSource.findSource(srce), new ArrayList<SecurityPrice>());
+		}
 		for (AccountLine alTemp : params.getAccountsList()){
-			if (alTemp.getSource() == Constants.YAHOOINDEX) {
-				if ((alTemp.isCurrency() && currencyTab.containsKey(alTemp.getName()))) {
-					if(!securityOnly ){
-						SecurityPrice spLine = new SecurityPrice (alTemp.getName());
-						yahooStocksList.add(spLine);
+			QuoteSource qs = QuoteSource.findSource(alTemp.getSource());
+			if (qs==null)
+				continue;
+			if ((alTemp.isCurrency() && currencyTab.containsKey(alTemp.getName()))) {
+				if(!securityOnly ){
+					SecurityPrice spLine = new SecurityPrice (alTemp.getName());
+						sourceList.get(qs).add(spLine);
 					}
 				}
 				else if(!alTemp.isCurrency() && accountsTab.containsKey(alTemp.getName())){
@@ -1272,64 +1270,15 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 							spLine.setExchange(selectedExchanges.get(alTemp.getName()));
 						else
 							spLine.setExchange(null);
-						yahooStocksList.add(spLine);
+						sourceList.get(qs).add(spLine);
 					}
 				}
-			}
-			if (alTemp.getSource() == Constants.FTINDEX) {
-				if (alTemp.isCurrency() && currencyTab.containsKey(alTemp.getName())) {
-					if (!securityOnly) {
-						SecurityPrice spLine = new SecurityPrice (alTemp.getName());
-						ftStocksList.add(spLine);
-					}
-				}
-				else {
-					if (!alTemp.isCurrency() && accountsTab.containsKey(alTemp.getName())){
-						if (!currencyOnly) {
-							SecurityPrice spLine = new SecurityPrice (alTemp.getName());
-							if (selectedExchanges.containsKey(alTemp.getName()))
-								spLine.setExchange(selectedExchanges.get(alTemp.getName()));
-							else
-								spLine.setExchange(null);
-							ftStocksList.add(spLine);
-						}
-					}
-				}
-			}
-			if (alTemp.getSource() == Constants.YAHOOHISTINDEX) {
-				if (alTemp.isCurrency() && currencyTab.containsKey(alTemp.getName())) {
-					if (!securityOnly) {
-						SecurityPrice spLine = new SecurityPrice (alTemp.getName());
-						yahooHistStocksList.add(spLine);
-					}
-				}
-				else {
-					if (!alTemp.isCurrency() && accountsTab.containsKey(alTemp.getName())){
-						if (!currencyOnly) {
-							SecurityPrice spLine = new SecurityPrice (alTemp.getName());
-							if (selectedExchanges.containsKey(alTemp.getName()))
-								spLine.setExchange(selectedExchanges.get(alTemp.getName()));
-							else
-								spLine.setExchange(null);
-							yahooHistStocksList.add(spLine);
-						}
-					}
-				}
-			}
-			if (alTemp.getSource() == Constants.FTHISTINDEX) {
-				if (!alTemp.isCurrency() && accountsTab.containsKey(alTemp.getName())){
-					if (!currencyOnly) {
-						SecurityPrice spLine = new SecurityPrice (alTemp.getName());
-						if (selectedExchanges.containsKey(alTemp.getName()))
-							spLine.setExchange(selectedExchanges.get(alTemp.getName()));
-						else
-							spLine.setExchange(null);
-						ftHistStocksList.add(spLine);
-					}
-				}
-			}
+
 		}
-		if(yahooStocksList.size() == 0 && ftStocksList.size()==0 && yahooHistStocksList.size() == 0 && ftHistStocksList.size() == 0) {
+		int totalQuotes=0;
+		for (List<SecurityPrice>item:sourceList.values())
+			totalQuotes+=item.size();
+		if(totalQuotes==0) {
 			if (runtype == Constants.MANUALRUN)
 				getPricesBtn.setEnabled(true);
 			else {
@@ -1343,161 +1292,65 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 				
 			return;
 		}
-		listener.setSubTaskSize(yahooStocksList.size()+ftStocksList.size()+yahooHistStocksList.size()+ftHistStocksList.size());
+		listener.setSubTaskSize(totalQuotes);
 		completed = false;
 		/*
 		 * let main process know we are starting a quote
 		 */
-		int totalQuotes= yahooStocksList.size()+yahooHistStocksList.size()+ftStocksList.size()+ftHistStocksList.size();
 		Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.STARTQUOTECMD+"?numquotes="+totalQuotes);
-		String yahooUUID = UUID.randomUUID().toString();
-		String yahooHistUUID = UUID.randomUUID().toString();
-		String ftUUID = UUID.randomUUID().toString();
-		String ftHistUUID = UUID.randomUUID().toString();
-		if (yahooStocksList.size() > 0) {
+		for (QuoteSource srce :QuoteSource.values()) {
+			if (sourceList.get(srce)==null ||sourceList.get(srce).isEmpty() ) 
+				continue;
+			
 			String url=null;
-			String type;
-			String ticker;
-			for (SecurityPrice price : yahooStocksList){
-				if (price.isCurrency()) {
-					type = Constants.CURRENCYTYPE;
-					String currency = price.getCurrency();
-					if (currency.endsWith("-"))
-						ticker = currency+baseCurrencyID;
+			String type="";
+			String ticker="";
+			for (SecurityPrice price : sourceList.get(srce)){
+					if (price.isCurrency()) {
+						type = Constants.CURRENCYTYPE;
+						String currency = price.getCurrency();
+						if (currency.endsWith("-"))
+							ticker = currency+baseCurrencyID;
+						else {
+							switch (srce) {
+							case FT:
+							case FTHD:
+								ticker = baseCurrencyID+currency;
+								break;
+							case YAHOO:
+							case YAHOOHD:
+							case YAHOOTD:
+								if (baseCurrencyID.equals("USD"))
+									ticker = currency+Constants.CURRENCYTICKER;
+								else
+									ticker = baseCurrencyID+currency+Constants.CURRENCYTICKER;
+								break;
+							default:
+								break;						
+							}
+						}
+					}
 					else {
-						if (baseCurrencyID.equals("USD"))
-							ticker = currency+Constants.CURRENCYTICKER;
-						else
-							ticker = baseCurrencyID+currency+Constants.CURRENCYTICKER;
+						type = Constants.STOCKTYPE;
+						ticker = price.getTicker();
+						String newTicker = params.getNewTicker(ticker,price.getExchange(), srce.getSource());
+						if (!newTicker.equals(ticker)){
+							alteredTickers.put(newTicker,ticker);
+							debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.DETAILED, "Ticker changed from "+ticker+" to "+newTicker);                
+							ticker = newTicker;
+						}
 					}
-				}
-				else {
-					type = Constants.STOCKTYPE;
-					ticker = price.getTicker();
-					String newTicker = params.getNewTicker(ticker,price.getExchange(), Constants.YAHOOINDEX);
-					if (!newTicker.equals(ticker)){
-						alteredTickers.put(newTicker,ticker);
-						debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.DETAILED, "Yahoo Ticker changed from "+ticker+" to "+newTicker);                
-						ticker = newTicker;
-					}
-				}
-				if (url==null)
-					url=newPriceUrl(Constants.SOURCEYAHOO,yahooUUID,ticker,type,-1);
-				else
-					url = url+addPriceUrl(ticker,type,-1);
-				if (listener !=null)
-					listener.started(price.getTicker(),yahooUUID);
-			}
-			debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.INFO, "URI "+url);
-			Main.context.showURL(url);		
-		}
-		if (yahooHistStocksList.size() > 0) {
-			String url=null;
-			String type;
-			String ticker;
-			String oldTicker;
-			for (SecurityPrice price : yahooHistStocksList){
-				if (price.isCurrency()) {
-					type = Constants.CURRENCYTYPE;
-					String currency = price.getCurrency();
-					if (currency.endsWith("-"))
-						ticker = currency+baseCurrencyID;
+					if (url==null)
+						url=newPriceUrl(Constants.SOURCES[srce.getSource()-1],srce.getUuid(),ticker,type,-1);
 					else
-						ticker = baseCurrencyID+currency+Constants.CURRENCYTICKER;
-					oldTicker = price.getTicker();
+						url = url+addPriceUrl(ticker,type,-1);
+					if (listener !=null)
+						listener.started(price.getTicker(),srce.getUuid());
 				}
-				else {
-					type = Constants.STOCKTYPE;
-					ticker = price.getTicker();
-					oldTicker = ticker;
-					String newTicker = params.getNewTicker(ticker,price.getExchange(), Constants.YAHOOHISTINDEX);
-					if (!newTicker.equals(ticker)){
-						alteredTickers.put(newTicker,ticker);
-						debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.DETAILED, "Yahoo History Ticker changed from "+ticker+" to "+newTicker);
-						ticker = newTicker;
-					}
-				}
-				Integer lastPriceDate = datesTab.get(oldTicker);
-				if (url==null)
-					url=newPriceUrl(Constants.SOURCEYAHOOHIST,yahooHistUUID,ticker,type,lastPriceDate);
-				else
-					url = url+addPriceUrl(ticker,type,lastPriceDate);
-				if (listener !=null)
-					listener.started(price.getTicker(),yahooHistUUID);
+				debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.INFO, "URI "+url);
+				Main.context.showURL(url);		
 			}
-			debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.INFO, "URI "+url);
-			Main.context.showURL(url);		
-		}
-		if (ftStocksList.size() > 0) {
-			String url=null;
-			String type;
-			String ticker;
-			for (SecurityPrice price : ftStocksList){
-				if (price.isCurrency()) {
-					type = Constants.CURRENCYTYPE;
-					String currency = price.getCurrency();
-					if (currency.endsWith("-"))
-						ticker = currency+baseCurrencyID;
-					else
-						ticker = baseCurrencyID+currency;
-				}
-				else {
-					type = Constants.STOCKTYPE;
-					ticker = price.getTicker();
-					String newTicker = params.getNewTicker(ticker,price.getExchange(), Constants.FTINDEX);
-					if (!newTicker.equals(ticker)){
-						alteredTickers.put(newTicker,ticker);
-						debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.DETAILED, "FT Ticker changed from "+ticker+" to "+newTicker);                
-						ticker = newTicker;
-				}
-				}
-				if (url==null)
-					url=newPriceUrl(Constants.SOURCEFT,ftUUID,ticker,type,-1);
-				else
-					url = url+addPriceUrl(ticker,type,-1);
-				if (listener !=null)
-					listener.started(price.getTicker(),ftUUID);
-			}
-			debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.INFO, "URI "+url);
-			Main.context.showURL(url);
-		}
-		if (ftHistStocksList.size() > 0) {
-			String url=null;
-			String type;
-			String ticker;
-			String oldTicker;
-			for (SecurityPrice price : ftHistStocksList){
-				if (price.isCurrency()) {
-					type = Constants.CURRENCYTYPE;
-					String currency = price.getCurrency();
-					if (currency.endsWith("-"))
-						ticker = currency+baseCurrencyID;
-					else
-						ticker = baseCurrencyID+currency;
-					oldTicker = ticker;
-				}
-				else {
-					type = Constants.STOCKTYPE;
-					ticker = price.getTicker();
-					oldTicker = ticker;
-					String newTicker = params.getNewTicker(ticker,price.getExchange(), Constants.FTHISTINDEX);
-					if (!newTicker.equals(ticker)){
-						alteredTickers.put(newTicker,ticker);
-						debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.DETAILED, "FT Hist Ticker changed from "+ticker+" to "+newTicker);                
-						ticker = newTicker;
-				}
-				}
-				Integer lastPriceDate = datesTab.get(oldTicker);
-				if (url==null)
-					url=newPriceUrl(Constants.SOURCEFTHIST,ftHistUUID,ticker,type,lastPriceDate);
-				else
-					url = url+addPriceUrl(ticker,type,lastPriceDate);
-				if (listener !=null)
-					listener.started(price.getTicker(),ftHistUUID);
-			}
-			debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.INFO, "URI "+url);
-			Main.context.showURL(url);
-		}
+
 	}
 
 	protected String newPriceUrl(String source, String tid, String stock, String type,Integer lastPriceDate) {
@@ -1568,26 +1421,53 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		List<NameValuePair> results = URLEncodedUtils.parse(uri, charSet);
 		SecurityPrice newPrice=null;
 		NumberFormat nf = NumberFormat.getNumberInstance();
+		QuoteSource srce=null;
 		for (NameValuePair price :results){
 			if (price.getName().compareToIgnoreCase(Constants.STOCKTYPE) == 0) {
 				newPrice = new SecurityPrice(price.getValue());
 			}
 			if (price.getName().compareToIgnoreCase(Constants.CURRENCYTYPE) == 0) {
 				String ticker = price.getValue();
-				if (ticker.endsWith(Constants.CURRENCYTICKER))
-					if (baseCurrencyID.equals("USD"))
-						ticker = Constants.CURRENCYID+ticker.substring(0, ticker.indexOf(Constants.CURRENCYTICKER));
-					else
+				if (ticker.endsWith(Constants.CURRENCYTICKER)) {
+					switch (srce) {
+					case FT:
+					case FTHD:
 						ticker = Constants.CURRENCYID+ticker.substring(3, ticker.indexOf(Constants.CURRENCYTICKER));
+						break;
+					case YAHOO:
+					case YAHOOHD:
+					case YAHOOTD:
+						if (baseCurrencyID.equals("USD"))
+							ticker = Constants.CURRENCYID+ticker.substring(0, ticker.indexOf(Constants.CURRENCYTICKER));
+						else
+							ticker = Constants.CURRENCYID+ticker.substring(3, ticker.indexOf(Constants.CURRENCYTICKER));
+						break;
+					default:
+						break;
+					}
+					}
 				else {
 					if (ticker.contains("-")) {
 						ticker = Constants.CURRENCYID+ticker.substring(0, ticker.indexOf('-')+1);
 					}
 					else {
-						if(baseCurrencyID.equals("USD"))
-							ticker = Constants.CURRENCYID+ticker.substring(0,2);
-						else
+						switch (srce) {
+						case FT:
+						case FTHD:
 							ticker = Constants.CURRENCYID+ticker.substring(3);
+							break;
+						case YAHOO:
+						case YAHOOHD:
+						case YAHOOTD:
+							if(baseCurrencyID.equals("USD")&&!uuid.isEmpty())
+								ticker = Constants.CURRENCYID+ticker.substring(0,2);
+							else
+								ticker = Constants.CURRENCYID+ticker.substring(3);
+							break;
+						default:
+							break;
+						
+						}
 					}
 				}
 
@@ -1622,6 +1502,12 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 			}
 			if (price.getName().compareToIgnoreCase(Constants.TIDCMD) == 0) {
 				uuid = price.getValue();
+				for (QuoteSource srcet:QuoteSource.values()) {
+					if (uuid.equals(srcet.getUuid())) {
+						srce=srcet;
+						break;
+					}
+				}
 			}
 			if (price.getName().compareToIgnoreCase(Constants.VOLUMETYPE) == 0) {
 				newPrice.setVolume(Long.parseLong(price.getValue()));

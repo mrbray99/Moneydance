@@ -89,6 +89,7 @@ public class MyTable extends JTable {
 	private JPopupMenu sourcePopup;
 	private JMenuItem sourceDoNotLoad;
 	private JMenuItem sourceYahoo;
+	private JMenuItem sourceYahooTD;
 	private JMenuItem sourceYahooHist;
 	private JMenuItem sourceFT;
 	private JMenuItem sourceFTHD;
@@ -343,6 +344,10 @@ public class MyTable extends JTable {
 					dm.updateAllSources(3);
 					return;
 				}
+				if (strAction.contains("Yahoo + TD")){
+					dm.updateAllSources(5);
+					return;
+				}
 				if (strAction.contains("Yahoo")){
 					dm.updateAllSources(1);
 					return;
@@ -378,6 +383,10 @@ public class MyTable extends JTable {
 		sourceFTHD.setText("Set all to FT HD");
 		sourcePopup.add(sourceFTHD);
 		sourceFTHD.addActionListener(popupListener);
+		sourceYahooTD = new JMenuItem();
+		sourceYahooTD.setText("Set all to Yahoo + TD");
+		sourcePopup.add(sourceYahooTD);
+		sourceYahooTD.addActionListener(popupListener);
 	}
 	@Override
 	public TableCellEditor getCellEditor(int row, int column) {
@@ -432,21 +441,16 @@ public class MyTable extends JTable {
 		String source = (String)dm.getValueAt(row,sourceCol);
 		int sourceid = 0;
 		String tickerSource="";
-		if (source.equals(Constants.YAHOO)) {
-			sourceid = Constants.YAHOOINDEX;
-			tickerSource = Constants.SOURCEYAHOO;
+		for (int i=0;i<Constants.SOURCELITS.length;i++) {
+			if (source.equals(Constants.SOURCELITS[i])) {
+				sourceid=Constants.SOURCELIST[i];
+				tickerSource = Constants.SOURCES[i];
+				break;
+			}
 		}
-		if (source.equals(Constants.YAHOOHIST)) {
-			sourceid = Constants.YAHOOHISTINDEX;
-			tickerSource = Constants.SOURCEYAHOOHIST;
-		}
-		if (source.equals(Constants.FT)) {
-			sourceid = Constants.FTINDEX;
-			tickerSource = Constants.SOURCEFT;
-		}
-		if (source.equals(Constants.FTHIST)) {
-			sourceid = Constants.FTHISTINDEX;
-			tickerSource = Constants.SOURCEFTHIST;
+		if (tickerSource.isEmpty()) {
+			JOptionPane.showMessageDialog(null,"You must select a source before testing");
+			return;
 		}
 		if (!exchange.isEmpty())
 			ticker = params.getNewTicker(ticker, exchange, sourceid);

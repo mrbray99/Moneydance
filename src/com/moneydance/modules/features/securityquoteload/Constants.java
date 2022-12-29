@@ -43,13 +43,17 @@ public abstract class Constants {
 	public static final Integer MINIMUMVERSIONNO = 2019;
 	public static final String YAHOO ="Yahoo";
 	public static final String YAHOOHIST ="Yahoo HD";
+	public static final String YAHOOTD ="Yahoo +TD";
 	public static final String FT ="FT";
 	public static final String FTHIST ="FT HD";
+	public static final String[] SOURCELITS= {YAHOO,FT,YAHOOHIST,FTHIST,YAHOOTD};
 	public static final String DONOTLOAD ="Do not load";
 	public static final Integer YAHOOINDEX = 1;
 	public static final Integer FTINDEX = 2;
 	public static final Integer YAHOOHISTINDEX = 3;
 	public static final Integer FTHISTINDEX = 4;
+	public static final Integer YAHOOTDINDEX=5;
+	public static final Integer[] SOURCELIST= {YAHOOINDEX, FTINDEX, YAHOOHISTINDEX, FTHISTINDEX,YAHOOTDINDEX};
 	public static final String[] AUTOTEXT = {"Manual Only","Daily","Weekly","Monthly","Quarterly","Yearly"};
 	public static final String[] TIMETEXT = {"At Start Up","02:00","04:00","06:00","08:00","09:00","11:00","13:00","15:00","17:00","19:00","21:00","22:00","23:00","24:00"};
 	public static final String CALENDARIMAGE = "calendar.png";
@@ -89,10 +93,11 @@ public abstract class Constants {
 	public static final String TOTALTYPE = "n";
 	public static final String TRADECURRTYPE = "c";
 	public static final String SOURCEYAHOOHIST = "yh";	
+	public static final String SOURCEYAHOOTD = "ytd";	
 	public static final String SOURCEYAHOO = "yahoo";
 	public static final String SOURCEFT = "ft";
 	public static final String SOURCEFTHIST = "fth";
-	public static final String[] SOURCES = {SOURCEYAHOO,SOURCEFT,SOURCEYAHOOHIST,SOURCEFTHIST};
+	public static final String[] SOURCES = {SOURCEYAHOO,SOURCEFT,SOURCEYAHOOHIST,SOURCEFTHIST,SOURCEYAHOOTD};
 	public static final Long TIMEOUT=20L;
 	public static final Long OVERALLTIMEOUT=20L;
 	public static final int TIMEOUTCOUNT=12;
@@ -226,4 +231,36 @@ public abstract class Constants {
     public static final int TASKSTARTED = 1;
     public static final int TASKFAILED = 2;
     public static final int TASKCOMPLETED = 3;
+    /*
+     * source management
+     */
+    public enum QuoteSource  {
+	    FT(FTINDEX),
+	    FTHD(FTHISTINDEX),
+	    YAHOO(YAHOOINDEX),
+	    YAHOOHD(YAHOOHISTINDEX),
+	    YAHOOTD(YAHOOTDINDEX);
+	    private Integer source;
+	    private String uuid="";
+	    QuoteSource(Integer sourceValue){
+		    source=sourceValue;
+	    }
+	    public Integer getSource() {
+		    return source;
+	    }
+	    public String getUuid() {
+		    return uuid;
+	    }
+	    public void setUuid(String uuid) {
+		    this.uuid=uuid;
+	    }
+	    public static QuoteSource findSource(Integer source) {
+		    for (QuoteSource qs:QuoteSource.values()) {
+			    if ( qs.getSource()==source)
+				    return qs;
+		    }
+		    return null;
+			    
+	    }
+    }
 }
