@@ -1298,6 +1298,7 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 		 * let main process know we are starting a quote
 		 */
 		Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.STARTQUOTECMD+"?numquotes="+totalQuotes);
+		Integer lastPriceDate=-1;
 		for (QuoteSource srce :QuoteSource.values()) {
 			if (sourceList.get(srce)==null ||sourceList.get(srce).isEmpty() ) 
 				continue;
@@ -1334,6 +1335,20 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 						type = Constants.STOCKTYPE;
 						ticker = price.getTicker();
 						String newTicker = params.getNewTicker(ticker,price.getExchange(), srce.getSource());
+						switch (srce) {
+						case YAHOOHD:
+						case FTHD:
+							lastPriceDate = datesTab.get(ticker);
+							break;
+						case FT:
+						case YAHOO:
+						case YAHOOTD:
+							lastPriceDate = -1;
+							break;
+						default:
+							break;
+						
+						}
 						if (!newTicker.equals(ticker)){
 							alteredTickers.put(newTicker,ticker);
 							debugInst.debug("loadPricesWindow", "getPrices", MRBDebug.DETAILED, "Ticker changed from "+ticker+" to "+newTicker);                
@@ -1341,9 +1356,9 @@ public class loadPricesWindow extends JFrame implements ActionListener, TaskList
 						}
 					}
 					if (url==null)
-						url=newPriceUrl(Constants.SOURCES[srce.getSource()-1],srce.getUuid(),ticker,type,-1);
+						url=newPriceUrl(Constants.SOURCES[srce.getSource()-1],srce.getUuid(),ticker,type,lastPriceDate);
 					else
-						url = url+addPriceUrl(ticker,type,-1);
+						url = url+addPriceUrl(ticker,type,lastPriceDate);
 					if (listener !=null)
 						listener.started(price.getTicker(),srce.getUuid());
 				}
