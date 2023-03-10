@@ -36,6 +36,9 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 
 import javax.swing.JButton;
@@ -48,112 +51,120 @@ import javax.swing.table.DefaultTableModel;
 
 import com.moneydance.awt.GridC;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
+import com.moneydance.modules.features.securityquoteload.view.SecTable;
+import com.moneydance.modules.features.securityquoteload.view.SecTableModel;
+import com.moneydance.modules.features.securityquoteload.view.SecurityTableLine;
 
+public class ExchangePopUp extends JDialog {
+	SortedMap<String, SecurityTableLine> securities;
+	List<String> listCodes;
+	List<ExchangeLine> listExchanges;
+	SortedMap<String, ExchangeLine> exchanges;
+	SecurityTableLine line;
+	String ticker;
+	String curExchange;
+	private final JTable exTable;
+	private final SecTableModel dm;
+	private final Parameters params;
+	private final ExchangeData model;
+	MRBDebug debugInst = Main.debugInst;
 
-public class ExchangePopUp extends JDialog
-{
-    SortedMap<String,ExchangeLine> mapExchanges;
-    ArrayList<String>listCodes;
-    ArrayList<ExchangeLine>listExchanges;
-    String ticker;
-    String curExchange;
-    private final JTable exTable;
-    private final MyTableModel dm; 
-    private final Parameters params;
-    private final ExchangeData model;
-    MRBDebug debugInst = Main.debugInst;
-    
-
-    public ExchangePopUp(int row,Parameters paramsp, MyTableModel priceModel)
-    {
-    	super((JFrame)null,"Select an Exchange",true);
-    	dm=priceModel;
-    	params = paramsp;
-    	ticker = (String)priceModel.getValueAt(row,MyTable.tickerCol);
-    	curExchange = (String)priceModel.getValueAt(row, MyTable.exchangeCol);
-    	BorderLayout layout = new BorderLayout();
-    	this.setLayout(layout);
-    	debugInst.debug("ExchangePopUp", "ExchangePopUp", MRBDebug.SUMMARY, "started ");
-    	mapExchanges = params.getExchangeLines();
-    	listCodes = new ArrayList<>(mapExchanges.keySet());
-    	listExchanges = new ArrayList<>(mapExchanges.values());
-    	// use JInternalFrame as pop up editor
-    	model = new ExchangeData();
-        exTable = new JTable(model);
+	public ExchangePopUp(int row, Parameters paramsp, SecTableModel priceModel) {
+		super((JFrame) null, "Select an Exchange", true);
+		dm = priceModel;
+		params = paramsp;
+		ticker = (String) priceModel.getValueAt(row, SecTable.tickerCol);
+		curExchange = (String) priceModel.getValueAt(row, SecTable.exchangeCol);
+		BorderLayout layout = new BorderLayout();
+		this.setLayout(layout);
+		debugInst.debug("ExchangePopUp", "ExchangePopUp", MRBDebug.SUMMARY, "started ");
+		securities = dm.getSecurities();
+		line = securities.get(ticker);
+		exchanges = params.getExchanges();
+		Set <String> codes=exchanges.keySet();
+		Collection <ExchangeLine> exchangeLines = exchanges.values();
+		listCodes = new ArrayList<String>(codes);
+		listExchanges =new ArrayList<ExchangeLine>(exchangeLines);
+		// use JInternalFrame as pop up editor
+		model = new ExchangeData();
+		exTable = new JTable(model);
 		exTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		exTable.getColumnModel().getColumn(1).setPreferredWidth(300);
 		exTable.setAutoCreateRowSorter(true);
 
-       	debugInst.debug("ExchangePopUp", "ExchangePopUp", MRBDebug.SUMMARY, "Rows cols "+exTable.getRowCount()+" "+ exTable.getColumnCount());
-       	JScrollPane scroll = new JScrollPane(exTable);
-        this.add(scroll,BorderLayout.CENTER);
-        for (int i=0;i<model.getRowCount();i++){
-        	if (((String)model.getValueAt(i,0)).equals(curExchange)) {
-        		exTable.setRowSelectionInterval(i,i);
-        		Rectangle rect = exTable.getCellRect(i, 0, false);
-        		exTable.scrollRectToVisible(rect);
-        	}
-        }
-        JPanel buttons = new JPanel(new GridBagLayout());
-        JButton okButton = new JButton("Ok");
-		okButton.addActionListener(new ActionListener () {
+		debugInst.debug("ExchangePopUp", "ExchangePopUp", MRBDebug.SUMMARY,
+				"Rows cols " + exTable.getRowCount() + " " + exTable.getColumnCount());
+		JScrollPane scroll = new JScrollPane(exTable);
+		this.add(scroll, BorderLayout.CENTER);
+		for (int i = 0; i < model.getRowCount(); i++) {
+			if (((String) model.getValueAt(i, 0)).equals(curExchange)) {
+				exTable.setRowSelectionInterval(i, i);
+				Rectangle rect = exTable.getCellRect(i, 0, false);
+				exTable.scrollRectToVisible(rect);
+			}
+		}
+		JPanel buttons = new JPanel(new GridBagLayout());
+		JButton okButton = new JButton("Ok");
+		okButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int selected = exTable.getSelectedRow();
 				if (selected != -1) {
 					String exchange = (String) model.getValueAt(selected, 0);
 					if (exchange.isEmpty())
-						params.setExchange(ticker, null);
+						line.setExchange(null);
 					else
-						params.setExchange(ticker, exchange);
+						line.setExchange(exchange);
 				}
+				dm.setIsDirty(true);
 				dm.fireTableDataChanged();
 				dispose();
 			}
-		});	
-        JButton cancelButton = new JButton("Cancel");
-		cancelButton.addActionListener(new ActionListener () {
+		});
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
-		});	
-
-
-        buttons.add(okButton,GridC.getc(0, 0).center().insets(5,20,5,5));
-        buttons.add(cancelButton,GridC.getc(1, 0).center().insets(5,20,5,5));
-        this.add(buttons,BorderLayout.SOUTH);
+		});
+		buttons.add(okButton, GridC.getc(0, 0).center().insets(5, 20, 5, 5));
+		buttons.add(cancelButton, GridC.getc(1, 0).center().insets(5, 20, 5, 5));
+		this.add(buttons, BorderLayout.SOUTH);
 		pack();
-        }
-     
-    public void close() {
-    }
+	}
+
+	public void close() {
+	}
 
 	private class ExchangeData extends DefaultTableModel {
 		@Override
 		public int getRowCount() {
 
-			return mapExchanges.size()+1;
+			return exchanges.size() + 1;
 		}
+
 		@Override
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		public Class getColumnClass(int c){
+		public Class getColumnClass(int c) {
 			return String.class;
 		}
 
 		@Override
 		public int getColumnCount() {
-				return 2;
-		}	
+			return 2;
+		}
+
 		@Override
 		public String getColumnName(int c) {
-			switch (c){
+			switch (c) {
 			case 0:
 				return "Code";
-			default :
+			default:
 				return "Name";
 			}
 		}
+
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			switch (columnIndex) {
@@ -163,18 +174,19 @@ public class ExchangePopUp extends JDialog
 			case 0:
 				if (rowIndex == 0)
 					return " ";
-				return  listCodes.get(rowIndex-1);
+				return listCodes.get(rowIndex - 1);
 			default:
 				if (rowIndex == 0)
 					return "Do not use an exchange";
-				return  listExchanges.get(rowIndex-1).getName();
+				return listExchanges.get(rowIndex - 1).getName();
 
 			}
 		}
+
 		@Override
-	    public boolean isCellEditable(int row, int col) {
+		public boolean isCellEditable(int row, int col) {
 			return false;
-	    }
+		}
 	}
-  
+
 }

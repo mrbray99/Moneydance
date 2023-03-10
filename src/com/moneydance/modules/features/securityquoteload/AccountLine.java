@@ -31,6 +31,8 @@
 package com.moneydance.modules.features.securityquoteload;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 /**
@@ -40,20 +42,21 @@ import com.moneydance.modules.features.mrbutil.MRBDebug;
  * @author Mike Bray
  *
  */
-@SuppressWarnings("serial")
 public class AccountLine implements Serializable{
 	private String name;
 	private int source;
 	private Boolean currencyFound;
+	private List<AccountSourceLine> alternates;
 	/**
 	 * Create class, uses the structure of the Ticker to determine if the account is a
 	 * currency
-	 * @param namep the Ticker of the account
+	 * @param name the Ticker of the account
 	 * @param sourcep the Source selected by the user
 	 */
-	public AccountLine(String namep, int sourcep){
-		name = namep;
-		source = sourcep;
+	public AccountLine(String name, int source){
+		this.name = name;
+		this.source = source;
+		this.alternates = new ArrayList<AccountSourceLine>();
 		currencyFound = false;
 		if (name.length() > 2)
 			if (name.substring(0, 3).equals(Constants.CURRENCYID))
@@ -96,4 +99,36 @@ public class AccountLine implements Serializable{
 	public Boolean isCurrency() {
 		return currencyFound;
 	}
+	/**
+	 *  adds/updates the alternative ticker for a particular source
+	 * @param source
+	 * @param alternate
+	 */
+	public void addAlternative(int source, String alternate) {
+		boolean found = false;
+		for (AccountSourceLine line :alternates) {
+			if (source == line.getSource()) {
+				found = true;
+				line.setAlternate(alternate);
+			}
+		}
+		if (!found) {
+			alternates.add(new AccountSourceLine(source,alternate));
+		}
+	}
+	public String getAlternate(int source) {
+		for (AccountSourceLine line :alternates) {
+			if (source == line.getSource()) {
+				return line.getAlternate();
+			}
+		}
+		return "";
+	}
+	public List<AccountSourceLine> getAlternates() {
+		return alternates;
+	}
+	public void setAlternates(List<AccountSourceLine> alternates) {
+		this.alternates = alternates;
+	}
+	
 }

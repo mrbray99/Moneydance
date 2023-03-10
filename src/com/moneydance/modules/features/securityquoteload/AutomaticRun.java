@@ -34,8 +34,12 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 import com.moneydance.modules.features.mrbutil.MRBDebug;
+import com.moneydance.modules.features.securityquoteload.view.CurTable;
+import com.moneydance.modules.features.securityquoteload.view.CurTableModel;
+import com.moneydance.modules.features.securityquoteload.view.SecTable;
+import com.moneydance.modules.features.securityquoteload.view.SecTableModel;
 
-public class AutomaticRun extends loadPricesWindow{
+public class AutomaticRun extends MainPriceWindow{
 
 		public AutomaticRun (Main mainp, int runtype)
 		{
@@ -43,26 +47,18 @@ public class AutomaticRun extends loadPricesWindow{
 			errorsFound = false;
 			errorTickers = new ArrayList<>();
 			main = mainp;
-			params = new Parameters();
-			Main.params=params;
+			params =Parameters.getParameters();
 			/*
 			 * set up internal tables
 			 */
-			newPricesTab = new TreeMap<> ();
-			newTradeDate = new TreeMap<>();
-			currentPriceTab = new TreeMap<> ();
-			datesTab = new TreeMap<> ();
-			accountsTab = new TreeMap<> ();
-			currencyTab = new TreeMap<> ();
-			tickerStatus = new TreeMap<> ();
-			tradeCurr = new TreeMap<>();
-			quotePrice = new TreeMap<>();
+			securitiesTable = new TreeMap<> ();
+			currenciesTable = new TreeMap<> ();
 			volumes = new TreeMap<>();
 			pseudoCurrencies = params.getPseudoCurrencies();
-			selectedExchanges = params.getExchangeSelect();
 			/*
 			 * Load base accounts and currencies
 			 */
+			accountSources = params.getSavedAccounts();
 			loadAccounts(Main.context.getRootAccount());
 			baseCurrency = Main.context.getCurrentAccountBook()
 					.getCurrencies()
@@ -71,35 +67,50 @@ public class AutomaticRun extends loadPricesWindow{
 			if(params.getCurrency() || params.getZero()){
 				loadCurrencies(Main.context.getCurrentAccountBook());
 			}
-			pricesModel = new MyTableModel (params,newPricesTab,
-					newTradeDate,
-					currentPriceTab,
-					datesTab,
-					accountsTab,
-					currencyTab,
-					tradeCurr,
-					quotePrice,
-					selectedExchanges,
-					volumes);
-			pricesDisplayTab = new MyTable (params,pricesModel,tickerStatus);
-			debugInst.debug("AutomaticRun", "AutomaticRun", MRBDebug.DETAILED, "get Prices");
+			secPricesModel = new SecTableModel (params,	securitiesTable, this);
+			secPricesDisplayTab = new SecTable (params,secPricesModel);
+			curRatesModel = new CurTableModel(params, currenciesTable, this);
+			curPricesDisplayTab = new CurTable(params, curRatesModel);
+			Main.debugInst.debug("AutomaticRun", "AutomaticRun", MRBDebug.DETAILED, "get Prices");
+			boolean tempProcessCurrency = false;
+			boolean tempProcessSecurity = false;
 			switch (runtype){
 				case Constants.SECAUTORUN :
-					currencyOnly = false;
-					securityOnly = true;
+					tempProcessCurrency = false;
+					tempProcessSecurity = true;
 					break;
 				case Constants.CURAUTORUN :
-					currencyOnly = true;
-					securityOnly = false;
+					tempProcessCurrency = true;
+					tempProcessSecurity = false;
 					break;
 				case Constants.BOTHAUTORUN :
-					currencyOnly = false;
-					securityOnly = false;
+					tempProcessCurrency = true;
+					tempProcessSecurity = true;
 					break;
 			}
 			Main.autoRunning=true;
-			getPrices();
+			Main.secondRunRequired = false;
+			if (tempProcessCurrency) {
+				processCurrency=true;
+				processSecurity = false;
+				if (tempProcessSecurity)
+					Main.secondRunRequired=true;
+				getPrices();
+			}
+			else {
+				if (tempProcessSecurity) {
+					processCurrency=false;
+					processSecurity = true;
+					getPrices();
+				}
+			}
 
+		}
+		public void secondRun() {
+			processCurrency=false;
+			processSecurity = true;
+			Main.secondRunRequired=false;
+			getPrices();
 		}
 
 }

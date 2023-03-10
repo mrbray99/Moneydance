@@ -37,13 +37,11 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import com.google.gson.Gson;
@@ -54,44 +52,40 @@ import com.google.gson.stream.JsonReader;
 import com.infinitekind.moneydance.model.AccountBook;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 
-public class Parameters implements Serializable{
+public class Parameters{
 	/*
-	 * Static and transient fields are not stored 
+	 * Static and  fields are not stored 
 	 */
-	private static final long serialVersionUID = 1L;
-	private transient FileInputStream curInFile;
-	private transient AccountBook curAcctBook;
-	private transient File curFolder;
-	private transient String fileName;
-	public transient static Integer [] multipliers = {-4,-3,-2,-1,0,1,2,3,4};
-	public transient static String[] CURRENCYDATES = {"Trade Date","Today's Date"};
-	public transient static int USETRADEDATE = 0;
-	public transient static int USETODAYSDATE = 1;
-	public transient static Integer [] decimals = {2,3,4,5,6,7,8};
-	public transient static String [] maximums = {"No Limit","6","7","8","9"};
-	private transient SortedMap<String, Integer> mapAccountsList;
-	private transient MRBDebug debugInst = Main.debugInst;
-	private transient String[] arrSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT,Constants.YAHOOHIST,Constants.FTHIST,Constants.YAHOOTD};
-	private transient String[] curSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.YAHOOHIST,Constants.FT,Constants.YAHOOTD};
-	private transient List<NewAccountLine>listNewAccounts;
-	private transient NewParameters newParams;
-	private transient ExchangeList exchanges;
-	private transient PseudoList pseudoList;
-	private transient SortedMap<String, ExchangeLine> mapExchangeLines;
-	private transient SortedMap<String,PseudoCurrency> pseudoCurrencies;
-	private transient SortedMap<String,String>mapExchangeSelect;
-	private transient Boolean addVolume;
-	private transient Boolean history;
-	private transient boolean export;
-	private transient boolean exportAuto;
-	private transient String exportFolder;
-	private transient boolean isDirty;
-	private transient boolean overridePrice;
-	private transient char[] HEX_CHARS = "0123456789abcdef".toCharArray();
-
-	/*
-     * The following fields are stored
-     */
+	private  AccountBook curAcctBook;
+	private  File curFolder;
+	private  String fileName;
+	public  static Integer [] multipliers = {-4,-3,-2,-1,0,1,2,3,4};
+	public  static String[] CURRENCYDATES = {"Trade Date","Today's Date"};
+	public  static int USETRADEDATE = 0;
+	public  static int USETODAYSDATE = 1;
+	public  static Integer [] decimals = {2,3,4,5,6,7,8};
+	public  static String [] maximums = {"No Limit","6","7","8","9"};
+	private  MRBDebug debugInst = Main.debugInst;
+	private  String[] arrSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT,Constants.YAHOOHIST,Constants.FTHIST,Constants.YAHOOTD};;
+	private  String[] curSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.YAHOOHIST,Constants.FT,Constants.YAHOOTD};
+	private  List<NewAccountLine>listNewAccounts;
+	private SortedMap<String, NewAccountLine> savedAccounts;
+	private  NewParameters newParams;
+	private  ExchangeList exchanges;
+	private  PseudoList pseudoList;
+	private  SortedMap<String, ExchangeLine> mapExchangeLines;
+	private  SortedMap<String,PseudoCurrency> pseudoCurrencies;
+	private  boolean addVolume;
+	private  boolean history;
+	private  boolean export;
+	private  boolean exportAuto;
+	private  String exportFolder;
+	private  boolean isDirty;
+	private  boolean overridePrice;
+	private  Integer displayOption;
+	private  Integer amtHistory;
+	private  Integer timeOfRun;
+	private  char[] HEX_CHARS = "0123456789abcdef".toCharArray();
 
 	private int noDecimals;
 	private int newNoDecimals;
@@ -99,7 +93,7 @@ public class Parameters implements Serializable{
 	private boolean includeCurrency;
 	private int currencyDate;
 	private boolean roundPrices;
-	private List<AccountLine> listAccounts;
+	private static Parameters thisObj=null;
 	public Parameters() {
 		curAcctBook = Main.context.getCurrentAccountBook();
 		curFolder = curAcctBook.getRootFolder();
@@ -126,93 +120,7 @@ public class Parameters implements Serializable{
 				createNew = true;
 			}
 			break;
-		case NEW1 :
-
-
-			/*
-			 * determine if old file already exists
-			 */
-			fileName = curFolder.getAbsolutePath()+"/"+Constants.PARAMETERFILE2;
-			try {
-				curInFile = new FileInputStream(fileName);
-				ObjectInputStream ois = new ObjectInputStream(curInFile);
-				/*
-				 * file exists, copy temporary object to this object
-				 */
-				Parameters tempParams = (Parameters) ois.readObject();
-				debugInst.debug("Parameters", "Parameters", MRBDebug.DETAILED, "Parameters found "+fileName);
-				newParams = new NewParameters();
-				newParams.setIncludeZero(tempParams.includeZero);
-				newParams.setIncludeCurrency(tempParams.includeCurrency);
-				newParams.setNoDecimals (tempParams.noDecimals);
-				newParams.setOverridePrice(tempParams.isOverridePrice());
-				listNewAccounts = new ArrayList<>();
-				for (AccountLine line : tempParams.getAccountsList()){
-					NewAccountLine newLine = new NewAccountLine();
-					newLine.setSource(line.getSource());
-					newLine.setName(line.getName());
-					newLine.setCurrency(line.isCurrency());
-					newLine.setExchange(null);
-					listNewAccounts.add(newLine);
-				}
-				newParams.setListAccounts(listNewAccounts);
-				curInFile.close();
-			}
-			catch (IOException | ClassNotFoundException ioException) {
-				createNew = true;
-			}
-			break;
-		case OLD2 :
-			fileName = curFolder.getAbsolutePath()+"\\"+Constants.PARAMETERFILE2;
-			try {
-				JsonReader reader = new JsonReader(new FileReader(fileName,StandardCharsets.UTF_8));
-				debugInst.debug("Parameters", "Parameters", MRBDebug.DETAILED, "Parameters found "+fileName);
-				newParams = new Gson().fromJson(reader,NewParameters.class);
-				listNewAccounts = newParams.getListAccounts();
-				reader.close();
-			}
-			catch (JsonParseException e) {
-				debugInst.debug("Parameters", "Parameters", MRBDebug.DETAILED, "Parse Exception "+e.getMessage());
-				createNew = true;
-			}
-			catch (IOException e){
-				createNew = true;
-			}
-			break;
-		case OLD1 :
-			/*
-			 * determine if old file already exists
-			 */
-			fileName = curFolder.getAbsolutePath()+"\\"+Constants.PARAMETERFILE2;
-			try {
-				curInFile = new FileInputStream(fileName);
-				ObjectInputStream ois = new ObjectInputStream(curInFile);
-				/*
-				 * file exists, copy temporary object to this object
-				 */
-				Parameters tempParams = (Parameters) ois.readObject();
-				debugInst.debug("Parameters", "Parameters", MRBDebug.DETAILED, "Parameters found "+fileName);
-				newParams = new NewParameters();
-				newParams.setIncludeZero(tempParams.includeZero);
-				newParams.setIncludeCurrency(tempParams.includeCurrency);
-				newParams.setNoDecimals (tempParams.noDecimals);
-				newParams.setOverridePrice(tempParams.isOverridePrice());
-				listNewAccounts = new ArrayList<>();
-				for (AccountLine line : tempParams.getAccountsList()){
-					NewAccountLine newLine = new NewAccountLine();
-					newLine.setSource(line.getSource());
-					newLine.setName(line.getName());
-					newLine.setCurrency(line.isCurrency());
-					newLine.setExchange(null);
-					listNewAccounts.add(newLine);
-				}
-				newParams.setListAccounts(listNewAccounts);
-				curInFile.close();
-			}	
-			catch (IOException | ClassNotFoundException ioException) {
-				createNew = true;
-			}
-			break;
+		default:
 		case NONE :	
 			createNew = true;
 		
@@ -241,27 +149,51 @@ public class Parameters implements Serializable{
 			}
 		}
 		/*
-		 * First time being run change column widths
+		 * Column Widths name changed
 		 */
 		int [] columnWidths;
-		columnWidths = Main.preferences.getIntArray(Constants.PROGRAMNAME+"."+Constants.CRNTCOLWIDTH);
-		if (columnWidths.length == 0)
-			columnWidths = Main.preferences.getIntArray(Constants.CRNTCOLWIDTH);		
-		if (columnWidths.length == 0)
-			columnWidths = Constants.DEFAULTCOLWIDTH;
-		else
-		{
-			if (columnWidths.length == Constants.NUMTABLECOLS-1){
-				int [] newCols = Constants.DEFAULTCOLWIDTH;
-				newCols[0] = columnWidths[0];
-				newCols[1] = columnWidths[1];
-				for (int i=2;i<columnWidths.length;i++) 
-					newCols[i+1] = columnWidths[i];
-				newCols[2] = Constants.DEFAULTCOLWIDTH[2];
-				columnWidths = newCols;
+		columnWidths = Main.preferences.getIntArray(Constants.PROGRAMNAME+".SEC."+Constants.CRNTCOLWIDTH);
+		if (columnWidths.length == 0) {
+			columnWidths = Main.preferences.getIntArray(Constants.PROGRAMNAME+"."+Constants.CRNTCOLWIDTH);		
+			if (columnWidths.length == 0)
+				columnWidths = Constants.DEFAULTCOLWIDTH;
+			else {
+				if (columnWidths.length < Constants.NUMTABLECOLS) {
+					int [] tempColWidths = Constants.DEFAULTCOLWIDTH;
+					if (columnWidths.length >0)
+						tempColWidths[0] = columnWidths[0];
+					if (columnWidths.length >1)
+						tempColWidths[1] = columnWidths[1];
+					if (columnWidths.length >2)
+						tempColWidths[3] = columnWidths[2];
+					if (columnWidths.length >3)
+						tempColWidths[4] = columnWidths[3];
+					if (columnWidths.length >4)
+						tempColWidths[5] = columnWidths[4];
+					if (columnWidths.length >5)
+						tempColWidths[6] = columnWidths[5];
+					if (columnWidths.length >6)
+						tempColWidths[7] = columnWidths[6];
+					if (columnWidths.length >7)
+						tempColWidths[8] = columnWidths[7];
+					if (columnWidths.length >8)
+						tempColWidths[9] = columnWidths[8];
+					if (columnWidths.length >9)
+						tempColWidths[10] = columnWidths[9];
+					tempColWidths[11] =Constants.DEFAULTCOLWIDTH[11];
+					if (columnWidths.length >11)
+						tempColWidths[12] = columnWidths[10];
+					if (columnWidths.length >12)
+						tempColWidths[13] = columnWidths[11];
+					columnWidths = tempColWidths;
+				}
+				Main.preferences.put(Constants.PROGRAMNAME+".SEC."+Constants.CRNTCOLWIDTH, columnWidths);
 			}
-			Main.preferences.put(Constants.PROGRAMNAME+"."+Constants.CRNTCOLWIDTH, columnWidths);
-			Main.preferences.isDirty();
+		}
+		columnWidths = Main.preferences.getIntArray(Constants.PROGRAMNAME+".CUR."+Constants.CRNTCOLWIDTH);
+		if (columnWidths.length == 0) {
+			columnWidths = Constants.DEFAULTCURCOLWIDTH;
+			Main.preferences.put(Constants.PROGRAMNAME+".CUR."+Constants.CRNTCOLWIDTH, Constants.DEFAULTCURCOLWIDTH);
 		}
 		if (createNew) {
 				/*
@@ -288,7 +220,6 @@ public class Parameters implements Serializable{
 			newParams.setNewNoDecimals(newParams.getNoDecimals()+4);
 		this.newNoDecimals = newParams.getNewNoDecimals();
 		this.noDecimals= newParams.getNewNoDecimals();
-		this.listAccounts= new ArrayList<>();
 		this.listNewAccounts = newParams.getListAccounts();
 		this.addVolume = newParams.isAddVolume();
 		this.history = newParams.isHistory();
@@ -297,13 +228,10 @@ public class Parameters implements Serializable{
 		this.exportFolder = newParams.getExportFolder();
 		this.roundPrices = newParams.isRoundPrices();
 		this.overridePrice = newParams.isOverridePrice();
-		mapExchangeSelect = new TreeMap<>();
-		for (NewAccountLine line : listNewAccounts){
-			AccountLine newLine = new AccountLine(line.getName(),line.getSource());
-			listAccounts.add(newLine);
-			if (line.getExchange() != null)
-				mapExchangeSelect.put(line.getName(),line.getExchange());
-		}
+		this.amtHistory= newParams.getAmtHistory();
+		this.displayOption=newParams.getDisplayOption();
+
+		savedAccounts = new TreeMap<>();
 		buildAccounts();
 		exchanges = new ExchangeList();
 		exchanges.getData();
@@ -313,6 +241,15 @@ public class Parameters implements Serializable{
 		pseudoCurrencies = pseudoList.getList();
 		if (currencyChanged)
 			save();
+		isDirty=false;
+	}
+	public static Parameters getParameters() {
+		if (thisObj == null)
+			thisObj = new Parameters();
+		return thisObj;
+	}
+	public static void closeParameters() {
+		thisObj = null;
 	}
 	public  String asHex(byte[] buf)
 	{
@@ -335,34 +272,6 @@ public class Parameters implements Serializable{
 		}
 		catch (IOException e) {
 		}
-		fileName=curFolder.getAbsolutePath()+"/" +Constants.PARAMETERFILE1;
-		try {
-			testFile = new FileInputStream(fileName);
-			testFile.close();
-			debugInst.debug("Parameters", "findFile", MRBDebug.DETAILED, "New 1");
-			return Constants.FILEFOUND.NEW1;
-		}
-		catch (IOException e) {
-		}
-		fileName=curFolder.getAbsolutePath()+"\\" +Constants.PARAMETERFILE2;
-		try {
-			testFile = new FileInputStream(fileName);
-			testFile.close();
-			debugInst.debug("Parameters", "findFile", MRBDebug.DETAILED, "Old 2");
-			return Constants.FILEFOUND.OLD2;
-		}
-		catch (IOException e) {
-		}
-		fileName=curFolder.getAbsolutePath()+"\\" +Constants.PARAMETERFILE1;
-		try {
-			testFile = new FileInputStream(fileName);
-			testFile.close();
-			debugInst.debug("Parameters", "findFile", MRBDebug.DETAILED, "Old 1");
-			return Constants.FILEFOUND.OLD1;
-		}
-		catch (IOException e) {
-		}
-		debugInst.debug("Parameters", "findFile", MRBDebug.DETAILED, "None");
 		return Constants.FILEFOUND.NONE;
 	}
 	
@@ -508,6 +417,34 @@ public class Parameters implements Serializable{
 	}
 	public void setOverridePrice(boolean overridePrice) {
 		this.overridePrice = overridePrice;
+		isDirty=true;
+	}
+	
+	public boolean getOverridePrice() {
+		return overridePrice;
+	}
+	public Constants.CurrencyDisplay getDisplayOption() {
+		if (displayOption==0)
+			return Constants.CurrencyDisplay.SAME;
+		return Constants.CurrencyDisplay.SEPARATE;
+	}
+	public void setDisplayOption(Constants.CurrencyDisplay displayOption) {
+		this.displayOption = displayOption.getNum();
+		isDirty=true;
+	}
+	public Integer getAmtHistory() {
+		return amtHistory;
+	}
+	public void setAmtHistory(Integer amtHistory) {
+		this.amtHistory = amtHistory;
+		isDirty=true;
+	}
+	public Integer getTimeOfRun() {
+		return timeOfRun;
+	}
+	public void setTimeOfRun(Integer timeOfRun) {
+		this.timeOfRun = timeOfRun;
+		isDirty=true;
 	}
 	public String [] getSourceArray() {
 		return arrSource;
@@ -518,91 +455,100 @@ public class Parameters implements Serializable{
 	public SortedMap<String,PseudoCurrency> getPseudoCurrencies(){
 		return pseudoCurrencies;
 	}
+	public SortedMap<String,ExchangeLine> getExchanges(){
+		return mapExchangeLines;
+	}
 	/*
 	 * Accounts
 	 * 
 	 * Only valid sources are stored.   'Do Not Load' is not stored
 	 */
 	private void buildAccounts() {
-		if (listAccounts == null)
-			listAccounts = new ArrayList<>();
-		mapAccountsList = new TreeMap<>();
-		for (AccountLine alTemp:listAccounts) {
-			if (alTemp.getSource()!= 0)
-				mapAccountsList.put(alTemp.getName(), alTemp.getSource());
+		if (listNewAccounts == null)
+			listNewAccounts = new ArrayList<>();
+		for (NewAccountLine alTemp:listNewAccounts) {
+			if (alTemp.getSource()!= 0 || alTemp.getFtAlternate()!=null || alTemp.getYahooAlternate()!=null|| alTemp.getExchange()!=null) {
+				savedAccounts.put(alTemp.getName(),alTemp);
+			}
 		}
 	}
 	
-	public List<AccountLine> getAccountsList() {
-		return listAccounts;
+	public List<NewAccountLine> getAccountsList() {
+		return listNewAccounts;
 	}
-	public SortedMap<String,Integer> getAccountsMap() {
-		return mapAccountsList;
+	public SortedMap<String,NewAccountLine> getSavedAccounts() {
+		return savedAccounts;
 	}
-	public String getNewTicker(String ticker, String exchange, int source){
-		if (exchange == null)
-			return ticker;
-		String newTicker = ticker;
+	public String getNewTicker(String ticker, String exchange,String alternate, int source){
+		debugInst.debug("Parameters", "getNewTicker", MRBDebug.DETAILED, "Ticker: "+ticker+" Exchange: "+exchange+" alternate: "+alternate);;
+		String newTicker;
+		if (alternate == null || alternate.isBlank())
+			newTicker = ticker;
+		else
+			newTicker = alternate;
+		if (exchange==null|| exchange.isBlank())
+			return newTicker;
 		ExchangeLine line = mapExchangeLines.get(exchange);
 		if (line!=  null) {
 			if (source == Constants.YAHOOINDEX || source == Constants.YAHOOHISTINDEX|| source==Constants.YAHOOTDINDEX)
-				newTicker = line.getYahooPrefix()+ticker+line.getYahooSuffix();
+				newTicker = line.getYahooPrefix()+newTicker+line.getYahooSuffix();
 			if (source == Constants.FTINDEX || source ==Constants.FTHISTINDEX)
-				newTicker = line.getFtPrefix()+ticker+line.getFtSuffix();
+				newTicker = line.getFtPrefix()+newTicker+line.getFtSuffix();
 		}
 		return newTicker;
 	}
-	public SortedMap<String,ExchangeLine> getExchangeLines() {
-		return mapExchangeLines;
-	}
-	public SortedMap<String,String> getExchangeSelect() {
-		return mapExchangeSelect;
-	}
-	public void setExchange(String ticker,String exchange) {
-		if (exchange == null)
-			mapExchangeSelect.remove(ticker);
-		else
-			if (mapExchangeSelect.containsKey(ticker))
-				mapExchangeSelect.replace(ticker,exchange);
-			else
-				mapExchangeSelect.put(ticker,exchange);
-	}
-	
-	/*
-	 * when changing the source for an account the entry is deleted if set to Do Not Load
-	 */
-	public void updateAccountSource (String accountName, Integer sourceID){
-		Boolean found = false; 
-		for (Iterator<AccountLine> itAccounts = listAccounts.listIterator();itAccounts.hasNext();){
-			AccountLine alTemp = itAccounts.next();
-			if (alTemp.getName().equals(accountName)){
-				if (sourceID == 0)
-					itAccounts.remove();
-				else 
-					alTemp.setSource(sourceID);
-				found = true;
-			}
-		}
-		if (!found && sourceID != 0) {
-			AccountLine alNew = new AccountLine(accountName,sourceID);
-			listAccounts.add(alNew);
-		}
-		if (mapAccountsList.containsKey(accountName)){
-			if (sourceID == 0)
-				mapAccountsList.remove(accountName);
-			else
-				mapAccountsList.replace(accountName, sourceID);
-		}
-		else
-			if (sourceID != 0)
-				mapAccountsList.put(accountName, sourceID);
-		
+
+	public void setDirty(boolean dirty) {
+		this.isDirty=dirty;
 	}
 	public boolean paramsChanged() {
 		return isDirty;
 	}
+	public void saveAccountSources(SortedMap<String,NewAccountLine>sources) {
+		NewParameters tempParams=null;
+		fileName = curFolder.getAbsolutePath()+"/"+Constants.PARAMETERFILE2;
+		try {
+			JsonReader reader = new JsonReader(new FileReader(fileName,StandardCharsets.UTF_8));
+			debugInst.debug("Parameters", "saveAccountSource", MRBDebug.DETAILED, "Parameters found "+fileName);
+			tempParams = new Gson().fromJson(reader,NewParameters.class);
+			listNewAccounts = newParams.getListAccounts();
+			reader.close();
+		}
+		catch (JsonParseException e) {
+			debugInst.debug("Parameters", "saveAccountSource", MRBDebug.DETAILED, "Parse Exception "+e.getMessage());
+		}
+		catch (IOException e2){
+			debugInst.debug("Parameters", "saveAccountSource", MRBDebug.DETAILED, "Parse Exception "+e2.getMessage());
+		}
+		List<NewAccountLine>newList = new ArrayList<NewAccountLine>();
+		for (Entry<String,NewAccountLine> entry : sources.entrySet()) {
+			NewAccountLine crntLine = entry.getValue();
+			NewAccountLine newLine = new NewAccountLine();
+			newLine.setName(entry.getKey());
+			newLine.setCurrency(crntLine.isCurrency());
+			newLine.setFtAlternate(crntLine.getFtAlternate());
+			newLine.setYahooAlternate(crntLine.getYahooAlternate());
+			newLine.setExchange(crntLine.getExchange());
+			newLine.setSource(crntLine.getSource());
+			newList.add(newLine);
+		}
+		tempParams.setListAccounts(newList);
+		/*
+		 * create the file
+		 */
+		fileName = curFolder.getAbsolutePath()+"/"+Constants.PARAMETERFILE2;
+		try {
+			   FileWriter writer2 = new FileWriter(fileName,StandardCharsets.UTF_8);
+			   String jsonString = new Gson().toJson(tempParams);
+			   writer2.write(jsonString);
+			   writer2.close();			  
+          } catch (IOException i) {
+					   i.printStackTrace();
+	
+          }
+	}
 	/*
-	 * Save
+	 * Save and reload
 	 */
 	public void save() {
 		/*
@@ -619,18 +565,8 @@ public class Parameters implements Serializable{
 		newParams.setExport(export);
 		newParams.setRoundPrices(roundPrices);
 		newParams.setOverridePrice(overridePrice);
-		listNewAccounts = new ArrayList<>();
-		for (AccountLine line : listAccounts){
-			NewAccountLine newLine = new NewAccountLine();
-			newLine.setSource(line.getSource());
-			newLine.setName(line.getName());
-			newLine.setCurrency(line.isCurrency());
-			if (mapExchangeSelect.containsKey(line.getName())) {
-				debugInst.debug("Parameters","save",MRBDebug.SUMMARY,"Exchange set to "+mapExchangeSelect.get(line.getName()));
-				newLine.setExchange(mapExchangeSelect.get(line.getName()));
-			}
-			listNewAccounts.add(newLine);
-		}
+		newParams.setAmtHistory(amtHistory);
+		newParams.setDisplayOption(displayOption);
 		newParams.setListAccounts(listNewAccounts);
 
 		/*
@@ -648,10 +584,24 @@ public class Parameters implements Serializable{
           }
 		isDirty = false;
 	}
-	public void print() {
-		debugInst.debug("Parameters","Zero ",MRBDebug.SUMMARY,includeZero ? "True": "false");
-		debugInst.debug("Parameters","Currency ",MRBDebug.SUMMARY,includeCurrency ? "True": "false");
-		debugInst.debug("Parameters","Decimal ",MRBDebug.SUMMARY,String.valueOf(newNoDecimals));
+	public void reloadValues() {
+		this.includeZero= newParams.isIncludeZero();
+		this.includeCurrency= newParams.isIncludeCurrency();
+		if(newParams.getNewNoDecimals() == -1)
+			newParams.setNewNoDecimals(newParams.getNoDecimals()+4);
+		this.newNoDecimals = newParams.getNewNoDecimals();
+		this.noDecimals= newParams.getNewNoDecimals();
+		this.listNewAccounts = newParams.getListAccounts();
+		this.addVolume = newParams.isAddVolume();
+		this.history = newParams.isHistory();
+		this.export = newParams.isExport();
+		this.exportAuto = newParams.isExportAuto();
+		this.exportFolder = newParams.getExportFolder();
+		this.roundPrices = newParams.isRoundPrices();
+		this.overridePrice = newParams.isOverridePrice();
+		this.amtHistory= newParams.getAmtHistory();
+		this.displayOption=newParams.getDisplayOption();
+		isDirty=false;
 	}
 
 }

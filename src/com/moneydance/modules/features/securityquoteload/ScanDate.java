@@ -76,12 +76,10 @@ public class ScanDate {
 	}
 	public Date parseString(String dateStr) throws IOException{
 		String [] parts= new String[5];
-		String dayOfWeek;
 		String month;
 		String dayStr="";
 		String yearStr="";
 		MonthStr monthEntry=null;;
-		Integer monthNum;
 		Integer day;
 		Integer year;
 		if (dateStr.indexOf(',')>0)
@@ -89,7 +87,6 @@ public class ScanDate {
 		else 
 			parts = dateStr.split(" ");
 		if (parts[0].length() > 3 && parts[0].substring(parts[0].length()-3).equalsIgnoreCase("day")) {
-			dayOfWeek = parts[0];
 			parts[1]=parts[1].trim();
 			int ind = parts[1].indexOf(' ');
 			month = parts[1].substring(0,ind);

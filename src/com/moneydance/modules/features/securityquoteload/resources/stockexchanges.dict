@@ -1,4 +1,4 @@
-{"build":"3047"}
+"build":"3057"}
 [{"exchange":"ASE",	"name":"American Stock Exchange",	"ftPrefix":"",	"ftSuffix":":ASE",	"yahooPrefix":"",	"yahooSuffix":"",	"multiplier":"1"},
 {"exchange":"Athens",	"name":"Athens Exchange",	"ftPrefix":"",	"ftSuffix":":ATH",	"yahooPrefix":"",	"yahooSuffix":".AT",	"multiplier":"1"},
 {"exchange":"ASX",	"name":"Australian Stock Exchange",	"ftPrefix":"",	"ftSuffix":":ASX",	"yahooPrefix":"",	"yahooSuffix":".AX",	"multiplier":"1"},

@@ -47,7 +47,6 @@ public class TaskExecutor
     ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
     Main myTask;
     volatile boolean isStopIssued;
-    private LocalDateTime lastSet=null;;
     MRBDebug debugInst = Main.debugInst;
 
     public TaskExecutor(Main myTask$) 
@@ -58,12 +57,6 @@ public class TaskExecutor
 
     public void startExecutionAt(LocalDateTime when)
     {
- //   	if (lastSet!= null) {
- //   		if (!lastSet.isAfter(when)) {
- //   			rwDebugInst.debug("TaskExecutor", "startExecutionAt", MRBDebug.DETAILED, "Execution ignored "+when.getHour()+" "+when.getMinute());
- //   			return;
- //   		}
-//    	}
 		debugInst.debug("TaskExecutor", "startExecutionAt", MRBDebug.DETAILED, "when time "+when.getDayOfMonth()+"/"+when.getMonthValue()+" "+when.getHour()+":"+when.getMinute());
        Runnable taskWrapper = new Runnable(){
 
@@ -75,7 +68,6 @@ public class TaskExecutor
 
         };
         long delay = computeNextDelay(when);
-        lastSet = when;
         LocalTime now = LocalTime.now();
 		debugInst.debug("TaskExecutor", "startExecutionAt", MRBDebug.DETAILED, "time "+now.getHour()+" "+now.getMinute());
 		debugInst.debug("TaskExecutor", "startExecutionAt", MRBDebug.DETAILED, "setting run at "+when.getHour()+" "+when.getMinute());

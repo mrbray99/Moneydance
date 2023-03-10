@@ -33,7 +33,6 @@
  */
 package com.moneydance.modules.features.securityquoteload;
 
-import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,6 +41,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JProgressBar;
 
 import com.moneydance.modules.features.mrbutil.MRBDebug;
+import com.moneydance.modules.features.securityquoteload.view.CurrencyTableLine;
+import com.moneydance.modules.features.securityquoteload.view.SecurityTableLine;
 
 
 final class GetQuotesProgressMonitor {
@@ -53,52 +54,57 @@ final class GetQuotesProgressMonitor {
 	private TaskListener window;
 	private SortedMap<String,TaskCounts> uuidStatus;
 	private AtomicBoolean completed;
-	private SortedMap<String, Integer> tickerStatus;
+	private SortedMap<String,SecurityTableLine> accountsTab;
+	private SortedMap<String,CurrencyTableLine> currencyTab;
 	private SortedMap<String,String>tids;
 	private Integer successfulCount=0;
 	private Integer failedCount=0;
-	public GetQuotesProgressMonitor(JProgressBar progressBar, TaskListener objWindow, SortedMap<String,Integer> tickerStatusp) {
+	private SecurityTableLine acct;
+	private CurrencyTableLine cur;
+	public GetQuotesProgressMonitor(JProgressBar progressBar, TaskListener objWindow, SortedMap<String,SecurityTableLine> accountsTab, SortedMap<String, CurrencyTableLine>currencyTab) {
 		this.progressBar = progressBar;
 		this.window = objWindow;
-		tickerStatus = tickerStatusp;
-		tickerStatus.clear();
+		this.accountsTab = accountsTab;
+		this.currencyTab = currencyTab;
 		uuidStatus = new TreeMap<String,TaskCounts>();
 		tids= new TreeMap<String,String>();
 		completed = new AtomicBoolean(false);
 	}
 
-	public synchronized void started(String strStock,String uuid) {
-		debugInst.debug("GetQuotesProgressMonitor","started",MRBDebug.SUMMARY,"> STARTED stock=" + strStock);
+	public synchronized void started(String ticker,String uuid) {
+		debugInst.debug("GetQuotesProgressMonitor","started",MRBDebug.SUMMARY,"> STARTED stock=" + ticker);
 		if (!uuidStatus.containsKey(uuid))
 			uuidStatus.put(uuid, new TaskCounts());
-		if (strStock.startsWith(Constants.CURRENCYID))
-			strStock = strStock.substring(3);
-		if (tickerStatus.containsKey(strStock))
-			tickerStatus.replace(strStock, Constants.TASKSTARTED);
-		else
-			tickerStatus.put(strStock, Constants.TASKSTARTED);
+		if (ticker.startsWith(Constants.CURRENCYID)) {
+			cur = currencyTab.get(ticker);
+			cur.setTickerStatus(Constants.TASKSTARTED);
+//			ticker = ticker.substring(3);
+		}
+		else {
+			acct = accountsTab.get(ticker);
+			acct.setTickerStatus(Constants.TASKSTARTED);
+		}
 		TaskCounts counts = uuidStatus.get(uuid);
 		counts.incTotal();
-		if (tids.containsKey(strStock))
-			tids.replace(strStock,uuid);
+		if (tids.containsKey(ticker))
+			tids.replace(ticker,uuid);
 		else
-			tids.put(strStock, uuid);
+			tids.put(ticker, uuid);
 	}
 	public void failed(String stock){
 		failed(stock,tids.get(stock));
 	}
-	public synchronized void failed(String strStock,String uuid){
-		debugInst.debug("GetQuotesProgressMonitor","failed",MRBDebug.SUMMARY,"> FAILED stock=" + strStock);
-		if (strStock.startsWith(Constants.CURRENCYID))
-			strStock = strStock.substring(3);
-		if (tickerStatus.containsKey(strStock)) {
-			/*
-			 * Only increment once if failed, there can be several messages
-			 */
-			if (tickerStatus.get(strStock) == Constants.TASKSTARTED){
-				debugInst.debug("GetQuotesProgressMonitor","Completed Count Incremented",MRBDebug.SUMMARY,"> FAILED stock=" + strStock);
+	public synchronized void failed(String ticker,String uuid){
+		debugInst.debug("GetQuotesProgressMonitor","failed",MRBDebug.SUMMARY,"> FAILED stock=" + ticker);
+		/*
+		 * Only increment once if failed, there can be several messages
+		 */
+		if (ticker.startsWith(Constants.CURRENCYID)) {
+			cur = currencyTab.get(ticker);
+			if (cur.getTickerStatus() == Constants.TASKSTARTED){
+				debugInst.debug("GetQuotesProgressMonitor","Completed Count Incremented",MRBDebug.SUMMARY,"> FAILED currency=" + ticker);
 				completedTasks.getAndIncrement();
-				tickerStatus.replace(strStock, Constants.TASKFAILED);
+				cur.setTickerStatus( Constants.TASKFAILED);
 				if (uuidStatus.containsKey(uuid.toString())) {
 					TaskCounts counts = uuidStatus.get(uuid.toString());
 					counts.incFailed();
@@ -106,19 +112,43 @@ final class GetQuotesProgressMonitor {
 				failedCount++;
 			}
 		}
-
+		else {
+			acct = accountsTab.get(ticker);
+			if (acct.getTickerStatus() == Constants.TASKSTARTED){
+				debugInst.debug("GetQuotesProgressMonitor","Completed Count Incremented",MRBDebug.SUMMARY,"> FAILED stock=" + ticker);
+				completedTasks.getAndIncrement();
+				acct.setTickerStatus( Constants.TASKFAILED);
+				if (uuidStatus.containsKey(uuid.toString())) {
+					TaskCounts counts = uuidStatus.get(uuid.toString());
+					counts.incFailed();
+				}
+				failedCount++;
+			}
+		}
 		updateProgress();
 	}
 
-	public synchronized void ended(String strStock,String uuid) {
-		debugInst.debug("GetQuotesProgressMonitor","ended",MRBDebug.SUMMARY,"> ENDED stock=" + strStock);
+	public synchronized void ended(String ticker,String uuid) {
 		completedTasks.getAndIncrement();
-		debugInst.debug("GetQuotesProgressMonitor","Completed Count Incremented",MRBDebug.SUMMARY,"> Ended stock=" + strStock);
-		if (strStock.startsWith(Constants.CURRENCYID))
-			strStock = strStock.substring(3);
-		if (tickerStatus.containsKey(strStock)) {
-			if (tickerStatus.get(strStock)== Constants.TASKSTARTED) {
-				tickerStatus.replace(strStock, Constants.TASKCOMPLETED);
+		if (ticker.startsWith(Constants.CURRENCYID)) {
+			cur = currencyTab.get(ticker);
+			if (cur !=null && cur.getTickerStatus() == Constants.TASKSTARTED){
+				debugInst.debug("GetQuotesProgressMonitor","Completed Count Incremented",MRBDebug.SUMMARY,"> ENDED currency=" + ticker.substring(3));
+				completedTasks.getAndIncrement();
+				cur.setTickerStatus( Constants.TASKCOMPLETED);
+				if (uuidStatus.containsKey(uuid.toString())) {
+					TaskCounts counts = uuidStatus.get(uuid.toString());
+					counts.incSuccess();
+				}
+				successfulCount++;
+			}
+		}
+		else {
+			acct = accountsTab.get(ticker);
+			if (acct!=null &&acct.getTickerStatus() == Constants.TASKSTARTED){
+				debugInst.debug("GetQuotesProgressMonitor","Completed Count Incremented",MRBDebug.SUMMARY,"> ENDED B stock=" + ticker);
+				completedTasks.getAndIncrement();
+				acct.setTickerStatus( Constants.TASKCOMPLETED);
 				if (uuidStatus.containsKey(uuid.toString())) {
 					TaskCounts counts = uuidStatus.get(uuid.toString());
 					counts.incSuccess();
@@ -135,10 +165,15 @@ final class GetQuotesProgressMonitor {
 			debugInst.debug("GetQuotesProgressMonitor","done",MRBDebug.INFO,"Totals disagree received="+totalQuotes+" sent="+subTaskSize.get()+" count="+counts.getTotal());
 		if (successful != counts.getSuccess())
 			debugInst.debug("GetQuotesProgressMonitor","done",MRBDebug.INFO,"Completed task numbers disagree received="+successful+" processed="+counts.getSuccess());
-		for (Entry<String, Integer> status : tickerStatus.entrySet()){
-			if (status.getValue()==Constants.TASKSTARTED)
-				if (uuid.equals(tids.get(status.getKey())))
-					failed (status.getKey(),uuid);
+		for (SecurityTableLine line :accountsTab.values()){
+			if (line.getTickerStatus()==Constants.TASKSTARTED)
+				if (uuid.equals(tids.get(line.getTicker())))
+					failed (line.getTicker(),uuid);
+		}
+		for (CurrencyTableLine line :currencyTab.values()){
+			if (line.getTickerStatus()==Constants.TASKSTARTED)
+				if (uuid.equals(tids.get(line.getTicker())))
+					failed (line.getTicker(),uuid);
 		}
 		uuidStatus.remove(uuid);
 		if (uuidStatus.isEmpty()){

@@ -34,8 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NewParameters {
-	private int noDecimals;
-	private int newNoDecimals;
+	private Integer noDecimals;
+	private Integer newNoDecimals;
 	private boolean includeZero;
 	private boolean includeCurrency;
 	private boolean addVolume;
@@ -44,17 +44,21 @@ public class NewParameters {
 	private boolean exportAuto;
 	private boolean roundPrices;
 	private boolean overridePrice;
+	private Integer	displayOption;
+	private Integer amtHistory;
 	private String exportFolder;
 	private List<NewAccountLine> listAccounts;
 
 	public  NewParameters(){
 		noDecimals = 0;
-		newNoDecimals = -1;
-		roundPrices = false;
+		newNoDecimals =2;
+		roundPrices =false;
 		includeZero = false;
 		includeCurrency = false;
 		addVolume = false;
 		overridePrice= false;
+		displayOption = 0;
+		amtHistory=0;
 		listAccounts = new ArrayList<>();
 	}
 	/**
@@ -88,6 +92,18 @@ public class NewParameters {
 		return includeCurrency;
 	}
 	/**
+	 * @return the amount of history to gather
+	 */
+	public Integer getAmtHistory() {
+		return amtHistory;
+	}
+	/**
+	 * @return the currency display option
+	 */
+	public Integer getDisplayOption() {
+		return displayOption;
+	}
+	/**
 	 * @return the listAccounts
 	 */
 	public List<NewAccountLine> getListAccounts() {
@@ -111,6 +127,16 @@ public class NewParameters {
 	public void setIncludeCurrency(boolean includeCurrency) {
 		this.includeCurrency = includeCurrency;
 	}
+	public boolean isOverridePrice() {
+		return overridePrice;
+	}
+	public boolean isRoundPrices() {
+		return roundPrices;
+	}
+	public Integer getNewNoDecimals() {
+		return newNoDecimals;
+	}
+
 	/**
 	 * @param listAccounts the listAccounts to set
 	 */
@@ -147,23 +173,20 @@ public class NewParameters {
 	public void setExportFolder(String exportFolder) {
 		this.exportFolder = exportFolder;
 	}
-	public int getNewNoDecimals() {
-		return newNoDecimals;
-	}
-	public void setNewNoDecimals(int newNoDecimals) {
+	public void setNewNoDecimals(Integer newNoDecimals) {
 		this.newNoDecimals = newNoDecimals;
-	}
-	public boolean isRoundPrices() {
-		return roundPrices;
 	}
 	public void setRoundPrices(boolean roundPrices) {
 		this.roundPrices = roundPrices;
 	}
-	public boolean isOverridePrice() {
-		return overridePrice;
-	}
 	public void setOverridePrice(boolean overridePrice) {
 		this.overridePrice = overridePrice;
+	}
+	public void setDisplayOption(Integer displayOption) {
+		this.displayOption = displayOption;
+	}
+	public void setAmtHistory(Integer amtHistory) {
+		this.amtHistory = amtHistory;
 	}
 	
 	

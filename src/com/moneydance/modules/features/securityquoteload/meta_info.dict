@@ -1,12 +1,12 @@
 {
   "vendor" = "Mike Bray"
-  "module_build" = "3058"
-  "minbuild" = "1820"
+  "module_build" = "3200"
+  "minbuild" = "1852"
   "vendor.url" = "https://bitbucket.org/mikerb/moneydance-2019/wiki/Quote%20Loader"
   "module_name" = "Quote Loader"
   "module_desc" = "<html><body><title>Quote Loader</title>><p>Loads the price of securities and currencies directly from an online source.
 </body></html>"
-  "desc" = "Obtains the current price from either Yahoo Finance or Financial Times. Moneydance must be restarted after install.\n"
+  "desc" = "Obtains the current security and curreny prices from either a number of different sources. Moneydance must be restarted after install.\n"
 
 }
 

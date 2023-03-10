@@ -30,6 +30,7 @@
  */
 package com.moneydance.modules.features.securityquoteload;
 
+
 /**
  * Class to store the source from selected by the user.  It will be stored in the 
  * parameter file
@@ -42,6 +43,8 @@ public class NewAccountLine{
 	private int source;
 	private Boolean currency;
 	private String exchange;
+	private String ftAlternate;
+	private String yahooAlternate;
 	/**
 	 * Create class, uses the structure of the Ticker to determine if the account is a
 	 * currency
@@ -104,4 +107,20 @@ public class NewAccountLine{
 		else
 			this.exchange = exchange;
 	}
+	public String getFtAlternate() {
+		return ftAlternate;
+	}
+	public void setFtAlternate(String ftAlternate) {
+		this.ftAlternate = ftAlternate;
+	}
+	public String getYahooAlternate() {
+		return yahooAlternate;
+	}
+	public void setYahooAlternate(String yahooAlternate) {
+		this.yahooAlternate = yahooAlternate;
+	}
+	
+	
+	
 }
+

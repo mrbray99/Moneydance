@@ -55,6 +55,7 @@ public abstract class Constants {
 	public static final Integer YAHOOTDINDEX=5;
 	public static final Integer[] SOURCELIST= {YAHOOINDEX, FTINDEX, YAHOOHISTINDEX, FTHISTINDEX,YAHOOTDINDEX};
 	public static final String[] AUTOTEXT = {"Manual Only","Daily","Weekly","Monthly","Quarterly","Yearly"};
+	public static final String[] HISTORYLIST= {"1 Month","2 Months","3 Months"};
 	public static final String[] TIMETEXT = {"At Start Up","02:00","04:00","06:00","08:00","09:00","11:00","13:00","15:00","17:00","19:00","21:00","22:00","23:00","24:00"};
 	public static final String CALENDARIMAGE = "calendar.png";
 	public static final String SELECTEDBLACKIMAGE = "selectedblack.png";
@@ -63,6 +64,13 @@ public abstract class Constants {
 	public static final String UNSELECTEDLIGHTIMAGE = "unselectedlight.png";
 	public static final String QUOTELOADIMAGE = "quote loader.png";
 	public static final String MISSINGDATE="19000101T00:00";
+	public static final String SECURITYTITLE = "Securities";
+	public static final String CURRENCYTITLE = "Exchange Rates";
+	public static final String PARAMETERTITLE = "Parameters";
+	public static final String JOINTTITLE = "Securities/Exchange Rates";
+	public static final String SPLITPERCENT="splitpercent";
+	public static final String SELECTALL="Select All Lines";
+	public static final String DESELECTALL="Deselect All Lines";
 	
 
     /*
@@ -119,12 +127,20 @@ public abstract class Constants {
 	public static final String MANUALDONECMD = "manualdone";
 	public static final String GETBUILDNUM ="getbuildnum";
 	public static final String RETURNBUILD ="buildnums";
+	public static final String RUNSECONDRUNCMD = "runsecondrun";
+	public static final int NORUN=0;
 	public static final int MANUALRUN = 1;
 	public static final int SECAUTORUN = 2;
 	public static final int CURAUTORUN = 3;
 	public static final int BOTHAUTORUN = 4;
-	public static final String EXPORTHEADER = "Ticker,Name,Price,Date,Volume\r\n";
+	public static final String EXPORTHEADER = "Ticker,AltTicker,Name,Price,AmtChg,PerChg,Date,Volume\r\n";
 	public static final String TICKEREXTID="#";
+	public enum MAINACTIONS {
+		CHANGECURDISPLAY,
+		RESETDISPLAY,
+		GETCURRENCYRATES,
+		CHANGEZERO
+	}
 	/*
 	 * Scheduling parameters
 	 */
@@ -148,6 +164,19 @@ public abstract class Constants {
 	public static final String CRNTFRAMEWIDTH = "framewidth";
 	public static final String CRNTFRAMEDEPTH = "framedepth";
 	public static final String CRNTCOLWIDTH = "columnwidth";
+	public static final int FRAMEWIDTH = 800;	
+	public static final int FRAMEHEIGHT = 800;
+	public static final int LOADSCREENWIDTH = 1000;
+	public static final int LOADSCREENHEIGHT = 800;
+	public static final int POPUPSCREENHEIGHT = 300;
+	public static final int POPUPSCREENWIDTH = 300;
+	public static final String SELECTEDSECURITY= "SEC";
+	public static final String SELECTEDCURRENCY= "CUR";
+	public static final String SELECTEDSECCUR= "SECCUR";
+	public static final String SELECTEDPARAMETER= "PARM";
+	/*
+	 * auto running
+	 */
 	public static final String SECRUNMODE = "runmode";
 	public static final String CURRUNMODE = "currunmode";
 	public static final String MANUALMODE = "manualmode";
@@ -187,14 +216,10 @@ public abstract class Constants {
 	public static final int RUN0800 = 15;
 	public static final int[] TIMEVALUES= {RUNSTARTUP,RUN0200,RUN0400,RUN0600,RUN0800,RUN0900,RUN1100,RUN1300,RUN1500,RUN1700,RUN1900,RUN2100,RUN2200,RUN2300,RUN2400};
 	public static final int[] TIMESTART = {0,2,4,6,8,9,11,13,15,17,19,21,22,23,24};
-	public static final int NUMTABLECOLS = 12; 
-	public static final int[]  DEFAULTCOLWIDTH = {40,100,100,300,80,80,80,80,80,80,80,80};
-	public static final int FRAMEWIDTH = 800;	
-	public static final int FRAMEHEIGHT = 800;
-	public static final int LOADSCREENWIDTH = 1000;
-	public static final int LOADSCREENHEIGHT = 800;
-	public static final int POPUPSCREENHEIGHT = 300;
-	public static final int POPUPSCREENWIDTH = 300;
+	public static final int NUMTABLECOLS = 14; 
+	public static final int NUMCURTABLECOLS = 10; 
+	public static final int[]  DEFAULTCOLWIDTH = {40,100,100,100,300,80,80,80,80,80,80,80,80,80};
+	public static final int[]  DEFAULTCURCOLWIDTH = {40,100,300,80,80,80,80,80,80,80};
 	/*
 	 * Load screen panel sizes
 	 */
@@ -231,6 +256,22 @@ public abstract class Constants {
     public static final int TASKSTARTED = 1;
     public static final int TASKFAILED = 2;
     public static final int TASKCOMPLETED = 3;
+    /*
+     * currency table control
+     */
+	public  enum CurrencyDisplay {
+		SAME(0),
+		SEPARATE(1);
+		private int sourceNum;
+		CurrencyDisplay(int sourceNum){
+			this.sourceNum = sourceNum;
+		}
+		public int getNum() {
+			return sourceNum;
+		}
+	};
+	public enum SaveAction {SECURITIES,CURRENCIES,BOTH};
+
     /*
      * source management
      */
