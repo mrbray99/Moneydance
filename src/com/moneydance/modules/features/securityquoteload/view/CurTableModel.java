@@ -67,7 +67,7 @@ public class CurTableModel extends DefaultTableModel {
 	private Double multiplier;
 	private MainPriceWindow controller;
 	private MRBDebug debugInst = Main.debugInst;
-	private static String[] arrColumns = { "Select", "Ticker", "Name", "Source", "Last Price", "Price Date",
+	private static String[] arrColumns = { "Select", "Ticker", "Name", "Source->>", "Last Price", "Price Date",
 			"New Price", "% chg", "Amt chg", "Trade Date" };
 
 	public CurTableModel(Parameters params, SortedMap<String, CurrencyTableLine> currencies,
@@ -280,7 +280,7 @@ public class CurTableModel extends DefaultTableModel {
 							"Source updated " + rowData.getTicker() + " " + i);
 				}
 			}
-			controller.setIsDirty(true);
+			controller.setIsCurDirty(true);
 			rowData.setInError(false);
 			break;
 		/*
@@ -292,8 +292,10 @@ public class CurTableModel extends DefaultTableModel {
 			rowData.setAmtChg(rowData.getNewPrice() - rowData.getLastPrice());
 			rowData.setPercentChg(
 					((rowData.getNewPrice() - rowData.getLastPrice()) / rowData.getLastPrice()) * 100);
+			rowData.setTradeDate(DateUtil.getStrippedDateInt());
 			this.fireTableCellUpdated(row, col + 1);
 			this.fireTableCellUpdated(row, col + 2);
+			this.fireTableCellUpdated(row, col+3);
 			rowData.setInError(false);
 			for (Entry<String, CurrencyTableLine> entry : listCurrencies) {
 				if (!entry.getKey().contains(Constants.TICKEREXTID))

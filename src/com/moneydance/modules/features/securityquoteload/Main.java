@@ -79,7 +79,7 @@ public class Main extends FeatureModule {
 	public static Main extension;
 	public static Parameters params=null;
 	public static String buildNo;
-	public static String versionNo="20";
+	public static String versionNo="01";
 	public static Boolean autoSettingsChanged=false;
 	private Image selectedBlack = null;
 	private Image selectedLight;
@@ -327,7 +327,7 @@ public class Main extends FeatureModule {
 
 	protected void handleEventFileClosing() {
 		debugInst.debug("Quote Load", "HandleEventFileClosing", MRBDebug.DETAILED, "Closing ");
-		if (frame !=null && (frame.isDirty||frame.isParamDirty()))
+		if (frame !=null && (frame.isSecDirty()|| frame.isCurDirty()||frame.isParamDirty()))
 			frame.close();
 		closingRequested = true;
 		if (autoRun != null) {
@@ -775,7 +775,8 @@ public class Main extends FeatureModule {
 		frame = new MainPriceWindow(this, runtype);
 		if (errorTickers != null)
 			frame.setErrorTickers(errorTickers);
-		frame.setTitle("Quote Loader " + buildNo+"."+versionNo);
+//		frame.setTitle("Quote Loader " + buildNo+"."+versionNo);
+		frame.setTitle("Quote Loader " + buildNo);
 		frame.setIconImage(getIcon(Constants.QUOTELOADIMAGE));
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		// Display the window.

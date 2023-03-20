@@ -120,7 +120,6 @@ public class CurTable extends JTable {
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 				boolean hasFocus, int row, int column) {
-			@SuppressWarnings("unused")
 			Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 			int modRow=tableObj.convertRowIndexToModel(row);
 			CurrencyTableLine crntRow = dm.getRowCurrency(modRow);

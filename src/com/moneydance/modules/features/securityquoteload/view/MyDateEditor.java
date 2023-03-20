@@ -34,6 +34,7 @@ import java.awt.Component;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JTable;
+import javax.swing.table.TableModel;
 
 import com.moneydance.awt.JDateField;
 import com.moneydance.modules.features.securityquoteload.Main;
@@ -43,10 +44,9 @@ public class MyDateEditor extends DefaultCellEditor {
 	private static final long serialVersionUID = 1L;
 	private JDateField ftf;
 	
-	public MyDateEditor(Parameters objParamsp) {
+	public MyDateEditor( Parameters objParamsp) {
 	      super(new JDateField(Main.cdate));
 	      ftf = (JDateField)getComponent();
-	
 	  }
 	
 	  //Override to invoke setValue on the formatted text field.
@@ -56,7 +56,10 @@ public class MyDateEditor extends DefaultCellEditor {
 	          int row, int column) {
 		 JDateField ftf = (JDateField)super.getTableCellEditorComponent(
   	                table, value, isSelected, row, column);
-		 ftf.setDateInt(ftf.getDateIntFromString((String)value));
+		 if (value==null||(value instanceof String && ((String)value).isEmpty()))
+			ftf.gotoToday();
+		 else
+			 ftf.setDateInt(ftf.getDateIntFromString((String)value));
 		 
 		 return ftf;
 	  }

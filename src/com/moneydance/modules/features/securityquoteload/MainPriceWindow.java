@@ -126,7 +126,8 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 	protected Boolean addVolume = false;
 	protected int runtype = 0;
 	protected double multiplier;
-	protected boolean isDirty = false;
+	protected boolean isSecDirty = false;
+	protected boolean isCurDirty = false;
 
 	/*
 	 * Panels, Preferences and window sizes
@@ -414,7 +415,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 				Constants.SaveAction action = null;
 				switch (tabs.getSelectedIndex()) {
 				case 0:
-					if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE)
+					if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE) 
 						action = Constants.SaveAction.SECURITIES;
 					else if (params.getCurrency())
 						action = Constants.SaveAction.BOTH;
@@ -428,7 +429,18 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 				}
 				if (action != null) {
 					saveSourceChanges(action);
-					isDirty = false;
+					switch (action) {
+					case SECURITIES:
+						isSecDirty=false;
+						break;
+					case CURRENCIES:
+						isCurDirty=false;
+						break;
+					case BOTH:
+						isSecDirty=false;
+						isCurDirty=false;
+						break;
+					}
 					JFrame fTemp = new JFrame();
 					JOptionPane.showMessageDialog(fTemp, "Source/ticker information saved");
 				}
@@ -863,22 +875,50 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		}
 	}
 
-	public void setIsDirty(boolean isDirty) {
-		this.isDirty = isDirty;
+	public void setIsSecDirty(boolean isDirty) {
+		this.isSecDirty = isDirty;
+	}
+	public void setIsCurDirty(boolean isDirty) {
+		this.isCurDirty = isDirty;
+	}
+	public boolean isSecDirty() {
+		return isSecDirty;
+	}
+	public boolean isCurDirty() {
+		return isCurDirty;
 	}
 
 	public boolean isParamDirty() {
 		return params.paramsChanged();
 	}
 	public void checkUnsaved() {
-		if (isDirty) {
+		if (isSecDirty && isCurDirty) {
 			if (JOptionPane.showConfirmDialog(this,
-					"You have changed the the source/ticker information.  Do you wish to save it before closing?",
+					"You have changed both the Securities and Exchange Rates source/ticker information.  Do you wish to save it before closing?",
 					"Save Source/Ticker", JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 				saveSourceChanges(Constants.SaveAction.BOTH);
 			}
-			isDirty=false;
+			isSecDirty=false;
+			isCurDirty=false;
+		}
+		if (isSecDirty) {
+			if (JOptionPane.showConfirmDialog(this,
+					"You have changed the Securities source/ticker information.  Do you wish to save it before closing?",
+					"Save Source/Ticker", JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+				saveSourceChanges(Constants.SaveAction.SECURITIES);
+			}
+			isSecDirty=false;
+		}
+		if (isCurDirty) {
+			if (JOptionPane.showConfirmDialog(this,
+					"You have changed the Exchange Rate source/ticker information.  Do you wish to save it before closing?",
+					"Save Source/Ticker", JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+				saveSourceChanges(Constants.SaveAction.CURRENCIES);
+			}
+			isCurDirty=false;
 		}
 		if (params.paramsChanged()) {
 			if (JOptionPane.showConfirmDialog(this,

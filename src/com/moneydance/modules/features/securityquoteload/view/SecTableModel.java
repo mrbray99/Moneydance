@@ -73,7 +73,7 @@ public class SecTableModel extends DefaultTableModel {
 	private MainPriceWindow controller;
 	private MRBDebug debugInst = Main.debugInst;
 	private Boolean includeDonotload = true;
-	private static String[] arrColumns = { "Select", "Ticker", "Alt Ticker", "Exch Mod", "Name", "Source",
+	private static String[] arrColumns = { "Select", "Ticker", "Alt Ticker", "Exch Mod", "Name", "Source->>",
 			"Last Price", "Price Date", "New Price", "% chg", "Amt chg", "Trade Date", "Trade Currency",
 			"Volume" };
 
@@ -101,7 +101,7 @@ public class SecTableModel extends DefaultTableModel {
 			for (int i = 0; i < iDec; i++)
 				strDec += "0";
 		}
-		debugInst.debug("MyTableModel", "MyTableModel", MRBDebug.DETAILED, "Decimal Format " + strDec);
+		debugInst.debug("SecTableModel", "ResetNumberFormat", MRBDebug.DETAILED, "Decimal Format " + strDec);
 
 		dfSymbols = new DecimalFormatSymbols();
 		dfSymbols.setDecimalSeparator(Main.decimalChar);
@@ -353,7 +353,7 @@ public class SecTableModel extends DefaultTableModel {
 		 */
 		case 2:
 			rowData.setAlternateTicker((String) value);
-			controller.setIsDirty(true);
+			controller.setIsSecDirty(true);
 			rowData.setInError(false);
 			break;
 		/*
@@ -367,7 +367,7 @@ public class SecTableModel extends DefaultTableModel {
 							"Source updated " + rowData.getTicker() + " " + i);
 				}
 			}
-			controller.setIsDirty(true);
+			controller.setIsSecDirty(true);
 			rowData.setInError(false);
 			this.fireTableCellUpdated(row, 2);
 			break;
@@ -379,8 +379,10 @@ public class SecTableModel extends DefaultTableModel {
 			rowData.setNewPrice(Double.parseDouble(newValue));
 			rowData.setAmtChg(rowData.getNewPrice()-rowData.getLastPrice());
 			rowData.setPercentChg(((rowData.getNewPrice()-rowData.getLastPrice())/rowData.getLastPrice())*100);
+			rowData.setTradeDate(DateUtil.getStrippedDateInt());
 			this.fireTableCellUpdated(row, col+1);
 			this.fireTableCellUpdated(row, col+2);
+			this.fireTableCellUpdated(row, col+3);
 			rowData.setInError(false);
 			for (Entry<String, SecurityTableLine> entry : listAccounts) {
 				if (!entry.getKey().contains(Constants.TICKEREXTID))
@@ -450,7 +452,7 @@ public class SecTableModel extends DefaultTableModel {
 				entry.getValue().setExchange(exchange);
 			}
 		}
-		controller.setIsDirty(true);
+		controller.setIsSecDirty(true);
 		return;
 	}
 
@@ -482,7 +484,7 @@ public class SecTableModel extends DefaultTableModel {
 	}
 
 	public void setIsDirty(boolean isDirty) {
-		controller.setIsDirty(isDirty);
+		controller.setIsSecDirty(isDirty);
 	}
 
 	/**
@@ -500,7 +502,7 @@ public class SecTableModel extends DefaultTableModel {
 			debugInst.debug("MyTableModel", "setValueAt", MRBDebug.DETAILED,
 					"Source updated " + key + " " + source);
 		}
-		controller.setIsDirty(true);
+		controller.setIsSecDirty(true);
 		this.fireTableDataChanged();
 	}
 

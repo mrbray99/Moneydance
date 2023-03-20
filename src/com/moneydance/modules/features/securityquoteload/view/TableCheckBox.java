@@ -64,12 +64,12 @@ public class TableCheckBox implements TableCellRenderer {
 		switch (tabType) {
 		case CUR:
 			Object temp = curModel.getValueAt(modRow, 6);
-			if (temp==null || (temp instanceof String && temp.equals("0.0")))
+			if (temp==null || (temp instanceof String && temp.equals("0.0"))||value instanceof String)
 				return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, modRow, column);
 			return booleanRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, modRow, column);
 		case SEC:
 			Object temp2 = secModel.getValueAt(modRow, 8);
-			if (temp2==null || (temp2 instanceof String && temp2.equals("0.0")))
+			if (temp2==null || (temp2 instanceof String && temp2.equals("0.0"))||value instanceof String)
 				return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, modRow, column);
 			return booleanRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, modRow, column);
 		default:
