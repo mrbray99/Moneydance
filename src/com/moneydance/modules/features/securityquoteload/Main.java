@@ -249,7 +249,7 @@ public class Main extends FeatureModule {
 	}
 
 	public void sendAuto() {
-		debugInst.debug("Quote Load", "sendAuto", MRBDebug.DETAILED, "checking syncing ");
+/*		debugInst.debug("Quote Load", "sendAuto", MRBDebug.DETAILED, "checking syncing ");
 		if (context != null && context.getCurrentAccountBook().getSyncer().isSyncing()) {
 			debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO, "Syncing - delay set ");
 			if (autoDelay == null) {
@@ -269,7 +269,7 @@ public class Main extends FeatureModule {
 			}
 			autoDelay.start();
 			return;
-		}
+		} */
 		debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO, "Check Auto without delay ");
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			@Override
