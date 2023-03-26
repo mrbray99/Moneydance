@@ -489,12 +489,12 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 						e2.printStackTrace();
 					}
 				} else {
-					Runtime runtime = Runtime.getRuntime();
-					try {
-						runtime.exec("xdg-open " + url);
-					} catch (IOException e3) {
-						e3.printStackTrace();
-					}
+//					Runtime runtime = Runtime.getRuntime();
+//					try {
+//						runtime.exec("xdg-open " + url);
+//					} catch (IOException e3) {
+//						e3.printStackTrace();
+//					}
 				}
 			}
 		});

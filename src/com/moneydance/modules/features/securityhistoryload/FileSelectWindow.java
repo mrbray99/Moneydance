@@ -1045,12 +1045,12 @@ public class  FileSelectWindow extends JPanel implements ActionListener{
 			                e.printStackTrace();
 			            }
 			        }else{
-			            Runtime runtime = Runtime.getRuntime();
-			            try {
-			                runtime.exec("xdg-open " + url);
-			            } catch (IOException e) {
-			                e.printStackTrace();
-			            }
+								try {
+									throw new IOException("Extension attempted to exec external process: xdg-open "+url);
+									//runtime.exec("xdg-open " + url);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
 			        }
 			    }
 			if (miSource == rbOff){

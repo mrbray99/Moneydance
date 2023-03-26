@@ -390,7 +390,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	 * 	<li>showconsole - called when the user selects the extension
 	 * <li>viewreport - View a report, must be done on AWT-Event-Queue
 	 *   </ul>
-	 *  @param uri		the uri from Moneydance
+	 *  @param urip		the uri from Moneydance
 	 */
 	@Override
 	public void invoke(String urip) {
@@ -437,9 +437,9 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 					e.printStackTrace();
 				}
 			}else{
-				Runtime runtime = Runtime.getRuntime();
 				try {
-					runtime.exec("xdg-open " + url);
+					throw new IOException("Extension attempted to exec external process: xdg-open "+url);
+					//runtime.exec("xdg-open " + url);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
