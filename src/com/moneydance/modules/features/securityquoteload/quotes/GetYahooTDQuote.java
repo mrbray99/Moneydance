@@ -62,9 +62,9 @@ import com.moneydance.modules.features.securityquoteload.Constants;
 import com.moneydance.modules.features.securityquoteload.QuotePrice;
 
 public class GetYahooTDQuote extends GetQuoteTask {
-
-	private String yahooSecURL = "https://query2.finance.yahoo.com/v7/finance/quote?symbols=";
-	private String yahooCurrURL = "https://query2.finance.yahoo.com/v7/finance/quote?symbols=";
+ 
+	private String yahooSecURL = "https://query2.finance.yahoo.com/v6/finance/quote?symbols=";
+	private String yahooCurrURL = "https://query2.finance.yahoo.com/v6/finance/quote?symbols=";
 	private SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd");
 	public GetYahooTDQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep, String tidp) {
 		super(tickerp, listenerp, httpClientp, tickerTypep,  tidp);

@@ -33,7 +33,6 @@ package com.moneydance.modules.features.securityquoteload.view;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -51,7 +50,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -66,11 +64,9 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
 import com.moneydance.apps.md.view.gui.MDColors;
-import com.moneydance.awt.GridC;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.Platform;
 import com.moneydance.modules.features.securityquoteload.Constants;
@@ -588,13 +584,14 @@ public class SecTable extends JTable {
 	}
 
 	private void displayExchangeTicker(int row) {
-		debugInst.debug("MouseListener", "displayExchangeTicker", MRBDebug.SUMMARY, "on row " + row);
-		String ticker = (String) dm.getValueAt(row, tickerCol);
+		int modRow = tableObj.convertRowIndexToModel(row);
+		debugInst.debug("SecTable", "displayExchangeTicker", MRBDebug.SUMMARY, "on row " + row+"/"+modRow);
+		String ticker = (String) dm.getValueAt(modRow, tickerCol);
 		if (ticker.contains(Constants.TICKEREXTID))
 			return;
-		String exchange = (String) dm.getValueAt(row, exchangeCol);
-		String source = (String) dm.getValueAt(row, sourceCol);
-		String alternate = (String)dm.getValueAt(row, altTickerCol);
+		String exchange = (String) dm.getValueAt(modRow, exchangeCol);
+		String source = (String) dm.getValueAt(modRow, sourceCol);
+		String alternate = (String)dm.getValueAt(modRow, altTickerCol);
 		int sourceid = 0;
 		String tickerSource = "";
 		for (int i = 0; i < Constants.SOURCELITS.length; i++) {
@@ -621,7 +618,7 @@ public class SecTable extends JTable {
 			public void actionPerformed(ActionEvent aeEvent) {
 				String strAction = aeEvent.getActionCommand();
 				if (strAction.contains("Test")) {
-					String source = (String) dm.getValueAt(row, sourceCol);
+					String source = (String) dm.getValueAt(modRow, sourceCol);
 					if (source.equals(Constants.DONOTLOAD)) {
 						JOptionPane.showMessageDialog(null, "You must select a source before testing");
 						return;
@@ -711,7 +708,7 @@ public class SecTable extends JTable {
 			if (SwingUtilities.isRightMouseButton(e) || e.isControlDown())
 				showPopup(e);
 			else {
-				debugInst.debug("MouseListener", "mouseReleased", MRBDebug.DETAILED, "width started ");
+				debugInst.debug("HeaderMouseListener", "mousePressed", MRBDebug.DETAILED, "width started ");
 				if (e.getSource() instanceof JTableHeader) {
 					TableColumn tc = ((JTableHeader) e.getSource()).getResizingColumn();
 					if (tc != null) {
@@ -723,7 +720,7 @@ public class SecTable extends JTable {
 					}
 				}
 
-				debugInst.debug("MouseListener", "mouseReleased", MRBDebug.DETAILED,
+				debugInst.debug("HeaderMouseListener", "mousePressed", MRBDebug.DETAILED,
 						"column " + resizingColumn + " oldWidth " + oldWidth);
 			}
 		}
@@ -735,7 +732,7 @@ public class SecTable extends JTable {
 				showPopup(e);
 			else {
 				if (tableObj.getColumnWidthChanged()) {
-					debugInst.debug("MouseListener", "mouseReleased", MRBDebug.DETAILED, "width finished ");
+					debugInst.debug("HeaderMouseListener", "mouseReleased", MRBDebug.DETAILED, "width finished ");
 					if (e.getSource() instanceof JTableHeader) {
 						TableColumn tc = ((JTableHeader) e.getSource()).getColumnModel()
 								.getColumn(resizingColumn);
@@ -746,7 +743,7 @@ public class SecTable extends JTable {
 							oldWidth = -1;
 						}
 					}
-					debugInst.debug("MouseListener", "mouseReleased", MRBDebug.DETAILED,
+					debugInst.debug("HeaderMouseListener", "mouseReleased", MRBDebug.DETAILED,
 							"Column " + resizingColumn + "new width " + newWidth);
 					columnWidths[resizingColumn] = newWidth;
 					Main.preferences.put(Constants.PROGRAMNAME + ".SEC." + Constants.CRNTCOLWIDTH,
@@ -754,7 +751,7 @@ public class SecTable extends JTable {
 					Main.preferences.isDirty();
 					// Reset the flag on the table.
 					tableObj.setColumnWidthChanged(false);
-					debugInst.debug("MouseListener", "mouseReleased", MRBDebug.DETAILED,
+					debugInst.debug("HeaderMouseListener", "mouseReleased", MRBDebug.DETAILED,
 							"column " + resizingColumn + " oldWidth " + oldWidth);
 
 				}
@@ -770,7 +767,8 @@ public class SecTable extends JTable {
 			int row = tc.rowAtPoint(p);
 			if (tc.getSelectedColumn() == tickerCol) {
 				if (e.getClickCount() == 2) {
-					SecurityTableLine acct = dm.getRowAccount(row);
+					int modRow=tableObj.convertRowIndexToModel(row);
+					SecurityTableLine acct = dm.getRowAccount(modRow);
 					javax.swing.SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
@@ -785,9 +783,12 @@ public class SecTable extends JTable {
 					displayExchangeTicker(row);
 				} else {
 					if (e.getClickCount() == 2) {
+						int modRow=tableObj.convertRowIndexToModel(tc.getSelectedRow());
+						debugInst.debug("TableMouseListener", "exchange selected", MRBDebug.DETAILED,
+								"column " + exchangeCol + " row " + tc.getSelectedRow()+" mod row "+modRow);
 						Rectangle rect = tc.getCellRect(tc.getSelectedRow(), exchangeCol, false);
 						Point p2 = new Point(rect.x + rect.width, rect.y + rect.width);
-						showExchangePopup(tc.getSelectedRow(), p2);
+						showExchangePopup(modRow, p2);
 					}
 				}
 			}

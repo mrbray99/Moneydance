@@ -605,9 +605,10 @@ public class CurTable extends JTable {
 			JTable tc = (JTable) e.getSource();
 			Point p = e.getPoint();
 			int row = tc.rowAtPoint(p);
+			int modRow = tableObj.convertRowIndexToModel(row);
 			if (tc.getSelectedColumn() == tickerCol) {
 				if (e.getClickCount() == 2) {
-					CurrencyTableLine acct = dm.getRowCurrency(row);
+					CurrencyTableLine acct = dm.getRowCurrency(modRow);
 					javax.swing.SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {

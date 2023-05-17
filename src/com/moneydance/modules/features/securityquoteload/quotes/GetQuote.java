@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020, Michael Bray and Hung Le.  All rights reserved.
+ *  Copyr ight (c) 2020, Michael Bray and Hung Le.  All rights reserved.
  *  
  *  NOTE: this module contains original work by Mike Bray and Hung Le, no breach of copyright is intended and no 
  *  benefit has been gained from the use of this work

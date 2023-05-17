@@ -86,6 +86,8 @@ import com.infinitekind.moneydance.model.CurrencyTable;
 import com.infinitekind.moneydance.model.CurrencyType;
 import com.infinitekind.moneydance.model.CurrencyUtil;
 import com.moneydance.apps.md.controller.Util;
+import com.moneydance.apps.md.view.MoneydanceUI;
+import com.moneydance.apps.md.view.gui.MoneydanceGUI;
 import com.moneydance.awt.GridC;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.securityquoteload.Constants.QuoteSource;
@@ -147,6 +149,8 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 	private JButton selectAll;
 	private JButton helpBtn;
 	private Charset charSet = Charset.forName("UTF-8");
+	private MoneydanceUI mdGUI;
+	private com.moneydance.apps.md.controller.Main mdMain;
 	/*
 	 * Shared
 	 */
@@ -170,6 +174,8 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		this.runtype = runtype;
 		if (runtype != Constants.MANUALRUN && runtype != 0)
 			return;
+		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
+		mdGUI = mdMain.getUI();
 
 		this.main = main;
 		params = Parameters.getParameters();
@@ -480,22 +486,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String url = "https://bitbucket.org/mikerb/moneydance-2019/wiki/New%20Quote%20Loader";
-
-				if (Desktop.isDesktopSupported()) {
-					Desktop desktop = Desktop.getDesktop();
-					try {
-						desktop.browse(new URI(url.trim()));
-					} catch (IOException | URISyntaxException e2) {
-						e2.printStackTrace();
-					}
-				} else {
-//					Runtime runtime = Runtime.getRuntime();
-//					try {
-//						runtime.exec("xdg-open " + url);
-//					} catch (IOException e3) {
-//						e3.printStackTrace();
-//					}
-				}
+				mdGUI.showInternetURL(url);
 			}
 		});
 		buttonsPanel.add(helpBtn, GridC.getc(gridX++, gridY).west().insets(10, 10, 10, 10));
