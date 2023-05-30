@@ -57,22 +57,23 @@ import org.apache.http.impl.client.CloseableHttpClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.securityquoteload.Constants;
 import com.moneydance.modules.features.securityquoteload.QuotePrice;
 
 public class GetYahooTDQuote extends GetQuoteTask {
  
-	private String yahooSecURL = "https://query2.finance.yahoo.com/v6/finance/quote?symbols=";
-	private String yahooCurrURL = "https://query2.finance.yahoo.com/v6/finance/quote?symbols=";
+	private String yahooSecURL = "https://query1.finance.yahoo.com/v11/finance/quoteSummary/";
+	private String yahooCurrURL = "https://query1.finance.yahoo.com/v11/finance/quoteSummary/";
 	private SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd");
 	public GetYahooTDQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep, String tidp) {
 		super(tickerp, listenerp, httpClientp, tickerTypep,  tidp);
 		String convTicker = ticker.replace("^", "%5E");
 		if (tickerType == Constants.STOCKTYPE)
-			url = yahooSecURL+convTicker+"&region=US&lang=en-US&corsDomain=finance.yahoo.com";
+			url = yahooSecURL+convTicker+"?modules=price";
 		if (tickerType == Constants.CURRENCYTYPE)
-			url = yahooCurrURL+convTicker+"&region=US&lang=en-US&corsDomain=finance.yahoo.com";
+			url = yahooCurrURL+convTicker+"?modules=price";
 		debugInst.debug("GetYahooTDQuote","GetYahooTDQuote",MRBDebug.DETAILED,"Executing :"+url);
 	}
 	@Override
@@ -140,23 +141,25 @@ public class GetYahooTDQuote extends GetQuoteTask {
 	private void parseDoc(JsonNode doc, QuotePrice quotePrice) throws IOException {
 		JsonNode quoteNode = null;
 		JsonNode resultNode = null;
+		JsonNode priceNode = null;
 		String timeZoneStr="";
 		Calendar tradeDateCal;
 		String tradeDateStr="";
 		try {
-			quoteNode = doc.findPath("quoteResponse");
+			quoteNode = doc.findPath("quoteSummary");
 			if (quoteNode.isMissingNode())
-				throw new IOException("Cannot parse response for "+ticker);				
-			resultNode = quoteNode.findPath("result");
+				throw new IOException("Cannot find quoteSummary "+ticker);				
+			resultNode = quoteNode.findPath("result");		
 			if (resultNode.isMissingNode() || ! resultNode.isArray())
-				throw new IOException("Cannot parse response for "+ticker);
-			resultNode = resultNode.get(0);
-			Iterator<Map.Entry<String, JsonNode>> it = resultNode.fields();
+				throw new IOException("Cannot find result "+ticker);
+			priceNode = resultNode.findPath("price");
+			Iterator<Map.Entry<String, JsonNode>> it =priceNode.fields();
 			while(it.hasNext()) {
 				Entry<String,JsonNode> itemNode=it.next();
 				JsonNode value;
 				if (itemNode.getKey().equals("regularMarketPrice")) {
-					value= itemNode.getValue();
+					Iterator<JsonNode> children = itemNode.getValue().elements();
+					value= children.next();;
 					quotePrice.setPrice(value.asDouble());
 				}
 				if (itemNode.getKey().equals("currency")) {
@@ -167,26 +170,21 @@ public class GetYahooTDQuote extends GetQuoteTask {
 					value= itemNode.getValue();
 					tradeDateStr =value.asText();
 				}
-				if (itemNode.getKey().equals("exchangeTimezoneShortName")) {
-					value= itemNode.getValue();
-					timeZoneStr =value.asText();
-				}
 				if (itemNode.getKey().equals("regularMarketVolume")) {
-					value= itemNode.getValue();
+					Iterator<JsonNode> children = itemNode.getValue().elements();
+					value= children.next();;
 					quotePrice.setVolume(value.asLong());
 
 				}
 				if (itemNode.getKey().equals("regularMarketDayHigh")) {
-					value= itemNode.getValue();
+					Iterator<JsonNode> children = itemNode.getValue().elements();
+					value= children.next();;
 					quotePrice.setHighPrice(value.asDouble());
 				}
 				if (itemNode.getKey().equals("regularMarketDayLow")) {
-					value= itemNode.getValue();
+					Iterator<JsonNode> children = itemNode.getValue().elements();
+					value= children.next();;
 					quotePrice.setLowPrice(value.asDouble());
-				}
-			if (itemNode.getKey().equals("exchangeTimezoneShortName")) {
-					value= itemNode.getValue();
-					timeZoneStr =value.asText();
 				}
 			}
 		} catch (IOException e) {
@@ -196,6 +194,7 @@ public class GetYahooTDQuote extends GetQuoteTask {
 		}  catch (NumberFormatException e3) {
 			throw new IOException("Cannot parse response for symbol=" + ticker + e3.getMessage(),e3);			
 		}
+		timeZoneStr = "EDT";
 		if (tradeDateStr.isEmpty() || timeZoneStr.isEmpty())
 			throw new IOException("Cannot find trade date for "+ticker);
 		tradeDateCal = getLastTrade(tradeDateStr, timeZoneStr);
