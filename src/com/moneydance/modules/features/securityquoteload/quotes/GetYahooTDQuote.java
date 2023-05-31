@@ -171,20 +171,26 @@ public class GetYahooTDQuote extends GetQuoteTask {
 					tradeDateStr =value.asText();
 				}
 				if (itemNode.getKey().equals("regularMarketVolume")) {
-					Iterator<JsonNode> children = itemNode.getValue().elements();
-					value= children.next();;
-					quotePrice.setVolume(value.asLong());
+					if (itemNode.getValue().has("raw")) {
+						Iterator<JsonNode> children = itemNode.getValue().elements();
+						value= children.next();;
+						quotePrice.setVolume(value.asLong());
+					}
 
 				}
 				if (itemNode.getKey().equals("regularMarketDayHigh")) {
-					Iterator<JsonNode> children = itemNode.getValue().elements();
-					value= children.next();;
-					quotePrice.setHighPrice(value.asDouble());
+					if (itemNode.getValue().has("raw")) {
+						Iterator<JsonNode> children = itemNode.getValue().elements();
+						value= children.next();;
+						quotePrice.setHighPrice(value.asDouble());
+					}
 				}
 				if (itemNode.getKey().equals("regularMarketDayLow")) {
-					Iterator<JsonNode> children = itemNode.getValue().elements();
-					value= children.next();;
-					quotePrice.setLowPrice(value.asDouble());
+					if (itemNode.getValue().has("raw")) {
+						Iterator<JsonNode> children = itemNode.getValue().elements();
+						value= children.next();;
+						quotePrice.setLowPrice(value.asDouble());
+					}
 				}
 			}
 		} catch (IOException e) {
