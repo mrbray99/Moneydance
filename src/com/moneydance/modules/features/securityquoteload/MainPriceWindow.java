@@ -2174,11 +2174,11 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 					javax.swing.SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
-							String message = runtype==Constants.STANDALONERUN?Constants.STANDALONEDONE:Constants.AUTODONECMD;
 							Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-									+ message);
+									+ Constants.AUTODONECMD);
 						}
 					});
+
 				}
 			}
 		}

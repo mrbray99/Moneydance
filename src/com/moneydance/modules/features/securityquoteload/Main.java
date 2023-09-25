@@ -287,13 +287,15 @@ public class Main extends FeatureModule {
 				}
 			});
 		}
-		debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO, "Check Auto without delay ");
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":" + Constants.CHECKAUTOCMD);
-			}
-		});
+		else {
+			debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO, "Check Auto without delay ");
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":" + Constants.CHECKAUTOCMD);
+				}
+			});
+		}
 	}
 
 	private void resetAutoRun() {
@@ -469,7 +471,6 @@ public class Main extends FeatureModule {
 			runtype = Constants.MANUALRUN;
 			showConsole();
 		} else {
-			debugInst.debug("Quote Load", "invoke", MRBDebug.DETAILED, "runtype not set");
 			if (command.equals(Constants.RUNAUTOCMD)) {
 				debugInst.debug("Quote Load", "invoke", MRBDebug.DETAILED, "command Run Auto");
 				showConsole();
@@ -768,6 +769,15 @@ public class Main extends FeatureModule {
 			}
 			context.showURL("moneydance:setprogress?meter=0&label=" + "Quote Loader Update Completed");
 			debugInst.debug("Quote Load", "ProcessCommand", MRBDebug.DETAILED, "Auto run done");
+			if (standAloneRequested) {
+				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+								+ Constants.STANDALONEDONE);
+					}
+				});
+			}
 			return;
 		}
 		/*
