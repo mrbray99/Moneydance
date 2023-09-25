@@ -103,7 +103,7 @@ import javafx.scene.Scene;
 
 
 /** 
- * MoneyDance extension to load security prices returned by the back end Rhumba extension
+ * Generalized Moneydance extension to extract data
  * <p>
  * Main class to create main window
  * @author Mike Bray
@@ -390,7 +390,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	 * 	<li>showconsole - called when the user selects the extension
 	 * <li>viewreport - View a report, must be done on AWT-Event-Queue
 	 *   </ul>
-	 *  @param urip		the uri from Moneydance
+	 *  @param uri		the uri from Moneydance
 	 */
 	@Override
 	public void invoke(String urip) {
@@ -437,9 +437,9 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 					e.printStackTrace();
 				}
 			}else{
+				Runtime runtime = Runtime.getRuntime();
 				try {
-					throw new IOException("Extension attempted to exec external process: xdg-open "+url);
-					//runtime.exec("xdg-open " + url);
+					runtime.exec("xdg-open " + url);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

@@ -38,6 +38,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.moneydance.apps.md.view.MoneydanceUI;
 import com.moneydance.modules.features.mrbutil.HelpMenu;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.Platform;
@@ -84,11 +85,15 @@ public class  FileSelectWindow extends JPanel implements ActionListener{
 	  private JRadioButtonMenuItem rbInfo;
 	  private JRadioButtonMenuItem rbSumm;
 	  private JRadioButtonMenuItem rbDet;
+		private MoneydanceUI mdGUI;
+		private com.moneydance.apps.md.controller.Main mdMain;
 	  
 	public FileSelectWindow() throws HeadlessException {
 //		try {
 //	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 //	    } catch (IllegalAccessException | UnsupportedLookAndFeelException | InstantiationException | ClassNotFoundException e) {}
+		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
+		mdGUI = mdMain.getUI();
 		GridBagLayout gbl_panel = new GridBagLayout();
 		this.setLayout(gbl_panel);
 		hmMenu = new HelpMenu ("Help");
@@ -1036,22 +1041,7 @@ public class  FileSelectWindow extends JPanel implements ActionListener{
 			JMenuItem miSource = (JMenuItem)(aeMenu.getSource());
 			if (miSource == miOnline) {
 			       String url = "http://bitbucket.com/mikerb/moneydance-2019/wiki/Security%20Price%20Load";
-
-			        if(Desktop.isDesktopSupported()){
-			            Desktop desktop = Desktop.getDesktop();
-			            try {
-			                desktop.browse(new URI(url));
-			            } catch (IOException | URISyntaxException e) {
-			                e.printStackTrace();
-			            }
-			        }else{
-								try {
-									throw new IOException("Extension attempted to exec external process: xdg-open "+url);
-									//runtime.exec("xdg-open " + url);
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-			        }
+			       mdGUI.showInternetURL(url);
 			    }
 			if (miSource == rbOff){
 				objDebug.setDebugLevel(MRBDebug.OFF);

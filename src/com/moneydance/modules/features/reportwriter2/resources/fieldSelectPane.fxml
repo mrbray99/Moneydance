@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane fx:id="gridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="237.0" prefWidth="628.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER" maxWidth="344.0" minWidth="10.0" prefWidth="112.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="520.0" minWidth="10.0" prefWidth="516.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="40.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER" />
+    <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" vgrow="SOMETIMES" />
+    <RowConstraints vgrow="NEVER" />
+  </rowConstraints>
+   <children>
+      <Label text="Template" />
+      <Label fx:id="templateName" GridPane.columnIndex="1" />
+      <TableView fx:id="fieldTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+        <columns>
+          <TableColumn fx:id="recordCol" prefWidth="124.0" text="Record" />
+          <TableColumn fx:id="fieldCol" prefWidth="102.0" text="Field" />
+            <TableColumn fx:id="typeCol" prefWidth="75.0" text="Type" />
+            <TableColumn fx:id="selectCol" prefWidth="75.0" text="Select" />
+        </columns>
+      </TableView>
+      <HBox spacing="5.0" GridPane.rowIndex="2">
+         <children>
+            <Button fx:id="okBtn" mnemonicParsing="false" onAction="#saveAndClose" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+   </children>
+</GridPane>

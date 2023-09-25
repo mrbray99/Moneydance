@@ -31,7 +31,6 @@
 package com.moneydance.modules.features.securityquoteload;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Window;
@@ -87,7 +86,6 @@ import com.infinitekind.moneydance.model.CurrencyType;
 import com.infinitekind.moneydance.model.CurrencyUtil;
 import com.moneydance.apps.md.controller.Util;
 import com.moneydance.apps.md.view.MoneydanceUI;
-import com.moneydance.apps.md.view.gui.MoneydanceGUI;
 import com.moneydance.awt.GridC;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.securityquoteload.Constants.QuoteSource;
@@ -2145,7 +2143,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 
 			}
 			if (runtype != Constants.MANUALRUN && runtype != 0) {
-				if (errorsFound && !Main.secondRunRequired) {
+				if (errorsFound && !Main.secondRunRequired&&runtype != Constants.STANDALONERUN) {
 					JOptionPane.showMessageDialog(null,
 							"Errors found on automatic run.  Look at 'Price Date' to determine which lines have not been updated",
 							"Quote Loader", JOptionPane.ERROR_MESSAGE);
@@ -2176,8 +2174,9 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 					javax.swing.SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
+							String message = runtype==Constants.STANDALONERUN?Constants.STANDALONEDONE:Constants.AUTODONECMD;
 							Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-									+ Constants.AUTODONECMD);
+									+ message);
 						}
 					});
 				}

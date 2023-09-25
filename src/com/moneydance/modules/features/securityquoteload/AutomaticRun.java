@@ -87,6 +87,10 @@ public class AutomaticRun extends MainPriceWindow{
 					tempProcessCurrency = true;
 					tempProcessSecurity = true;
 					break;
+				case Constants.STANDALONERUN:	
+					tempProcessCurrency = true;
+					tempProcessSecurity = true;
+					break;
 			}
 			Main.autoRunning=true;
 			Main.secondRunRequired = false;

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.GridPane?>
+
+<GridPane hgap="5.0" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="ALWAYS" />
+   </rowConstraints>
+   <columnConstraints>
+      <ColumnConstraints minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints maxWidth="95.0" minWidth="10.0" prefWidth="51.0" />
+      <ColumnConstraints maxWidth="149.0" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints />
+   </columnConstraints>
+   <children>
+      <Label text="Font" GridPane.rowIndex="1" />
+      <ComboBox fx:id="fontName" onAction="#selectFontName" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Label text="Weight" GridPane.rowIndex="2" />
+      <ComboBox fx:id="fontWeight" onAction="#selectFontWeight" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Label text="Size" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <ComboBox fx:id="fontSize" onAction="#selectFontSize" prefWidth="150.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+      <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+         <children>
+            <Button fx:id="italicBtn" mnemonicParsing="false" onAction="#selectItalic" text="I">
+               <HBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="underlineBtn" mnemonicParsing="false" onAction="#selectUnderline" text="U">
+               <HBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+      <Label text="Colour" GridPane.rowIndex="4" />
+      <ColorPicker fx:id="colour" onAction="#selectColour" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="2" GridPane.columnSpan="3" GridPane.rowIndex="3">
+         <children>
+            <HBox spacing="10.0">
+               <children>
+                  <Button fx:id="alignLeft" mnemonicParsing="false" onAction="#selectAlignLeft">
+                     <HBox.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="alignCentre" mnemonicParsing="false" onAction="#selectAlignCentre">
+                     <HBox.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="alignRight" mnemonicParsing="false" onAction="#selectAlignRight">
+                     <HBox.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="alignJustify" mnemonicParsing="false" onAction="#selectAlignJustify">
+                     <HBox.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets right="10.0" />
+               </padding>
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </HBox>
+         </children>
+      </HBox>
+      <Label text="Style Name" />
+      <TextField fx:id="styleName" GridPane.columnIndex="1" />
+      <Label fx:id="sampleText" text="Label" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="5" />
+   </children>
+</GridPane>

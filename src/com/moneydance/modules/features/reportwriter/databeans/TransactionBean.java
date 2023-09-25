@@ -186,7 +186,7 @@ public class TransactionBean extends DataBean {
 				parCategory = setString (tempCat.getParentAccount().getAccountName());
 			}
 			else
-				transAcct = setString(split.getAccount() == null ? "" : parent.getAccount().getAccountName());
+				transAcct = setString(split.getAccount() == null ? "" : split.getAccount().getAccountName());
 			CurrencyType splitCur = split.getAccount().getCurrencyType();
 			if (splitCur == null)
 				splitCur = Main.baseCurrency;

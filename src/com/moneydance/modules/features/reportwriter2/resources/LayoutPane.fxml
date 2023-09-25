@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.GridPane?>
+
+<SplitPane fx:id="paneBox" dividerPositions="0.5, 0.5" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <items>
+      <ScrollPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="875.0" prefViewportHeight="875.0" prefViewportWidth="245.0" prefWidth="258.0">
+         <content>
+            <VBox fx:id="fieldsBox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="738.0" prefWidth="267.0">
+               <children>
+                  <Label alignment="TOP_CENTER" text="Page">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <GridPane fx:id="pageDetailPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="175.0" prefWidth="235.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="71.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="80.0" minHeight="80.0" prefHeight="80.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label text="Paper Size" />
+                        <Label text="Orientation" GridPane.hgrow="NEVER" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="paperSizes" onAction="#selectPaperSize" prefWidth="150.0" GridPane.columnIndex="1" />
+                        <ComboBox fx:id="pageOrientation" onAction="#selectOrientation" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <BorderPane prefHeight="116.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+                           <center>
+                              <Label text="Margins" BorderPane.alignment="CENTER" />
+                           </center>
+                           <left>
+                              <TextField fx:id="leftMargin" maxWidth="35.0" minWidth="35.0" prefWidth="35.0" BorderPane.alignment="CENTER" />
+                           </left>
+                           <top>
+                              <TextField fx:id="topMargin" maxWidth="35.0" minWidth="35.0" prefHeight="25.0" prefWidth="35.0" BorderPane.alignment="TOP_CENTER" />
+                           </top>
+                           <bottom>
+                              <TextField fx:id="bottomMargin" maxWidth="35.0" minWidth="35.0" prefWidth="35.0" BorderPane.alignment="CENTER" />
+                           </bottom>
+                           <right>
+                              <TextField fx:id="rightMargin" maxWidth="35.0" minWidth="35.0" prefWidth="35.0" BorderPane.alignment="CENTER" />
+                           </right>
+                        </BorderPane>
+                     </children>
+                     <VBox.margin>
+                        <Insets left="5.0" right="5.0" />
+                     </VBox.margin>
+                  </GridPane>
+                  <Label alignment="CENTER" text="Fields">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" top="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TreeView fx:id="fieldsList" prefHeight="352.0" prefWidth="245.0" />
+                  <HBox fx:id="alignBox" prefHeight="30.0" prefWidth="267.0" spacing="5.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="68.0" text="Alignment" />
+                        <Button fx:id="leftAlign" mnemonicParsing="false" onAction="#selectLeftAlign" text="Left" />
+                        <Button fx:id="topAlign" mnemonicParsing="false" onAction="#selectTopAlign" text="Top" />
+                        <Button fx:id="rightAlign" mnemonicParsing="false" onAction="#selectRightAlign" text="Right" />
+                        <Button fx:id="bottomAlign" mnemonicParsing="false" onAction="#selectBottomAlign" text="Bottom" />
+                     </children>
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin>
+                     <padding>
+                        <Insets left="5.0" top="5.0" />
+                     </padding>
+                  </HBox>
+                  <HBox fx:id="spaceBox" prefHeight="27.0" prefWidth="245.0" spacing="5.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="68.0" text="Spacing">
+                           <HBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Button fx:id="horSpace" mnemonicParsing="false" onAction="#selectHorSpace" text="Horizontal">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="verSpace" mnemonicParsing="false" onAction="#selectVerSpace" text="Vertical" />
+                     </children>
+                     <padding>
+                        <Insets top="5.0" />
+                     </padding>
+                  </HBox>
+                  <HBox fx:id="otherBox" prefHeight="38.0" prefWidth="262.0" spacing="5.0">
+                     <children>
+                        <Button fx:id="delete" mnemonicParsing="false" onAction="#selectDelete" text="Delete" />
+                        <Button fx:id="selectAll" mnemonicParsing="false" onAction="#selectSelectAll" text="Select All" />
+                     </children>
+                     <VBox.margin>
+                        <Insets left="5.0" top="5.0" />
+                     </VBox.margin>
+                     <padding>
+                        <Insets left="5.0" top="5.0" />
+                     </padding>
+                  </HBox>
+                  <Button fx:id="okBtn" mnemonicParsing="false" onAction="#okBtnClick" />
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+      <VBox fx:id="layoutBox" alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity">
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" text="Layout">
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin>
+            </Label>
+            <ScrollPane fx:id="layoutScroll" fitToHeight="true" fitToWidth="true" minHeight="-Infinity" minWidth="-Infinity" prefViewportWidth="100.0">
+               <content>
+                  <AnchorPane fx:id="bannerLayout" minHeight="-Infinity" minWidth="-Infinity" />
+               </content>
+            </ScrollPane>
+            <Label fx:id="statusBar" />
+         </children>
+      </VBox>
+      <VBox fx:id="bannerBox" alignment="TOP_CENTER" minWidth="245.0" prefHeight="875.0" prefWidth="279.0">
+         <children>
+            <Label text="Detail" />
+            <ScrollPane fx:id="detailScroll" maxHeight="-Infinity" maxWidth="-Infinity" prefViewportWidth="265.0">
+               <content>
+                  <VBox fx:id="detailHoldingBox">
+                     <children>
+                        <AnchorPane fx:id="detailPane1" prefHeight="200.0" prefWidth="200.0" />
+                        <AnchorPane fx:id="detailPane2" prefHeight="200.0" prefWidth="200.0" />
+                        <AnchorPane fx:id="detailPane3" prefHeight="200.0" prefWidth="200.0" />
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
+         </children>
+      </VBox>
+   </items>
+</SplitPane>

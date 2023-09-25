@@ -103,7 +103,7 @@ public class MyTable extends JTable {
 		super(dm);
 		this.setFillsViewportHeight(true);
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.setAutoResizeMode(AUTO_RESIZE_OFF);
+		this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		/*
 		 * Select
 		 */
@@ -113,13 +113,13 @@ public class MyTable extends JTable {
 		/*
 		 * Ticker
 		 */
-		this.getColumnModel().getColumn(1).setResizable(false);
+		this.getColumnModel().getColumn(1).setResizable(true);
 		this.getColumnModel().getColumn(1).setPreferredWidth(80);
 		this.getColumnModel().getColumn(1).setCellRenderer(new TickerRenderer());
 		/*
 		 * Settlement Date
 		 */
-		this.getColumnModel().getColumn(2).setResizable(false);
+		this.getColumnModel().getColumn(2).setResizable(true);
 		this.getColumnModel().getColumn(2).setPreferredWidth(80);
 		this.getColumnModel().getColumn(2).setCellRenderer(new DateRenderer());
 		/*
@@ -130,18 +130,18 @@ public class MyTable extends JTable {
 		/*
 		 * Reference
 		 */
-		this.getColumnModel().getColumn(4).setResizable(false);
+		this.getColumnModel().getColumn(4).setResizable(true);
 		this.getColumnModel().getColumn(4).setPreferredWidth(100);
 		this.getColumnModel().getColumn(4).setCellRenderer(new ReferenceRenderer());
 		/*
 		 * Description
 		 */
-		this.getColumnModel().getColumn(5).setResizable(false);
+		this.getColumnModel().getColumn(5).setResizable(true);
 		this.getColumnModel().getColumn(5).setPreferredWidth(350);
 		/*
 		 * Value
 		 */
-		this.getColumnModel().getColumn(6).setResizable(false);
+		this.getColumnModel().getColumn(6).setResizable(true);
 		this.getColumnModel().getColumn(6).setPreferredWidth(80);
 	}
 

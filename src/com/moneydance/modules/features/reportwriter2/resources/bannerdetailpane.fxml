@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane prefHeight="242.0" prefWidth="298.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+   </rowConstraints>
+   <columnConstraints>
+      <ColumnConstraints minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints minWidth="10.0" />
+   </columnConstraints>
+   <children>
+      <Label text="Banner Name" />
+      <Label fx:id="bannerName" GridPane.columnIndex="1" />
+      <Label text="Banner Type" GridPane.rowIndex="1" />
+      <Label fx:id="bannerType" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Label text="New Page" GridPane.rowIndex="2" />
+      <Label text="Bottom Line" GridPane.rowIndex="5" />
+      <Label text="Height" GridPane.rowIndex="7" />
+      <CheckBox fx:id="bannerNewPage" mnemonicParsing="false" onAction="#checkNewPage" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <CheckBox fx:id="bannerBotLine" mnemonicParsing="false" onAction="#checkBotLine" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <TextField fx:id="bannerHeight" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+      <Label text="Top Line" GridPane.rowIndex="4" />
+      <CheckBox fx:id="bannerTopLine" mnemonicParsing="false" onAction="#checkTopLine" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <Label text="Style" GridPane.rowIndex="8" />
+      <ComboBox fx:id="bannerStyles" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+      <Label text="Visible" GridPane.rowIndex="6" />
+      <CheckBox fx:id="bannerVisible" mnemonicParsing="false" onAction="#checkVisible" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+      <Label text="Repeat Each Page" GridPane.rowIndex="3" />
+      <CheckBox fx:id="bannerRepeat" mnemonicParsing="false" onAction="#checkRepeat" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+   </children>
+</GridPane>

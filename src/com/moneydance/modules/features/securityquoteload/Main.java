@@ -55,6 +55,7 @@ import com.infinitekind.util.DateUtil;
 import com.moneydance.apps.md.controller.FeatureModule;
 import com.moneydance.apps.md.controller.FeatureModuleContext;
 import com.moneydance.apps.md.controller.UserPreferences;
+import com.moneydance.apps.md.view.MoneydanceUI;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.MRBPreferences2;
 import com.moneydance.modules.features.mrbutil.Platform;
@@ -112,8 +113,13 @@ public class Main extends FeatureModule {
 	public static boolean isUpdating = false;
 	public static boolean isGUIOpen = false;
 	public static boolean isQuotesRunning = false;
+	private boolean standAloneRequested=false;
+	private boolean isSyncing=false;
 	private int timeoutMax = Constants.TIMEOUTCOUNT;
 	private Timer autoDelay;
+	private MoneydanceUI mdGUI;
+	private com.moneydance.apps.md.controller.Main mdMain;
+
 
 	/*
 	 * Called when extension is loaded<p> Need to register the feature and the URI
@@ -252,6 +258,7 @@ public class Main extends FeatureModule {
 		debugInst.debug("Quote Load", "sendAuto", MRBDebug.DETAILED, "checking syncing ");
 		if (context != null && context.getCurrentAccountBook().getSyncer().isSyncing()) {
 			debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO, "Syncing - delay set ");
+			isSyncing=true;
 			if (autoDelay == null) {
 				autoDelay = new Timer(1, ((ae) -> {
 					javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -270,6 +277,16 @@ public class Main extends FeatureModule {
 			autoDelay.start();
 			return;
 		} 
+		isSyncing=false;
+		if (standAloneRequested) {
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+							+ Constants.STANDALONEREQUESTED);
+				}
+			});
+		}
 		debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO, "Check Auto without delay ");
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			@Override
@@ -437,6 +454,11 @@ public class Main extends FeatureModule {
 		 * AWT-Event-Queue to preserve sequence
 		 */
 		debugInst.debug("Quote Load", "invoke", MRBDebug.SUMMARY, "Command " + command);
+		if (command.equals(Constants.RUNSTANDALONECMD)) {
+			standAloneRequested = true;
+			sendAuto();
+			return;
+		}
 		if (command.equals("showconsole")) {
 			if (frame != null && runtype > Constants.MANUALRUN) {
 				JOptionPane.showMessageDialog(null, "Quote Loader is running an automatic update,please wait",
@@ -452,8 +474,15 @@ public class Main extends FeatureModule {
 				debugInst.debug("Quote Load", "invoke", MRBDebug.DETAILED, "command Run Auto");
 				showConsole();
 			} else {
-				debugInst.debug("Quote Load", "invoke", MRBDebug.DETAILED, "Processing " + command);
-				processCommand(command,uri);
+				if (command.equals(Constants.STANDALONEREQUESTED)) {
+					runtype = Constants.STANDALONERUN;
+					debugInst.debug("Quote Load", "invoke", MRBDebug.INFO, "command Run Standalone");
+					showConsole();
+				}
+				else {
+					debugInst.debug("Quote Load", "invoke", MRBDebug.DETAILED, "Processing " + command);
+					processCommand(command,uri);
+				}
 			}
 		}
 	}
@@ -726,6 +755,9 @@ public class Main extends FeatureModule {
 				quotesCompleted.set(true);
 			return;
 		}
+		/*
+		 * check for end of automatic run completed
+		 */
 		if (command.equals(Constants.AUTODONECMD)) {
 			runtype = 0;
 			if (frame != null) {
@@ -738,10 +770,32 @@ public class Main extends FeatureModule {
 			debugInst.debug("Quote Load", "ProcessCommand", MRBDebug.DETAILED, "Auto run done");
 			return;
 		}
+		/*
+		 * check for standalone run completed
+		 */
+		if (command.equals(Constants.STANDALONEDONE)) {
+			debugInst.debug("Quote Load", "ProcessCommand", MRBDebug.INFO, "Standalone  run done");
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+		
+					mdMain = com.moneydance.apps.md.controller.Main.mainObj;
+					mdGUI = mdMain.getUI();
+					mdMain.saveCurrentAccount();
+					mdGUI.shutdownApp(false);
+				}
+			}); 
+		}
+		/*
+		 * check for manual run done
+		 */
 		if (command.equals(Constants.MANUALDONECMD)) {
 			runtype = 0;
 			isQuotesRunning = false;
 		}
+		/*
+		 * second run required one autorun to allow currencies to be done first
+		 */
 		if (command.equals(Constants.RUNSECONDRUNCMD))
 			if (frame != null && frame instanceof AutomaticRun)
 				((AutomaticRun)frame).secondRun();
@@ -805,9 +859,24 @@ public class Main extends FeatureModule {
 	 */
 	private synchronized void showConsole() {
 
-		debugInst.debug("Quote Load", "showConsole", MRBDebug.INFO, "Starting Quote Load - runtype "+runtype);
+		debugInst.debug("Quote Load", "showConsole", MRBDebug.DETAILED, "Starting Quote Load - runtype "+runtype);
 		if (runtype != Constants.MANUALRUN) {
-			debugInst.debug("Quote Load", "showConsole", MRBDebug.INFO, "Auto Run");
+			String runmsg="";
+			switch (runtype) {
+			case 2:
+				runmsg="Auto Run - Securities Only";
+				break;
+			case 3:
+				runmsg="Auto Run - Currencies Only";
+				break;
+			case 4:
+				runmsg="Auto Run - Securities and Currencies";
+				break;
+			case 5:
+				runmsg="Standalone  Run";
+				break;
+			}
+			debugInst.debug("Quote Load", "showConsole", MRBDebug.INFO, runmsg);
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {

@@ -33,76 +33,69 @@
  */
 package com.moneydance.modules.features.securityquoteload.quotes;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TimeZone;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.securityquoteload.Constants;
 import com.moneydance.modules.features.securityquoteload.QuotePrice;
+import com.moneydance.modules.features.securityquoteload.ScanDate;
 
 public class GetYahooTDQuote extends GetQuoteTask {
  
-	private String yahooSecURL = "https://query1.finance.yahoo.com/v11/finance/quoteSummary/";
-	private String yahooCurrURL = "https://query1.finance.yahoo.com/v11/finance/quoteSummary/";
-	private SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private String convTicker="";
+	private String yahooSecURL = "https://finance.yahoo.com/quote/";
+	private String yahooCurrURL = "https://finance.yahoo.com/quote/";
+	private ScanDate scanDate=new ScanDate();
 	public GetYahooTDQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep, String tidp) {
 		super(tickerp, listenerp, httpClientp, tickerTypep,  tidp);
-		String convTicker = ticker.replace("^", "%5E");
+		convTicker = ticker.replace("^", "%5E");
 		if (tickerType == Constants.STOCKTYPE)
-			url = yahooSecURL+convTicker+"?modules=price";
+			url = yahooSecURL+convTicker+"/history?p="+convTicker;
 		if (tickerType == Constants.CURRENCYTYPE)
-			url = yahooCurrURL+convTicker+"?modules=price";
+			url = yahooCurrURL+convTicker+"/history?p="+convTicker;
 		debugInst.debug("GetYahooTDQuote","GetYahooTDQuote",MRBDebug.DETAILED,"Executing :"+url);
 	}
 	@Override
 	synchronized public QuotePrice analyseResponse(CloseableHttpResponse response) throws IOException {
-		
+		debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.DETAILED,"Analysing "+convTicker);
 		QuotePrice quotePrice = new QuotePrice();
 		HttpEntity entity = response.getEntity();
+		InputStream stream = entity.getContent();
+		Document doc = Jsoup.parse(stream,"UTF-8","http://localhost");
 		try {
-			InputStream stream = entity.getContent();
-			String buffer = getJsonString(stream);
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode nodes = mapper.readTree(buffer);
 			try {
-				parseDoc(nodes, quotePrice);
+				parseDoc(doc, quotePrice);
 			}
 			catch (IOException a) {
-				debugInst.debug("GetYahooTDQuote","analyseResponse",MRBDebug.INFO,"IOException "+a.getMessage());
+				debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"IOException "+a.getMessage());
 				throw new IOException(a);
 			}
 		}
 		catch (UnsupportedOperationException e) {
-			debugInst.debug("GetYahooTDQuote","analyseResponse",MRBDebug.INFO,"IOException "+e.getMessage());
+			debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"Unsupported Operation  "+e.getMessage());
 			throw new IOException(e);
 		}
 		catch (MalformedURLException e) {
+			debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"MalformedURL "+e.getMessage());
 			throw (new IOException (e));
 		} catch (ClientProtocolException e) {
-			throw (new IOException (e));
+			debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"ClientProtocolException "+e.getMessage());
+		throw (new IOException (e));
 		} catch (IOException e) {
+			debugInst.debug("GetYahooHistQuote","analyseResponse",MRBDebug.INFO,"IOException "+e.getMessage());
 			throw (new IOException (e));
 		} 
 
@@ -112,125 +105,105 @@ public class GetYahooTDQuote extends GetQuoteTask {
 
 		return quotePrice;
 	}
-	private String getJsonString(InputStream stream) throws IOException {
-		String result="";
-		BufferedReader reader = null;
+
+	private void parseDoc(Document doc, QuotePrice quotePrice) throws IOException {
+		debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.INFO,"Parsing document for  "+convTicker);
+		Elements dataRows=null;
+		boolean priceFound = false;
 		try {
-			reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-			String buffer="";
-			while ((buffer = reader.readLine()) !=null) {
-				result+=buffer;
+			Elements spans = doc.getElementsByTag("span");
+			if (spans == null) {
+				throw new IOException("Cannot find Currency");
 			}
-		}
-		finally {
-			if (reader !=null) {
-				try {
-					reader.close();
+			String cur="";
+			for (int i=0;i<spans.size();i++) {
+				Element elem = spans.get(i);
+				List<TextNode> children = elem.textNodes();
+				for (TextNode text:children) {
+					if (text.text().contains("Currency in")) {
+							int place = text.text().indexOf("Currency in")+12;
+							cur = text.text().substring(place, place+3);
+							break;
+						}
 				}
-				finally {
-					
-				}
-			}	
-		}
-		if (result.isEmpty())
-			throw new IOException("Cannot find Yahoo price data");
-		return result;
-	}
-
-	
-	private void parseDoc(JsonNode doc, QuotePrice quotePrice) throws IOException {
-		JsonNode quoteNode = null;
-		JsonNode resultNode = null;
-		JsonNode priceNode = null;
-		String timeZoneStr="";
-		Calendar tradeDateCal;
-		String tradeDateStr="";
-		try {
-			quoteNode = doc.findPath("quoteSummary");
-			if (quoteNode.isMissingNode())
-				throw new IOException("Cannot find quoteSummary "+ticker);				
-			resultNode = quoteNode.findPath("result");		
-			if (resultNode.isMissingNode() || ! resultNode.isArray())
-				throw new IOException("Cannot find result "+ticker);
-			priceNode = resultNode.findPath("price");
-			Iterator<Map.Entry<String, JsonNode>> it =priceNode.fields();
-			while(it.hasNext()) {
-				Entry<String,JsonNode> itemNode=it.next();
-				JsonNode value;
-				if (itemNode.getKey().equals("regularMarketPrice")) {
-					Iterator<JsonNode> children = itemNode.getValue().elements();
-					value= children.next();;
-					quotePrice.setPrice(value.asDouble());
-				}
-				if (itemNode.getKey().equals("currency")) {
-					value= itemNode.getValue();
-					quotePrice.setCurrency(value.asText());
-				}
-				if (itemNode.getKey().equals("regularMarketTime")) {
-					value= itemNode.getValue();
-					tradeDateStr =value.asText();
-				}
-				if (itemNode.getKey().equals("regularMarketVolume")) {
-					if (itemNode.getValue().has("raw")) {
-						Iterator<JsonNode> children = itemNode.getValue().elements();
-						value= children.next();;
-						quotePrice.setVolume(value.asLong());
-					}
-
-				}
-				if (itemNode.getKey().equals("regularMarketDayHigh")) {
-					if (itemNode.getValue().has("raw")) {
-						Iterator<JsonNode> children = itemNode.getValue().elements();
-						value= children.next();;
-						quotePrice.setHighPrice(value.asDouble());
-					}
-				}
-				if (itemNode.getKey().equals("regularMarketDayLow")) {
-					if (itemNode.getValue().has("raw")) {
-						Iterator<JsonNode> children = itemNode.getValue().elements();
-						value= children.next();;
-						quotePrice.setLowPrice(value.asDouble());
-					}
-				}
+				if (!cur.isEmpty())
+					break;
 			}
-		} catch (IOException e) {
-			throw new IOException("Cannot parse response for symbol=" + ticker + e.getMessage(),e);
-		} catch (NullPointerException e2) {
-			throw new IOException("Cannot parse response for symbol=" + ticker + e2.getMessage(),e2);			
-		}  catch (NumberFormatException e3) {
-			throw new IOException("Cannot parse response for symbol=" + ticker + e3.getMessage(),e3);			
+			if (cur.isEmpty())
+				throw new IOException("Cannot find Currency");
+			quotePrice.setCurrency(cur);
+			dataRows =doc.getElementsByAttributeValue("class","BdT Bdc($seperatorColor) Ta(end) Fz(s) Whs(nw)");
+			for (Element row:dataRows) {
+				if (row.childNodeSize()==2) {
+					Elements childrenList = row.child(1).children();
+					if (childrenList.isEmpty())
+						continue;
+					Element child1 = childrenList.get(1);
+					String text="";
+					if (child1.hasText())
+						text=child1.text();
+					if(text.equals("Dividend"))
+						continue;
+					break;
+				}
+				if (row.childNodeSize()<7)
+					break;
+				String tradeDate =getTextNode(row,0);
+				String highStr =getTextNode(row,2);
+				highStr=highStr.replace(",", "");
+				String lowStr =getTextNode(row,3);
+				lowStr=lowStr.replace(",", "");
+				String priceStr =getTextNode(row,5);
+				priceStr=priceStr.replace(",", "");
+				String volumeStr=getTextNode(row,6);
+				if (highStr.isEmpty() && lowStr.isEmpty()&& priceStr.isEmpty())
+					continue;
+				if (!priceFound) {
+					int tradeDateInt =scanDate.parseYahooDate(tradeDate);
+					if (tradeDateInt == 19000101)
+						throw new IOException("Error in trade date " + tradeDate);
+					quotePrice.setTradeDateInt( tradeDateInt);
+					quotePrice.setTradeDate(String.valueOf(tradeDateInt)+"T00:00");
+
+					if (priceStr.isEmpty())
+						throw new IOException("Error in price " + priceStr);
+					else
+						quotePrice.setPrice(Double.parseDouble(priceStr));
+					quotePrice.setHighPrice(highStr.isEmpty()?0.0:Double.parseDouble(highStr));
+					quotePrice.setLowPrice(lowStr.isEmpty()?0.0:Double.parseDouble(lowStr));
+					if (volumeStr.isEmpty())
+						quotePrice.setVolume(0L);
+					else {	
+						volumeStr=volumeStr.replace(",", "");
+						quotePrice.setVolume(Long.parseLong(volumeStr));
+					}
+					priceFound = true;
+					break;
+				}
+
+			}
+		} catch (Exception e1) {
+			debugInst.debug("GetYahooHistQuote","parseDoc",MRBDebug.INFO,"Cannot parse response for  "+convTicker+" "+e1.getMessage());
+			throw new IOException("Cannot parse response for symbol=" + ticker + e1.getMessage(),e1);
+			
 		}
-		timeZoneStr = "EDT";
-		if (tradeDateStr.isEmpty() || timeZoneStr.isEmpty())
-			throw new IOException("Cannot find trade date for "+ticker);
-		tradeDateCal = getLastTrade(tradeDateStr, timeZoneStr);
-		quotePrice.setTradeDate(dFormat.format(tradeDateCal.getTime())+"T00:00");
-
-	return;
 	}
-	    private Calendar  getLastTrade(String regularMarketTime, String exchangeTimezoneName) throws IOException{
-		       Calendar lastTrade = null;
-		        if ((regularMarketTime != null) && (exchangeTimezoneName != null)) {
-		            long longValue;
-		            try {
-		                longValue = Long.valueOf(regularMarketTime);
-		                ZonedDateTime marketZonedDateTime = getMarketZonedDateTime(longValue, exchangeTimezoneName);
-		                lastTrade = GregorianCalendar.from(marketZonedDateTime);
-		            } catch (NumberFormatException e) {
-		               throw new IOException("error calculating trade date");
-		            }
-		        }
-		        return lastTrade;
-		    }
-
-		    private final ZonedDateTime getMarketZonedDateTime(long regularMarketTime, String exchangeTimezoneName) {
-		        long epoch = regularMarketTime;
-		        Instant instant = Instant.ofEpochSecond(epoch);
-		        TimeZone timeZone = TimeZone.getTimeZone(exchangeTimezoneName);
-		        ZoneId zoneId = timeZone.toZoneId();
-		        ZonedDateTime zoneDateTime = ZonedDateTime.ofInstant(instant, zoneId);
-		        return zoneDateTime;
-		    }
-
-	
+	private String getTextNode(Element row, int child) {
+		if (row.childNodeSize()< child+1)
+			return "";
+		if (row.child(child) == null)
+			return "";
+		Elements childrenList = row.child(child).children();
+		if (childrenList.isEmpty())
+			return "";
+		if (row.child(child).child(0)== null)
+			return "";
+		if (row.child(child).child(0).textNodes().isEmpty())
+			return "";
+		if (row.child(child).child(0).textNodes().get(0)==null)
+			return "";
+		if (row.child(child).child(0).textNodes().get(0).text()==null)
+			return "";
+		return row.child(child).child(0).textNodes().get(0).text();
+	}
 }

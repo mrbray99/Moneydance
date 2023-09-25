@@ -1,0 +1,975 @@
+/*
+ * Copyright (c) 2020, Michael Bray.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *   - Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *   - Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *
+ *   - The name of the author may not used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ */
+package com.moneydance.modules.features.reportwriter2;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+
+import com.infinitekind.moneydance.model.Account;
+import com.infinitekind.moneydance.model.AccountBook;
+import com.infinitekind.moneydance.model.AccountIterator;
+import com.infinitekind.moneydance.model.AccountListener;
+import com.infinitekind.moneydance.model.Budget;
+import com.infinitekind.moneydance.model.BudgetList;
+import com.infinitekind.moneydance.model.BudgetListener;
+import com.infinitekind.moneydance.model.CurrencyListener;
+import com.infinitekind.moneydance.model.CurrencyTable;
+import com.infinitekind.moneydance.model.CurrencyType;
+import com.infinitekind.moneydance.model.InvestTxnType;
+import com.infinitekind.moneydance.model.TxnUtil;
+import com.moneydance.apps.md.controller.FeatureModule;
+import com.moneydance.apps.md.controller.FeatureModuleContext;
+import com.moneydance.apps.md.controller.PreferencesListener;
+import com.moneydance.apps.md.controller.UserPreferences;
+import com.moneydance.apps.md.view.MoneydanceUI;
+import com.moneydance.apps.md.view.gui.MDColors;
+import com.moneydance.modules.features.mrbutil.MRBDebug;
+import com.moneydance.modules.features.mrbutil.MRBDirectoryUtils;
+import com.moneydance.modules.features.mrbutil.MRBFXSelectionRow;
+import com.moneydance.modules.features.mrbutil.MRBPreferences2;
+import com.moneydance.modules.features.mrbutil.MRBReportFonts;
+import com.moneydance.modules.features.reportwriter2.factory.OutputCSV;
+import com.moneydance.modules.features.reportwriter2.factory.OutputDatabase;
+import com.moneydance.modules.features.reportwriter2.factory.OutputFactory;
+import com.moneydance.modules.features.reportwriter2.factory.OutputSpreadsheet;
+import com.moneydance.modules.features.reportwriter2.report.Report;
+import com.moneydance.modules.features.reportwriter2.view.AccelKeys;
+import com.moneydance.modules.features.reportwriter2.view.MyReport;
+import com.moneydance.modules.features.reportwriter2.view.tables.ReportDataRow;
+import com.moneydance.modules.features.reportwriter2.Constants.ReportType;
+import com.moneydance.modules.features.reportwriter2.Utilities.FxDatePickerConverter;
+
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+
+/**
+ * Generalized Moneydance extension to extract data and create reports
+ * extension
+ * <p>
+ * Main class to create main window
+ * 
+ * @author Mike Bray
+ */
+
+public class Main extends FeatureModule implements AccountListener, BudgetListener, CurrencyListener, PreferencesListener {
+	/*
+	 * global fields
+	 * 
+	 * 		- build info
+	 */
+	public static String minorBuildNo = "01";
+	public static String databaseChanged = "20210121";
+	public static String buildNo;
+	/*
+	 * 		- date info
+	 */
+	public static  SimpleDateFormat cdate;
+	public static DateTimeFormatter cdateFX;
+	public static ZoneId zone;
+	public static String datePattern;
+	public static FxDatePickerConverter dateConverter;
+	public static DecimalFormat moneyFmt;;
+	public static DecimalFormat perFmt;
+	public static Date now;
+	/*
+	 * 		- MD Data
+	 */
+	public List<MRBFXSelectionRow> currencies;
+	public List<MRBFXSelectionRow> transferTypes;
+	public List<MRBFXSelectionRow> bankAccounts;
+	public List<MRBFXSelectionRow> assetAccounts;
+	public List<MRBFXSelectionRow> liabilityAccounts;
+	public List<MRBFXSelectionRow> creditAccounts;
+	public List<MRBFXSelectionRow> loanAccounts;
+	public List<MRBFXSelectionRow> investmentAccounts;
+	public List<MRBFXSelectionRow> securityAccounts;
+	public List<MRBFXSelectionRow> incomeCategories;
+	public List<MRBFXSelectionRow> expenseCategories;
+	public List<MRBFXSelectionRow> tags;
+	public List<MRBFXSelectionRow> securities;
+	public List<MRBFXSelectionRow> budgets;
+
+	public static char decimalChar;
+	public static FeatureModuleContext context;
+	public static AccountBook book;
+	public static UserPreferences up;
+	public static CurrencyType baseCurrency;
+	public static String extensionDir;
+	/*
+	 * 		- debug
+	 */
+	public static MRBDebug rwDebugInst;
+	/*
+	 * 		- control 
+	 */
+	public static AccelKeys accels;
+	public static Main extension;
+	public static MyReport frameReport = null;
+	public static JFrame frame;
+	private JFrame progressFrame;
+	private JScrollPane progressScroll;
+	private JTextArea progressArea;
+	private String progressText;
+	private String uri;
+	private String command;
+	public static MRBPreferences2 preferences;
+	public static ClassLoader loader;
+	private Database database;
+	private boolean extensionOpen = false;
+	private static Scene scene;
+	private MDColors colours;
+	private SortedMap<String,java.awt.Color> swingColours=new TreeMap<>();
+	private MoneydanceUI mdGUI;
+	private com.moneydance.apps.md.controller.Main mdMain;
+
+
+	/*
+	 * 		- printing/display info
+	 */
+	public static String reportFont;
+	public static Integer reportFontSize;
+	public static String header1Font;
+	public static Integer header1FontSize;
+	public static String header2Font;
+	public static Integer header2FontSize;
+	public static String header3Font;
+	public static Integer header3FontSize;
+	public static Font labelFont;
+	public static javafx.scene.paint.Color selectColour = Color.BLACK;
+	public static javafx.scene.paint.Color unSelectColour = Color.LIGHTGRAY;
+	public static javafx.scene.paint.Color fieldColour = Color.WHITE;
+	public static javafx.scene.paint.Color selectedButtonColour = Color.LIGHTBLUE;
+	public static javafx.scene.paint.Color unSelectedButtonColour = Color.WHITE;
+	public static MRBReportFonts fonts;
+	/*
+	 * 		- icons and window info
+	 */
+	public static Image mainIcon;
+	public int SCREENWIDTH;
+	public int SCREENHEIGHT;
+	public static Images loadedIcons;
+	/*
+	 * Called when extension is loaded<p> Need to register the feature and the URI
+	 * command to be called when the user selects the extension.
+	 * 
+	 * normally "showconsole"
+	 */
+	@Override
+	public void init() {
+		// the first thing we will do is register this module to be invoked
+		// via the application toolbar
+		extension = this;
+		context = getContext();
+		int iBuild = getBuild();
+		buildNo = String.valueOf(iBuild);
+		mainIcon = getIcon("mrb icon2.png");
+		try {
+			context.registerFeature(this, "showconsole", mainIcon, getName());
+			rwDebugInst = new MRBDebug();
+			rwDebugInst.setExtension(Constants.EXTENSIONNAME);
+			rwDebugInst.setDebugLevel(MRBDebug.DETAILED);
+			rwDebugInst.debug(Constants.EXTENSIONNAME, "Init", MRBDebug.INFO,
+					"Started Build " + buildNo + "." + minorBuildNo);
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		up = UserPreferences.getInstance();
+		up.addListener(this);
+		datePattern = up.getSetting(UserPreferences.DATE_FORMAT);
+		cdate = new SimpleDateFormat(datePattern);
+		cdateFX = DateTimeFormatter.ofPattern(datePattern);
+		dateConverter = new FxDatePickerConverter();
+		zone = ZoneId.systemDefault();
+		now = new Date();
+		decimalChar = up.getDecimalChar();
+		loadedIcons = new Images();
+		labelFont = UIManager.getFont("Label.font");
+		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
+		mdGUI = mdMain.getUI();
+
+		/*
+		 * Need to ensure style sheet is available to FX Scenes
+		 * 
+		 */
+		if (!setReportDirectory()) {
+			JOptionPane.showMessageDialog(null,"Problem loading Report Writer. Look at the Console Log for more detail");
+		}
+
+
+	}
+
+	/**
+	 * retrieves an image from within the .mxt file. Must be included when the
+	 * extension is compiled
+	 * 
+	 * @param action the name of the image to load
+	 * @return the image
+	 */
+	public Image getIcon(String resource) {
+		try {
+			loader = getClass().getClassLoader();
+			java.io.InputStream in = loader.getResourceAsStream(Constants.RESOURCES + resource);
+			if (in != null) {
+				ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
+				byte buf[] = new byte[256];
+				int n = 0;
+				while ((n = in.read(buf, 0, buf.length)) >= 0)
+					bout.write(buf, 0, n);
+				return Toolkit.getDefaultToolkit().createImage(bout.toByteArray());
+			}
+		} catch (Throwable e) {
+		}
+		return null;
+	}
+
+	/*
+	 * Need to capture MD calling cleanup so FX page is closed
+	 */
+	@Override
+	public void cleanup() {
+		rwDebugInst.debug("ReportWriter", "cleanup", MRBDebug.SUMMARY, "cleanup  ");
+		closeConsole();
+		extensionOpen = false;
+	}
+
+	@Override
+	public void unload() {
+		rwDebugInst.debug("ReportWriter", "unload", MRBDebug.SUMMARY, "unload  ");
+		super.unload();
+		closeConsole();
+		extensionOpen = false;
+	}
+
+	@Override
+	public void handleEvent(String appEvent) {
+		super.handleEvent(appEvent);
+		rwDebugInst.debug("Main", "HandleEvent", MRBDebug.SUMMARY, "Event " + appEvent);
+		if (appEvent.compareToIgnoreCase("md:file:opening") == 0) {
+			handleEventFileOpening();
+		} else if (appEvent.compareToIgnoreCase("md:file:opened") == 0) {
+			handleEventFileOpened();
+		} else if (appEvent.compareToIgnoreCase("md:file:closing") == 0) {
+			handleEventFileClosed();
+		}
+	}
+
+	private void handleEventFileOpening() {
+		rwDebugInst.debug("Main", "HandleEventFileOpening", MRBDebug.SUMMARY, "Opening ");
+	}
+
+	private void handleEventFileOpened() {
+		rwDebugInst.debug("Main", "HandleEventFileOpened", MRBDebug.INFO, "File Opened");
+		if (!extensionOpen) {
+			MRBPreferences2.forgetInstance();
+//			context = getContext();
+			book = context.getCurrentAccountBook();
+			MRBPreferences2.loadPreferences(context);
+			preferences = MRBPreferences2.getInstance();
+			rwDebugInst.setDebugLevel(
+					preferences.getInt(Constants.PROGRAMNAME + "." + Constants.DEBUGLEVEL, MRBDebug.INFO));
+			String debug;
+			if (rwDebugInst.getDebugLevel() == MRBDebug.INFO)
+				debug = "INFO";
+			else if (rwDebugInst.getDebugLevel() == MRBDebug.SUMMARY)
+				debug = "SUMM";
+			else if (rwDebugInst.getDebugLevel() == MRBDebug.DETAILED)
+				debug = "DET";
+			else
+				debug = "OFF";
+			rwDebugInst.debug("ReportWriter", "HandleEventFileOpened", MRBDebug.INFO,
+					"Debug level set to " + debug);
+		}
+		book.addAccountListener(this);
+		book.getBudgets().addListener(this);
+		book.getCurrencies().addCurrencyListener(this);
+	}
+	private boolean setReportDirectory() {
+		File extensionData = MRBDirectoryUtils.getExtensionDataDirectory(Constants.PROGRAMNAME);
+		extensionDir = extensionData.getAbsolutePath();
+		if (extensionData != null && extensionData.exists()) {
+			rwDebugInst.debug("Main", "setReportDirectory", MRBDebug.SUMMARY, "Extension directory found");
+			String [] filenames = extensionData.list();
+			for (String cssFile : filenames) {
+				rwDebugInst.debug("Main", "setReportDirectory", MRBDebug.SUMMARY, "File "+cssFile);					
+				if (cssFile.endsWith(".css")) {
+					File deleteFile = new File(extensionDir+"/"+cssFile);
+					try {
+						deleteFile.delete();
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+						rwDebugInst.debug("Main", "setReportDirectory", MRBDebug.SUMMARY, "Error deleting temp file "+cssFile);
+						return false;
+					}
+				}
+			}
+		}
+		else {
+			rwDebugInst.debug("Main", "setReportDirectory", MRBDebug.SUMMARY, "Extension directory not found");
+			return false;
+		}
+
+		return true;
+	}
+
+
+	private void handleEventFileClosed() {
+		rwDebugInst.debug("Main", "HandleEventFileClosed", MRBDebug.INFO, "Closing ");
+		closeConsole();
+	}
+
+	/**
+	 * Processes the uri from Moneydance. Called by Moneydance
+	 * <p>
+	 * Commands:
+	 * <ul>
+	 * <li>showconsole - called when the user selects the extension
+	 * <li>viewreport - View a report, must be done on AWT-Event-Queue
+	 * </ul>
+	 * 
+	 * @param uri the uri from Moneydance
+	 */
+	@Override
+	public void invoke(String urip) {
+		preferencesUpdated();
+		if (book == null)
+			book = context.getCurrentAccountBook();
+		baseCurrency = book.getCurrencies().getBaseType();
+		moneyFmt = new DecimalFormat(baseCurrency.getPrefix()+"#"+decimalChar+"00"+baseCurrency.getSuffix());
+		perFmt=new DecimalFormat("#"+Main.decimalChar+"00%");
+		UserPreferences prefs = UserPreferences.getInstance();
+		fonts = MRBReportFonts.getPrintingFonts(prefs);
+		reportFont = fonts.getNormalFont().getFontName();
+		reportFontSize = fonts.getNormalFont().getSize();
+		header1Font = fonts.getTitleFont().getFontName();
+		header1FontSize=fonts.getTitleFont().getSize();
+		header2Font = fonts.getSubtitleFont().getFontName();
+		header2FontSize=fonts.getSubtitleFont().getSize();
+		header3Font = fonts.getHeaderFont().getFontName();
+		header3FontSize=fonts.getHeaderFont().getSize();
+		accels = new AccelKeys();
+		if (preferences == null) {
+			MRBPreferences2.loadPreferences(context);
+			preferences = MRBPreferences2.getInstance();
+		}
+		uri = urip;
+		command = uri;
+		int theIdx = uri.indexOf('?');
+		if (theIdx >= 0) {
+			command = uri.substring(0, theIdx);
+		} else {
+			theIdx = uri.indexOf(':');
+			if (theIdx >= 0) {
+				command = uri.substring(0, theIdx);
+			}
+		}
+		/*
+		 * showConsole will be on AWT-Event-Queue, all other commands will be on the
+		 * thread of the calling program, make sure all commands are processed on the
+		 * AWT-Event-Queue to preserve sequence
+		 */
+		rwDebugInst.debug("Main", "invoke", MRBDebug.SUMMARY, "Command " + command);
+		switch (command) {
+		case "showconsole":
+			showConsole();
+			break;
+		case Constants.VIEWREPORTCMD:
+			viewReport(uri);
+			break;
+		case Constants.SHOWHELP:
+			String url = Constants.HELPURL;
+			mdGUI.showInternetURL(url);
+			break;
+		}
+	}
+
+	@Override
+	public String getName() {
+		return Constants.EXTENSIONNAME;
+	}
+
+	/**
+	 * Create the GUI and show it. For thread safety, this method should be invoked
+	 * from the event dispatch thread.
+	 */
+	private void createAndShowGUI() {
+		rwDebugInst.debug("ReportWriter", "createandShowGUI", MRBDebug.SUMMARY, "cleanup  ");
+		if (extensionOpen && frame != null) {
+			frame.requestFocus();
+			return;
+		}
+		collectData();
+		book.addAccountListener(this);
+		book.getBudgets().addListener(this);
+		book.getCurrencies().addCurrencyListener(this);
+		frame = new JFrame();
+		frameReport = new MyReport();
+		frame.setTitle(Constants.EXTENSIONNAME + " " + buildNo + "." + minorBuildNo);
+		frame.setIconImage(mainIcon);
+		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		// Display the window.
+		frame.setLocationRelativeTo(null);
+		frame.addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+				if (JOptionPane.showConfirmDialog(frameReport, "Are you sure you want to close Report Writer?",
+						"Close Window?", JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+					rwDebugInst.debug("Main", "createAndShowGUI", MRBDebug.SUMMARY, "Yes");
+					extensionOpen=false;
+					closeConsole();
+				}
+			}
+		});
+		SCREENWIDTH = preferences.getInt(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEWIDTH,
+				Constants.MAINSCREENWIDTH);
+		rwDebugInst.debug("Main", "createAndShowGUI", MRBDebug.SUMMARY, "Width " + SCREENWIDTH);
+		SCREENHEIGHT = preferences.getInt(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEHEIGHT,
+				Constants.MAINSCREENHEIGHT);
+		rwDebugInst.debug("Main", "createAndShowGUI", MRBDebug.SUMMARY, "Height " + SCREENHEIGHT);
+		frame.add(frameReport);
+		frame.getContentPane().setPreferredSize(new Dimension(SCREENWIDTH, SCREENHEIGHT));
+		frame.pack();
+		rwDebugInst.debug("Main", "createAndShowGUI", MRBDebug.SUMMARY,
+				"frame " + frame.getWidth() + "/" + frame.getHeight());
+		frame.setVisible(true);
+		frame.setLocation(preferences.getInt(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEX, 0),
+				preferences.getInt(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEY, 0));
+
+		frame.addComponentListener(new ComponentListener() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				Component c = (Component) e.getSource();
+				Point currentLocation = c.getLocationOnScreen();
+				Main.rwDebugInst.debugThread("Main", "createAndShowGUI", MRBDebug.SUMMARY,
+						"Component moved " + currentLocation.x + "/" + currentLocation.y);
+				Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEX, currentLocation.x);
+				Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEY, currentLocation.y);
+				Main.preferences.isDirty();
+			}
+
+			@Override
+			public void componentShown(ComponentEvent e) {
+
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e) {
+			}
+		});
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+				extensionOpen = true;
+				initFX(frameReport);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/*
+	 * Initiate JavaFX, this runs on the FX thread
+	 */
+	private static void initFX(MyReport fxPanel) {
+		rwDebugInst.debugThread("ReportWriter", "initFX", MRBDebug.SUMMARY, "setting javafx scene");
+		// This method is invoked on the JavaFX thread
+		scene = fxPanel.createScene();
+		fxPanel.setScene(scene);
+		fxPanel.setSizes();
+		rwDebugInst.debugThread("ReportWriter", "initFX", MRBDebug.SUMMARY, "javafx scene set");
+	}
+
+	/**
+	 * Starts the user interface for the extension
+	 * 
+	 * @see #invoke(String)
+	 */
+	private synchronized void showConsole() {
+		rwDebugInst.debug("Main", "showConsole", MRBDebug.INFO, "Show Console");
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				createAndShowGUI();
+			}
+		});
+
+	}
+
+	/**
+	 * Get the extension context
+	 * 
+	 * @return FeatureModuleContext context
+	 */
+	public FeatureModuleContext getUnprotectedContext() {
+		return getContext();
+	}
+
+	/**
+	 * closes the extension - need to close the FX Panel
+	 */
+	public synchronized void closeConsole() {
+		rwDebugInst.debug("Main", "closeConsole", MRBDebug.DETAILED, "closing Console ");
+		extensionOpen = false;
+		if (frameReport != null) {
+			frameReport.closeDown();
+			Platform.exit();
+			scene = null;
+			frameReport = null;
+		}
+		if (frame != null) {
+			frame.setVisible(false);
+			frame = null;
+		}
+		if (preferences != null) {
+			MRBPreferences2.forgetInstance();
+			preferences = null;
+		}
+		book = null;
+
+	}
+
+	/*
+	 * collect the MD data required for the parameter and group panes
+	 */
+	private void collectData() {
+		loadAccounts();
+		loadBudgets();
+		loadTags();
+		loadCurrencies();
+		InvestTxnType[] txnTypes = InvestTxnType.ALL_TXN_TYPES;
+		transferTypes = new ArrayList<>();
+		for (InvestTxnType type : txnTypes) {
+			MRBFXSelectionRow row = new MRBFXSelectionRow(type.toString(), type.getIDString(), "Transfer Type",
+					false);
+			row.setDepth(0);
+			transferTypes.add(row);
+		}
+	}
+
+	private void loadBudgets() {
+		budgets = new ArrayList<>();
+		BudgetList budgetList = book.getBudgets();
+		if (budgetList != null) {
+			for (Budget budget : budgetList.getAllBudgets()) {
+				MRBFXSelectionRow row = new MRBFXSelectionRow(budget.getUUID(), budget.toString(), "Budget",
+						false);
+				row.setDepth(0);
+				budgets.add(row);
+			}
+		}
+
+	}
+
+	private synchronized void loadCurrencies() {
+		currencies = new ArrayList<>();
+		securities = new ArrayList<>();
+		List<CurrencyType> currencyTable = book.getCurrencies().getAllCurrencies();
+		for (CurrencyType type : currencyTable) {
+			if (type.getCurrencyType() == CurrencyType.Type.CURRENCY) {
+				MRBFXSelectionRow row = new MRBFXSelectionRow(type.getUUID(),
+						type.getName() + "(" + type.getIDString() + ")", "Currency", false);
+				row.setDepth(0);
+				row.setInActive(type.getHideInUI());
+				currencies.add(row);
+			}
+			if (type.getCurrencyType() == CurrencyType.Type.SECURITY) {
+				MRBFXSelectionRow row = new MRBFXSelectionRow(type.getUUID(),
+						type.getName() + "(" + type.getIDString() + ")", "Security", false);
+				row.setDepth(0);
+				row.setInActive(type.getHideInUI());
+				securities.add(row);
+			}
+		}
+		Collections.sort(currencies, new CompareCurrency());
+		Collections.sort(securities, new CompareCurrency());
+	}
+
+	private synchronized void loadAccounts() {
+		AccountIterator it = new AccountIterator(book);
+		if (bankAccounts == null)
+			bankAccounts = new ArrayList<>();
+		else
+			bankAccounts.clear();
+		if (assetAccounts == null)
+			assetAccounts = new ArrayList<>();
+		else
+			assetAccounts.clear();
+		if (creditAccounts == null)
+			creditAccounts = new ArrayList<>();
+		else
+			creditAccounts.clear();
+		if (liabilityAccounts == null)
+			liabilityAccounts = new ArrayList<>();
+		else
+			liabilityAccounts.clear();
+		if (loanAccounts == null)
+			loanAccounts = new ArrayList<>();
+		else
+			loanAccounts.clear();
+		if (investmentAccounts == null)
+			investmentAccounts = new ArrayList<>();
+		else
+			investmentAccounts.clear();
+		if (securityAccounts == null)
+			securityAccounts = new ArrayList<>();
+		else
+			securityAccounts.clear();
+		if (incomeCategories == null)
+			incomeCategories = new ArrayList<>();
+		else
+			incomeCategories.clear();
+		if (expenseCategories == null)
+			expenseCategories = new ArrayList<>();
+		else
+			expenseCategories.clear();
+		while (it.hasNext()) {
+			Account acct = it.next();
+			MRBFXSelectionRow row = new MRBFXSelectionRow(acct.getUUID(), acct.getAccountName(), "Account",
+					false);
+			row.setInActive(false);
+			row.setSortText(acct.getFullAccountName());
+			row.setDepth(0);
+			switch (acct.getAccountType()) {
+			case ASSET:
+				row.setType("Asset");
+				assetAccounts.add(row);
+				break;
+			case BANK:
+				row.setType("Bank");
+				bankAccounts.add(row);
+				break;
+			case CREDIT_CARD:
+				row.setType("Credit Card");
+				creditAccounts.add(row);
+				break;
+			case INVESTMENT:
+				row.setType("Invest");
+				investmentAccounts.add(row);
+				securityAccounts.add(row);
+				break;
+			case LIABILITY:
+				row.setType("Liability");
+				liabilityAccounts.add(row);
+				break;
+			case LOAN:
+				row.setType("Loan");
+				loanAccounts.add(row);
+				break;
+			case INCOME:
+				row.setText(acct.getIndentedName());
+				row.setType("Income");
+				row.setDepth(acct.getDepth());
+				row.setInActive(acct.getAccountIsInactive());
+				incomeCategories.add(row);
+				break;
+			case EXPENSE:
+				row.setText(acct.getIndentedName());
+				row.setType("Expense");
+				row.setDepth(acct.getDepth());
+				row.setInActive(acct.getAccountIsInactive());
+				expenseCategories.add(row);
+				break;
+			case ROOT:
+				break;
+			case SECURITY:
+				row.setText("   " + acct.getAccountName());
+				row.setType("Security");
+				row.setDepth(acct.getDepth());
+				row.setInActive(acct.getCurrentBalance() == 0L);
+				securityAccounts.add(row);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	private void loadTags() {
+		tags = new ArrayList<>();
+		List<String> tagList = TxnUtil.getListOfAllUsedTransactionTags(book.getTransactionSet().getAllTxns());
+		for (String tagStr : tagList) {
+			tags.add(new MRBFXSelectionRow(tagStr, tagStr, "Tag", false));
+
+		}
+	}
+
+	/*
+	 * running on EDT Obtains data and writes to an h2 database Compiles the Jasper
+	 * Report producing {name}.jasper Fills it with data producing {name}.jrprint
+	 * Displays the report
+	 * 
+	 * Output files are stored in the defined reports directory A temporary file
+	 * with a .java extension is created in the extension data directory
+	 */
+	@SuppressWarnings("unused")
+	private void viewReport(String uri) {
+
+	}
+
+	public void displayProgressWindow() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				progressFrame = new JFrame();
+				progressText = "";
+				progressArea = new JTextArea(30, 70);
+				progressArea.setText(progressText);
+				progressScroll = new JScrollPane(progressArea);
+				progressFrame.setSize(200, 200);
+				progressFrame.getContentPane().add(progressScroll, BorderLayout.CENTER);
+				progressFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				progressFrame.pack();
+				progressFrame.setLocationRelativeTo(null);
+				progressFrame.setVisible(true);
+			}
+		});
+
+	}
+
+	public void updateProgress(String line) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {		
+				progressArea.append(line + System.lineSeparator());
+				progressArea.setCaretPosition(progressArea.getText().length() - 1);
+				progressArea.update(progressArea.getGraphics());
+				progressScroll.validate();
+			}
+		});
+	}
+
+	public void closeProgressWindow() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				progressFrame.setVisible(false);
+				progressFrame = null;
+			}
+		});
+	}
+
+	public void openOutput() {
+		Parameters params = Parameters.getInstance();
+		Desktop desktop = Desktop.getDesktop();
+		File dirToOpen = null;
+		try {
+			dirToOpen = new File(params.getOutputDirectory());
+			desktop.open(dirToOpen);
+		} catch (IllegalArgumentException | IOException iae) {
+			iae.printStackTrace();
+			rwDebugInst.debug("Main", "openOutput", MRBDebug.DETAILED,
+					"Error opening Output folder - " + iae.getLocalizedMessage());
+		}
+	}
+
+	/*
+	 * Required Listener methods
+	 */
+	@Override
+	public void accountModified(Account paramAccount) {
+		loadAccounts();
+		if (frameReport != null)
+			frameReport.resetData();
+	}
+
+	@Override
+	public void accountBalanceChanged(Account paramAccount) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void accountDeleted(Account paramAccount1, Account paramAccount2) {
+		loadAccounts();
+		if (frameReport != null)
+			frameReport.resetData();
+	}
+
+	@Override
+	public void accountAdded(Account paramAccount1, Account paramAccount2) {
+		loadAccounts();
+		if (frameReport != null)
+			frameReport.resetData();
+	}
+
+	@Override
+	public void budgetListModified(BudgetList paramBudgetList) {
+		loadAccounts();
+		if (frameReport != null)
+			frameReport.resetData();
+	}
+
+	@Override
+	public void budgetAdded(Budget paramBudget) {
+		loadBudgets();
+		if (frameReport != null)
+			frameReport.resetData();
+	}
+
+	@Override
+	public void budgetRemoved(Budget paramBudget) {
+		loadBudgets();
+		if (frameReport != null)
+			frameReport.resetData();
+	}
+
+	@Override
+	public void budgetModified(Budget paramBudget) {
+
+	}
+
+	public class CompareCurrency implements Comparator<MRBFXSelectionRow> {
+		public int compare(MRBFXSelectionRow a, MRBFXSelectionRow b) {
+			return a.getText().compareTo(b.getText());
+		}
+	}
+
+	@Override
+	public void currencyTableModified(CurrencyTable arg0) {
+		loadCurrencies();
+		if (frameReport != null)
+			frameReport.resetData();
+	}
+	@Override
+	public void preferencesUpdated() {
+		colours = MDColors.getSingleton();
+		swingColours.put("defaultBackground",colours.defaultBackground);
+		swingColours.put("defaultTextForeground",colours.defaultTextForeground);
+		swingColours.put("defaultlistBackground",colours.listBackground);
+		swingColours.put("registerGrid",colours.registerGrid);
+		unSelectColour =Color.rgb(colours.registerUnfocusedSelectedBG.getRed(),colours.registerUnfocusedSelectedBG.getGreen(),colours.registerUnfocusedSelectedBG.getBlue());
+		swingColours.put("registerBG1",colours.registerBG1);
+		swingColours.put("registerBG2",colours.registerBG2);
+		swingColours.put("registerSelectedBG",colours.registerSelectedBG);
+		selectColour =Color.rgb(colours.registerSelectedBG.getRed(),colours.registerSelectedBG.getGreen(),colours.registerSelectedBG.getBlue());
+		selectedButtonColour =Color.rgb(colours.registerSelectedBG.getRed(),colours.registerSelectedBG.getGreen(),colours.registerSelectedBG.getBlue());
+		unSelectedButtonColour =Color.rgb(colours.defaultBackground.getRed(),colours.defaultBackground.getGreen(),colours.defaultBackground.getBlue());
+		swingColours.put("registerTextFG",colours.registerTextFG);
+		swingColours.put("tableHeaderBG",colours.tableHeaderBG);
+		swingColours.put("tableHeaderFG",colours.headerFG);
+		swingColours.put("headerFG",colours.headerFG);
+		swingColours.put("listBackground",colours.listBackground);
+		swingColours.put("borderColour", colours.mainPanelBorderColor);
+		swingColours.put("marginColour", colours.registerUnfocusedSelectedBG);
+		InputStream stream = this.getClass().getResourceAsStream(Constants.RESOURCES+Constants.STYLESHEET);
+		if (stream != null) {
+			try {
+				InputStreamReader fsr=new InputStreamReader(stream, StandardCharsets.UTF_8);
+				BufferedReader br = new BufferedReader(fsr);
+				String newName = extensionDir+"/"+Constants.STYLESHEET;
+				FileWriter outputFile = new FileWriter(newName);
+				String line="";
+				while ((line=br.readLine())!=null){
+					outputFile.write(makeLine(line));			
+				}
+				outputFile.close();
+				br.close();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+				rwDebugInst.debug("Main", "updateCssFile", MRBDebug.SUMMARY, "Error copying css file ");					
+				return;
+			}
+		}
+		if (frameReport !=null) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					frameReport.setStyleSheet();
+				}
+			});	
+		}
+		datePattern = up.getSetting(UserPreferences.DATE_FORMAT);
+		cdate = new SimpleDateFormat(datePattern);
+		cdateFX = DateTimeFormatter.ofPattern(datePattern);
+		dateConverter = new FxDatePickerConverter();
+		zone = ZoneId.systemDefault();
+		now = new Date();
+		decimalChar = up.getDecimalChar();
+
+	}
+	private String makeLine(String line) {
+		String newLine="";
+		if (line.startsWith("\t-fx-rw")) {
+			int ind = line.indexOf(":")-1;
+			String name = line.substring(8,ind);
+			java.awt.Color colour = swingColours.get(name);
+			if (colour==null)
+				newLine = line;
+			else
+				newLine = " -fx-rw-"+name+" : rgb("+String.valueOf(colour.getRed())+","+String.valueOf(colour.getGreen())+","+String.valueOf(colour.getBlue())+");";
+		}
+		else
+			newLine = line;
+		return newLine+"\n";
+	}
+}

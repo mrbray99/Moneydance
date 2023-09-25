@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.GridPane?>
+
+<GridPane hgap="5.0" prefHeight="454.0" prefWidth="427.0" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+ <children>
+      <Label text="Hght" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
+      <Label text="Y" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
+      <Label text="X" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+                        <Label text="Location" GridPane.rowIndex="4" />
+                        <Label text="Wdth" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
+                        <Label text="Size" GridPane.rowIndex="6" />
+                        <TextField fx:id="positionY" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                        <TextField fx:id="positionX" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                        <Label fx:id="fieldName" text="Field Detail" GridPane.columnSpan="2" GridPane.halignment="LEFT" />
+      <Label text="Expression" GridPane.rowIndex="10" />
+      <Button fx:id="expBtn" mnemonicParsing="false" onAction="#expBtnClicked" GridPane.columnIndex="3" GridPane.rowIndex="10">
+         <GridPane.margin>
+            <Insets bottom="5.0" top="5.0" />
+         </GridPane.margin></Button>
+      <Label text="Pattern" GridPane.rowIndex="11" />
+      <TextField fx:id="fieldExp" disable="true" focusTraversable="false" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="10" />
+      <Button fx:id="patternBtn" mnemonicParsing="false" onAction="#patternBtnClicked" GridPane.columnIndex="3" GridPane.rowIndex="11">
+         <GridPane.margin>
+            <Insets bottom="5.0" top="5.0" />
+         </GridPane.margin></Button>
+      <CheckBox fx:id="fieldBlank" mnemonicParsing="false" onAction="#blankAction" text="Blank when NULL" GridPane.rowIndex="9" />
+      <Label text="Text " GridPane.rowIndex="12" />
+      <Label text="Name" GridPane.columnIndex="1" />
+      <Label fx:id="fieldName" GridPane.columnIndex="2" />
+      <Label text="Type" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Label fx:id="fieldType" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <Label text="Srce" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Label fx:id="fieldSource" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+      <Label text="Banr" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <Label fx:id="fieldBanner" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+      <TextField fx:id="fieldText" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="12" />
+      <TextField fx:id="fieldWidth" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+      <TextField fx:id="fieldHeight" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+      <TextField fx:id="fieldPattern" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="11" />
+      <Label text="Style" GridPane.rowIndex="8" />
+      <ComboBox fx:id="layoutStyles" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+           </children>
+   <columnConstraints>
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+   </rowConstraints>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+	<!-- TODO Add Nodes -->
+</GridPane>

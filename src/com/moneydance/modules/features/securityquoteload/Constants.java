@@ -124,15 +124,19 @@ public abstract class Constants {
 	public static final String CHECKAUTOCMD = "checkauto";
 	public static final String CHECKAUTOSYNC = "checkautosync";
 	public static final String AUTODONECMD = "autodone";
+	public static final String STANDALONEDONE="standalonedone";
 	public static final String MANUALDONECMD = "manualdone";
 	public static final String GETBUILDNUM ="getbuildnum";
 	public static final String RETURNBUILD ="buildnums";
 	public static final String RUNSECONDRUNCMD = "runsecondrun";
+	public static final String RUNSTANDALONECMD="runstandalone";
+	public static final String STANDALONEREQUESTED="standalonerequested";	
 	public static final int NORUN=0;
 	public static final int MANUALRUN = 1;
 	public static final int SECAUTORUN = 2;
 	public static final int CURAUTORUN = 3;
 	public static final int BOTHAUTORUN = 4;
+	public static final int STANDALONERUN=5;
 	public static final String EXPORTHEADER = "Ticker,AltTicker,Name,Price,AmtChg,PerChg,Date,Volume\r\n";
 	public static final String TICKEREXTID="#";
 	public enum MAINACTIONS {

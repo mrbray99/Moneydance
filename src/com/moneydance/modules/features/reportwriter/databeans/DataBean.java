@@ -88,7 +88,7 @@ public abstract class DataBean {
 			FieldType type = field.getAnnotation(FieldType.class);
 			switch (type.value()) {
 			case STRING:
-				bld.append(" Varchar(255)");
+				bld.append(" Varchar(1024)");
 				break;
 			case BOOLEAN:
 				bld.append(" Boolean");

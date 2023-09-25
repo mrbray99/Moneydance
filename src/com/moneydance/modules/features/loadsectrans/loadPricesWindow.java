@@ -123,9 +123,7 @@ public class loadPricesWindow extends JPanel implements TableListener {
 			}
 		});
 		panMid.add(jcSelect);
-		this.add(panMid,BorderLayout.CENTER);
-		
-		
+		this.add(panMid,BorderLayout.CENTER);		
 		/*
 		 * Add Buttons
 		 */

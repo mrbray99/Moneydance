@@ -148,7 +148,7 @@ public class MRBFXSelectionPanel implements Callback<Object, String> {
 		}
 		panDisplay.add(okBtn, ix++, iy,1,1);
 		GridPane.setMargin(okBtn, new Insets(10,10,10,10));
-		panDisplay.add(cancelBtn,ix++, iy,1,1);
+		panDisplay.add(cancelBtn,ix, iy,1,1);
 		GridPane.setMargin(cancelBtn, new Insets(10,10,10,10));
 		HBox.setHgrow(table, Priority.ALWAYS);
 		stage.showAndWait();
@@ -178,6 +178,7 @@ public class MRBFXSelectionPanel implements Callback<Object, String> {
 		}
 		table.refresh();
 	}
+// TODO retest method
 	public void setChildren(MRBFXSelectionRow rowSelected, Boolean select) {
 		Boolean found=false;
 		Integer depthSelected=0;
