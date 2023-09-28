@@ -97,6 +97,7 @@ public class Main extends FeatureModule {
 	private int timeoutCount = 0;
 	private String uri;
 	private String command;
+	private String cmdParam="quit";
 	public static MRBPreferences2 preferences;
 	private String secMode;
 	private String curMode;
@@ -448,7 +449,15 @@ public class Main extends FeatureModule {
 			theIdx = uri.indexOf(':');
 			if (theIdx >= 0) {
 				command = uri.substring(0, theIdx);
+				cmdParam = uri.substring(theIdx+1);
 			}
+		}
+		if (command.equalsIgnoreCase(Constants.RUNSTANDALONECMD)) {
+			if (!cmdParam.equalsIgnoreCase("quit")&&!cmdParam.equalsIgnoreCase("noquit")) {
+				JOptionPane.showMessageDialog(null, "Invalid Quote Loader runauto parameter: "+cmdParam,
+						"Quote Loader", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}			
 		}
 		/*
 		 * showConsole will be on AWT-Event-Queue, all other commands will be on the
@@ -769,7 +778,7 @@ public class Main extends FeatureModule {
 			}
 			context.showURL("moneydance:setprogress?meter=0&label=" + "Quote Loader Update Completed");
 			debugInst.debug("Quote Load", "ProcessCommand", MRBDebug.DETAILED, "Auto run done");
-			if (standAloneRequested) {
+			if (standAloneRequested && cmdParam.equalsIgnoreCase("quit")) {
 				javax.swing.SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
