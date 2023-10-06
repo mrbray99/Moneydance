@@ -70,7 +70,7 @@ public class ExchangeList {
 				/*
 				 * file found is the first line build number
 				 */
-				String line = file.readLine();
+				String line = file.readLine().trim();
 				int fileBuild=0;
 				if (line.startsWith(buildString)) {
 					if (line.endsWith(endBuildString))
