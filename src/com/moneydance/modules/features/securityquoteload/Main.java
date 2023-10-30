@@ -82,6 +82,8 @@ public class Main extends FeatureModule {
 	public static String buildNo;
 	public static String versionNo="00";
 	public static Boolean autoSettingsChanged=false;
+	public static boolean standAloneRequested=false;
+
 	private Image selectedBlack = null;
 	private Image selectedLight;
 	private Image unselectedBlack;
@@ -114,7 +116,6 @@ public class Main extends FeatureModule {
 	public static boolean isUpdating = false;
 	public static boolean isGUIOpen = false;
 	public static boolean isQuotesRunning = false;
-	private boolean standAloneRequested=false;
 	private boolean isSyncing=false;
 	private int timeoutMax = Constants.TIMEOUTCOUNT;
 	private Timer autoDelay;
@@ -490,7 +491,6 @@ public class Main extends FeatureModule {
 					showConsole();
 				}
 				else {
-					debugInst.debug("Quote Load", "invoke", MRBDebug.DETAILED, "Processing " + command);
 					processCommand(command,uri);
 				}
 			}

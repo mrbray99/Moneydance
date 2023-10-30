@@ -1203,13 +1203,24 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 			}
 
 			else {
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-								+ Constants.AUTODONECMD);
-					}
-				});
+				if (Main.standAloneRequested && processCurrency) {
+					javax.swing.SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+									+ Constants.RUNSECONDRUNCMD);
+						}
+					});
+				}
+				else {
+					javax.swing.SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+									+ Constants.AUTODONECMD);
+						}
+					});
+				}
 			}
 
 			return;
