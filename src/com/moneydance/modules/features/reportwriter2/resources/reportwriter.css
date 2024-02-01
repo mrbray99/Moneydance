@@ -31,6 +31,9 @@
  	-fx-background-color:-fx-rw-defaultBackground;
  	-fx-border-color: -fx-rw-borderColour; 	
     }
+.combo-box:disabled, .combo-box:disabled > * {
+	-fx-opacity: 1.0 ;
+}
 .check-box {
 	-fx-background-color :-fx-rw-defaultBackground;
 	-fx-border-color : -fx-rw-borderColour;

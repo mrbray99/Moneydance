@@ -1,7 +1,5 @@
 package com.moneydance.modules.features.reportwriter2.report;
 
-import java.sql.ResultSet;
-
 import com.moneydance.modules.features.reportwriter2.Constants;
 import com.moneydance.modules.features.reportwriter2.RWException;
 import com.moneydance.modules.features.reportwriter2.Utilities;
@@ -25,42 +23,33 @@ public class ReportPage extends Canvas {
 		gc=this.getGraphicsContext2D();
 		
 	}
-	public void addField(ReportLayout field,ResultSet results, GroupValues groupValues) throws RWException{
+
+	public void addField(ReportLayout field, GroupValues groupValues) throws RWException{
 		String columnValue="";
+		ReportField fldField = field.getField();
 		switch(field.getType()) {
 		case DATABASE:
-			ReportField fldField = field.getField();
-			FieldValue dbValue= groupValues.getVariableValues().get(fldField.getKey());
+			FieldValue dbValue= groupValues.getFieldValue(fldField.getKey());
 			if (dbValue == null ) {
-					try {
-						columnValue= fldField.getResultsValue(results).getText();
-					}
-					catch (RWException e) {
-						throw new RWException ("Problem rendering report - "+e.getLocalizedMessage());
-					}
+				throw new RWException ("Field key not found- "+fldField.getKey());
 			}
 			else {
-				if (field.getField().getOutputType()==Constants.TEXTOUTPUTTYPE)
+				if (field.getField().getOutputType()==Constants.OUTPUTTYPE.TEXT)
 					columnValue = dbValue.getText();
 				else
 					columnValue =String.valueOf(dbValue.getNumeric());
 			}
 			break;
-		case GROUPNAME:
-			break;
 		case LABEL:
 			columnValue =field.getText();
 			break;
-		case TOTAL:
-			break;
 		case VARIABLE:
 			String fieldKey = field.getField().getKey();
-			FieldValue tmpValue = groupValues.getVariableValues().get(fieldKey);
+			FieldValue tmpValue = groupValues.getFieldValue(fldField.getKey());
 			if (tmpValue==null) {
 				tmpValue=new FieldValue("",0.0,"");
-				groupValues.getVariableValues().put(fieldKey, tmpValue);
 			}
-			if (field.getField().getOutputType()==Constants.TEXTOUTPUTTYPE)
+			if (field.getField().getOutputType()==Constants.OUTPUTTYPE.TEXT)
 				columnValue = tmpValue.getText();
 			else
 				columnValue =String.valueOf(tmpValue.getNumeric());

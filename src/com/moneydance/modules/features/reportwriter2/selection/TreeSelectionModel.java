@@ -231,6 +231,7 @@ public class TreeSelectionModel extends MultipleSelectionModel<TreeItem<LayoutTr
 			case DATABASE:
 			case RECORD:
 			case STYLES:
+			case FORMATS:
 			case VARIABLES:
 				Main.rwDebugInst.debugThread("TreeSelectionModel", "isNodeSelectable", MRBDebug.DETAILED,
 						"node type "+node.getNodeType().name()+" not selectable");
@@ -241,6 +242,7 @@ public class TreeSelectionModel extends MultipleSelectionModel<TreeItem<LayoutTr
 			case FIELD:
 			case DATABASEFIELD:
 			case FUNCTION:
+			case FORMAT:
 			case STYLE:
 				Main.rwDebugInst.debugThread("TreeSelectionModel", "isNodeSelectable", MRBDebug.DETAILED,
 						"node type "+node.getNodeType().name()+"selectable");

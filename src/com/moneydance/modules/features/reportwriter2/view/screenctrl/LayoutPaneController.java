@@ -53,6 +53,7 @@ import com.moneydance.modules.features.reportwriter2.edit.UndoFieldDetail;
 import com.moneydance.modules.features.reportwriter2.edit.UndoRecord;
 import com.moneydance.modules.features.reportwriter2.selection.BannerSelectModel;
 import com.moneydance.modules.features.reportwriter2.selection.FieldSelectModel;
+import com.moneydance.modules.features.reportwriter2.selection.FormatSelectModel;
 import com.moneydance.modules.features.reportwriter2.selection.LabelSelectModel;
 import com.moneydance.modules.features.reportwriter2.selection.StyleSelectModel;
 import com.moneydance.modules.features.reportwriter2.selection.TreeSelectionModel;
@@ -64,6 +65,7 @@ import com.moneydance.modules.features.reportwriter2.view.controls.HorizontalRul
 import com.moneydance.modules.features.reportwriter2.view.controls.LayoutTreeNode;
 import com.moneydance.modules.features.reportwriter2.view.controls.ReportBanner;
 import com.moneydance.modules.features.reportwriter2.view.controls.ReportField;
+import com.moneydance.modules.features.reportwriter2.view.controls.ReportFormat;
 import com.moneydance.modules.features.reportwriter2.view.controls.ReportLayout;
 import com.moneydance.modules.features.reportwriter2.view.controls.ReportStyle;
 import com.moneydance.modules.features.reportwriter2.view.controls.ReportTemplate;
@@ -126,10 +128,12 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 	private BannerSelectModel<ReportBanner> bannerSelectModel;
 	private FieldSelectModel<ReportLayout> fieldSelectModel;
 	private LabelSelectModel<ReportField> labelSelectModel;
+	private FormatSelectModel<ReportFormat> formatSelectModel;
 	private StyleSelectModel<ReportStyle> styleSelectModel;
 	private ObservableList<String> paperSizesList;
 	private ObservableList<String> pageOrientationList;
 	private SortedMap<Integer, ReportBanner> allBanners = new TreeMap<>();
+	private SortedMap<String, ReportFormat> formats;
 	private SortedMap<String, ReportStyle> styles;
 	private ObservableList<SplitPane.Divider> dividers;
 	private TreeSelectionModel treeSelectModel;
@@ -156,12 +160,14 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 	private TreeItem<LayoutTreeNode> labelsNode;
 	private TreeItem<LayoutTreeNode> labelNode;
 	private TreeItem<LayoutTreeNode> variablesNode;
+	private TreeItem<LayoutTreeNode> formatsNode;
 	private SortedMap<String, TreeItem<LayoutTreeNode>> recordNodes;
 	private LayoutPaneController thisObj;
 	private FieldPane fieldsPane;
 	private Boolean multiSelection = false;
 	private UndoLayoutManager undoManager;
 	private boolean showDefaultStyle=true;
+	private boolean showDefaultFormat=true;
 	/**
 	 * Panel fields
 	 * 
@@ -241,6 +247,8 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 	private AnchorPane detailPane2;
 	@FXML
 	private AnchorPane detailPane3;
+	@FXML
+	private AnchorPane detailPane4;
 	/**
 	 * Buttons
 	 */
@@ -269,6 +277,7 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 		bannerSelectModel = new BannerSelectModel<ReportBanner>();
 		fieldSelectModel = new FieldSelectModel<ReportLayout>();
 		labelSelectModel = new LabelSelectModel<ReportField>();
+		formatSelectModel = new FormatSelectModel<ReportFormat>();
 		styleSelectModel = new StyleSelectModel<ReportStyle>();
 		layoutWidth = new SimpleDoubleProperty();
 		/*
@@ -380,6 +389,7 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 		 * set up field tree
 		 */
 		banners = template.getBanners();
+		formats= template.getFormats();
 		styles = template.getStyles();
 		selectedFields = template.getSelectedFields();
 		labels = template.getLabels();
@@ -404,11 +414,13 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 		styleNode.getValue().setItem(styleNode);
 		labelsNode = new TreeItem<>(new LayoutTreeNode("Labels", NodeType.LABELS));
 		labelsNode.getValue().setItem(labelNode);
+		formatsNode=new TreeItem<>(new LayoutTreeNode("Formats", NodeType.FORMATS));
+		formatsNode.getValue().setItem(formatsNode);
 		fieldsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		fieldsList.setRoot(rootNode);
 		TreeItem<LayoutTreeNode> treeRecord;
 		recordNodes = new TreeMap<>();
-		rootNode.getChildren().addAll(fieldNode, bannerNode, styleNode);
+		rootNode.getChildren().addAll(fieldNode, bannerNode, formatsNode,styleNode);
 		fieldNode.getChildren().addAll(databaseNode, labelsNode, variablesNode);
 		for (ReportField field : selectedFields.values()) {
 			if (recordNodes.containsKey(field.getFieldBean().getShortTableName()))
@@ -455,6 +467,7 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 		ruler.setRightMargin(template.getRightMargin());
 		ruler.setBottomMargin(template.getBottomMargin());
 		bannerLayout.getChildren().add(ruler);
+		formatSelectModel.setController(thisObj);
 		styleSelectModel.setController(thisObj);
 		if (banners != null) {
 			for (ReportBanner banner : banners) {
@@ -488,6 +501,15 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 					layout.setTreeItem(fieldItem);
 					fieldSelectModel.addField(layout);
 				}
+			}
+		}
+		if (formats !=null && !formats.isEmpty()) {
+			for (ReportFormat format:formats.values()) {
+				TreeItem<LayoutTreeNode> formatItem = new TreeItem<LayoutTreeNode>(new LayoutTreeNode(format));
+				formatItem.getValue().setItem(formatItem);
+				formatsNode.getChildren().add(formatItem);
+				formatSelectModel.addFormat(format);
+				format.setTreeItem(formatItem);
 			}
 		}
 		if (styles != null && !styles.isEmpty()) {
@@ -703,6 +725,14 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 				styleSelectModel.select(node.getStyle());
 				selectStyle(styleSelectModel.getSelectedItem());
 				break;
+			case FORMAT:
+				if (node.getFormat() != null && node.getFormat() == formatSelectModel.getSelectedItem())
+					return;
+				formatSelectModel.clearSelection();
+				formatSelectModel.select(node.getFormat());
+				selectFormat(formatSelectModel.getSelectedItem());
+				break;
+				
 			case BANNER: // rules 3,6
 				Main.rwDebugInst.debugThread("LayoutPaneController", "selectItem", MRBDebug.DETAILED,
 						"banner selected " + node.getBanner().getName());
@@ -932,6 +962,10 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 					Main.rwDebugInst.debugThread("LayoutPaneController", "deselectAllNodes",
 							MRBDebug.DETAILED, "style deselected");
 					break;
+				case FORMAT:
+					Main.rwDebugInst.debugThread("LayoutPaneController", "deselectAllNodes",
+							MRBDebug.DETAILED, "format deselected");
+					break;
 				case BANNER:
 					Main.rwDebugInst.debugThread("LayoutPaneController", "deselectAllNodes",
 							MRBDebug.DETAILED,
@@ -973,6 +1007,10 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 					Main.rwDebugInst.debugThread("LayoutPaneController", "selectAllNodes", MRBDebug.DETAILED,
 							"style selected");
 					break;
+				case FORMAT:
+					Main.rwDebugInst.debugThread("LayoutPaneController", "selectAllNodes", MRBDebug.DETAILED,
+							"format selected");
+					break;
 				case BANNER:
 					Main.rwDebugInst.debugThread("LayoutPaneController", "deselectAllNodes",
 							MRBDebug.DETAILED,
@@ -1003,6 +1041,32 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 			((FieldDetailController) detailPane2.getChildren().get(0)).clearFields();
 		}
 		setAlignSpaceBtns();
+
+	}
+
+	/**
+	 * Selects a format- sets up the Format Detail Pane
+	 * 
+	 * @param format - the Report Format to select
+	 */
+	private void selectFormat(ReportFormat format) {
+		FormatDetailController formatPane;
+		if (detailPane4.getChildren().isEmpty()) {
+			formatPane = new FormatDetailController(template, thisObj, format);
+			formatPane.setLine();
+			detailPane4.getChildren().add(formatPane);
+		} else {
+			formatPane = (FormatDetailController) detailPane4.getChildren().get(0);
+			formatPane.clearFields();
+		}
+		formatPane.setFields(format);
+	}
+
+	/**
+	 * Clears the Format Detail pane
+	 */
+	private void deselectFormat() {
+		detailPane4.getChildren().clear();
 
 	}
 
@@ -1176,7 +1240,22 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 			field.setTreeItem(fieldItem);
 		}
 	}
-
+	/*
+	 * reset the formats in the tree view
+	 */
+	private void resetTreeFormats() {
+		formatsNode.getChildren().clear();
+		formats = template.getFormats();
+		for (ReportFormat format : formats.values()) {
+			if (format.isDefaultFormat() && !showDefaultFormat)
+				continue;
+			TreeItem<LayoutTreeNode> formatItem = new TreeItem<LayoutTreeNode>(new LayoutTreeNode(format));
+			formatItem.getValue().setItem(formatItem);
+			formatsNode.getChildren().add(formatItem);
+			format.setTreeItem(formatItem);
+			formatSelectModel.addFormat(format);
+		}
+	}
 	/*
 	 * reset the styles in the tree view
 	 */
@@ -1193,7 +1272,15 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 			styleSelectModel.addStyle(style);
 		}
 	}
+	/*
+	 * Go through banners and reset field formats
+	 */
+	public void resetFormats() {
+		if (!detailPane2.getChildren().isEmpty()) {
+			((FieldDetailController) (detailPane2.getChildren().get(0))).resetFormats();
+		}
 
+	}
 	/*
 	 * Go through banners and reset field styles
 	 */
@@ -2138,6 +2225,7 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 			tmpVar.setKey("variable." + "grpvar" + selectedField.getName());
 			tmpVar.setReportType(ReportFieldType.VARIABLE);
 			tmpVar.setFieldExp(function.getName() + "(" + selectedField.getName() + ")");
+			tmpVar.setOutputType(selectedField.getOutputType());
 			template.addVariable(tmpVar);
 			resetTreeVariables(tmpVar);
 		} else
@@ -2243,7 +2331,17 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 		template.setDirty(true);
 
 	}
-
+	private void deleteFormat(ReportFormat format) {
+		if (checkFormatUse(format))
+			OptionMessage.displayErrorMessage("Format in use, can not be deleted");
+		else {
+			template.removeFormat(format);
+			resetTreeFormats();
+			resetFormats();
+			deselectFormat();
+			template.setDirty(true);
+		}
+	}
 	private void deleteStyle(ReportStyle style) {
 		if (checkStyleUse(style))
 			OptionMessage.displayErrorMessage("Style in use, can not be deleted");
@@ -2302,6 +2400,23 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 		cell.getParent().getChildren().remove(cell);
 		resetAllTreeLabels();
 		template.isDirty();
+	}
+	private boolean checkFormatUse(ReportFormat format) {
+		for (ReportBanner banner : allBanners.values()) {
+			for (ReportLayout layout : banner.getFields()) {
+				if (layout.getFormat() == format)
+					return true;
+			}
+		}
+		for (ReportField field:selectedFields.values())
+			if (field.getFormat() == format) {
+				return true;
+			}
+		for (ReportField field:variables.values())
+			if (field.getFormat() == format) {
+				return true;
+			}
+		return false;
 	}
 
 	private boolean checkStyleUse(ReportStyle style) {
@@ -2482,6 +2597,27 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 				menu3.setId(nodeType.toString() + "#" + Constants.ACTIONSELECTALL);
 				setContextMenu(cellContextMenu);
 				break;
+			case FORMAT:
+				setText(node.getText());
+				menu1.setVisible(true);
+				menu2.setVisible(true);
+				menu1.setText(Constants.ACTIONSHOW);
+				menu1.setId(nodeType.toString() + "#" + Constants.ACTIONSHOW);
+				menu2.setText(Constants.ACTIONDELETE);
+				menu2.setId(nodeType.toString() + "#" + Constants.ACTIONDELETE);
+				setContextMenu(cellContextMenu);
+				break;
+			case FORMATS:
+				setText(node.getText());
+				menu1.setVisible(true);
+				menu2.setVisible(true);
+				menu1.setText(Constants.ACTIONSHOWFORMAT);
+				menu1.setId(nodeType.toString() + "#" + Constants.ACTIONSHOWFORMAT);
+				menu2.setText(Constants.ACTIONADDFORMAT);
+				menu2.setId(nodeType.toString() + "#" + Constants.ACTIONADDFORMAT);
+				setContextMenu(cellContextMenu);
+				break;
+				
 			case STYLE:
 				setText(node.getText());
 				menu1.setVisible(true);
@@ -2560,6 +2696,7 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 			TreeItem<LayoutTreeNode> bannerNode;
 			TreeItem<LayoutTreeNode> treeItem;
 			ReportStyle style;
+			ReportFormat format;
 			ReportField variable;
 			switch (nodeType) {
 			case AVAILABLEFIELDS:
@@ -2650,6 +2787,24 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 				break;
 			case ROOT:
 				break;
+			case FORMAT:
+				switch (menuAction) {
+				case Constants.ACTIONDELETE:
+					treeItem = thisCell.getTreeItem();
+					format = treeItem.getValue().getFormat();
+					if (format.isDefaultFormat()) {
+						OptionMessage.displayErrorMessage("You can not delete a default format");
+						break;
+					}
+					deleteFormat(format);
+					break;
+				case Constants.ACTIONSHOW:
+					treeItem = fieldsList.getSelectionModel().getSelectedItem();
+					format= treeItem.getValue().getFormat();
+					selectFormat(format);
+					break;
+				}
+				break;
 			case STYLE:
 				switch (menuAction) {
 				case Constants.ACTIONDELETE:
@@ -2665,6 +2820,34 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 					treeItem = fieldsList.getSelectionModel().getSelectedItem();
 					style = treeItem.getValue().getStyle();
 					selectStyle(style);
+					break;
+				}
+				break;
+			case FORMATS:
+				switch (menuAction) {
+				case Constants.ACTIONSHOWFORMAT:
+					showDefaultFormat = !showDefaultFormat;
+					resetTreeFormats();
+					break;
+				case Constants.ACTIONADDFORMAT:
+					String name = OptionMessage.inputMessage("Enter name of new Format");
+					if (name.equals(Constants.CANCELPRESSED))
+						break;
+					if (formats == null)
+						formats = new TreeMap<String, ReportFormat>();
+					if (formats.containsKey(name.toLowerCase())) {
+						OptionMessage.displayErrorMessage("Format Name Already Exists");
+						break;
+					}
+					format = new ReportFormat();
+					format.setName(name);
+					format.setDefaultFormat(false);
+					template.addFormat(format);
+					formatSelectModel.addFormat(format);
+					formatSelectModel.select(format);
+					selectFormat(format);
+					resetFormats();
+					resetTreeFormats();
 					break;
 				}
 				break;
@@ -2721,6 +2904,7 @@ public class LayoutPaneController implements FieldSelectListener, UndoAction {
 					variable.setName(name);
 					variable.setKey("variable." + name);
 					variable.setReportType(ReportFieldType.VARIABLE);
+					variable.setOutputType(Constants.OUTPUTTYPE.TEXT);
 					template.addVariable(variable);
 					resetTreeVariables(variable);
 					template.setDirty(true);

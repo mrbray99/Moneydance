@@ -14,7 +14,7 @@ public class DetailPane extends AnchorPane {
 	private FXMLLoader loader;
 	private GridPane pane;
 	protected ReportTemplate template;
-	public DetailPane(String fxmlFile, ReportTemplate template) {
+	public DetailPane(String fxmlFile, ReportTemplate template){
 		this.controller = this;
 		this.template = template;	
 		try {
@@ -25,6 +25,10 @@ public class DetailPane extends AnchorPane {
 		}
 		catch (IOException e) {
 			e.printStackTrace();
+			return;
+		}
+		catch (Exception e1) {
+			e1.printStackTrace();
 			return;
 		}
 	}

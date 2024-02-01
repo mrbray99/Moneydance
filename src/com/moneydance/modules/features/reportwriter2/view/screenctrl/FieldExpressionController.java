@@ -70,10 +70,10 @@ public class FieldExpressionController extends PopUpController {
 	public void setUpFields(ReportTemplate template,ReportField field) {
 		this.template = template;
 		this.field = field;
-		dataType.setItems(FXCollections.observableArrayList("Number","Text"));
-		dataType.getSelectionModel().select(field.getOutputType());
-		dataType.getSelectionModel().selectedIndexProperty().addListener((ChangeListener<Number>) (ov, oldV, newV) -> {	
-			field.setOutputType(newV.intValue());
+		dataType.setItems(FXCollections.observableArrayList(Constants.OUTPUTTYPE.NUMBER.getName(),Constants.OUTPUTTYPE.TEXT.getName(),Constants.OUTPUTTYPE.DATE.getName()));
+		dataType.getSelectionModel().select(field.getOutputType().getName());
+		dataType.valueProperty().addListener((ChangeListener<String>) (ov, oldV, newV) -> {
+			field.setOutputType(Constants.OUTPUTTYPE.findName(newV));
 			dirty=true;
 		});
 		typeList.getStyleClass().add("myTree");
@@ -118,21 +118,25 @@ public class FieldExpressionController extends PopUpController {
 					case FUNCTION:
 						tempExp.append("#"+node.getVarFunction().getName()+"(");
 						FieldFunction crntFunc = node.getVarFunction(); 
-						if (crntFunc.getNumParms()>0 &&crntFunc.getNumParms()<5) {
-							for (int i=0;i<crntFunc.getNumParms();i++) {
-								if (i>0)
-									tempExp.append(",");
-								if (crntFunc.getOutputType()==Constants.FuncType.NUMERIC)
-									tempExp.append("num"+(i+1));
-								if (crntFunc.getOutputType()==Constants.FuncType.STRING)
-									tempExp.append("text"+(i+1));
+						for (int i=0;i<crntFunc.getNumParms();i++) {
+							if (i>0)
+								tempExp.append(",");
+							switch (crntFunc.getParm(i)){
+							case DATE:
+								tempExp.append("date"+(i+1));
+								break;
+							case NUMERIC:
+								tempExp.append("num"+(i+1));
+								break;
+							case STRING:
+								tempExp.append("text"+(i+1));
+								break;
+							case OPERATOR:
+								tempExp.append("operator"+(i+1));
+								break;
+							case LOGICAL:
+								tempExp.append("logical"+(i+1));
 							}
-						}
-						if (crntFunc.getNumParms()==5&& crntFunc.getOutputType()==Constants.FuncType.NUMERIC) {
-							tempExp.append("num1,oper,num2,true value, false value");
-						}
-						if (crntFunc.getNumParms()==5&& crntFunc.getOutputType()==Constants.FuncType.STRING) {
-							tempExp.append("text1,oper,text2,true value, false value");
 						}
 						tempExp.append(")");
 						cursor = expression.getCaretPosition();

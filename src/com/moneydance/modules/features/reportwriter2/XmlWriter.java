@@ -52,6 +52,16 @@ public interface XmlWriter {
 	public static final String BANNERHASFOOTER="bannerhasfooter";
 	public static final String BANNEROTHERPOS="bannerotherpos";	
 	public static final String BANNERVISIBLE="bannervisible";	
+	public static final String FORMATS="formats";
+	public static final String FORMAT="format";
+	public static final String FORNAME="forname";
+	public static final String FORPATDEC="fordecimalplaces";
+	public static final String FORPATTEXT="fortext";
+	public static final String FORPATMMARK="formmark";
+	public static final String FORPATREDNEG="forredneg";
+	public static final String FORPATCURR="forcurrsign";
+	public static final String FORALIGN="foralign";
+	public static final String FORTYPE="fortype";
 	public static final String LABELS="labels";
 	public static final String LABEL="label";
 	public static final String LAYOUTFIELDS="layoutfields";
@@ -63,6 +73,7 @@ public interface XmlWriter {
 	public static final String LAYOUTSTYLE="layoutstyle";
 	public static final String LAYOUTBLANK="layoutblank";
 	public static final String LAYOUTFLDTYPE="layoutfieldtype";
+	public static final String LAYOUTFORMAT="layoutformat";	
 	public static final String POSITION="position";
 	public static final String LAYOUTX="layoutx";
 	public static final String LAYOUTY="layouty";
@@ -78,11 +89,11 @@ public interface XmlWriter {
 	public static final String SRCFLDHEIGHT="fieldheight";
 	public static final String SRCFLDSELECTED="fieldselected";
 	public static final String SRCFLDEXP="fieldexp";
-	public static final String SRCFLDPATTERN="fieldpattern";
 	public static final String SRCFLDSORT="fieldsort";
 	public static final String SRCFLDTEXT="fieldtext";
 	public static final String SRCFLDGROUP="fieldgroup";
 	public static final String SRCFLDOUTPUT="fieldoutput";
+	public static final String SRCFLDFORMAT="fieldformat";
 	public static final String STYLES="styles";
 	public static final String STYLE="style";
 	public static final String STYLENAME="stylename";

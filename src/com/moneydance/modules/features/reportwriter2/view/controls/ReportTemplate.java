@@ -36,6 +36,9 @@ import com.moneydance.modules.features.reportwriter2.OptionMessage;
 
 import javafx.print.PageOrientation;
 import javafx.print.Paper;
+/**
+ * 
+ */
 public class ReportTemplate implements XmlWriter {
 	private String name;
 private boolean question1=false;
@@ -51,6 +54,8 @@ private boolean question1=false;
 	private SortedMap<String,ReportField> selectedFields=null;
 	private SortedMap<String,ReportStyle> styles=null;
 	private SortedMap<String, ReportStyle> defaultStyles=null;
+	private SortedMap<String,ReportFormat> formats=null;
+	private SortedMap<String,ReportFormat> defaultFormats=null;
 	private List<ReportField>sortedVariables;
 	private Parameters params;
 	private Paper paperSize; // class
@@ -59,6 +64,11 @@ private boolean question1=false;
 	private ReportStyle header1Style=null;
 	private ReportStyle header2Style=null;
 	private ReportStyle header3Style=null;
+	private ReportFormat defaultNumber = null;
+	private ReportFormat defaultDate = null;
+	private ReportFormat defaultBoolean = null;
+	private ReportFormat defaultPercent = null;
+	private ReportFormat defaultText = null;
 	private double leftMargin=0.0; // metric
 	private double rightMargin=0.0; // metric 
 	private double topMargin=0.0;// metric
@@ -73,6 +83,7 @@ private boolean question1=false;
 		variables = new TreeMap<String, ReportField>();
 		selectedFields = new TreeMap<String,ReportField>();
 		styles = new TreeMap<String,ReportStyle>();
+		loadDefaultFormats();
 		loadDefaultStyles();
 }
 	
@@ -367,7 +378,21 @@ private boolean question1=false;
 	public List<ReportField> getSortedVariables() {
 		return sortedVariables;
 	}
+	
 
+	public SortedMap<String, ReportFormat> getFormats() {
+		return formats;
+	}
+
+	public void setFormats(SortedMap<String, ReportFormat> formats) {
+		this.formats = formats;
+	}
+	public void addFormat(ReportFormat format) {
+		formats.put(format.getName(), format);
+	}
+	public void removeFormat(ReportFormat format) {
+		formats.remove(format.getName());
+	}
 	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
 	}
@@ -400,6 +425,19 @@ private boolean question1=false;
 		/*
 		 * make template complete
 		 */
+		if (formats==null)
+			formats=new TreeMap<String, ReportFormat>();
+		if (formats.get(Constants.FORMATNUMBER)==null)
+			formats.put(Constants.FORMATNUMBER, defaultNumber);
+		if (formats.get(Constants.FORMATTEXT)==null)
+			formats.put(Constants.FORMATTEXT, defaultText);
+		if (formats.get(Constants.FORMATPERCENT)==null)
+			formats.put(Constants.FORMATPERCENT, defaultPercent);
+		if (formats.get(Constants.FORMATDATE)==null)
+			formats.put(Constants.FORMATDATE, defaultDate);
+		if (formats.get(Constants.FORMATBOOLEAN)==null)
+			formats.put(Constants.FORMATBOOLEAN, defaultBoolean);
+
 		if (styles==null) 
 			styles = new TreeMap<String, ReportStyle>();
 		if (styles.get(Constants.DEFAULTSTYLENAME)==null) 
@@ -558,6 +596,16 @@ private boolean question1=false;
 			field.loadXML(xmlEventReader, xmlEvent,this);
 			selectedFields.put(field.getKey().toLowerCase(),field);
 			break;
+		case XmlWriter.FORMATS:
+			formats = new TreeMap<>();
+			break;
+		case XmlWriter.FORMAT:
+			if (formats==null)
+				formats = new TreeMap<>();
+			ReportFormat format = new ReportFormat();
+			format.loadXML(xmlEventReader, xmlEvent, this);
+			formats.put(format.getName(), format);
+			break;
 		case XmlWriter.STYLES:
 			styles = new TreeMap<>();
 			break;
@@ -632,6 +680,16 @@ private boolean question1=false;
 			writer.writeDataElement(XmlWriter.RIGHTMARGIN,String.valueOf(leftMargin));
 			writer.writeDataElement(XmlWriter.TOPMARGIN,String.valueOf(leftMargin));
 			writer.writeDataElement(XmlWriter.BOTTOMMARGIN,String.valueOf(leftMargin));
+			if (formats != null) {
+				writer.writeStartElement(XmlWriter.FORMATS);
+				for (ReportFormat format:formats.values()) {
+					writer.writeStartElement(XmlWriter.FORMAT);
+					writer.writeNewLine();
+					format.writeXML(writer);
+					writer.writeIndentedEndElement(); // format
+				}
+				writer.writeIndentedEndElement(); // formats				
+			}
 			if (styles != null && !styles.isEmpty()) {
 				writer.writeStartElement(XmlWriter.STYLES);
 				for (ReportStyle style:styles.values()) {
@@ -734,6 +792,66 @@ private boolean question1=false;
 		header3Style.setFontSize(Main.header3FontSize);		
 		defaultStyles.put(Constants.HEADER3STYLENAME,header3Style);
 
+	}
+	private void loadDefaultFormats() {
+		if (defaultFormats == null)
+			defaultFormats = new TreeMap<String, ReportFormat>();
+		defaultNumber = new ReportFormat();
+		defaultNumber.setFieldAlign(Constants.FieldAlign.RIGHT);
+		defaultNumber.setPatternDecPlaces(2);
+		defaultNumber.setUseMMark(true);
+		defaultNumber.setUseRedNeg(false);
+		defaultNumber.setUseCurrSign(false);
+		defaultNumber.setPatternText("#"+Main.decimalChar+"00");
+		defaultNumber.setName(Constants.FORMATNUMBER);
+		defaultNumber.setFormatType(Constants.FieldPattern.NUMBER);
+		defaultNumber.setDefaultFormat(true);
+		defaultFormats.put(defaultNumber.getName(), defaultNumber);
+		defaultDate = new ReportFormat();
+		defaultDate.setFieldAlign(Constants.FieldAlign.LEFT);
+		defaultDate.setPatternDecPlaces(0);
+		defaultDate.setUseMMark(false);
+		defaultDate.setUseRedNeg(false);
+		defaultDate.setUseCurrSign(false);
+		defaultDate.setPatternText(Main.datePattern);
+		defaultDate.setName(Constants.FORMATDATE);
+		defaultDate.setFormatType(Constants.FieldPattern.DATE);
+		defaultDate.setDefaultFormat(true);
+		defaultFormats.put(defaultDate.getName(), defaultDate);
+		defaultPercent = new ReportFormat();
+		defaultPercent.setFieldAlign(Constants.FieldAlign.RIGHT);
+		defaultPercent.setPatternDecPlaces(2);
+		defaultPercent.setUseMMark(false);
+		defaultPercent.setUseRedNeg(false);
+		defaultPercent.setUseCurrSign(false);
+		defaultPercent.setPatternText("0"+Main.decimalChar+"00%");
+		defaultPercent.setName(Constants.FORMATPERCENT);
+		defaultPercent.setFormatType(Constants.FieldPattern.PERCENTAGE);
+		defaultPercent.setDefaultFormat(true);
+		defaultFormats.put(defaultPercent.getName(), defaultPercent);
+		defaultText = new ReportFormat();
+		defaultText.setFieldAlign(Constants.FieldAlign.LEFT);
+		defaultText.setPatternDecPlaces(0);
+		defaultText.setUseMMark(false);
+		defaultText.setUseRedNeg(false);
+		defaultText.setUseCurrSign(false);
+		defaultText.setPatternText("");
+		defaultText.setName(Constants.FORMATTEXT);
+		defaultText.setFormatType(Constants.FieldPattern.TEXT);
+		defaultText.setDefaultFormat(true);
+		defaultFormats.put(defaultText.getName(), defaultText);
+		defaultBoolean = new ReportFormat();
+		defaultBoolean.setFieldAlign(Constants.FieldAlign.LEFT);
+		defaultBoolean.setPatternDecPlaces(0);
+		defaultBoolean.setUseMMark(false);
+		defaultBoolean.setUseRedNeg(false);
+		defaultBoolean.setUseCurrSign(false);
+		defaultBoolean.setPatternText(Constants.BOOLEANPATTERNS.get(0));
+		defaultBoolean.setName(Constants.FORMATBOOLEAN);
+		defaultBoolean.setFormatType(Constants.FieldPattern.YESNO);
+		defaultBoolean.setDefaultFormat(true);
+		defaultFormats.put(defaultBoolean.getName(), defaultBoolean);
+	
 	}
 	public void determineVariables() {
 		sortedVariables = new ArrayList<ReportField>();

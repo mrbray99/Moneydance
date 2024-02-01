@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane hgap="5.0" vgap="5.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+         </rowConstraints>
+         <columnConstraints>
+            <ColumnConstraints maxWidth="145.0" minWidth="10.0" prefWidth="133.0" />
+            <ColumnConstraints minWidth="10.0" />
+         </columnConstraints>
+         <children>
+            <Label text="Pattern" GridPane.rowIndex="2" />
+            <Label text="Num Decimal Places" GridPane.rowIndex="3" />
+            <ComboBox fx:id="numDecPlaces" onAction="#selectDecPlaces" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label text="Use 1,000 marker" GridPane.rowIndex="4" />
+            <CheckBox fx:id="useMMark" mnemonicParsing="false" onAction="#selectMMark" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label text="Red if -ve" GridPane.rowIndex="5" />
+            <CheckBox fx:id="redNeg" mnemonicParsing="false" onAction="#selectRedNeg" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Label text="Alignment" GridPane.rowIndex="6" />
+            <Label text="Currency Sign" GridPane.rowIndex="7" />
+            <ComboBox fx:id="alignment" onAction="#selectAlignment" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <CheckBox fx:id="useCurr" mnemonicParsing="false" onAction="#selectCurr" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            <HBox fx:id="buttons" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="9" />
+            <Label fx:id="plusExamp" GridPane.rowIndex="8" />
+            <Label fx:id="negExamp" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <ComboBox fx:id="patternText" onAction="#selectPatternText" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label text="Format Name" />
+            <Label fx:id="formatName" GridPane.columnIndex="1" />
+            <Label text="Format Type" GridPane.rowIndex="1" />
+            <ComboBox fx:id="formatType" onAction="#selectFormatType" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </GridPane>

@@ -1,6 +1,5 @@
 package com.moneydance.modules.features.reportwriter2.view.controls;
 
-import com.moneydance.modules.features.reportwriter2.Constants;
 import com.moneydance.modules.features.reportwriter2.Constants.FieldFunction;
 import com.moneydance.modules.features.reportwriter2.Constants.NodeType;
 
@@ -13,6 +12,7 @@ public class LayoutTreeNode  {
 	private ReportBanner banner;
 	private ReportStyle style;
 	private ReportLayout layout;
+	private ReportFormat format;
 	private TreeItem<LayoutTreeNode> item;
 	private FieldFunction varFunction;
 	public LayoutTreeNode() {
@@ -31,6 +31,11 @@ public class LayoutTreeNode  {
 		text = banner.getName();
 		nodeType = NodeType.BANNER;
 		this.banner = banner;
+	}
+	public LayoutTreeNode(ReportFormat format) {
+		this.format = format;
+		text=format.getName();
+		nodeType=NodeType.FORMAT;
 	}
 	public LayoutTreeNode(ReportStyle style) {
 		this.style = style;
@@ -72,6 +77,12 @@ public class LayoutTreeNode  {
 	}
 	public void setText(String text) {
 		this.text = text;
+	}
+	public ReportFormat getFormat() {
+		return format;
+	}
+	public void setFormat(ReportFormat format) {
+		this.format = format;
 	}
 	public ReportStyle getStyle() {
 		return style;

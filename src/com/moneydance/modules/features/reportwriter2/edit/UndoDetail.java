@@ -25,7 +25,8 @@ public class UndoDetail {
 		ADDVARIABLE("addvariable"),
 		ADDLAYOUT("addlayout"),
 		UNSETBANNERFOOTER("unsetbannerfooter"),
-		DELETEBANNER("deletebanner");
+		DELETEBANNER("deletebanner"),
+		FORMAT("format");
 		private String typeName;
 		DetailType(String typeName){
 			this.typeName=typeName;
