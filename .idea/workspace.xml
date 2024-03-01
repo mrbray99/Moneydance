@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="To align with github&#10;&#10;# Conflicts:&#10;#&#9;dist/securityquoteload.mxt">
+      <change beforePath="$PROJECT_DIR$/lib/extadmin.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/extadmin.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/jsoup-1.11.3.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/jsoup-1.11.3.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/budgetgenbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/budgetgenbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/budgetreportbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/budgetreportbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/build.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/build.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/AbstractWriterRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/CloseExtensionException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/Constants.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/Database.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/FieldSelectListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/FirstRun.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/HelpScreen.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/Images.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/IndentXML.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/MainMenu.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/NewParameters.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/OptionMessage.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/Parameters.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/RWException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/Symbol.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/Utilities.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/XmlWriter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/AccountBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/AccountTypeBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/AddressBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/BeanAnnotations.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/BeanRecord.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/BudgetBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/BudgetItemBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/CategoryBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/CurrencyBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/CurrencyRateBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/DBConstants.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/DataBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/DataBeanList.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/InvTranBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/LotsBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/ReminderBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/SecurityBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/SecurityPriceBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/TransactionBean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/databeans/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/edit/UndoAction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/edit/UndoDetail.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/edit/UndoFieldDetail.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/edit/UndoLayoutManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/edit/UndoRecord.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/AccountFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/AddressFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/BudgetFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/BudgetItemFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/CategoryFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/CurrencyFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/CurrencyRateFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/InvestTranFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/LotsFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/OutputCSV.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/OutputDatabase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/OutputFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/OutputSpreadsheet.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/ReminderFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/SecurityFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/SecurityPriceFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/factory/TransactionFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/meta_info.dict" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/report/FieldValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/report/GroupValues.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/report/Report.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/report/ReportPage.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/001-checked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/002-cross.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/Delete24.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/Edit24.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/LayoutPane.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/PrintPreview24.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/ReportPrinter.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/Save24.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/SaveAs24.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/Search-Folder-icon.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/Undo24.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/add_node_32px.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/bannerdetailpane.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/cancel_32px.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/close24.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/database.mv.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/delete_node_32px.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/download_from_cloud_32px.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/edit_node_32px.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/exit_32px.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/fieldExp.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/fieldSelectPane.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/fielddetailpane.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/fields.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/firstrun.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/groupSelectPane.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/help_32px.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-add-database-32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-add-new-32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-check-all-32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-database-16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-edit-file-30.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-exit-32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-export-csv-32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-gear-30.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-help-32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-math-book-32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-replicate-rows-32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-save-32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-search-folder-32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-search-folder-48.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-send-to-printer-30.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-spreadsheet-file-32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-translate-text-32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/icons8-trash-can-30.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/mainscreen.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/mrb icon2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/ok_32px.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/print_32px.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/reporttemplate.xsd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/reportwriter.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/search_folder_32px.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/settings.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/settings_32px.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/styledetailpane.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/templatedatapane.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/view24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/samples/DownloadException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/samples/HttpDownloadUtility.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/selection/BannerSelectModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/selection/FieldSelectModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/selection/LabelSelectModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/selection/StyleSelectModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/selection/TreeSelectionModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/AccelKeys.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/DataDataPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/DataPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/DataParameter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/DetailPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/FieldExpression.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/FieldPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/FieldSelectionPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/HelpScreen.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/IntroScreen.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/LayoutPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/MyReport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/PopUpScreen.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/ReportDataPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/ReportPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/ScreenDataPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/ScreenPanel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/SelectionDataPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/SelectionPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/TemplateDataPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/TemplateDownloadPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/TemplatePane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/DumbSplitPaneSkin.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/ExpressionProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/FieldBorder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/FieldLabel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/HorizontalRuler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/LayoutTreeNode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/MyGridPane.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/ReportBanner.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/ReportField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/ReportLayout.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/ReportLayoutLabel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/ReportStyle.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/ReportTemplate.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/Ruler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/VerticalRuler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/BannerDetailController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/FieldDetailController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/FieldExpressionController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/FieldPaneController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/GroupSelectController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/LayoutPaneController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/PopUpController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/StyleDetailController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/TemplateDataPaneController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/tables/DataDataRow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/tables/DataRow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/tables/FieldPaneRow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/tables/FieldSelectionRow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/tables/GroupSelectionRow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/tables/ReportDataRow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/tables/ReportRow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/tables/SelectionDataRow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/tables/SelectionRow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/tables/TemplateListRow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/tables/TemplateRow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/filedisplaybuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/filedisplaybuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/loadsectransbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/loadsectransbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/priceloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/priceloadbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/qifloaderbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/qifloaderbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reportwriterbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportwriterbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/securityhistoryloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/securityhistoryloadbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/securitypriceloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/securitypriceloadbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/securityquoteloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/securityquoteloadbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/updaterelease.bat" beforeDir="false" afterPath="$PROJECT_DIR$/updaterelease.bat" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;mrbray99&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="9b7daa86-5f94-49c1-857e-b2a86f4108ba" />
+        <option name="url" value="https://github.com/mrbray99/Moneydance" />
+      </UrlAndAccount>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2blbEnmtCuSef17aAZuZwskpUNg" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "jdk.selected.JAVA_MODULE": "temurin-21",
+    "last_opened_file_path": "D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/src/securityquoteloadbuild.xml",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.externalDependencies"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="" />
+      <created>1706792503623</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1706792503623</updated>
+    </task>
+    <task id="LOCAL-00001" summary="To align with github&#10;&#10;# Conflicts:&#10;#&#9;dist/securityquoteload.mxt">
+      <option name="closed" value="true" />
+      <created>1706794949828</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1706794949828</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="To align with github&#10;&#10;# Conflicts:&#10;#&#9;dist/securityquoteload.mxt&#10;" />
+    <MESSAGE value="To align with github&#10;&#10;# Conflicts:&#10;#&#9;dist/securityquoteload.mxt" />
+    <option name="LAST_COMMIT_MESSAGE" value="To align with github&#10;&#10;# Conflicts:&#10;#&#9;dist/securityquoteload.mxt" />
+  </component>
+</project>

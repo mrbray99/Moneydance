@@ -2,6 +2,7 @@
 <project version="4">
   <component name="AntConfiguration">
     <buildFile url="file://$PROJECT_DIR$/src/build.xml" />
+<<<<<<< HEAD
     <buildFile url="file://$PROJECT_DIR$/src/filedisplaybuild.xml" />
     <buildFile url="file://$PROJECT_DIR$/src/mrbutilbuild.xml" />
     <buildFile url="file://$PROJECT_DIR$/src/dataextractorbuild.xml" />
@@ -14,5 +15,18 @@
     <buildFile url="file://$PROJECT_DIR$/src/budgetgenbuild.xml" />
     <buildFile url="file://$PROJECT_DIR$/src/loadsectransbuild.xml" />
     <buildFile url="file://$PROJECT_DIR$/src/budgetreportbuild.xml" />
+=======
+    <buildFile url="file://$PROJECT_DIR$/src/budgetgenbuild.xml" />
+    <buildFile url="file://$PROJECT_DIR$/src/budgetreportbuild.xml" />
+    <buildFile url="file://$PROJECT_DIR$/src/filedisplaybuild.xml" />
+    <buildFile url="file://$PROJECT_DIR$/src/loadsectransbuild.xml" />
+    <buildFile url="file://$PROJECT_DIR$/src/mrbutilbuild.xml" />
+    <buildFile url="file://$PROJECT_DIR$/src/priceloadbuild.xml" />
+    <buildFile url="file://$PROJECT_DIR$/src/qifloaderbuild.xml" />
+    <buildFile url="file://$PROJECT_DIR$/src/reportwriterbuild.xml" />
+    <buildFile url="file://$PROJECT_DIR$/src/securityhistoryloadbuild.xml" />
+    <buildFile url="file://$PROJECT_DIR$/src/securitypriceloadbuild.xml" />
+    <buildFile url="file://$PROJECT_DIR$/src/securityquoteloadbuild.xml" />
+>>>>>>> 3205
   </component>
 </project>

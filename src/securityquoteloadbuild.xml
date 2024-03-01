@@ -23,18 +23,16 @@
 		</jar>
 	    <java newenvironment="true" 
 	      classpathref="classpath"
-	      classname="com.moneydance.admin.KeyAdmin">
+	      classname="SignMxt" fork="yes">
 	      <arg value="signextjar"/>
 	      <arg value="${privkeyfile}"/>
 	      <arg value="${privkeyid}"/>
 	      <arg value="securityquoteload"/>
 	      <arg line="${dist}/securityquoteload.mxt"/>
 	    </java>
-	    <delete file="${dist}/securityquoteload.mxt" verbose="true" failonerror="false" />
-	    <move file="./s-securityquoteload.mxt" tofile="${dist}/securityquoteload.mxt"
-	verbose="true" failonerror="false" />
-	    <copy file="${dist}/securityquoteload.mxt" tofile="${install}/securityquoteload.mxt"
-	verbose="true" failonerror="false" /> 
+		<copy file="./s-securityquoteload.mxt" tofile="${install}/securityquoteload.mxt" verbose="true" failonerror="false" />
+		<copy file="${install}/securityquoteload.mxt" tofile="${dist}/securityquoteload.mxt" verbose="true" failonerror="false" />
+		<delete file="./s-securityquoteload.mxt" />
 		<echo>the current time is ${TODAY_UK}</echo>
 	</target> 
 	<target name="cleansecurityquoteload">
@@ -44,5 +42,35 @@
 			</fileset>
 		</delete>
 	</target>
+	<target name="download">
+			<delete quiet="true" dir="../staging" />
+			<mkdir dir="../staging" />
 
+			<copy file="${install}/.rhumba/hleOfxQuotes.jar" tofile="../staging/hleOfxQuotes.jar" />
+	    	<copy file="${dist}/securityquoteload.mxt" tofile="../staging/securityquoteload.mxt" />
+			<copy file="${install}/rhumba.mxt" tofile="../staging/rhumba.mxt" />
+
+		</target>
+
+		<target name="package" depends="initpackage, download">
+			<delete quiet="true" file="${dist}/${artifact}.zip" />
+			<delete quiet="true" dir="../${artifact}" />
+
+			<mkdir dir="../${artifact}" />
+			<copy todir="../${artifact}">
+				<fileset dir="../staging" />
+			</copy>
+
+			<zip destfile="${dist}/${artifact}.zip">
+				<fileset dir="../" includes="${artifact}/**" />
+			</zip>
+		</target>
+
+		<target name="initpackage">
+			<!-- Create the time stamp -->
+			<tstamp />
+			<property name="release" value="${DSTAMP}" />
+			<property name="artifact" value="QL-2019-release-${release}" />
+			<echo> building ${artifact}.zip</echo>
+		</target>
 </project>

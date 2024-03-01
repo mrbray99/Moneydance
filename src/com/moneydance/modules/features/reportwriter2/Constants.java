@@ -32,7 +32,6 @@ package com.moneydance.modules.features.reportwriter2;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -76,11 +75,6 @@ public abstract class Constants {
 	public static final String HEADER1STYLENAME="Header 1";
 	public static final String HEADER2STYLENAME="Header 2";
 	public static final String HEADER3STYLENAME="Header 3";
-	public static final String FORMATNUMBER ="Default Number";
-	public static final String FORMATTEXT ="Default Text";
-	public static final String FORMATPERCENT ="Default Percentage";
-	public static final String FORMATDATE ="Default Date";
-	public static final String FORMATBOOLEAN ="Default Boolean";
 	public static final String EXTENSIONNAME = "Report Writer 2";
 	public static final String FILLREPORT = "fillReport";
 	public static final String FIRSTRUNDIR = "firstrundir";
@@ -111,14 +105,12 @@ public abstract class Constants {
 	 */
 	public static final String TEMPLATESCREENFXML = "templatedatapane.fxml";
 	public static final String STYLEDETAILFXML="styledetailpane.fxml";
-	public static final String FORMATDETAILFXML="formatdetailpane.fxml";
 	public static final String BANNERDETAILFXML="bannerdetailpane.fxml";
 	public static final String FIELDDETAILFXML="fielddetailpane.fxml";
 	public static final String RESIZEBANNER = "resizebanner";
 	public static final String LAYOUTPANE= "LayoutPane.fxml";
 	public static final String FIELDPANE= "fieldSelectPane.fxml";
 	public static final String FIELDEXPRESPANE = "fieldExp.fxml";
-	public static final String FIELDPATTERNPANE="patterndetailpane.fxml";
 	public static final String GROUPSELECTPANE = "groupSelectPane.fxml";
 	/*
 	 * layout sub menu actions
@@ -137,8 +129,6 @@ public abstract class Constants {
 	public static final String ACTIONSELECTALL= "select all";
 	public static final String ACTIONADDLABEL= "create label";
 	public static final String ACTIONADDVARIABLE= "create variable";
-	public static final String ACTIONSHOWFORMAT= "show/hide standard formats";
-	public static final String ACTIONADDFORMAT= "create format";
 
 /*
  * Preferences
@@ -317,25 +307,13 @@ public abstract class Constants {
     /*
      * Lists
      */
-  	public static final String[] DELIMITERS = {",",".","#","|","Tab",";",":"};
-	public static List<String> DATEPATTERNS=Arrays.asList("dd/MM/yyyy",
-			"MM/dd/yyyy",
-			"dd.MM.yyyy",
-			"MM.dd.yyyy",
-			"yyyy-MM-dd",
-			"MM/yyyy",
-			"MM.yyyy",
-			"yyyy/MM",
-			"yyyy.MM",
-			"dd LLL yyyy",
-			"LLL dd yyyy");
-	public static List<String> BOOLEANPATTERNS=Arrays.asList("Yes/No","True/False","Y/N","X/ ");
-  /*
+	public static final String[] DELIMITERS = {",",".","#","|","Tab",";",":"};
+    /*
      * types
      */
 	public enum TextAlignment {LEFT,RIGHT,CENTRE,JUSTIFIED};
 	public enum ReportType {REPORT, DATABASE, SPREADSHEET, CSV};
-	public enum ReportFieldType {DATABASE,LABEL,VARIABLE}
+	public enum ReportFieldType {DATABASE,LABEL,TOTAL,GROUPNAME,VARIABLE}
 	public enum BannerType {
 		TITLE("Title",10),
 		PAGEHEAD("Page Header",20),
@@ -393,112 +371,11 @@ public abstract class Constants {
 	public static final String[] SortColumnValues = {SortColumn.FIRST.toString(),SortColumn.SECOND.toString(),SortColumn.THIRD.toString()};
 	public enum NodeType{ROOT,OUTLINE,AVAILABLEFIELDS,BANNERS,STYLES,STYLE,VARIABLES,
 		BANNER,FIELD,VARIABLE,DATABASE,RECORD,DATABASEFIELD,LABELS,LABEL,
-		FUNCTIONS, FUNCTION,OPERATOR,OPERATORS,FORMATS,FORMAT}
-	public enum OUTPUTTYPE {TEXT("Text"),NUMBER("Number"), DATE("Date");
-		private String name;
-		OUTPUTTYPE (String name){
-			this.name = name;
-		}
-		public String getName() {
-			return name;
-		}
-		public static OUTPUTTYPE findName(String name) {
-			for (OUTPUTTYPE value:values())
-				if (name.equals(value.getName()))
-					return value;
-			return OUTPUTTYPE.TEXT;
-		}
-	};
+		FUNCTIONS, FUNCTION,OPERATOR,OPERATORS}
+	public static int NUMBEROUTPUTTYPE = 0;
+	public static int TEXTOUTPUTTYPE = 1;
 	public enum FuncType {NUMERIC, STRING, LOGICAL, DATE, OPERATOR};
 	public enum ExpNodeType {ROOT,FIELD,NUMBER, STRING,FUNCTION,PARAMETER,OPERATOR,VARIABLE,BRACKET};
-	public enum FieldDetailType {FIELD, LAYOUT};
-	public static Integer PATGEN=0;
-	public static Integer PATNUM=1;
-	public static Integer PATCUR=2;
-	public static Integer PATDAT=3;
-	public static Integer PATPER=4;
-	public static Integer PATYNO=5;
-	public static Integer PATTEX=6;
-	public static Integer PATCUS=7;
-	public enum FieldPattern {GENERAL("General","",0,false,false,false,PATGEN,"1,1,1,1,1,1,1,1,1"),
-		NUMBER("Number","#.00",2, true,false,false,PATNUM,"0,0,1,1,0,1,1,1,1"),
-		CURRENCY("Currency","#.00",2, true,true,false,PATCUR,"0,0,0,1,0,1,1,1,1"),
-		DATE("Date","dd/mm/yy",0,false,false,false,PATDAT,"0,1,0,1,0,0,0,1,1"),
-		PERCENTAGE("Percentage","#.00%",2,false,false,false,PATPER,"0,0,1,1,0,0,1,1,1"),
-		TEXT("Text","",0,false,false,false,PATTEX,"1,1,1,1,1,1,1,1,1"),
-		YESNO("Yes/No","",0,false,false,false,PATYNO,"0,0,0,0,1,0,0,0,0");
-		private String name;
-		private Integer numDecs;
-		private Boolean useMMark;
-		private Boolean currSign;
-		private Boolean redNeg;
-		private String patternText;
-		private Integer dataType;
-		private Boolean [] allowed;
-		FieldPattern(String name, String patternText,Integer numDecs, Boolean useMMark, Boolean currSign, Boolean redNeg,Integer dataType,String combos){
-			this.name = name;
-			this.patternText = patternText;
-			this.numDecs = numDecs;
-			this.useMMark= useMMark;
-			this.currSign = currSign;
-			this.redNeg = redNeg;
-			this.dataType = dataType;
-			allowed = new Boolean[9];
-			String allowedArray[] = combos.split(",");
-			for (int i=0;i<allowedArray.length;i++) {
-				if ( allowedArray[i].equals("0"))
-					allowed[i]=false;
-				else
-					allowed[i]=true;
-			}
-		}
-		public String getName() {
-			return name;
-		}
-		public Integer getNumDecs() {
-			return numDecs;
-		}
-		public Boolean getUseMMark() {
-			return useMMark;
-		}
-		public Boolean getCurrSign() {
-			return currSign;
-		}
-		public Boolean getRedNeg() {
-			return redNeg;
-		}
-		public String getPatternText() {
-			return patternText;
-		}
-		
-		public Integer getDataType() {
-			return dataType;
-		}
-		public Boolean isAllowed(Integer dataType) {
-			return allowed[dataType];
-		}
-	};
-	public enum FieldAlign {LEFT("Left",0), RIGHT("Right",1), CENTRE("Centre",2);
-		private String text;
-		private Integer index;
-		FieldAlign(String text, Integer index) {
-			this.text = text;
-			this.index = index;
-		}
-		public String getText() {
-			return text;
-		}
-		public Integer getIndex() {
-			return index;
-		}
-		public static FieldAlign findAlign(String name) {
-			for (FieldAlign field : values()) {
-				if (field.getText().equalsIgnoreCase(name))
-					return field;
-			}
-			return null;
-		}
-	}
 	public enum FieldFunction {
 		DATE("Date",FuncType.DATE,FuncType.STRING,"Todays date"),
 		TIME("Time",FuncType.DATE,FuncType.STRING,"Time now"),
@@ -512,7 +389,7 @@ public abstract class Constants {
 		CONCATENATE("Concatenate",FuncType.STRING,FuncType.STRING,"String",FuncType.STRING,FuncType.STRING),
 		LEFT("Left",FuncType.STRING,FuncType.STRING,"Left of String",FuncType.STRING,FuncType.NUMERIC),
 		RIGHT("Right",FuncType.STRING,FuncType.STRING,"Right of String",FuncType.STRING,FuncType.NUMERIC),
-		MID("Mid",FuncType.STRING,FuncType.STRING,"Middle of string",FuncType.STRING,FuncType.NUMERIC,FuncType.NUMERIC),
+		MID("Mid",FuncType.STRING,FuncType.STRING,"Middle of string",FuncType.STRING,FuncType.NUMERIC),
 		MAX("Maximum",FuncType.NUMERIC,FuncType.NUMERIC,"Maximum value of group",FuncType.NUMERIC),
 		MIN("Minimum",FuncType.NUMERIC,FuncType.NUMERIC,"Minimum value of group",FuncType.NUMERIC),
 		SUM("Sum",FuncType.NUMERIC,FuncType.NUMERIC,"Sum of values of group",FuncType.NUMERIC),
@@ -549,7 +426,7 @@ public abstract class Constants {
 			this.outputType = outputType;
 			this.funcType = funcType;
 		}
-		FieldFunction(String name,FuncType funcType,FuncType outputType,String returnString,FuncType parm1,FuncType parm2, FuncType parm3){
+		FieldFunction(String name,FuncType funcType,Integer numParms,FuncType outputType,String returnString,FuncType parm1,FuncType parm2, FuncType parm3){
 			this.name = name;
 			this.parms.add(parm1);		
 			this.parms.add(parm2);		
@@ -596,9 +473,6 @@ public abstract class Constants {
 		}
 		public FuncType getFuncType() {
 			return funcType;
-		}
-		public FuncType getParm(Integer parm){
-			return parms.get(parm);
 		}
 	}
 	public enum LogicalOperators{

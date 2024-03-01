@@ -19,7 +19,7 @@
 		</jar>
 	    <java newenvironment="true" 
 	      classpathref="classpath"
-	      classname="com.moneydance.admin.KeyAdmin">
+	      classname="SignMxt">
 	      <arg value="signextjar"/>
 	      <arg value="${privkeyfile}"/>
 	      <arg value="${privkeyid}"/>

@@ -17,18 +17,16 @@
 
 	    <java newenvironment="true" 
 	      classpathref="classpath"
-	      classname="com.moneydance.admin.KeyAdmin">
+	      classname="SignMxt" fork="yes">
 	      <arg value="signextjar"/>
 	      <arg value="${privkeyfile}"/>
 	      <arg value="${privkeyid}"/>
 	      <arg value="qifloader"/>
 	      <arg line="${dist}/qifloader.mxt"/>
 	    </java>
-	    <delete file="${dist}/qifloader.mxt" verbose="true" 	failonerror="false" />
-	    <move file="./s-qifloader.mxt" tofile="${dist}/qifloader.mxt"
-	verbose="true" failonerror="false" />
-	    <copy file="${dist}/qifloader.mxt" tofile="${install}/qifloader.mxt"
-	verbose="true" failonerror="false" /> 
+		<copy file="./s-qifloader.mxt" tofile="${install}/qifloader.mxt" verbose="true" failonerror="false" />
+		<copy file="${install}/qifloader.mxt" tofile="${dist}/qifloader.mxt" verbose="true" failonerror="false" />
+		<delete file="./s-qifloader.mxt" />
 		<echo>the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanqifloader">
