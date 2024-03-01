@@ -16,18 +16,16 @@
 
 	    <java newenvironment="true" 
 	      classpathref="classpath"
-	      classname="com.moneydance.admin.KeyAdmin">
+	      classname="SignMxt" fork="yes">
 	      <arg value="signextjar"/>
 	      <arg value="${privkeyfile}"/>
 	      <arg value="${privkeyid}"/>
 	      <arg value="securitypriceload"/>
 	      <arg line="${dist}/securitypriceload.mxt"/>
 	    </java>
-	    <delete file="${dist}/securitypriceload.mxt" verbose="true" failonerror="false" />
-	    <move file="./s-securitypriceload.mxt" tofile="${dist}/securitypriceload.mxt"
-	verbose="true" failonerror="false" />
-	    <copy file="${dist}/securitypriceload.mxt" tofile="${install}/securitypriceload.mxt"
-	verbose="true" failonerror="false" /> 
+		<copy file="./s-securitypriceload.mxt" tofile="${install}/securitypriceload.mxt" verbose="true" failonerror="false" />
+		<copy file="${install}/securitypriceload.mxt" tofile="${dist}/securitypriceload.mxt" verbose="true" failonerror="false" />
+		<delete file="./s-securitypriceload.mxt" />
 		<echo>the current time is ${TODAY_UK}</echo>
 	 	</target> 
 	<target name="cleansecuritypriceload">

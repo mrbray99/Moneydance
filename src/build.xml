@@ -4,17 +4,18 @@ http://jakarta.apache.org/ant/index.html
 -->
  
 <project name="moneydance" basedir=".">
-  <property file="./user.properties" />
   <property name="version"  value="2.2"/>
   <property name="src" value="."/>
   <property name="build" value="./build"/>
   <property name="build.compiler" value="modern" />
-  <property name="target" value="11" />
-  <property name="srccode" value="11" />
+  <property name="target" value="21" />
+  <property name="srccode" value="21" />
   <property name="lib" value="../lib"/>
-  <property name="md_ext_lib_dir" value="c:/program files/Moneydance3069/lib"/>
-  <property environment="env" />
-  <property name="javafx" value="c:/program files/java/javafx-sdk-11.0.2/lib"/>
+  <property name="md_ext_lib_dir" value="c:/Program Files/Moneydance20235064/lib"/>
+  <property name="jasperlib" value="../jasperlib"/>	
+   <property environment="env" />
+  <property name="javafx" value="c:/program files/java/javafx-sdk-16/javafx-sdk-16/lib"/>
+  <property name="jasper" value="c:/users/mrbmo/eclipse-workspace/MDJasperServer/target"/>
   <property name="privkeyfile" value="${src}/priv_key"/>
   <property name="pubkeyfile" value="${src}/pub_key"/>
   <property name="privkeyid" value="99"/>
@@ -26,26 +27,26 @@ http://jakarta.apache.org/ant/index.html
   <property name="tmp"  value="../tmp"/>
   <property name="debug"  value="on"/>
   <property name="optimize"  value="off"/>
-  <property name="install" value="C:\Users\mrbmo\.moneydance\fmodules\released"/>
+  <property name="install" value="C:\Users\mrbmo\.moneydance\fmodules"/>
 
 	  <path id="classpath">
 	    <pathelement path="${lib}/extadmin.jar"/>
-	    <pathelement path="${lib}/moneydance-dev.jar"/>
 	    <pathelement path="${md_ext_lib_dir}/moneydance.jar"/>
 	  	<pathelement path="${md_ext_lib_dir}/jfreechart-1.0.13.jar"/>
 	  	<pathelement path="${lib}/jython-2_7.jar"/>
-	  	<pathelement path="${md_ext_lib_dir}/jcommon-1.0.16.jar"/>
+	  	<pathelement path="${lib}/jcommon-1.0.16.jar"/>
 	  	<pathelement path="${md_ext_lib_dir}/httpclient-4.5.6.jar"/>
 	  	<pathelement path="${md_ext_lib_dir}/httpcore-4.4.10.jar"/>
 	   	<pathelement path="${md_ext_lib_dir}/httpmime-4.5.6.jar"/>
-	  	<pathelement path="${md_ext_lib_dir}/gson-2.5.jar"/>
+	  	<pathelement path="${md_ext_lib_dir}/gson-2.8.7.jar"/>
 	  	<pathelement path="${lib}/h2-1.4.200.jar"/>
 		<pathelement path="${lib}/jsoup-1.11.3.jar"/>
-	  	<pathelement path="${lib}/mrbutil.jar"/>
+	   	<pathelement path="${lib}/mrbutil.jar"/>
 		<pathelement path="${md_ext_lib_dir}/jackson-core-2.7.4.jar"/>
 		<pathelement path="${lib}/jackson-databind-2.7.4.jar"/>
 		<pathelement path="${lib}/jackson-dataformat-xml-2.7.4.jar"/>
-		<pathelement path="${lib}/jackson-annotations-2.7.4.jar"/>
+		<pathelement path="${md_ext_lib_dir}/jackson-annotations-2.8.4.jar"/>
+		<pathelement path="${lib}/jasperreports-6.13.0.jar"/>
 	  	<pathelement path="${lib}/exp4j-0.4.8.jar"/>
 	  	<pathelement path="${lib}/org.apache.commons.io.jar"/>	  	
 	  	<pathelement path="${lib}/opencsv-5.2.jar"/>
@@ -53,16 +54,18 @@ http://jakarta.apache.org/ant/index.html
 	  	<pathelement path="${lib}/poi.excelant-4.1.2.jar"/>
 	  	<pathelement path="${lib}/poi-ooxml-4.1.2.jar"/>
 	  	<pathelement path="${lib}/poi-ooxml-schemas-4.1.2.jar"/>
+	  	<pathelement path="${lib}/signmxt.jar"/>
 	  	<pathelement path="${lib}/SparseBitSet-1.2.jar"/>
 	  	<pathelement path="${javafx}/javafx.base.jar"/>
 	  	<pathelement path="${javafx}/javafx.controls.jar"/>
 	  	<pathelement path="${javafx}/javafx.fxml.jar"/>
-	  	<pathelement path="${javafx}/javafx.graphics.jar"/>
+		<pathelement path="${javafx}/javafx.graphics.jar"/>
 	  	<pathelement path="${javafx}/javafx.media.jar"/>
 	  	<pathelement path="${javafx}/javafx.properties.jar"/>
 	  	<pathelement path="${javafx}/javafx.swing.jar"/>
 	  	<pathelement path="${javafx}/javafx.web.jar"/>
 	  	<pathelement path="${javafx}/javafx-swt.jar"/>
+
 	  </path>
 	<target name="init">
 		<mkdir dir="${dist}" />
@@ -75,13 +78,15 @@ http://jakarta.apache.org/ant/index.html
 	<import file="budgetgenbuild.xml"/>
 	<import file="budgetreportbuild.xml"/>
 	<import file="loadsectransbuild.xml"/>
-	<import file="qifloaderbuild.xml"/>
 	<import file="securityhistoryloadbuild.xml"/>
 	<import file="securitypriceloadbuild.xml"/>
 	<import file="mrbutilbuild.xml"/>
 	<import file="qifloaderbuild.xml"/>
+	<import file="qlerroranalyserbuild.xml"/>
 	<import file="securityquoteloadbuild.xml"/>
 	<import file="reportwriterbuild.xml"/>
+	<import file="reportwriterbuild2.xml"/>
+	<import file="testext.xml"/>
 	<target name="genkeys">
 		<java classpathref="classpath" classname="com.moneydance.admin.KeyAdmin">
 			<arg value="genkey" />
@@ -89,9 +94,19 @@ http://jakarta.apache.org/ant/index.html
 			<arg value="${pubkeyfile}" />
 		</java>
 	</target>
- <target name="cleanall" depends="cleanmrbutil, cleanbudgetgen, cleanbudgetreport, cleanfiledisplay, cleanloadsectrans, cleanqifloader, cleansecurityhistoryload, cleansecuritypriceload,cleansecurityquoteload,cleanreportwriter">
+ <target name="cleanall" depends="cleanmrbutil, cleanbudgetgen, cleanbudgetreport, cleanfiledisplay, cleanqifloader, cleanloadsectrans, cleansecurityhistoryload, cleansecuritypriceload,cleansecurityquoteload,cleanreportwriter">
  </target>
-	 <target name="all" depends="init, mrbutil, budgetgen, budgetreport,filedisplay, loadsectrans, qifloader, securityhistoryload, securitypriceload, securityquoteload,reportwriter">
+	 <target name="all" description="all targets">
+	 	<antcall target="mrbutil"/>
+		 <antcall target="budgetgen"/>
+		 <antcall target="budgetreport"/>
+		 <antcall target="filedisplay"/>
+		 <antcall target="loadsectrans"/>
+		 <antcall target="qifloader"/>
+		 <antcall target="securityhistoryload"/>
+		 <antcall target="securitypriceload"/>
+		 <antcall target="securityquoteload"/>
+		 <antcall target="reportwriter"/>
 	 </target>
 	
 </project>

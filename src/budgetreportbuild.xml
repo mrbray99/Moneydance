@@ -17,19 +17,16 @@
 
 	    <java newenvironment="true" 
 	      classpathref="classpath"
-	      classname="com.moneydance.admin.KeyAdmin">
+	      classname="SignMxt" fork="yes">
 	      <arg value="signextjar"/>
 	      <arg value="${privkeyfile}"/>
 	      <arg value="${privkeyid}"/>
 	      <arg value="budgetreport"/>
 	      <arg line="${dist}/budgetreport.mxt"/>
 	    </java>
-	    <delete file="${dist}/budgetreport.mxt" verbose="true"
-	failonerror="false" />
-	    <move file="./s-budgetreport.mxt" tofile="${dist}/budgetreport.mxt"
-	verbose="true" failonerror="false" />
-	    <copy file="${dist}/budgetreport.mxt" tofile="${install}/budgetreport.mxt"
-	verbose="true" failonerror="false" /> 
+		<copy file="./s-budgetreport.mxt" tofile="${install}/budgetreport.mxt" verbose="true" failonerror="false" />
+		<copy file="${install}/budgetreport.mxt" tofile="${dist}/budgetreport.mxt" verbose="true" failonerror="false" />
+		<delete file="./s-budgetreport.mxt" />
 		<echo>the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanbudgetreport">

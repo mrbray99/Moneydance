@@ -9,3 +9,5 @@ xcopy "d:\f\mrbmo\eclipse-workspace\Moneydance2021\src\com\moneydance\modules\fe
 xcopy "d:\f\mrbmo\eclipse-workspace\Moneydance2021\src\com\moneydance\modules\features\securityhistoryload\*.*" "d:\f\mrbmo\eclipse-workspace\Moneydance Released Extensions\src\com\moneydance\modules\features\securityhistoryload" /v /d /s /y
 xcopy "d:\f\mrbmo\eclipse-workspace\Moneydance2021\src\com\moneydance\modules\features\securitypriceload\*.*" "d:\f\mrbmo\eclipse-workspace\Moneydance Released Extensions\src\com\moneydance\modules\features\securitypriceload" /v /d /s /y
 xcopy "d:\f\mrbmo\eclipse-workspace\Moneydance2021\src\com\moneydance\modules\features\securityquoteload\*.*" "d:\f\mrbmo\eclipse-workspace\Moneydance Released Extensions\src\com\moneydance\modules\features\securityquoteload" /v /d /s /y
+xcopy "d:\f\mrbmo\eclipse-workspace\Moneydance2021\src\*build.xml" "d:\f\mrbmo\eclipse-workspace\Moneydance Released Extensions\src" /v /d /s /y
+xcopy "d:\f\mrbmo\eclipse-workspace\Moneydance2021\lib\*.jar" "d:\f\mrbmo\eclipse-workspace\Moneydance Released Extensions\lib" /v /d /s /y
