@@ -35,8 +35,6 @@ import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.ByteArrayOutputStream;
@@ -72,6 +70,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.infinitekind.util.StringUtils;
 import com.moneydance.apps.md.controller.FeatureModuleContext;
 import com.moneydance.apps.md.controller.UserPreferences;
+import com.moneydance.apps.md.view.MoneydanceUI;
 import com.moneydance.awt.GridC;
 import com.moneydance.awt.JDateField;
 import com.moneydance.modules.features.mrbutil.MRBPreferences2;
@@ -114,9 +113,12 @@ public class BudgetValuesWindow extends JFrame {
 	private JComboBox<String> boxBudget;
 	private JCheckBox chkRoll;
 	private JTextField txtFileName;
+	private MoneydanceUI mdGUI;
+	private com.moneydance.apps.md.controller.Main mdMain;
+	private JButton helpBtn;
 	@SuppressWarnings("unused")
 	private LookAndFeel previousLF;
-	private JFileChooser objFileChooser = null;
+	private JFileChooser fileChooser;
 	private File fParameters;
 	/*
 	 * date fields
@@ -168,12 +170,9 @@ public class BudgetValuesWindow extends JFrame {
 	private JButton btnIDeselect;
 
 	public BudgetValuesWindow(Main extension) {
-//		previousLF = UIManager.getLookAndFeel();
-//		try {
-//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//				| InstantiationException | ClassNotFoundException e) {
-//		}
-		objFileChooser = new JFileChooser();
+		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
+		mdGUI = mdMain.getUI();
+		fileChooser = new JFileChooser();
 		context = extension.getUnprotectedContext();
 		MRBPreferences2.loadPreferences(context);
 		objPreferences = MRBPreferences2.getInstance();
@@ -212,7 +211,7 @@ public class BudgetValuesWindow extends JFrame {
 		objReportParms = new ReportParameters(context);
 		strBudget = objReportParms.getBudget();
 		strFileName = objReportParms.getFile();
-		if (strFileName.equals(""))
+		if (strFileName.isEmpty())
 			strFileName = Constants.DEFAULTFILE;
 		objParams = new BudgetParameters(context, strFileName, jdtFiscalStart,
 				jdtFiscalEnd);
@@ -244,10 +243,10 @@ public class BudgetValuesWindow extends JFrame {
 				Constants.SELECTED);
 		mylmExpenseSelect = new MyListModel(objParams,
 				Constants.EXPENSE_SCREEN, Constants.SELECTED);
-		listIncomeMissing = new JList<String>(mylmIncomeMissing);
-		listExpenseMissing = new JList<String>(mylmExpenseMissing);
-		listIncomeSelect = new JList<String>(mylmIncomeSelect);
-		listExpenseSelect = new JList<String>(mylmExpenseSelect);
+		listIncomeMissing = new JList<>(mylmIncomeMissing);
+		listExpenseMissing = new JList<>(mylmExpenseMissing);
+		listIncomeSelect = new JList<>(mylmIncomeSelect);
+		listExpenseSelect = new JList<>(mylmExpenseSelect);
 		/*
 		 * start of screen
 		 */
@@ -296,21 +295,17 @@ public class BudgetValuesWindow extends JFrame {
 
 		// Select Budget
 		objBudgetList = new BudgetListExtend(context);
-		String strNames[] = objBudgetList.getBudgetNames();
-		boxBudget = new JComboBox<String>(strNames);
+		String[] strNames = objBudgetList.getBudgetNames();
+		boxBudget = new JComboBox<>(strNames);
 		boxBudget.setToolTipText("Select the Moneydance Budget you wish to report against");
-		boxBudget.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				@SuppressWarnings("unchecked")
-				JComboBox<String> cbBudgetT = ((JComboBox<String>) e
-						.getSource());
-				objBudget.refreshData(objBudgetList
-						.refreshData((String) (cbBudgetT.getSelectedItem())));
-				objReportParms.setBudget(objBudget.getName());
-				objReportParms.saveParams();
-			}
-		});
+		boxBudget.addActionListener(e -> {
+            JComboBox<String> cbBudgetT = ((JComboBox<String>) e
+                    .getSource());
+            objBudget.refreshData(objBudgetList
+                    .refreshData((String) (cbBudgetT.getSelectedItem())));
+            objReportParms.setBudget(objBudget.getName());
+            objReportParms.saveParams();
+        });
 		panTop.add(boxBudget,  GridC.getc(1,0).fillx().west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 		/*
@@ -341,12 +336,7 @@ public class BudgetValuesWindow extends JFrame {
 		btnChoose.setToolTipText("Click to browse for file");
 		panTop.add(btnChoose, GridC.getc(4,1).insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
-		btnChoose.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				chooseFile();
-			}
-		});
+		btnChoose.addActionListener(e -> chooseFile());
 		/*
 		 * Start Date
 		 */
@@ -440,16 +430,13 @@ public class BudgetValuesWindow extends JFrame {
 		btnHeaderColour.setOpaque(true);
 		btnHeaderColour.setBorder(brdButtons);
 		btnHeaderColour.setToolTipText("Click to select background colour for the header lines");
-		btnHeaderColour.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JButton btnTemp = (JButton) e.getSource();
-				ccHeadersBG = JColorChooser.showDialog(panTop,
-						"Choose Header Colour", ccHeadersBG);
-				btnTemp.setBackground(ccHeadersBG);
-				objParams.setColourHeaders(ccHeadersBG);
-			}
-		});
+		btnHeaderColour.addActionListener(e -> {
+            JButton btnTemp = (JButton) e.getSource();
+            ccHeadersBG = JColorChooser.showDialog(panTop,
+                    "Choose Header Colour", ccHeadersBG);
+            btnTemp.setBackground(ccHeadersBG);
+            objParams.setColourHeaders(ccHeadersBG);
+        });
 		panTop.add(btnHeaderColour, GridC.getc(2,4).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
@@ -462,16 +449,13 @@ public class BudgetValuesWindow extends JFrame {
 		btnBudgetColour.setOpaque(true);
 		btnBudgetColour.setBorder(brdButtons);
 		btnBudgetColour.setToolTipText("Click to select background colour for the budget lines");
-		btnBudgetColour.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JButton btnTemp = (JButton) e.getSource();
-				ccBudgetBG = JColorChooser.showDialog(panTop,
-						"Choose Budget Line Colour", ccBudgetBG);
-				btnTemp.setBackground(ccBudgetBG);
-				objParams.setColourBudget(ccBudgetBG);
-			}
-		});
+		btnBudgetColour.addActionListener(e -> {
+            JButton btnTemp = (JButton) e.getSource();
+            ccBudgetBG = JColorChooser.showDialog(panTop,
+                    "Choose Budget Line Colour", ccBudgetBG);
+            btnTemp.setBackground(ccBudgetBG);
+            objParams.setColourBudget(ccBudgetBG);
+        });
 		panTop.add(btnBudgetColour, GridC.getc(2,5).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
@@ -484,16 +468,13 @@ public class BudgetValuesWindow extends JFrame {
 		btnActualColour.setOpaque(true);
 		btnActualColour.setBorder(brdButtons);
 		btnActualColour.setToolTipText("Click to select background colour for the actuals lines");
-		btnActualColour.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JButton btnTemp = (JButton) e.getSource();
-				ccActualBG = JColorChooser.showDialog(panTop,
-						"Choose Actual Line Colour", ccActualBG);
-				btnTemp.setBackground(ccActualBG);
-				objParams.setColourActual(ccActualBG);
-			}
-		});
+		btnActualColour.addActionListener(e -> {
+            JButton btnTemp = (JButton) e.getSource();
+            ccActualBG = JColorChooser.showDialog(panTop,
+                    "Choose Actual Line Colour", ccActualBG);
+            btnTemp.setBackground(ccActualBG);
+            objParams.setColourActual(ccActualBG);
+        });
 		panTop.add(btnActualColour, GridC.getc(2,6).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
@@ -506,16 +487,13 @@ public class BudgetValuesWindow extends JFrame {
 		btnPositiveColour.setOpaque(true);
 		btnPositiveColour.setBorder(brdButtons);
 		btnPositiveColour.setToolTipText("Click to select background colour for positive figures on difference lines");
-		btnPositiveColour.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JButton btnTemp = (JButton) e.getSource();
-				ccPositiveBG = JColorChooser.showDialog(panTop,
-						"Choose Colour for Positive Differences", ccPositiveBG);
-				btnTemp.setBackground(ccPositiveBG);
-				objParams.setColourPositive(ccPositiveBG);
-			}
-		});
+		btnPositiveColour.addActionListener(e -> {
+            JButton btnTemp = (JButton) e.getSource();
+            ccPositiveBG = JColorChooser.showDialog(panTop,
+                    "Choose Colour for Positive Differences", ccPositiveBG);
+            btnTemp.setBackground(ccPositiveBG);
+            objParams.setColourPositive(ccPositiveBG);
+        });
 		panTop.add(btnPositiveColour, GridC.getc(2,7).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
@@ -528,16 +506,13 @@ public class BudgetValuesWindow extends JFrame {
 		btnNegativeColour.setOpaque(true);
 		btnNegativeColour.setBorder(brdButtons);
 		btnNegativeColour.setToolTipText("Click to select background colour for negative figures on difference lines");
-		btnNegativeColour.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JButton btnTemp = (JButton) e.getSource();
-				ccNegativeBG = JColorChooser.showDialog(panTop,
-						"Choose Colour for Negative Differences", ccNegativeBG);
-				btnTemp.setBackground(ccNegativeBG);
-				objParams.setColourNegative(ccNegativeBG);
-			}
-		});
+		btnNegativeColour.addActionListener(e -> {
+            JButton btnTemp = (JButton) e.getSource();
+            ccNegativeBG = JColorChooser.showDialog(panTop,
+                    "Choose Colour for Negative Differences", ccNegativeBG);
+            btnTemp.setBackground(ccNegativeBG);
+            objParams.setColourNegative(ccNegativeBG);
+        });
 		panTop.add(btnNegativeColour, GridC.getc(2,8).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 		JButton btnPositiveColourFG = new JButton("           ");
@@ -546,16 +521,13 @@ public class BudgetValuesWindow extends JFrame {
 		btnPositiveColourFG.setOpaque(true);
 		btnPositiveColourFG.setBorder(brdButtons);
 		btnPositiveColourFG.setToolTipText("Click to select foreground colour for positive figures on difference lines");
-		btnPositiveColourFG.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JButton btnTemp = (JButton) e.getSource();
-				ccPositiveFG = JColorChooser.showDialog(panTop,
-						"Choose Colour for Positive Differences", ccPositiveFG);
-				btnTemp.setBackground(ccPositiveFG);
-				objParams.setColourFGPositive(ccPositiveFG);
-			}
-		});
+		btnPositiveColourFG.addActionListener(e -> {
+            JButton btnTemp = (JButton) e.getSource();
+            ccPositiveFG = JColorChooser.showDialog(panTop,
+                    "Choose Colour for Positive Differences", ccPositiveFG);
+            btnTemp.setBackground(ccPositiveFG);
+            objParams.setColourFGPositive(ccPositiveFG);
+        });
 		panTop.add(btnPositiveColourFG, GridC.getc(3,7).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
@@ -565,16 +537,13 @@ public class BudgetValuesWindow extends JFrame {
 		btnNegativeColourFG.setOpaque(true);
 		btnNegativeColourFG.setBorder(brdButtons);
 		btnNegativeColourFG.setToolTipText("Click to select foreground colour for negative figures on difference lines");
-		btnNegativeColourFG.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JButton btnTemp = (JButton) e.getSource();
-				ccNegativeFG = JColorChooser.showDialog(panTop,
-						"Choose Colour for Negative Differences", ccNegativeFG);
-				btnTemp.setBackground(ccNegativeFG);
-				objParams.setColourFGNegative(ccNegativeFG);
-			}
-		});
+		btnNegativeColourFG.addActionListener(e -> {
+            JButton btnTemp = (JButton) e.getSource();
+            ccNegativeFG = JColorChooser.showDialog(panTop,
+                    "Choose Colour for Negative Differences", ccNegativeFG);
+            btnTemp.setBackground(ccNegativeFG);
+            objParams.setColourFGNegative(ccNegativeFG);
+        });
 		panTop.add(btnNegativeColourFG, GridC.getc(3,8).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 		/*
@@ -582,12 +551,7 @@ public class BudgetValuesWindow extends JFrame {
 		 */
 		btnSave = new JButton("Save Parameters");
 		btnSave.setToolTipText("Click to save parameters.  You will be asked for a file name");
-		btnSave.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				save();
-			}
-		});
+		btnSave.addActionListener(e -> save());
 		panTop.add(btnSave, GridC.getc(0,9).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
@@ -596,12 +560,7 @@ public class BudgetValuesWindow extends JFrame {
 		 */
 		btnGenerate = new JButton("Generate");
 		btnGenerate.setToolTipText("Click to generate the report");
-		btnGenerate.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				generate();
-			}
-		});
+		btnGenerate.addActionListener(e -> generate());
 		panTop.add(btnGenerate, GridC.getc(1,9).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
@@ -610,14 +569,20 @@ public class BudgetValuesWindow extends JFrame {
 		 */
 		btnClose = new JButton("Close");
 		btnClose.setToolTipText("<html>Click to close the extension.  <br>If there are unsaved changes to the parameters, <br>you will be asked if you wish to continue</html>");
-		btnClose.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				close();
-			}
-		});
+		btnClose.addActionListener(e -> close());
 		panTop.add(btnClose, GridC.getc(2,9).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
+		/*
+		 * Button 4 - Help
+		 *
+		 */
+		helpBtn = new JButton("Help");
+		helpBtn.setToolTipText("Display help information");
+		helpBtn.addActionListener(e -> {
+            String url = "https://github.com/mrbray99/moneydanceproduction/wiki/Budget-Report";
+            mdGUI.showInternetURL(url);
+        });
+		panTop.add(helpBtn, GridC.getc(3, 9).west().insets(10, 10, 10, 10));
 		panTop.setPreferredSize(new Dimension(iTOPWIDTH, Constants.TOPDEPTH));
 
 		panScreen.add(panTop, BorderLayout.PAGE_START);
@@ -640,21 +605,11 @@ public class BudgetValuesWindow extends JFrame {
 		spIncomeMissing.setToolTipText("Shows the income categories not included in the report");
 		panMid.add(spIncomeMissing, GridC.getc(0,2).rowspan(2).insets(0,10,0,0));
 		btnISelect = new JButton("Sel");
-		btnISelect.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				incomeSelect();
-			}
-		});
+		btnISelect.addActionListener(e -> incomeSelect());
 		btnISelect.setToolTipText("Click to add the selected income categories to the report");
 		panMid.add(btnISelect,  GridC.getc(1,2).fillx().south().insets(40, 5, 5, 5));
 		btnIDeselect = new JButton("Des");
-		btnIDeselect.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				incomeDeselect();
-			}
-		});
+		btnIDeselect.addActionListener(e -> incomeDeselect());
 		btnIDeselect.setToolTipText("Click to remove the selected income categories from the report");
 		panMid.add(btnIDeselect, GridC.getc(1,3).fillx().north().insets(0, 5, 5, 5));
 		spIncomeSelected = new JScrollPane(listIncomeSelect);
@@ -679,21 +634,11 @@ public class BudgetValuesWindow extends JFrame {
 		spExpenseMissing.setToolTipText("Shows the expense categories not included in the report");
 		panMid.add(spExpenseMissing, GridC.getc(0,6).rowspan(2).insets(0,10,0,0));
 		btnESelect = new JButton("Sel");
-		btnESelect.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				expenseSelect();
-			}
-		});
+		btnESelect.addActionListener(e -> expenseSelect());
 		btnESelect.setToolTipText("Click to add the selected expense categories to the report");
 		panMid.add(btnESelect, GridC.getc(1,6).fillx().south().insets(40, 5, 5, 5));
 		btnEDeselect = new JButton("Des");
-		btnEDeselect.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				expenseDeselect();
-			}
-		});
+		btnEDeselect.addActionListener(e -> expenseDeselect());
 		btnEDeselect.setToolTipText("Click to remove the selected expense categories from the report");
 		panMid.add(btnEDeselect, GridC.getc(1,7).fillx().north().insets(0, 5, 5, 5));
 		spExpenseSelected = new JScrollPane(listExpenseSelect);
@@ -719,13 +664,13 @@ public class BudgetValuesWindow extends JFrame {
 	 * Select a file
 	 */
 	private void chooseFile() {
-		objFileChooser
+		fileChooser
 				.setFileFilter(new FileNameExtensionFilter("bprp", "BPRP"));
-		objFileChooser.setCurrentDirectory(context.getCurrentAccountBook()
+		fileChooser.setCurrentDirectory(context.getCurrentAccountBook()
 				.getRootFolder());
-		int iReturn = objFileChooser.showDialog(this, "Select File");
+		int iReturn = fileChooser.showDialog(this, "Select File");
 		if (iReturn == JFileChooser.APPROVE_OPTION) {
-			fParameters = objFileChooser.getSelectedFile();
+			fParameters = fileChooser.getSelectedFile();
 			txtFileName.setText(fParameters.getName().substring(0,
 					fParameters.getName().lastIndexOf('.')));
 		}
@@ -754,14 +699,15 @@ public class BudgetValuesWindow extends JFrame {
 							+ icon);
 			if (in != null) {
 				ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
-				byte buf[] = new byte[256];
-				int n = 0;
+				byte[] buf = new byte[256];
+				int n;
 				while ((n = in.read(buf, 0, buf.length)) >= 0)
 					bout.write(buf, 0, n);
 				return Toolkit.getDefaultToolkit().createImage(
 						bout.toByteArray());
 			}
 		} catch (Throwable e) {
+			return null;
 		}
 		return null;
 	}
@@ -924,7 +870,7 @@ public class BudgetValuesWindow extends JFrame {
 			int iResult = JOptionPane.showConfirmDialog(null, panInput,
 					"Save Parameters", JOptionPane.OK_CANCEL_OPTION);
 			if (iResult == JOptionPane.OK_OPTION) {
-				if (txtType.getText().equals("")) {
+				if (txtType.getText().isEmpty()) {
 					JOptionPane.showMessageDialog(null,
 							"File Name can not be blank");
 					continue;

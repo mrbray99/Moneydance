@@ -3,7 +3,7 @@ package com.moneydance.modules.features.mrbutil;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class MRBDebug {
+public class 	MRBDebug {
 	private int iLevel = 0;
 	public  static final int  OFF = 0;
 	public  static final int INFO = 1;

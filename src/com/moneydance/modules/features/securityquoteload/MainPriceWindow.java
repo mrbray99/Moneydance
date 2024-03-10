@@ -483,7 +483,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		helpBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String url = "https://bitbucket.org/mikerb/moneydance-2019/wiki/New%20Quote%20Loader";
+				String url = "http://github.com/mrbray99/moneydanceproduction/wiki/New-Quote-Loader";
 				mdGUI.showInternetURL(url);
 			}
 		});

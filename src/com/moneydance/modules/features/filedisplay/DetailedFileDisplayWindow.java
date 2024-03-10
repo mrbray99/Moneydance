@@ -44,24 +44,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import com.infinitekind.moneydance.model.AbstractTxn;
-import com.infinitekind.moneydance.model.Account;
-import com.infinitekind.moneydance.model.AccountBook;
-import com.infinitekind.moneydance.model.AddressBook;
-import com.infinitekind.moneydance.model.AddressBookEntry;
-import com.infinitekind.moneydance.model.Budget;
-import com.infinitekind.moneydance.model.BudgetItem;
-import com.infinitekind.moneydance.model.BudgetList;
-import com.infinitekind.moneydance.model.CurrencySnapshot;
-import com.infinitekind.moneydance.model.CurrencyTable;
-import com.infinitekind.moneydance.model.CurrencyType;
-import com.infinitekind.moneydance.model.ParentTxn;
-import com.infinitekind.moneydance.model.Reminder;
-import com.infinitekind.moneydance.model.ReminderSet;
-import com.infinitekind.moneydance.model.ReportSpec;
-import com.infinitekind.moneydance.model.ReportSpecManager;
-import com.infinitekind.moneydance.model.TransactionSet;
-import com.infinitekind.moneydance.model.TxnSet;
+import com.infinitekind.moneydance.model.*;
 import com.infinitekind.tiksync.SyncRecord;
 import com.infinitekind.util.DateUtil;
 import com.moneydance.awt.GridC;
@@ -307,9 +290,9 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer)tree.getCellRenderer();
-		renderer.setOpenIcon(new ImageIcon(Main.openIcon));
-		renderer.setClosedIcon(new ImageIcon(Main.closeIcon));
-		renderer.setLeafIcon(new ImageIcon(Main.leafIcon));
+		if (Main.openIcon !=null)renderer.setOpenIcon(new ImageIcon(Main.openIcon));
+		if (Main.closeIcon !=null)renderer.setClosedIcon(new ImageIcon(Main.closeIcon));
+		if (Main.leafIcon !=null)renderer.setLeafIcon(new ImageIcon(Main.leafIcon));
 		// Listen for when the selection changes.
 		tree.addTreeSelectionListener(this);
 
@@ -1268,7 +1251,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 				detailmodel.addRow(veccheque);
 				Vector<String> vecstatus = new Vector<String>();
 				vecstatus.add("Tran: Status");
-				vecstatus.add(String.valueOf(vrtxn.getStatus()));
+				vecstatus.add(String.valueOf(vrtxn.getClearedStatus()));
 				detailmodel.addRow(vecstatus);
 				SyncRecord srTran = vrtxn.getTags();
 				if (srTran != null) {
@@ -1389,10 +1372,6 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		vbiacct.add("Date");
 		vbiacct.add(cdate.format(ctitem.getDateInt()));
 		detailmodel.addRow(vbiacct);
-		Vector<String> vbrramt = new Vector<String>();
-		vbrramt.add("Raw Rate");
-		vbrramt.add(String.valueOf(ctitem.getRawRate()));
-		detailmodel.addRow(vbrramt);
 		Vector<String> vbudhamt = new Vector<String>();
 		vbudhamt.add("User Daily High");
 		vbudhamt.add(String.valueOf(ctitem.getDailyHigh()));
@@ -1477,7 +1456,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 			else
 				vec.add("S");
 			vec.add(txn.getCheckNumber());
-			vec.add(String.valueOf(txn.getStatus()));
+			vec.add(String.valueOf(txn.getClearedStatus()));
 			tranmodel.addRow(vec);
 			for (int i = 0; i<txn.getOtherTxnCount();i++){
 				AbstractTxn txn2 = txn.getOtherTxn(i);
@@ -1500,7 +1479,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 				else
 					vec.add("S");
 				vec.add(txn2.getCheckNumber());
-				vec.add(String.valueOf(txn2.getStatus()));
+				vec.add(String.valueOf(txn2.getClearedStatus()));
 				tranmodel.addRow(vec);
 			}			
 		}
@@ -1542,7 +1521,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 				else
 					vec.add("S");
 				vec.add(txn.getCheckNumber());
-				vec.add(String.valueOf(txn.getStatus()));
+				vec.add(String.valueOf(txn.getClearedStatus()));
 				tranmodel.addRow(vec);
 			}
 		}
@@ -1595,7 +1574,6 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		modTran.addRow(vecoid);
 		Vector<String> vecacct = new Vector<String>();
 		vecacct.add("Account");
-
 		if (txn.getAccount() == null) {
 			vecacct.add("None");
 			ctype = ctgbp;
@@ -1634,7 +1612,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		modTran.addRow(veccheque);
 		Vector<String> vecstatus = new Vector<String>();
 		vecstatus.add("Status");
-		vecstatus.add(String.valueOf(txn.getStatus()));
+		vecstatus.add(String.valueOf(txn.getClearedStatus()));
 		modTran.addRow(vecstatus);
 		Vector<String> vecotc = new Vector<String>();
 		vecotc.add("Num other trans");

@@ -35,6 +35,7 @@ import java.util.jar.JarFile;
 import com.infinitekind.moneydance.model.AbstractTxn;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.MRBDirectoryUtils;
+import com.moneydance.util.Platform;
 
 import javafx.util.StringConverter;
 
@@ -289,5 +290,7 @@ public abstract class Utilities {
 	        return text;
 		}   
 	}
-
-}
+    public static String getPlatform(){
+       return Platform.architecture().toString();
+    }
+ }

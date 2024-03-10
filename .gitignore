@@ -4,3 +4,6 @@ src/user.properties
 dist
 lib/moneydance-2019full.jar
 lib/mrbutil.jar
+src/priv_key
+src/pub_key
+src/sign_pw.txt

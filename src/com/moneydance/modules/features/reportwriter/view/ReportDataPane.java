@@ -33,13 +33,10 @@ import javafx.stage.Stage;
 public class ReportDataPane extends ScreenDataPane {
 	private Parameters params;
 	private TextField name;
-	private ComboBox<String> templates;
-	private Label templateLbl;
 	private ComboBox<String> selections;
 	private ComboBox<String> dataParms;
 	private ComboBox<String> csvDelimiter;
 	private Label delimiterLbl;
- 	private RadioButton jasperReport;
 	private RadioButton createDatabase;
 	private RadioButton createSpreadsheet;
 	private RadioButton createCsvFile;
@@ -50,7 +47,6 @@ public class ReportDataPane extends ScreenDataPane {
 	private TextField fileName;
 	private ToggleGroup group;
 	private HBox csvBox;
-	private List<TemplateRow> listTemplates;
 	private List<SelectionRow> listSelections;
 	private List<DataRow> listDataParms;
 	private ObservableList<String> listTempNames;
@@ -121,7 +117,6 @@ public class ReportDataPane extends ScreenDataPane {
 			}
 		});
 		resize();
-		listTemplates = params.getTemplateList();
 		listSelections = params.getSelectionList();
 		listDataParms = params.getDataList();
 		Label reportLbl = new Label("Name");
@@ -138,29 +133,14 @@ public class ReportDataPane extends ScreenDataPane {
 		csvDelimiter.setItems(FXCollections.observableArrayList(Constants.DELIMITERS));
 		csvDelimiter.getSelectionModel().selectedItemProperty().addListener((ov,oldv,newv)->{if(newv!=oldv)dirty=true;});
 		Label addBOMLbl = new Label("Target Excel");
-		Label templatesLbl = new Label("Report Template");
 		addBOM = new CheckBox();
 		addBOM.selectedProperty().addListener((ov,oldv,newv)->{if(newv!=oldv)dirty=true;});
 		csvBox = new HBox(delimiterLbl, csvDelimiter, addBOMLbl, addBOM);
 		csvBox.setSpacing(10.0);
 		GridPane.setMargin(csvBox,new Insets(10,10,10,10));
-		templates = new ComboBox<>();
-		templateLbl = new Label();
-		templates.getSelectionModel().selectedItemProperty().addListener((ov,oldv,newv)->{if(newv!=oldv)dirty=true;});
-		GridPane.setMargin(templatesLbl,new Insets(10,10,10,10));
-		listTempNames = FXCollections.observableArrayList();
-		for (TemplateRow rowT : listTemplates) {
-			listTempNames.add(rowT.getName());
-		}
-		templates.setItems(listTempNames);
-		if (!newRow)
-			templates.getSelectionModel().select(row.getTemplate());
-		GridPane.setMargin(templates,new Insets(10,10,10,10));
-		jasperReport = new RadioButton ("View Jasper Report");
 		createDatabase = new RadioButton ("Create Database");
 		createSpreadsheet = new RadioButton ("Create Spreadsheet");
 		createCsvFile = new RadioButton ("Create .CSV file");
-		GridPane.setMargin(jasperReport,new Insets(10,10,10,10));
 		GridPane.setMargin(createDatabase,new Insets(10,10,10,10));
 		GridPane.setMargin(createSpreadsheet,new Insets(10,10,10,10));
 		GridPane.setMargin(createCsvFile,new Insets(10,10,10,10));
@@ -170,61 +150,30 @@ public class ReportDataPane extends ScreenDataPane {
 				RadioButton rb = (RadioButton) group.getSelectedToggle();
 				dirty = true;
 				csvBox.setVisible(false);
-				if (rb == jasperReport) { 
-					templates.setDisable(false);
-					templates.setVisible(true);
-					templateLbl.setVisible(false);
-				}
-				else {
-					templates.setDisable(true);
-					templates.setVisible(false);
-					templateLbl.setVisible(true);
-					if (rb == createDatabase)
-						templateLbl.setText("Create Database");
-					else if (rb==createSpreadsheet)
-						templateLbl.setText("Create Spreadsheet");
-					else if (rb==createCsvFile) {
-						templateLbl.setText("Create CSV File");
+				 if (rb==createCsvFile)
 						csvBox.setVisible(true);
 
-					}
-				}
 			}
 		});
-		jasperReport.setToggleGroup(group);
 		createDatabase.setToggleGroup(group);
 		createSpreadsheet.setToggleGroup(group);
 		createCsvFile.setToggleGroup(group);
 		csvBox.setVisible(false);
 		if (newRow)
-			jasperReport.setSelected(true);
+			createCsvFile.setSelected(true);
 		else {
 			switch (row.getType()) {
-			case JASPER:
-				jasperReport.setSelected(true);
-				templates.setVisible(true);
-				break;
 			case DATABASE:
 				createDatabase.setSelected(true);;
-				templates.setVisible(false);
-				templateLbl.setVisible(true);
-				templateLbl.setText("Create Database");
 				break;
 			case SPREADSHEET:
 				createSpreadsheet.setSelected(true);;
-				templates.setVisible(false);
-				templateLbl.setVisible(true);
-				templateLbl.setText("Create Spreadsheet");
 				break;
 			case CSV:
 				createCsvFile.setSelected(true);;
-				templates.setVisible(false);
-				templateLbl.setVisible(true);
-				templateLbl.setText("Create CSV File");
 				csvBox.setVisible(true);
 				csvDelimiter.setValue(row.getDelimiter());
 				addBOM.setSelected(row.getTargetExcel());
-
 				break;
 			}
 		}
@@ -320,22 +269,17 @@ public class ReportDataPane extends ScreenDataPane {
 		pane.add(reportLbl, ix++, iy);
 		pane.add(name, ix, iy++);
 		ix=1;
-		pane.add(jasperReport, ix++, iy);
-		pane.add(createDatabase, ix++, iy);
-		pane.add(createSpreadsheet, ix++, iy);
-		pane.add(createCsvFile, ix, iy++);
+		pane.add(createDatabase, ix, iy++);
+		pane.add(createSpreadsheet, ix, iy++);
+		pane.add(createCsvFile, ix++, iy);
+		pane.add(csvBox, ix, iy++);
+		GridPane.setColumnSpan(csvBox, 3);
 		ix=0;
 		pane.add(fileNameLbl, ix++, iy);
 		pane.add(fileName, ix++, iy);
 		pane.add(generateName, ix++, iy);
 		pane.add(overWriteFile, ix++, iy);
 		pane.add(addDateStamp, ix, iy++);
-		ix=0;
-		pane.add(templatesLbl, ix++, iy);
-		pane.add(templateLbl, ix, iy);
-		pane.add(templates, ix++, iy);
-		pane.add(csvBox, ix, iy++);
-		GridPane.setColumnSpan(csvBox, 3);
 		ix=0;
 		pane.add(selectionLbl, ix++, iy);
 		pane.add(selections, ix, iy++);
@@ -355,11 +299,7 @@ public class ReportDataPane extends ScreenDataPane {
 			OptionMessage.displayMessage("Name must be entered");
 			return false;
 		}
-		if (jasperReport.isSelected() && templates.getSelectionModel().isEmpty()) { 
-			OptionMessage.displayMessage("A Report Template must be selected");
-			return false;
-		}
-		if (selections.getSelectionModel().isEmpty()) { 
+		if (selections.getSelectionModel().isEmpty()) {
 			OptionMessage.displayMessage("A Selection Group must be selected");
 			return false;
 		}
@@ -401,21 +341,14 @@ public class ReportDataPane extends ScreenDataPane {
 		RadioButton selectedType = (RadioButton) group.getSelectedToggle();
 		if (selectedType == createCsvFile) {
 			row.setType(Constants.ReportType.CSV);
-			row.setTemplate(templateLbl.getText());
 		}
 		else {
 			if (selectedType == createDatabase) {
 				row.setType(Constants.ReportType.DATABASE);
-				row.setTemplate(templateLbl.getText());
 			}
 			else 
 				if (selectedType == createSpreadsheet) {
 					row.setType(Constants.ReportType.SPREADSHEET);
-					row.setTemplate(templateLbl.getText());
-				}
-				else {
-					row.setType(Constants.ReportType.JASPER);
-					row.setTemplate(templates.getSelectionModel().getSelectedItem());
 				}
 		}
 		row.setOutputFileName(fileName.getText());

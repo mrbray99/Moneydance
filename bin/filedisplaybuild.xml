@@ -9,26 +9,23 @@
              com/moneydance/modules/features/filedisplay/meta_info.dict
              com/moneydance/modules/features/filedisplay/*.gif
               com/moneydance/modules/features/filedisplay/*.jpg
-        com/moneydance/modules/features/filedisplay/*.png
-            com/moneydance/modules/features/filedisplay/*.jpeg"/>
+             com/moneydance/modules/features/filedisplay/*.jpeg
+     	   com/moneydance/modules/features/filedisplay/*.png"/>
       <fileset dir="${build}" includes="com/moneydance/modules/features/filedisplay/**"/>
     </jar>
 
     <java newenvironment="true" 
-      classpathref="classpath"
-      classname="com.moneydance.admin.KeyAdmin">
+      classpathref="signmxtpath"
+      classname="SignMxt" fork="yes">
       <arg value="signextjar"/>
       <arg value="${privkeyfile}"/>
       <arg value="${privkeyid}"/>
       <arg value="filedisplay"/>
       <arg line="${dist}/filedisplay.mxt"/>
     </java>
-    <delete file="${dist}/filedisplay.mxt" verbose="true"
-failonerror="false" />
-    <move file="./s-filedisplay.mxt" tofile="${dist}/filedisplay.mxt"
-verbose="true" failonerror="false" />
-    <copy file="${dist}/filedisplay.mxt" tofile="${install}/filedisplay.mxt"
-verbose="true" failonerror="false" /> 
+		<copy file="./s-filedisplay.mxt" tofile="${install}/filedisplay.mxt" verbose="true" failonerror="false" />
+		<copy file="${install}/filedisplay.mxt" tofile="${dist}/filedisplay.mxt" verbose="true" failonerror="false" />
+        <delete file="./s-filedisplay.mxt" />
 	<echo>the current time is ${TODAY_UK}</echo>
  </target>
 	<target name="cleanfiledisplay">

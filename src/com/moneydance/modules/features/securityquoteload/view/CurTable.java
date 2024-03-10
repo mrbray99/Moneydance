@@ -62,7 +62,7 @@ import javax.swing.table.TableRowSorter;
 
 import com.moneydance.apps.md.view.gui.MDColors;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
-import com.moneydance.modules.features.mrbutil.Platform;
+import com.moneydance.modules.features.mrbutil.MRBPlatform;
 import com.moneydance.modules.features.securityquoteload.Constants;
 import com.moneydance.modules.features.securityquoteload.Main;
 import com.moneydance.modules.features.securityquoteload.Parameters;
@@ -348,7 +348,7 @@ public class CurTable extends JTable {
 		 */
 		TableColumn colSelect = this.getColumnModel().getColumn(selectCol);
 		colSelect.setCellEditor(new DefaultCellEditor(boxSelect));
-		if (Platform.isFreeBSD() || Platform.isUnix())
+		if (MRBPlatform.isFreeBSD() || MRBPlatform.isUnix())
 			colSelect.setCellRenderer(new CheckBoxRenderer());
 		colSelect.setPreferredWidth(columnWidths[selectCol]);
 		colSelect.setCellRenderer(selectRenderer);

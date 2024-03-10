@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 public class Images {
 	public Image editImg=null;
 	public Image deleteImg = null;
-	public Image viewImg = null;
+//	public Image viewImg = null;
 	public Image okImg = null;
 	public Image cancelImg = null;
 	public Image closeImg = null;
@@ -39,14 +39,14 @@ public class Images {
 			}
 			catch (IOException e) {}
 		}
-		InputStream streamView = getClass().getResourceAsStream(Constants.RESOURCES+"print_32px.png");
+	/*	InputStream streamView = getClass().getResourceAsStream(Constants.RESOURCES+"print_32px.png");
 		if (streamView != null) {
 			viewImg = new Image(streamView);
 			try {
 				streamView.close();
 			}
 			catch (IOException e) {}
-		}
+		} */
 		InputStream streamOk = getClass().getResourceAsStream(Constants.RESOURCES+"ok_32px.png");
 		if (streamOk != null) {
 				okImg = new Image(streamOk);

@@ -302,8 +302,8 @@ public class MRBReportViewer extends JPanel implements PreferencesListener {
 	 * Prints the current report using the MRBReportPrinter
 	 */
 	public void print() {
-		MRBPrinter objPrinter = new MRBPrinter();
-		objPrinter.print(new MRBReportPrinter(this, getColumnWidths()));
+		MRBPrinter printer = new MRBPrinter();
+		printer.print(new MRBReportPrinter(this, getColumnWidths()));
 
 	}
 	/**

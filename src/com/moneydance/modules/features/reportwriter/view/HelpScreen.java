@@ -133,7 +133,7 @@ public class HelpScreen {
 		pane.add(debugInfo, 0, 3);
 		pane.add(debugSummary, 0, 4);
 		pane.add(debugDetailed, 0, 5);
-		String about = Constants.ABOUT1+Constants.ABOUT2+Constants.ABOUT3+Main.buildNo+"."+Main.minorBuildNo+"\n\n"+Constants.ABOUT4+Constants.ABOUT5;
+		String about = Constants.ABOUT1+Constants.ABOUT2+Constants.ABOUT3+Main.buildNo+"."+Main.minorBuildNo+"\n\n"+Constants.ABOUT4;
 		Label aboutLbl = new Label(about);
 		pane.add(aboutLbl,1,0);
 		GridPane.setRowSpan(aboutLbl, 5);

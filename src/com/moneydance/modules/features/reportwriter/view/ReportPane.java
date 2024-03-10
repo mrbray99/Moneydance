@@ -52,7 +52,7 @@ public class ReportPane extends ScreenPanel {
     private Tooltip editTip = new Tooltip();
     private Tooltip deleteTip = new Tooltip();
     private Tooltip addTip = new Tooltip();
-    private ImageView reportIcon=null;
+ //   private ImageView reportIcon=null;
     private ImageView csvIcon=null;
     private ImageView spreadIcon=null;
     private ImageView dbIcon=null;
@@ -65,7 +65,7 @@ public class ReportPane extends ScreenPanel {
 	public ReportPane(Parameters paramsp) {
 		params = paramsp;
 		thisObj = this;
-		reportIcon = new ImageView(Main.loadedIcons.viewImg);
+//		reportIcon = new ImageView(Main.loadedIcons.viewImg);
 		csvIcon = new ImageView(Main.loadedIcons.csvImg);
 		spreadIcon = new ImageView(Main.loadedIcons.spreadImg);
 		dbIcon = new ImageView(Main.loadedIcons.dbImg);
@@ -128,11 +128,11 @@ public class ReportPane extends ScreenPanel {
 		dbRunTip.setText("Create the selected Database");
 		viewBtn = new Button();
 		setMargin(viewBtn,new Insets(10,10,10,10));
-		if (reportIcon == null)
-			viewBtn.setText("View Report");
+		if (csvIcon == null)
+			viewBtn.setText("Create CSV file");
 		else
-			viewBtn.setGraphic(reportIcon);
-		viewBtn.setTooltip(reportRunTip);
+			viewBtn.setGraphic(csvIcon);
+		viewBtn.setTooltip(csvRunTip);
 		viewBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -379,15 +379,7 @@ public class ReportPane extends ScreenPanel {
             					viewBtn.setGraphic(dbIcon);
             				viewBtn.setTooltip(dbRunTip);
             				break;
-          			case JASPER :
-            				removeBtnImages();
-            				if (reportIcon == null)
-            					viewBtn.setText("View Report");
-            				else
-            					viewBtn.setGraphic(reportIcon);
-            				viewBtn.setTooltip(reportRunTip);
-            				break;
-            			case SPREADSHEET :
+             			case SPREADSHEET :
             				if (spreadIcon == null)
             					viewBtn.setText("Output Spreadsheet");
             				else
@@ -413,8 +405,6 @@ public class ReportPane extends ScreenPanel {
 	private void removeBtnImages() {
 		if (dbIcon != null)
 			thisObj.getChildren().remove(dbIcon);		
-		if (reportIcon != null)
-			thisObj.getChildren().remove(reportIcon);		
 		if (csvIcon != null)
 			thisObj.getChildren().remove(csvIcon);		
 		if (spreadIcon != null)

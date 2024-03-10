@@ -38,10 +38,14 @@ public abstract class Constants {
 	public static final String SECURITY_INCOME = "Security Income";  
 	public static final String SECURITY_COST = "Security Cost";  
 	public static final String INVESTMENT_INCOME = "Investment Income";  
-	public static final String INVESTMENT_COST = "Investment Cost";  
-	public static final String SECURITY_DIVIDEND = "Security Dividend";  
+	public static final String INVESTMENT_COST = "Investment Cost";
+	public static final String INVESTMENT_BUY = "Investment Buy";
+	public static final String INVESTMENT_SELL = "Investment Sell";
+	public static final String SECURITY_DIVIDEND = "Security Dividend";
 	public static final String [] TRANSTYPES = {SECURITY_INCOME,SECURITY_DIVIDEND, SECURITY_COST,
-		INVESTMENT_INCOME, INVESTMENT_COST};
+		INVESTMENT_INCOME, INVESTMENT_COST,INVESTMENT_BUY,INVESTMENT_SELL};
+	public static final String [] TRANSTYPESNOUNITS = {SECURITY_INCOME,SECURITY_DIVIDEND, SECURITY_COST,
+			INVESTMENT_INCOME, INVESTMENT_COST};
 	public static final String NEWTRAN = "**new**";
 	public static final String NOTICKER = "main";
 	public static final String SELECTEDBLACKIMAGE = "selectedblack.png";

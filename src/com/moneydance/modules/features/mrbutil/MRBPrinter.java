@@ -22,8 +22,8 @@ import com.moneydance.apps.md.view.gui.MoneydanceGUI;
  public class MRBPrinter 
    implements Printable
  {
-   private PrinterJob objPrintJob = null;
-   private MRBPrintable objPrinter=null;
+   private PrinterJob printJob = null;
+   private MRBPrintable mrbPrintable =null;
    private int iLastPage = -1;
    private double dWidth;
    private double dHeight;
@@ -34,42 +34,42 @@ import com.moneydance.apps.md.view.gui.MoneydanceGUI;
     * @param objPrinterp The Report Printer object to be used
     * @return true if successful, false if not
     */
-   public boolean print(MRBPrintable objPrinterp)
+   public boolean print(MRBPrintable printable)
    {
-     objPrintJob = PrinterJob.getPrinterJob();
-     if (objPrintJob == null) {
+     printJob = PrinterJob.getPrinterJob();
+     if (printJob == null) {
        return false;
      }
  
-     PrintService ps = objPrintJob.getPrintService();
+     PrintService ps = printJob.getPrintService();
      if (ps == null) {
         return false;
      }
  
-     objPrinter = objPrinterp;
+     mrbPrintable = printable;
      try
      {
-       PageFormat objPageFormat = objPrintJob.defaultPage();
-       objPageFormat.setOrientation(PageFormat.LANDSCAPE);
-       objPageFormat = objPrintJob.validatePage(objPageFormat);
-       Paper objPaper = objPageFormat.getPaper();
-       dHeight = objPaper.getHeight();
-       dWidth = objPaper.getWidth();
-       objPaper.setImageableArea(0.0D, 0.0D, dWidth, dHeight);
-       objPageFormat.setPaper(objPaper);
+       PageFormat pageFormat = printJob.defaultPage();
+       pageFormat.setOrientation(PageFormat.LANDSCAPE);
+       pageFormat = printJob.validatePage(pageFormat);
+       Paper paper = pageFormat.getPaper();
+       dHeight = paper.getHeight();
+       dWidth = paper.getWidth();
+       paper.setImageableArea(0.0D, 0.0D, dWidth, dHeight);
+       pageFormat.setPaper(paper);
  
-       objPrintJob.setPrintable(this, objPageFormat);
+       printJob.setPrintable(this, pageFormat);
      } catch (Exception e) {
        e.printStackTrace(System.err);
        return false;
      }
  
-     if (!objPrintJob.printDialog()) {
+     if (!printJob.printDialog()) {
        return false;
      }
      try
      {
-       objPrintJob.print();
+       printJob.print();
      } catch (Exception e) {
        e.printStackTrace(System.err);
        return false;
@@ -86,7 +86,7 @@ import com.moneydance.apps.md.view.gui.MoneydanceGUI;
      if ((iLastPage >= 0) && (pageIndex > iLastPage)) return 1;
      double dHeight;
      double dWidth;
-     if (objPrinter.usesWholePage())
+     if (mrbPrintable.usesWholePage())
      {
        dWidth = pageFormat.getWidth();
        dHeight = pageFormat.getHeight();
@@ -96,13 +96,13 @@ import com.moneydance.apps.md.view.gui.MoneydanceGUI;
        int iImageableX = 36;
        int iImageableY = 36;
  
-       if (MoneydanceGUI.isMac);
+       if (MoneydanceGUI.isMac)
        		g = g.create(iImageableX, iImageableY, (int)dWidth, (int)dHeight);
      }
  
      g.setColor(Color.black);
  
-     if (!objPrinter.printPage(g, pageIndex, dWidth, dHeight, 72))
+     if (!mrbPrintable.printPage(g, pageIndex, dWidth, dHeight, 72))
      {
        iLastPage = pageIndex;
      }

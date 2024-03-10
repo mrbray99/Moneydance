@@ -47,4 +47,6 @@ public abstract class Constants {
 		INVESTMENT_INCOME, INVESTMENT_COST};
 	public static final String NEWTRAN = "**new**";
 	public static final String NOTICKER = "main";
+	public static final String PROGRAMNAME = "qifloader";
+	public static final String LASTDIR = "lastdir";
 }

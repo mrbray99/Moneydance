@@ -35,7 +35,7 @@ package com.moneydance.modules.features.securityquoteload.view;
 import javax.swing.JCheckBox;
 
 import com.moneydance.modules.features.mrbutil.MRBDebug;
-import com.moneydance.modules.features.mrbutil.Platform;
+import com.moneydance.modules.features.mrbutil.MRBPlatform;
 import com.moneydance.modules.features.securityquoteload.Main;
 
 
@@ -44,7 +44,7 @@ public class MyCheckBox extends JCheckBox{
 	public MyCheckBox() {
 		super();
 		this.setHorizontalAlignment(CENTER);
-		if (Platform.isFreeBSD() || Platform.isUnix()) {
+		if (MRBPlatform.isFreeBSD() || MRBPlatform.isUnix()) {
 			if (Main.extension.selectedIcon != null) {
 				Main.debugInst.debug("MyCheckBox", "construct no label", MRBDebug.DETAILED,"Using check box sel icons");
 				setSelectedIcon(Main.extension.selectedIcon);
@@ -62,7 +62,7 @@ public class MyCheckBox extends JCheckBox{
 	public MyCheckBox(String labelp) {
 		super (labelp);
 		this.setHorizontalAlignment(CENTER);
-		if (Platform.isFreeBSD() || Platform.isUnix()) {
+		if (MRBPlatform.isFreeBSD() || MRBPlatform.isUnix()) {
 			if (Main.extension.selectedIcon != null) {
 				Main.debugInst.debug("MyCheckBox", "construct label", MRBDebug.DETAILED,"Using check box sel icons");
 				setSelectedIcon(Main.extension.selectedIcon);

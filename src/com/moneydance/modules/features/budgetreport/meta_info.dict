@@ -1,8 +1,8 @@
 {
   "vendor" = "Mike Bray"
-  "module_build" = "3036"
+  "module_build" = "3206"
    "minbuild" = "1820"
-  "vendor.url" = "http://bitbucket.org/mikerb/moneydance-2015wiki/Home/"
+  "vendor.url" = ""http://github.com/mrbray99/moneydanceproduction/wiki""
   "module_name" = "Budget Report"
   "module_desc" = "<html><body><title>Budget Report</title>><p>Displays actuals verses budgets with the ability to roll up figures into parent categories
 </body></html>"

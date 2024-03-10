@@ -15,19 +15,17 @@
 	    </jar>
 
 	    <java newenvironment="true" 
-	      classpathref="classpath"
-	      classname="com.moneydance.admin.KeyAdmin">
+	      classpathref="signmxtpath"
+	      classname="SignMxt" fork="yes">
 	      <arg value="signextjar"/>
 	      <arg value="${privkeyfile}"/>
 	      <arg value="${privkeyid}"/>
 	      <arg value="securityhistoryload"/>
 	      <arg line="${dist}/securityhistoryload.mxt"/>
 	    </java>
-	    <delete file="${dist}/securityhistoryload.mxt" verbose="true" failonerror="false" />
-	    <move file="./s-securityhistoryload.mxt" tofile="${dist}/securityhistoryload.mxt"
-	verbose="true" failonerror="false" />
-	    <copy file="${dist}/securityhistoryload.mxt" tofile="${install}/securityhistoryload.mxt"
-	verbose="true" failonerror="false" /> 
+		<copy file="./s-securityhistoryload.mxt" tofile="${install}/securityhistoryload.mxt" verbose="true" failonerror="false" />
+		<copy file="${install}/securityhistoryload.mxt" tofile="${dist}/securityhistoryload.mxt" verbose="true" failonerror="false" />
+		<delete file="./s-securityhistoryload.mxt" />
 		<echo>the current time is ${TODAY_UK}</echo>
 	 	</target> 
 	<target name="cleansecurityhistoryload">

@@ -13,7 +13,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import com.moneydance.apps.md.controller.UserPreferences;
-import com.moneydance.util.StringUtils;
 /**
  * Prints a report.
  * <p>
@@ -52,13 +51,13 @@ public class MRBReportPrinter implements MRBPrintable {
 	/**
 	 * Creates a report printer
 	 * 
-	 * @param objViewerp - the MRBReportViewer that is displaying the report to be printed
+	 * @param viewer - the MRBReportViewer that is displaying the report to be printed
 	 * @param arrdColWidths - the column widths
 	 */
-	public MRBReportPrinter(MRBReportViewer objViewerp, double[] arrdColWidths) {
+	public MRBReportPrinter(MRBReportViewer viewer, double[] arrdColWidths) {
 		prefs = UserPreferences.getInstance();
-		viewer = objViewerp;
-		report = viewer.getReport();
+		this.viewer = viewer;
+		report = this.viewer.getReport();
 		columnRelativeWidths = arrdColWidths;
 		fonts = MRBReportFonts.getPrintingFonts(prefs);
 	}
@@ -230,7 +229,7 @@ public class MRBReportPrinter implements MRBPrintable {
 					}
 
 					if (row < lines.length) {
-						if (!StringUtils.isBlank(lines[row])) {
+						if (!lines[row].isBlank()) {
 							g.setColor(Color.black);
 							g.drawString(
 									lines[row],
@@ -258,7 +257,7 @@ public class MRBReportPrinter implements MRBPrintable {
 				}
 
 				if (row < lines.length) {
-					if (!StringUtils.isBlank(lines[row])) {
+					if (!lines[row].isBlank()) {
 						g.setColor(Color.black);
 						g.drawString(
 								lines[row],
@@ -442,14 +441,10 @@ public class MRBReportPrinter implements MRBPrintable {
 	private void drawPageFooterText(Graphics2D g, int leftX, double width,
 			double height, int pageIndex, int iHorPage) {
 		String pageStr = report.getFooter();
-		pageStr = StringUtils.replaceAll(
-				pageStr,
-				"{pagenum}",
+		pageStr = pageStr.replaceAll("\\{pagenum\\}",
 				String.valueOf(pageIndex + 1) + " - "
 						+ String.valueOf(iHorPage + 1));
-		pageStr = StringUtils.replaceAll(
-				pageStr,
-				"{numpages}",
+		pageStr = pageStr.replaceAll("\\{numpages\\}",
 				String.valueOf(numPages) + " - "
 						+ String.valueOf(numPagesWide));
 		g.setFont(fonts.getNormalFont());
@@ -592,7 +587,7 @@ public class MRBReportPrinter implements MRBPrintable {
 		 */
 		String subtitle = report.getSubTitle();
 		lm = fonts.getSubtitleFont().getLineMetrics(defaultString, frc);
-		if (!StringUtils.isBlank(subtitle)) {
+		if (!subtitle.isBlank()) {
 			titleHeaderHeight += lm.getHeight();
 		}
 		/*
@@ -648,11 +643,11 @@ public class MRBReportPrinter implements MRBPrintable {
 		FontMetrics fm = obj2DGraphics.getFontMetrics(fntHeader);
 		for (int ii = 0; ii < columnWidths.length; ii++) {
 			String strColumnName = report.getColumnNameNoHTML(ii);
-			if (!StringUtils.isBlank(strColumnName)) {
+			if (!strColumnName.isBlank()) {
 				String[] arrstrLines = strColumnName.split("\n");
 				numHeaderRows = Math.max(numHeaderRows, arrstrLines.length);
 				for (String strLine : arrstrLines)
-					if (!StringUtils.isBlank(strLine))
+					if (!strLine.isBlank())
 						while ((fm.stringWidth(strLine) > columnWidths[ii])
 								&& (fHeaderFontSize > 5.0F)) {
 							fHeaderFontSize -= 0.5F;

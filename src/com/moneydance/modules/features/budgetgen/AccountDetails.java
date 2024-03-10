@@ -32,23 +32,23 @@ package com.moneydance.modules.features.budgetgen;
 import com.infinitekind.moneydance.model.Account;
 public class AccountDetails {
 	private Account acct;
-	private String strParent;
-	private BudgetLine objLine;
-	public AccountDetails(Account acctp, String strParentp) {
-		acct = acctp;
-		strParent = strParentp;
+	private String parent;
+	private BudgetLine line;
+	public AccountDetails(Account acct, String parent) {
+		this.acct = acct;
+		this.parent = parent;
 	}
 	public Account getAccount() {
 		return acct;
 	}
 	public String getParent () {
-		return strParent;
+		return parent;
 	}
 	public BudgetLine getLine () {
-		return objLine;
+		return line;
 	}
-	public void setLine (BudgetLine objLinep) {
-		objLine = objLinep;
+	public void setLine (BudgetLine line) {
+		this.line = line;
 	}
 
 }

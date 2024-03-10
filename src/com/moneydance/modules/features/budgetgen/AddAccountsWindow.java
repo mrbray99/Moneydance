@@ -32,8 +32,6 @@ package com.moneydance.modules.features.budgetgen;
  * Add Accounts Window - lists Expense Categories from 'missing' Map (see BudgetParameters) 
  */
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -50,49 +48,39 @@ import com.moneydance.modules.features.mrbutil.MRBDebug;
 public class AddAccountsWindow extends JPanel {
 	public static int SCREENWIDTH = Constants.ADDSCREENWIDTH-30;
 	public static int SCREENHEIGHT = Constants.ADDSCREENHEIGHT-100;
-	private AddAccountsModel modAccounts;
+	private AddAccountsModel accountsModel;
 	private Map<String,AccountDetails> mapAccounts;
-	private BudgetParameters objParams;
-	private AddAccountsTable tabAccounts;
- 	public AddAccountsWindow(BudgetParameters objParamsp ) {
-		objParams = objParamsp;
+	private BudgetParameters params;
+	private AddAccountsTable accountsTable;
+ 	public AddAccountsWindow(BudgetParameters params ) {
+		this.params = params;
 		/*
 		 * get list of categories in the file but not in the parameters
 		 */
-		mapAccounts =objParams.getMissing();
-		Set<String> setAccounts= mapAccounts.keySet();
-		String[]arrAccounts = setAccounts.toArray(new String[0]);
+		mapAccounts = this.params.getMissing();
+		Set<String> accountsKeySet= mapAccounts.keySet();
+		String[]accountsArray = accountsKeySet.toArray(new String[0]);
 		/*
 		 * set up table
 		 */
-		tabAccounts = new AddAccountsTable(new AddAccountsModel());
-		modAccounts = (AddAccountsModel) tabAccounts.getModel();
-		modAccounts.setRows(arrAccounts);
-		tabAccounts.setPreferredScrollableViewportSize(new Dimension(SCREENWIDTH-20,SCREENHEIGHT-20));
-		JScrollPane scrAccounts = new JScrollPane(tabAccounts);
+		accountsTable = new AddAccountsTable(new AddAccountsModel());
+		accountsModel = (AddAccountsModel) accountsTable.getModel();
+		accountsModel.setRows(accountsArray);
+		accountsTable.setPreferredScrollableViewportSize(new Dimension(SCREENWIDTH-20,SCREENHEIGHT-20));
+		JScrollPane scrAccounts = new JScrollPane(accountsTable);
 		scrAccounts.setPreferredSize(new Dimension(SCREENWIDTH, SCREENHEIGHT));
 		add(scrAccounts);
 		/*
 		 * add "Add" button 
 		 */
 		JButton butAdd = new JButton("Add Selected");
-		butAdd.addActionListener(new ActionListener () {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				addSelected();
-			}
-	    });
+		butAdd.addActionListener(e -> addSelected());
 		add(butAdd);
 		/*
 		 * add "Close" button
 		 */
 		JButton butClose = new JButton("Close");
-		butClose.addActionListener(new ActionListener () {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				close();
-			}
-	    });
+		butClose.addActionListener(e -> close());
 		add(butClose);
 		
 	}
@@ -105,25 +93,25 @@ public class AddAccountsWindow extends JPanel {
 	 * Remove from list of missing accounts
 	 */
 	public void addSelected(){
-		for (int i=0;i<modAccounts.getRowCount();i++) {
-			if ((Boolean) modAccounts.getValueAt(i,0)) {
-				Main.debugInst.debug("AddAccountsWindow","addSelected",MRBDebug.DETAILED, "Account added ="+(String)modAccounts.getValueAt(i,1));					
-				objParams.addCategory((String)modAccounts.getValueAt(i,1));
+		for (int i = 0; i< accountsModel.getRowCount(); i++) {
+			if ((Boolean) accountsModel.getValueAt(i,0)) {
+				Main.debugInst.debug("AddAccountsWindow","addSelected",MRBDebug.DETAILED, "Account added ="+accountsModel.getValueAt(i,1));
+				params.addCategory((String) accountsModel.getValueAt(i,1));
 			}
 		}
-		Collections.sort( objParams.getLines());
-		objParams.setParents();
+		Collections.sort( params.getLines());
+		params.setParents();
 		/*
 		 * mapAccounts has changed inside objParams
 		 * Reload table
 		 */
 		Set<String> setAccounts= mapAccounts.keySet();
 		String[]arrAccounts = setAccounts.toArray(new String[0]);
-		modAccounts.setRows(arrAccounts);
+		accountsModel.setRows(arrAccounts);
 		/*
 		 * reload the screen
 		 */
-		modAccounts.fireTableDataChanged();
+		accountsModel.fireTableDataChanged();
 	}
 	/*
 	 * Close window

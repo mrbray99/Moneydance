@@ -49,13 +49,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import com.infinitekind.moneydance.model.AbstractTxn;
-import com.infinitekind.moneydance.model.Account;
-import com.infinitekind.moneydance.model.InvestFields;
-import com.infinitekind.moneydance.model.InvestTxnType;
-import com.infinitekind.moneydance.model.OnlineTxn;
-import com.infinitekind.moneydance.model.ParentTxn;
-import com.infinitekind.moneydance.model.SplitTxn;
+import com.infinitekind.moneydance.model.*;
+import com.moneydance.apps.md.view.MoneydanceUI;
+import com.moneydance.awt.GridC;
 
 public class GenerateWindow extends JPanel {
 	private SortedSet<SecLine> setLine;
@@ -67,16 +63,21 @@ public class GenerateWindow extends JPanel {
 	private JPanel panMid;
 	private JPanel panBot;
 	private JTextField txtAccount;
-	private MyCheckBox jcSelect;
+	private MyCheckBox select;
 	private JButton btnClose;
 	private JButton btnSave;
+	private MoneydanceUI mdGUI;
+	private com.moneydance.apps.md.controller.Main mdMain;
+	private JButton helpBtn;
 
-	private JScrollPane spTrans;
-	private Parameters objParms;
-	public GenerateWindow(SortedSet<SecLine> setLinep, Account acctp, Parameters objParmsp) {
-		setLine = setLinep;
-		acct = acctp;
-		objParms = objParmsp;
+	private JScrollPane transScrollPane;
+	private Parameters2 params;
+	public GenerateWindow(SortedSet<SecLine> setLine, Account acct, Parameters2 params) {
+		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
+		mdGUI = mdMain.getUI();
+		this.setLine = setLine;
+		this.acct = acct;
+		this.params = params;
 		transModel = new GenerateTableModel();
 		transTab = new GenerateTable(transModel);
 		generateTrans();
@@ -95,7 +96,7 @@ public class GenerateWindow extends JPanel {
 		GridBagConstraints gbc_account = new GridBagConstraints();
 		gbc_account.gridx = 1;
 		gbc_account.gridy = 0;
-		txtAccount = new JTextField(acct.getAccountName());
+		txtAccount = new JTextField(this.acct.getAccountName());
 		panTop.add(txtAccount,gbc_account);
 		this.add(panTop,BorderLayout.PAGE_START);
 		/*
@@ -103,13 +104,13 @@ public class GenerateWindow extends JPanel {
 		 */
 		panMid = new JPanel ();
 		panMid.setLayout(new BoxLayout(panMid,BoxLayout.Y_AXIS));
-		spTrans = new JScrollPane (transTab);
-		spTrans.setAlignmentX(LEFT_ALIGNMENT);
-		panMid.add(spTrans,BorderLayout.LINE_START);
-		spTrans.setPreferredSize(new Dimension(Constants.LOADSCREENWIDTH,Constants.LOADSCREENHEIGHT));
-		jcSelect = new MyCheckBox();
-		jcSelect.setAlignmentX(LEFT_ALIGNMENT);
-		jcSelect.addItemListener(new ItemListener() {
+		transScrollPane = new JScrollPane (transTab);
+		transScrollPane.setAlignmentX(LEFT_ALIGNMENT);
+		panMid.add(transScrollPane,BorderLayout.LINE_START);
+		transScrollPane.setPreferredSize(new Dimension(Constants.LOADSCREENWIDTH,Constants.LOADSCREENHEIGHT));
+		select = new MyCheckBox();
+		select.setAlignmentX(LEFT_ALIGNMENT);
+		select.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				boolean bNewValue;
@@ -122,7 +123,7 @@ public class GenerateWindow extends JPanel {
 				transModel.fireTableDataChanged();
 			}
 		});
-		panMid.add(jcSelect);
+		panMid.add(select);
 		this.add(panMid,BorderLayout.CENTER);
 		
 		
@@ -133,11 +134,11 @@ public class GenerateWindow extends JPanel {
 		/*
 		 * Button 1
 		 */
-		GridBagConstraints gbcbt1 = new GridBagConstraints();
-		gbcbt1.gridx = 0;
-		gbcbt1.gridy = 0;
-		gbcbt1.anchor = GridBagConstraints.LINE_START;
-		gbcbt1.insets = new Insets(15,15,15,15);
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.anchor = GridBagConstraints.LINE_START;
+		constraints.insets = new Insets(15,15,15,15);
 		btnClose = new JButton("Close");
 		btnClose.addActionListener(new ActionListener() {
 			@Override
@@ -145,15 +146,15 @@ public class GenerateWindow extends JPanel {
 				close();
 			}
 		});
-		panBot.add(btnClose,gbcbt1);
+		panBot.add(btnClose,constraints);
 
 		/*
 		 * Button 2
 		 */
-		GridBagConstraints gbcbt2 = new GridBagConstraints();
-		gbcbt2.gridx = gbcbt1.gridx+1;
-		gbcbt2.gridy = gbcbt1.gridy;
-		gbcbt2.insets = new Insets(15,15,15,15);
+		GridBagConstraints constraints2 = new GridBagConstraints();
+		constraints2.gridx = constraints.gridx+1;
+		constraints2.gridy = constraints.gridy;
+		constraints2.insets = new Insets(15,15,15,15);
 		btnSave = new JButton("SaveTransactions");
 		btnSave.addActionListener(new ActionListener() {
 			@Override
@@ -163,16 +164,23 @@ public class GenerateWindow extends JPanel {
 				panMid.validate();
 			}
 		});
-		panBot.add(btnSave,gbcbt2);
+		panBot.add(btnSave,constraints2);
+		helpBtn = new JButton("Help");
+		helpBtn.setToolTipText("Display help information");
+		helpBtn.addActionListener(e -> {
+			String url = "https://github.com/mrbray99/moneydanceproduction/wiki/Security-Transaction-Load";
+			mdGUI.showInternetURL(url);
+		});
+		panBot.add(helpBtn, GridC.getc(constraints2.gridx+1,constraints2.gridy).west().insets(10, 10, 10, 10));
 		
 		this.add(panBot,BorderLayout.PAGE_END);
 			
 	}
 	private void generateTrans() {
-		for (SecLine objLine :setLine) {
-			if (!objLine.getSelect())
+		for (SecLine secLine :setLine) {
+			if (!secLine.getSelect())
 				continue;
-			FieldLine objMatch = objParms.matchType(objLine.getReference());
+			FieldLine objMatch = params.matchType(secLine.getTranType());
 			if (objMatch != null) {
 				investFields = new InvestFields();
 				investFields.hasFee = false;
@@ -180,110 +188,150 @@ public class GenerateWindow extends JPanel {
 				ptTran.setAccount(acct);
 				switch (Constants.TRANSTYPES[objMatch.getTranType()]) {
 				case Constants.SECURITY_INCOME :
-					investFields.amount=objLine.getValue();
+					investFields.amount= secLine.getValue();
 					investFields.hasAmount = true;
 					investFields.category = objMatch.getAccount();
 					investFields.hasCategory=true;
-					investFields.date = objLine.getDate();
-					investFields.taxDate=objLine.getDate();
+					investFields.date = secLine.getDate();
+					investFields.taxDate= secLine.getDate();
 					investFields.txnType = InvestTxnType.MISCINC;
-					investFields.security = Main.mapAccounts.get(objLine.getTicker());
+					investFields.security = Main.mapAccounts.get(secLine.getTicker());
 					investFields.hasSecurity = true;
 					investFields.storeFields(ptTran);
-					transModel.addLine(new GenerateTransaction(Constants.PARENT,acct,objLine.getDate(),
-							objLine.getValue(),"","",
-							AbstractTxn.TRANSFER_TYPE_MISCINCEXP,objLine.getReference(),ptTran.getParentTxn()));
-					transModel.addLine(new GenerateTransaction(Constants.SPLIT,(Main.mapAccounts.get(objLine.getTicker())),
-							objLine.getDate(),0,Main.mapAccounts.get(objLine.getTicker()).getAccountName(),"",
-							AbstractTxn.TRANSFER_TYPE_MISCINCEXP,objLine.getReference(),ptTran.getSplit(0)));
-					transModel.addLine(new GenerateTransaction(Constants.SPLIT,objMatch.getAccount(),objLine.getDate(),
-							objLine.getValue()*-1,
-							OnlineTxn.INVEST_TXN_MISCINC+" "+Main.mapAccounts.get(objLine.getTicker()).getAccountName(),"",
-							AbstractTxn.TRANSFER_TYPE_MISCINCEXP, objLine.getReference(),ptTran.getSplit(1)));				
+					transModel.addLine(new GenerateTransaction(Constants.PARENT,acct, secLine.getDate(),
+							secLine.getValue(),"","",
+							AbstractTxn.TRANSFER_TYPE_MISCINCEXP, secLine.getTranType(),ptTran.getParentTxn()));
+					transModel.addLine(new GenerateTransaction(Constants.SPLIT,(Main.mapAccounts.get(secLine.getTicker())),
+							secLine.getDate(),0,Main.mapAccounts.get(secLine.getTicker()).getAccountName(),"",
+							AbstractTxn.TRANSFER_TYPE_MISCINCEXP, secLine.getTranType(),ptTran.getSplit(0)));
+					transModel.addLine(new GenerateTransaction(Constants.SPLIT,objMatch.getAccount(), secLine.getDate(),
+							secLine.getValue()*-1,
+							OnlineTxn.INVEST_TXN_MISCINC+" "+Main.mapAccounts.get(secLine.getTicker()).getAccountName(),"",
+							AbstractTxn.TRANSFER_TYPE_MISCINCEXP, secLine.getTranType(),ptTran.getSplit(1)));
 					break;
 				case Constants.SECURITY_DIVIDEND :
-					investFields.amount=objLine.getValue();
+					investFields.amount= secLine.getValue();
 					investFields.hasAmount = true;
 					investFields.category = objMatch.getAccount();
 					investFields.hasCategory=true;
-					investFields.date = objLine.getDate();
-					investFields.taxDate=objLine.getDate();
+					investFields.date = secLine.getDate();
+					investFields.taxDate= secLine.getDate();
 					investFields.txnType = InvestTxnType.DIVIDEND;
-					investFields.security = Main.mapAccounts.get(objLine.getTicker());
+					investFields.security = Main.mapAccounts.get(secLine.getTicker());
 					investFields.hasSecurity = true;
 					investFields.storeFields(ptTran);
 					transModel.addLine(new GenerateTransaction(Constants.PARENT,
 							acct, //account
-							objLine.getDate(), //date
-							objLine.getValue(), // value
+							secLine.getDate(), //date
+							secLine.getValue(), // value
 							"", // descr
 							"",  // cheque
 							AbstractTxn.TRANSFER_TYPE_DIVIDEND, // type
-							objLine.getReference(),ptTran.getParentTxn())); // reference
-					transModel.addLine(new GenerateTransaction(Constants.SPLIT,(Main.mapAccounts.get(objLine.getTicker())),
-							objLine.getDate(),0,Main.mapAccounts.get(objLine.getTicker()).getAccountName(),"",AbstractTxn.TRANSFER_TYPE_DIVIDEND,objLine.getReference(),ptTran.getSplit(0)));
-					transModel.addLine(new GenerateTransaction(Constants.SPLIT,objMatch.getAccount(),objLine.getDate(),
-							objLine.getValue()*-1,
-							OnlineTxn.INVEST_TXN_DIVIDEND+" "+Main.mapAccounts.get(objLine.getTicker()).getAccountName(),"",
-							AbstractTxn.TRANSFER_TYPE_DIVIDEND,objLine.getReference(),ptTran.getSplit(1)));
+							secLine.getTranType(),ptTran.getParentTxn())); // reference
+					transModel.addLine(new GenerateTransaction(Constants.SPLIT,(Main.mapAccounts.get(secLine.getTicker())),
+							secLine.getDate(),0,Main.mapAccounts.get(secLine.getTicker()).getAccountName(),"",AbstractTxn.TRANSFER_TYPE_DIVIDEND, secLine.getTranType(),ptTran.getSplit(0)));
+					transModel.addLine(new GenerateTransaction(Constants.SPLIT,objMatch.getAccount(), secLine.getDate(),
+							secLine.getValue()*-1,
+							OnlineTxn.INVEST_TXN_DIVIDEND+" "+Main.mapAccounts.get(secLine.getTicker()).getAccountName(),"",
+							AbstractTxn.TRANSFER_TYPE_DIVIDEND, secLine.getTranType(),ptTran.getSplit(1)));
 					
 					break;
 				case Constants.SECURITY_COST :
-					investFields.amount=objLine.getValue();
+					investFields.amount= secLine.getValue();
 					investFields.hasAmount = true;
-					investFields.category = objLine.getAccount();
+					investFields.category = secLine.getAccount();
 					investFields.hasCategory=true;
-					investFields.date = objLine.getDate();
-					investFields.taxDate=objLine.getDate();
+					investFields.date = secLine.getDate();
+					investFields.taxDate= secLine.getDate();
 					investFields.txnType = InvestTxnType.MISCEXP;
-					investFields.security = Main.mapAccounts.get(objLine.getTicker());
+					investFields.security = Main.mapAccounts.get(secLine.getTicker());
 					investFields.hasSecurity = true;
 					investFields.storeFields(ptTran);
-					transModel.addLine(new GenerateTransaction(Constants.PARENT,acct,objLine.getDate(),
-							objLine.getValue()*-1,"","",
-							AbstractTxn.TRANSFER_TYPE_MISCINCEXP,objLine.getReference(),ptTran.getParentTxn()));
-					transModel.addLine(new GenerateTransaction(Constants.SPLIT,(Main.mapAccounts.get(objLine.getTicker())),
-							objLine.getDate(),0,Main.mapAccounts.get(objLine.getTicker()).getAccountName(),"",AbstractTxn.TRANSFER_TYPE_MISCINCEXP,
-							objLine.getReference(),ptTran.getSplit(0)));
-					transModel.addLine(new GenerateTransaction(Constants.SPLIT,objMatch.getAccount(),objLine.getDate(),
-							objLine.getValue(),
-							OnlineTxn.INVEST_TXN_MISCINC+" "+Main.mapAccounts.get(objLine.getTicker()).getAccountName(),"",
-							AbstractTxn.TRANSFER_TYPE_MISCINCEXP, objLine.getReference(),ptTran.getSplit(1)));				
+					transModel.addLine(new GenerateTransaction(Constants.PARENT,acct, secLine.getDate(),
+							secLine.getValue()*-1,"","",
+							AbstractTxn.TRANSFER_TYPE_MISCINCEXP, secLine.getTranType(),ptTran.getParentTxn()));
+					transModel.addLine(new GenerateTransaction(Constants.SPLIT,(Main.mapAccounts.get(secLine.getTicker())),
+							secLine.getDate(),0,Main.mapAccounts.get(secLine.getTicker()).getAccountName(),"",AbstractTxn.TRANSFER_TYPE_MISCINCEXP,
+							secLine.getTranType(),ptTran.getSplit(0)));
+					transModel.addLine(new GenerateTransaction(Constants.SPLIT,objMatch.getAccount(), secLine.getDate(),
+							secLine.getValue(),
+							OnlineTxn.INVEST_TXN_MISCINC+" "+Main.mapAccounts.get(secLine.getTicker()).getAccountName(),"",
+							AbstractTxn.TRANSFER_TYPE_MISCINCEXP, secLine.getTranType(),ptTran.getSplit(1)));
 					break;
 				case Constants.INVESTMENT_INCOME:
-					investFields.amount=objLine.getValue();
+					investFields.amount= secLine.getValue();
 					investFields.hasAmount = true;
 					investFields.xfrAcct = objMatch.getAccount();
 					investFields.hasXfrAcct=true;
-					investFields.date = objLine.getDate();
-					investFields.taxDate=objLine.getDate();
+					investFields.date = secLine.getDate();
+					investFields.taxDate= secLine.getDate();
 					investFields.txnType = InvestTxnType.BANK;
 					investFields.storeFields(ptTran);
-					transModel.addLine(new GenerateTransaction(Constants.PARENT,acct,objLine.getDate(),
-							objLine.getValue(),objLine.getDescription(),"",AbstractTxn.TRANSFER_TYPE_BANK,objLine.getReference(),ptTran.getParentTxn()));
-					transModel.addLine(new GenerateTransaction(Constants.SPLIT,objMatch.getAccount(),objLine.getDate(),
-							objLine.getValue()*-1,acct.getAccountName(),"",
-							AbstractTxn.TRANSFER_TYPE_BANK,objLine.getReference(),ptTran.getSplit(0)));
+					transModel.addLine(new GenerateTransaction(Constants.PARENT,acct, secLine.getDate(),
+							secLine.getValue(), secLine.getDescription(),"",AbstractTxn.TRANSFER_TYPE_BANK, secLine.getTranType(),ptTran.getParentTxn()));
+					transModel.addLine(new GenerateTransaction(Constants.SPLIT,objMatch.getAccount(), secLine.getDate(),
+							secLine.getValue()*-1,acct.getAccountName(),"",
+							AbstractTxn.TRANSFER_TYPE_BANK, secLine.getTranType(),ptTran.getSplit(0)));
 					break;
 				case Constants.INVESTMENT_COST :
-					investFields.amount=objLine.getValue();
+					investFields.amount= secLine.getValue();
 					investFields.hasAmount = true;
 					investFields.xfrAcct = objMatch.getAccount();
 					investFields.hasXfrAcct=true;
-					investFields.date = objLine.getDate();
-					investFields.taxDate=objLine.getDate();
+					investFields.date = secLine.getDate();
+					investFields.taxDate= secLine.getDate();
 					investFields.txnType = InvestTxnType.BANK;
 					investFields.storeFields(ptTran);
-					transModel.addLine(new GenerateTransaction(Constants.PARENT,acct,objLine.getDate(),
-							objLine.getValue(),objLine.getDescription(),"",
-							AbstractTxn.TRANSFER_TYPE_BANK,objLine.getReference(),ptTran.getParentTxn()));
-					transModel.addLine(new GenerateTransaction(Constants.SPLIT,objMatch.getAccount(),objLine.getDate(),
-							objLine.getValue()*-1,acct.getAccountName(),"",
-							AbstractTxn.TRANSFER_TYPE_BANK,objLine.getReference(),ptTran.getSplit(0)));
+					transModel.addLine(new GenerateTransaction(Constants.PARENT,acct, secLine.getDate(),
+							secLine.getValue(), secLine.getDescription(),"",
+							AbstractTxn.TRANSFER_TYPE_BANK, secLine.getTranType(),ptTran.getParentTxn()));
+					transModel.addLine(new GenerateTransaction(Constants.SPLIT,objMatch.getAccount(), secLine.getDate(),
+							secLine.getValue()*-1,acct.getAccountName(),"",
+							AbstractTxn.TRANSFER_TYPE_BANK, secLine.getTranType(),ptTran.getSplit(0)));
+					break;
+				case Constants.INVESTMENT_BUY:
+				case Constants.INVESTMENT_SELL:
+					if (Constants.TRANSTYPES[objMatch.getTranType()].equals(Constants.INVESTMENT_BUY)) {
+						investFields.txnType = InvestTxnType.BUY;
+						investFields.amount = -secLine.getValue();
+					}
+					else {
+						investFields.amount = -secLine.getValue();
+						investFields.txnType = InvestTxnType.SELL;
+					}
+
+					Account security = Main.mapAccounts.get(secLine.getTicker());
+					if (security==null || (!security.getAccountType().equals(Account.AccountType.SECURITY))||
+						security.getCurrencyType()==null)
+						break;
+					CurrencyType securityCurrency = security.getCurrencyType();
+					investFields.hasPrice = true;
+					investFields.hasSecurity=true;
+					investFields.hasShares=true;
+					investFields.hasAmount=true;
+					investFields.hasMemo = true;
+					Double unitConvert = secLine.getUnit();
+					for (int i=0;i<securityCurrency.getDecimalPlaces();i++)
+						unitConvert = unitConvert*10.0;
+					investFields.shares = unitConvert.longValue();
+					investFields.secCurr= securityCurrency;
+					investFields.date = secLine.getDate();
+					investFields.taxDate = secLine.getDate();
+
+					investFields.price=secLine.getValue()/(100.0 * secLine.getUnit());
+					investFields.security = security;
+					investFields.payee = secLine.getDescription();
+					investFields.storeFields(ptTran);
+					transModel.addLine(new GenerateTransaction(Constants.PARENT,acct, secLine.getDate(),
+							secLine.getValue(), secLine.getDescription(),"",
+							AbstractTxn.TRANSFER_TYPE_BUYSELL, secLine.getTranType(),ptTran.getParentTxn(),params));
+					transModel.addLine(new GenerateTransaction(Constants.SPLIT,acct, secLine.getDate(),
+							investFields.shares,acct.getAccountName(),"",
+							AbstractTxn.TRANSFER_TYPE_BANK, secLine.getTranType(),ptTran.getSplit(0),params));
 					break;
 				default :
 					/*
-					 * not interested in buys/sells/transfers/card payments
+					 * not interested in transfers/card payments
 					 */
 				}
 			}
@@ -306,6 +354,7 @@ public class GenerateWindow extends JPanel {
 				 if ((boolean)transModel.getValueAt(i, 0)) {
 					 GenerateTransaction transLine = transModel.getLine(i);	
 				 	 ParentTxn ptTran = (ParentTxn)transLine.getTxn();
+					 if (transLine.getInvType()!= null) ptTran.setInvestTxnType(transLine.getInvType());
 				 	 SplitTxn stTran1 = (SplitTxn) ptTran.getSplit(0);
 					 ptTran.setParameter(Constants.TAGGEN, transLine.getRef());
 					 stTran1.setParameter(Constants.TAGGEN, transLine.getRef());
@@ -329,7 +378,7 @@ public class GenerateWindow extends JPanel {
 		  *   3. redisplay window 
 		  */
 		 Main.tranSet = Main.acctBook.getTransactionSet();
-		 Main.generatedTranSet = new MyTransactionSet(Main.root, acct,objParms,setLine);
+		 Main.generatedTranSet = new MyTransactionSet(Main.root, acct, params,setLine);
 		 for (SecLine objLine :setLine) {
 			if (!objLine.getSelect())
 				continue;

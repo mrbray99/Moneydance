@@ -44,13 +44,13 @@ public class ReportDataRow {
 	}
 	public Constants.ReportType getType() {
 		if (type == null)
-			return Constants.ReportType.JASPER;
+			return Constants.ReportType.CSV;
 		switch (type) {
 		case 2: return Constants.ReportType.DATABASE;
 		case 3: return Constants.ReportType.SPREADSHEET;
-		case 4: return Constants.ReportType.CSV;
+		case 4:
 		default :
-			return Constants.ReportType.JASPER;
+			return Constants.ReportType.CSV;
 		}
 	}
 	public void setType(Constants.ReportType typep) {

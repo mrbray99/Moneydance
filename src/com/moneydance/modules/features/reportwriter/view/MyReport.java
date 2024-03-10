@@ -42,7 +42,6 @@ import java.nio.charset.StandardCharsets;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.MRBDirectoryUtils;
 import com.moneydance.modules.features.reportwriter.Constants;
-import com.moneydance.modules.features.reportwriter.FirstRun;
 import com.moneydance.modules.features.reportwriter.Main;
 import com.moneydance.modules.features.reportwriter.Parameters;
 import com.moneydance.modules.features.reportwriter.RWException;
@@ -70,10 +69,9 @@ public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
 	 */
 	private Scene scene;
 	private GridPane mainScreen;
-	private TemplatePane templatePan;
+	private ReportPane reportPan;
 	private SelectionPane selectionPan;
 	private DataPane dataPan;
-	private ReportPane reportPan;
 	private MyReport thisObj;
 	private Button closeBtn;
 	private Button settingsBtn;
@@ -91,56 +89,37 @@ public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
 	public Scene createScene() {
 		mainScreen = new GridPane();
 		scene = new Scene(mainScreen);
-		Main.accels.setSceneClose(scene, new Runnable() {
-			@Override
-			public void run() {
-				Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.DETAILED, "Accelerator close ");
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Main.extension.closeConsole();
-					}
-				});
-			}
-		});
-		Main.accels.setSceneOpen(scene, new Runnable() {
-			@Override
-			public void run() {
-				Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.DETAILED, "Accelerator open ");
-				ScreenPanel crntPan = getFocus();
-				if (crntPan != null)
-					crntPan.openMsg();
-			}
-		});
-		Main.accels.setSceneDelete(scene, new Runnable() {
-			@Override
-			public void run() {
-				Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.DETAILED, "Accelerator delete ");
-				ScreenPanel crntPan = getFocus();
-				if (crntPan != null)
-					crntPan.deleteMsg();
-			}
-		});
-		Main.accels.setSceneNew(scene, new Runnable() {
-			@Override
-			public void run() {
-				Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.DETAILED, "Accelerator new ");
-				ScreenPanel crntPan = getFocus();
-				if (crntPan != null)
-					crntPan.newMsg();
-			}
-		});
+		Main.accels.setSceneClose(scene, () -> {
+            Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.DETAILED, "Accelerator close ");
+            javax.swing.SwingUtilities.invokeLater(() -> Main.extension.closeConsole());
+        });
+		Main.accels.setSceneOpen(scene, () -> {
+            Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.DETAILED, "Accelerator open ");
+            ScreenPanel crntPan = getFocus();
+            if (crntPan != null)
+                crntPan.openMsg();
+        });
+		Main.accels.setSceneDelete(scene, () -> {
+            Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.DETAILED, "Accelerator delete ");
+            ScreenPanel crntPan = getFocus();
+            if (crntPan != null)
+                crntPan.deleteMsg();
+        });
+		Main.accels.setSceneNew(scene, () -> {
+            Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.DETAILED, "Accelerator new ");
+            ScreenPanel crntPan = getFocus();
+            if (crntPan != null)
+                crntPan.newMsg();
+        });
 
 		params = new Parameters();
 		if(params.getIntroScreen()) {
-			IntroScreen intro = new IntroScreen(params);
+			new IntroScreen(params);
 		}
 		if (params.getDataDirectory() == null || params.getDataDirectory().equals(Constants.NODIRECTORY)
-				|| params.getReportDirectory() == null || params.getReportDirectory().equals(Constants.NODIRECTORY)
 				|| params.getOutputDirectory() == null || params.getOutputDirectory().equals(Constants.NODIRECTORY)) {
-			new FirstRun(this, params);
+			new FirstRun(this,params);
 			if (params.getDataDirectory().equals(Constants.NODIRECTORY)
-					|| params.getReportDirectory().equals(Constants.NODIRECTORY)
 					|| params.getOutputDirectory().equals(Constants.NODIRECTORY)) {
 				Alert alert = new Alert(AlertType.ERROR, "Extension can not continue without setting the directories");
 				alert.showAndWait();
@@ -178,67 +157,36 @@ public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
 			closeBtn.setText("Exit");
 		else
 			closeBtn.setGraphic(new ImageView(Main.loadedIcons.closeImg));
-		closeBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Main.extension.closeConsole();
-					}
-				});
-			}
-		});
+		closeBtn.setOnAction(e -> javax.swing.SwingUtilities.invokeLater(() -> Main.extension.closeConsole()));
 		settingsBtn = new Button();
 		if (Main.loadedIcons.settingsImg == null)
 			settingsBtn.setText("Settings");
 		else
 			settingsBtn.setGraphic(new ImageView(Main.loadedIcons.settingsImg));
-		settingsBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						new FirstRun(thisObj, params);
-						if (params.getDataDirectory().equals(Constants.NODIRECTORY)) {
-							Alert alert = new Alert(AlertType.ERROR,
-									"Extension can not continue without setting the directories");
-							alert.showAndWait();
-						} else
-							params.save();
-						resetData();
-					}
-				});
-			}
-		});
+		settingsBtn.setOnAction(e -> Platform.runLater(() -> {
+            new FirstRun(this,params);
+            if (params.getDataDirectory().equals(Constants.NODIRECTORY)) {
+                Alert alert = new Alert(AlertType.ERROR,
+                        "Extension can not continue without setting the directories");
+                alert.showAndWait();
+            } else
+                params.save();
+            resetData();
+        }));
 		helpBtn = new Button();
 		if (Main.loadedIcons.helpImg == null)
 			helpBtn.setText("Help");
 		else
 			helpBtn.setGraphic(new ImageView(Main.loadedIcons.helpImg));
-		helpBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						new HelpScreen(params);
-					}
-				});
-			}
-		});
-		templatePan = new TemplatePane(params);
+		helpBtn.setOnAction(e -> Platform.runLater(() -> new HelpScreen(params)));
 		dataPan = new DataPane(params);
 		reportPan = new ReportPane(params);
 		selectionPan = new SelectionPane(params);
-		mainScreen.add(templatePan, 0, 0);
-		GridPane.setMargin(templatePan, new Insets(10, 10, 10, 10));
-		mainScreen.add(selectionPan, 1, 0);
+		mainScreen.add(selectionPan, 0, 0);
 		GridPane.setMargin(selectionPan, new Insets(10, 10, 10, 10));
-		mainScreen.add(dataPan, 0, 1);
+		mainScreen.add(dataPan, 1, 0);
 		GridPane.setMargin(dataPan, new Insets(10, 10, 10, 10));
-		mainScreen.add(reportPan, 1, 1);
+		mainScreen.add(reportPan, 2, 0);
 		GridPane.setMargin(reportPan, new Insets(10, 10, 10, 10));
 		buttons = new HBox();
 		buttons.getChildren().addAll(closeBtn, settingsBtn, helpBtn);
@@ -250,8 +198,8 @@ public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
 			java.io.InputStream in = Main.loader.getResourceAsStream(Constants.RESOURCES + "datadatapane.css");
 			if (in != null) {
 				ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
-				byte buf[] = new byte[256];
-				int n = 0;
+				byte[] buf = new byte[256];
+				int n;
 				while ((n = in.read(buf, 0, buf.length)) >= 0)
 					bout.write(buf, 0, n);
 				css = bout.toString();
@@ -271,13 +219,10 @@ public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
 	 * check to see if default database has changed
 	 */
 	private void checkDefaultDb() {
-		if (params.getReportDirectory().equals(Constants.NODIRECTORY))
-			return;
 		String defaultDBLoaded = Main.preferences.getString(Constants.PARMLASTDB, "00000000");
 		if (defaultDBLoaded.compareTo(Main.databaseChanged) < 0) {
 			try {
-				createAdapter(params.getReportDirectory());
-				copyDatabaseFiles(params.getReportDirectory());
+				createAdapter(params.getOutputDirectory());
 			} catch (DownloadException | RWException e) {
 				Alert alert = new Alert(AlertType.ERROR, "Issues setting up default database");
 				alert.showAndWait();
@@ -286,23 +231,6 @@ public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
 
 	}
 
-	public void copyDatabaseFiles(String directory) {
-		Main.rwDebugInst.debug("Main", "checkDefaultDb", MRBDebug.DETAILED, "Copying empty database");
-		String outFile = directory + "/Moneydance.mv.db";
-		try {
-			java.io.InputStream in = getClass().getResourceAsStream(Constants.RESOURCES + Constants.JASPERDATABASE);
-			byte[] buffer = new byte[in.available()];
-			in.read(buffer);
-			File outputFile = new File(outFile);
-			OutputStream outStream = new FileOutputStream(outputFile);
-			outStream.write(buffer);
-			outStream.close();
-		} catch (Throwable e) {
-			e.printStackTrace();
-			throw new DownloadException("Error creating Database Adapter");
-		}
-		Main.preferences.put(Constants.PARMLASTDB, Main.databaseChanged);
-	}
 
 	public void createAdapter(String directory) throws RWException {
 		Main.rwDebugInst.debug("MyReport", "createAdapter", MRBDebug.DETAILED, "Creating database adapter");
@@ -312,17 +240,20 @@ public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
 
 		try {
 			java.io.InputStream in = getClass().getResourceAsStream(Constants.RESOURCES + Constants.DATABASEADAPTER);
-			byte[] buffer = new byte[in.available()];
-			in.read(buffer);
-			File outputFile = new File(outFile);
-			OutputStream outStream = new FileOutputStream(outputFile);
-			String tempStr = new String(buffer, StandardCharsets.UTF_8);
-			tempStr = tempStr.replace("##database##", directory + "/Moneydance");
-			tempStr = tempStr.replace("##jar##", dirName + "/" + Constants.DATABASEJAR);
-			tempStr = tempStr.replace(".jarsav", ".jar");
-			buffer = tempStr.getBytes();
-			outStream.write(buffer);
-			outStream.close();
+			byte[] buffer;
+			if (in != null) {
+				buffer = new byte[in.available()];
+				in.read(buffer);
+				File outputFile = new File(outFile);
+				OutputStream outStream = new FileOutputStream(outputFile);
+				String tempStr = new String(buffer, StandardCharsets.UTF_8);
+				tempStr = tempStr.replace("##database##", directory + "/Moneydance");
+				tempStr = tempStr.replace("##jar##", dirName + "/" + Constants.DATABASEJAR);
+				tempStr = tempStr.replace(".jarsav", ".jar");
+				buffer = tempStr.getBytes();
+				outStream.write(buffer);
+				outStream.close();
+			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw new RWException("Error creating Database Adapter");
@@ -331,23 +262,17 @@ public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
 
 	@Override
 	public void handle(ActionEvent event) {
-		if (event.getSource() instanceof MenuItem) {
-			MenuItem mItem = (MenuItem) event.getSource();
+		if (event.getSource() instanceof MenuItem mItem) {
 			String command = mItem.getText();
 			switch (command) {
 			case Constants.ITEMFILECLOSE:
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Main.extension.closeConsole();
-					}
-				});
+				javax.swing.SwingUtilities.invokeLater(() -> Main.extension.closeConsole());
 				break;
 			case Constants.ITEMFILESAVE:
 				params.save();
 				break;
 			case Constants.ITEMFILEOPTIONS:
-				new FirstRun(this, params);
+				new FirstRun(this,params);
 				if (params.getDataDirectory().equals(Constants.NODIRECTORY)) {
 					Alert alert = new Alert(AlertType.ERROR,
 							"Extension can not continue without setting the directories");
@@ -412,8 +337,6 @@ public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
 			selectionPan.resize();
 		if (reportPan != null)
 			reportPan.resize();
-		if (templatePan != null)
-			templatePan.resize();
 		if (dataPan != null)
 			dataPan.resize();
 		Main.rwDebugInst.debugThread("MyReport", "updatePreferences", MRBDebug.SUMMARY,
@@ -425,14 +348,10 @@ public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
 			dataPan.resetData();
 		if (selectionPan != null)
 			selectionPan.resetData();
-		if (templatePan != null)
-			templatePan.resetData();
 		if (reportPan != null)
 			reportPan.resetData();
 	}
 
 	public void closeDown() {
-		if (templatePan != null)
-			templatePan.closeDown();
 	}
 }

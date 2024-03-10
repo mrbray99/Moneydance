@@ -37,8 +37,8 @@ import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
 public class AddAccountsModel extends DefaultTableModel {
-	private List<Boolean> listSelect = new ArrayList<Boolean>();
-	private List<String> listCategory = new ArrayList<String>();
+	private List<Boolean> listSelect = new ArrayList<>();
+	private List<String> listCategory = new ArrayList<>();
 	public AddAccountsModel() {
 		super();
 	}
@@ -50,7 +50,6 @@ public class AddAccountsModel extends DefaultTableModel {
 	public int getRowCount() {
 		return (listSelect==null?0:listSelect.size());
 	}
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Class getColumnClass(int c){
 		if (c == 0)
 			return Boolean.class;
@@ -70,9 +69,7 @@ public class AddAccountsModel extends DefaultTableModel {
 	}
 	@Override
     public boolean isCellEditable(int row, int col) {
-		if (col == 0)
-			return true;
-		return false;
+        return col == 0;
     }
 	@Override
 	public void setValueAt(Object value, int row, int col){
@@ -80,15 +77,14 @@ public class AddAccountsModel extends DefaultTableModel {
 			listSelect.set(row,(Boolean) value);
 		else
 			listCategory.set(row,(String) value);
-		return;
 	}
 	public void setRows(String[] arrAccounts){
 		listSelect.clear();
 		listCategory.clear();
-		for (int i=0;i<arrAccounts.length;i++) {
-			listSelect.add(false);
-			listCategory.add(arrAccounts[i]);		
-		}
+        for (String arrAccount : arrAccounts) {
+            listSelect.add(false);
+            listCategory.add(arrAccount);
+        }
 		fireTableDataChanged();
 	}
 

@@ -35,7 +35,7 @@
 			<zipgroupfileset dir="${lib}" includes="**/javafx.graphics.jar" />
 			<zipgroupfileset dir="${lib}" includes="**/javafx.swing.jar" />
 		</jar>
-		<java newenvironment="true" classpathref="classpath" classname="SignMxt" fork="yes">
+		<java newenvironment="true" classpathref="signmxtpath" classname="SignMxt" fork="yes">
 			<arg value="signextjar" />
 			<arg value="${privkeyfile}" />
 			<arg value="${privkeyid}" />

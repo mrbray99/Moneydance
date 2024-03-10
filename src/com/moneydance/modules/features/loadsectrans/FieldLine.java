@@ -17,16 +17,19 @@ public class FieldLine implements Serializable {
      */
 
 	private String strType;
-	private String strAcctName;
+	private String strAcctName;  // full path name for category
 	private String strAcctRealName;
 	private int iTranType;
-	public FieldLine(String strTypep, 
-			String strAcctNamep, Account acctp, int iTranTypep) {
-		strType = strTypep;
-		strAcctName = strAcctNamep;
-		acct = acctp;
-		strAcctRealName = acct.getFullAccountName();
-		iTranType = iTranTypep;
+	public FieldLine(String fieldType,
+			String acctName, Account acct, int tranType) {
+		this.strType = fieldType;
+		this.strAcctName = acctName;
+		this.acct = acct;
+		if (acct != null)
+			strAcctRealName = this.acct.getFullAccountName();
+		else
+			strAcctRealName = acctName;
+		this.iTranType = tranType;
 	}
 	public String getType() {
 		return strType;

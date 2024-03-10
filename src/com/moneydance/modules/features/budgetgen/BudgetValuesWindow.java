@@ -36,12 +36,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Calendar;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -70,6 +68,7 @@ import javax.swing.border.Border;
 import com.infinitekind.util.StringUtils;
 import com.moneydance.apps.md.controller.FeatureModuleContext;
 import com.moneydance.apps.md.controller.UserPreferences;
+import com.moneydance.apps.md.view.MoneydanceUI;
 import com.moneydance.awt.GridC;
 import com.moneydance.awt.JDateField;
 import com.moneydance.modules.features.mrbutil.MRBPreferences2;
@@ -80,13 +79,16 @@ public class BudgetValuesWindow extends JPanel {
 	 */
 	public static BudgetListExtend budgetList;
 	public static BudgetExtend budget;
-	public BudgetParameters objParams;
-	private String strFileName;
+	public BudgetParameters params;
+	private String fileName;
+	private JButton helpBtn;
+	private MoneydanceUI mdGUI;
+	private com.moneydance.apps.md.controller.Main mdMain;
 	/*
 	 * Screen fields
 	 */
-	public static MyTable tabBudget;
-	public static MyTableModel modBudget;
+	public static MyTable budgetTable;
+	public static MyTableModel budgetModel;
 	private JButton btnAddAccount;
 	private JButton btnSelectAll;
 	private JButton btnDeselectAll;
@@ -111,13 +113,13 @@ public class BudgetValuesWindow extends JPanel {
 	 */
 	public static int iFiscalYear;
 	public static int iYear;
-	public static JDateField jdtStartDate;
-	public static JDateField jdtEndDate;
-	public static JDateField jdtFiscalStart;
-	public static JDateField jdtFiscalEnd;
-	public static JDateField jdtStartYear;
-	public static JDateField jdtEndYear;
-	public static Calendar dtWeekStart;
+	public static JDateField startDate;
+	public static JDateField endDate;
+	public static JDateField fiscalStart;
+	public static JDateField fiscalEnd;
+	public static JDateField startYear;
+	public static JDateField endYear;
+	public static Calendar weekStart;
 
 	private JPanel panTop;
 	private JPanel panMid;
@@ -139,8 +141,10 @@ public class BudgetValuesWindow extends JPanel {
 	private int iMIDDEPTH;
 
 	public BudgetValuesWindow(Main extension, String strSelectedBud, int iTypep, String strFileNamep) {
+		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
+		mdGUI = mdMain.getUI();
 		iType = iTypep;
-		strFileName = strFileNamep;
+		fileName = strFileNamep;
 		FeatureModuleContext context = extension.getUnprotectedContext();
 		MRBPreferences2.loadPreferences(context);
 		preferences = MRBPreferences2.getInstance();
@@ -152,7 +156,7 @@ public class BudgetValuesWindow extends JPanel {
 				.getSetting(UserPreferences.FISCAL_YEAR_START_MMDD);
 		iFiscalYear = StringUtils.isBlank(strFiscal) ? 101 : Integer
 				.parseInt(strFiscal);
-		budget = budgetList.getBudget(strSelectedBud, iFiscalYear, iType, strFileName);
+		budget = budgetList.getBudget(strSelectedBud, iFiscalYear, iType, fileName);
 		if (budget == null) {
 			JFrame fTemp = new JFrame();
 			JOptionPane
@@ -165,7 +169,7 @@ public class BudgetValuesWindow extends JPanel {
 				return;
 		}
 
-		objParams = budget.getParameters();
+		params = budget.getParameters();
 		/*
 		 * set up dates for periods (Fiscal Start date is set when BudgetExtend
 		 * is created)
@@ -173,28 +177,28 @@ public class BudgetValuesWindow extends JPanel {
 		Calendar gc = Calendar.getInstance();
 		iYear = gc.get(Calendar.YEAR);
 		Calendar dtYear = Calendar.getInstance();
-		dtYear.set(iYear, 0, 1);
-		jdtStartYear = new JDateField(Main.cdate);
-		jdtStartYear.setDate(dtYear.getTime());
-		jdtEndYear = new JDateField(Main.cdate);
-		jdtEndYear.setDateInt(jdtStartYear.getDateInt());
-		jdtEndYear.gotoLastDayInYear();
+		dtYear.set(iYear, Calendar.JANUARY, 1);
+		startYear = new JDateField(Main.cdate);
+		startYear.setDate(dtYear.getTime());
+		endYear = new JDateField(Main.cdate);
+		endYear.setDateInt(startYear.getDateInt());
+		endYear.gotoLastDayInYear();
 		Calendar dtFiscalEnd = Calendar.getInstance();
-		dtWeekStart = Calendar.getInstance();
-		dtWeekStart.setWeekDate(iYear, 1, Calendar.SUNDAY);
-		jdtFiscalStart = budget.getFiscalStart();
-		jdtFiscalEnd = new JDateField(Main.cdate);
-		dtFiscalEnd.setTime(jdtFiscalStart.parseDate());
+		weekStart = Calendar.getInstance();
+		weekStart.setWeekDate(iYear, 1, Calendar.SUNDAY);
+		fiscalStart = budget.getFiscalStart();
+		fiscalEnd = new JDateField(Main.cdate);
+		dtFiscalEnd.setTime(fiscalStart.parseDate());
 		dtFiscalEnd.add(Calendar.YEAR, 1);
-		jdtFiscalEnd.setDate(dtFiscalEnd.getTime());
-		jdtFiscalEnd.decrementDate();
-		jdtStartDate = new JDateField(Main.cdate);
-		jdtEndDate = new JDateField(Main.cdate);
+		fiscalEnd.setDate(dtFiscalEnd.getTime());
+		fiscalEnd.decrementDate();
+		startDate = new JDateField(Main.cdate);
+		endDate = new JDateField(Main.cdate);
 		/*
 		 * set up table
 		 */
-		tabBudget = new MyTable(new MyTableModel(objParams, iType), objParams);
-		modBudget = (MyTableModel) tabBudget.getModel();
+		budgetTable = new MyTable(new MyTableModel(params, iType), params);
+		budgetModel = (MyTableModel) budgetTable.getModel();
 		/*
 		 * start of screen
 		 * 
@@ -257,19 +261,23 @@ public class BudgetValuesWindow extends JPanel {
 		panTop.add(lblPeriod, GridC.getc(x, y).west().insets(10, 10, 10, 10));
 		x++;
 		boxPeriod = new JComboBox<>(Constants.PERIODS);
-		boxPeriod.setSelectedIndex(objParams.getDatePeriod());
+		boxPeriod.setSelectedIndex(params.getDatePeriod());
 		String strTip = "<html>Select Fiscal year if you budget is to match your declared Fiscal Year.";
 		strTip += "<br>Select Calendar Year if your budget is to be from 1st January to 31st December.";
 		strTip += "<br>Alternately select Custom Dates to enter your own period</html>"; 
 		boxPeriod.setToolTipText(strTip);
-		panTop.add(boxPeriod, GridC.getc(x, y).west().insets(10, 10, 10, 10));
-		boxPeriod.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				objParams.setDatePeriod(boxPeriod.getSelectedIndex());
-				changeDates();
-			}
-		});
+		panTop.add(boxPeriod, GridC.getc(x++, y).west().insets(10, 10, 10, 10));
+		boxPeriod.addActionListener(e -> {
+            params.setDatePeriod(boxPeriod.getSelectedIndex());
+            changeDates();
+        });
+		helpBtn = new JButton("Help");
+		helpBtn.setToolTipText("Display help information");
+		helpBtn.addActionListener(e -> {
+            String url = "https://github.com/mrbray99/moneydanceproduction/wiki/Budget-Gen";
+            mdGUI.showInternetURL(url);
+        });
+		panTop.add(helpBtn, GridC.getc(x, y++).west().insets(10, 10, 10, 10));
 		/*
 		 * Start Date
 		 */
@@ -282,22 +290,22 @@ public class BudgetValuesWindow extends JPanel {
 		/*
 		 * use the border as the default valid border
 		 */
-		validBorder = jdtStartDate.getBorder();
-		jdtStartDate.setDateInt(objParams.getStartDate());
-		jdtStartDate.setDisabledTextColor(Color.BLACK);
+		validBorder = startDate.getBorder();
+		startDate.setDateInt(params.getStartDate());
+		startDate.setDisabledTextColor(Color.BLACK);
 		strTip = "<html>Enter or select the start date for your budget.";
 		strTip += "<br>Note: Start date must start on 1st January if chosen Budget is Annual,";
 		strTip+= " <br>1st of the Month if Monthly, and a Sunday if weekly or bi-weekly</html>";
-		jdtStartDate.setToolTipText(strTip);
-		panTop.add(jdtStartDate, GridC.getc(x, y).west().insets(10, 10, 10, 10));
-		jdtStartDate.setInputVerifier(new InputVerifier() {
+		startDate.setToolTipText(strTip);
+		panTop.add(startDate, GridC.getc(x, y).west().insets(10, 10, 10, 10));
+		startDate.setInputVerifier(new InputVerifier() {
 			@Override
 			public boolean verify(JComponent jcField) {
 				JDateField jdtStart = (JDateField) jcField;
 				Calendar dtStart = Calendar.getInstance();
 				dtStart.setTime(jdtStart.getDate());
 				Calendar dtEnd = Calendar.getInstance();
-				dtEnd.setTime(jdtEndDate.getDate());
+				dtEnd.setTime(endDate.getDate());
 				switch (budget.getPeriodOrder()) {
 				case Constants.PERIODANNUAL:
 					if (dtStart.get(Calendar.MONTH) != Calendar.JANUARY
@@ -307,7 +315,7 @@ public class BudgetValuesWindow extends JPanel {
 								.showMessageDialog(fTemp,
 										"Budget is annual, Start Date must be 1st of January");
 						startError = true;
-						jdtStartDate.setBorder(invalidBorder);
+						startDate.setBorder(invalidBorder);
 						return true;
 					}
 					break;
@@ -318,7 +326,7 @@ public class BudgetValuesWindow extends JPanel {
 								.showMessageDialog(fTemp,
 										"Budget is monthly, Start Date must be 1st day of month");
 						startError = true;
-						jdtStartDate.setBorder(invalidBorder);
+						startDate.setBorder(invalidBorder);
 						return true;
 					}
 					break;
@@ -342,18 +350,13 @@ public class BudgetValuesWindow extends JPanel {
 									"End Date can not be beyond 1 year after start date");
 					return false;
 				}
-				objParams.setStartDate(jdtStart.getDateInt());
+				params.setStartDate(jdtStart.getDateInt());
 				startError = false;
-				jdtStartDate.setBorder(validBorder);
+				startDate.setBorder(validBorder);
 				return true;
 			}
 		});
-		jdtStartDate.addPropertyChangeListener(new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent e) {
-				changeStartDate(e);
-			}
-		});
+		startDate.addPropertyChangeListener(this::changeStartDate);
 		/*
 		 * End Date
 		 */
@@ -361,20 +364,20 @@ public class BudgetValuesWindow extends JPanel {
 		JLabel lblEnd = new JLabel("End :");
 		panTop.add(lblEnd, GridC.getc(x, y).west().insets(10, 10, 10, 10));
 		x++;
-		jdtEndDate.setDateInt(objParams.getEndDate());
-		jdtEndDate.setDisabledTextColor(Color.BLACK);
+		endDate.setDateInt(params.getEndDate());
+		endDate.setDisabledTextColor(Color.BLACK);
 		strTip = "<html>Enter or select the end date for your budget.";
 		strTip += "<br>Note: End date must start on 31st December if chosen Budget is Annual,";
 		strTip+= " <br>last day of the Month if Monthly, and a Saturday if weekly or bi-weekly</html>";
-		jdtEndDate.setToolTipText(strTip);
-		panTop.add(jdtEndDate, GridC.getc(x, y).west().insets(10, 10, 10, 10));
-		jdtEndDate.setInputVerifier(new InputVerifier() {
+		endDate.setToolTipText(strTip);
+		panTop.add(endDate, GridC.getc(x, y).west().insets(10, 10, 10, 10));
+		endDate.setInputVerifier(new InputVerifier() {
 			@Override
 			public boolean verify(JComponent jcField) {
 				JDateField jdtEnd = (JDateField) jcField;
 				Calendar dtStart = Calendar.getInstance();
 				Calendar dtEnd = Calendar.getInstance();
-				dtStart.setTime(jdtStartDate.getDate());
+				dtStart.setTime(startDate.getDate());
 				dtEnd.setTime(jdtEnd.getDate());
 				switch (budget.getPeriodOrder()) {
 				case Constants.PERIODANNUAL:
@@ -385,7 +388,7 @@ public class BudgetValuesWindow extends JPanel {
 								.showMessageDialog(fTemp,
 										"Budget is annual, End Date must be 31st December");
 						endError = true;
-						jdtEndDate.setBorder(invalidBorder);
+						endDate.setBorder(invalidBorder);
 						return true;
 					}
 					break;
@@ -397,7 +400,7 @@ public class BudgetValuesWindow extends JPanel {
 								.showMessageDialog(fTemp,
 										"Budget is monthly, End Date must be Last day of month");
 						endError = true;
-						jdtEndDate.setBorder(invalidBorder);
+						endDate.setBorder(invalidBorder);
 						return true;
 					}
 					break;
@@ -409,7 +412,7 @@ public class BudgetValuesWindow extends JPanel {
 								.showMessageDialog(fTemp,
 										"Budget is Weekly/Bi-Weekly, End Date must be a Saturday");
 						endError = true;
-						jdtEndDate.setBorder(invalidBorder);
+						endDate.setBorder(invalidBorder);
 						return true;
 					}
 					break;
@@ -422,12 +425,12 @@ public class BudgetValuesWindow extends JPanel {
 							.showMessageDialog(fTemp,
 									"End Date can not be beyond 1 year after start date");
 					endError = true;
-					jdtEndDate.setBorder(invalidBorder);
+					endDate.setBorder(invalidBorder);
 					return true;
 				}
 				endError = false;
-				jdtEndDate.setBorder(validBorder);
-				objParams.setEndDate(jdtEnd.getDateInt());
+				endDate.setBorder(validBorder);
+				params.setEndDate(jdtEnd.getDateInt());
 				return true;
 			}
 		});
@@ -441,18 +444,13 @@ public class BudgetValuesWindow extends JPanel {
 		panTop.add(lblYearsl, GridC.getc(x, y).west().insets(10, 10, 10, 10));
 
 		x++;
-		boxYears = new JComboBox<String>();
-		boxYears.setModel(new DefaultComboBoxModel<String>(new String[] { "1",
-				"2", "3" }));
+		boxYears = new JComboBox<>();
+		boxYears.setModel(new DefaultComboBoxModel<>(new String[]{"1",
+                "2", "3"}));
 		boxYears.setSelectedIndex(0);
 		boxYears.setToolTipText("Determines how many columns are shown");
 		panTop.add(boxYears, GridC.getc(x, y).west().insets(10, 10, 10, 10));
-		boxYears.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				changeYears();
-			}
-		});
+		boxYears.addActionListener(e -> changeYears());
 		/*
 		 * RPI
 		 */
@@ -466,7 +464,7 @@ public class BudgetValuesWindow extends JPanel {
 		txtRPI.setInputVerifier(new InputVerifier() {
 			@Override
 			public boolean verify(JComponent input) {
-				Double dTemp;
+				double dTemp;
 				JFormattedTextField ftf = (JFormattedTextField) input;
 				String text = ftf.getText();
 				try {
@@ -494,9 +492,9 @@ public class BudgetValuesWindow extends JPanel {
 					return true;
 				}
 				try {
-					objParams.setRPI(Double.parseDouble(text));
+					params.setRPI(Double.parseDouble(text));
 					txtRPI.setValue(String.format("%1$,.2f%%",
-							objParams.getRPI()));
+							params.getRPI()));
 					rpiError = false;
 					txtRPI.setBorder(validBorder);
 				} catch (NumberFormatException pe) {
@@ -506,30 +504,27 @@ public class BudgetValuesWindow extends JPanel {
 				return true;
 			}
 		});
-		txtRPI.setValue(String.format("%1$,.2f%%", objParams.getRPI()));
+		txtRPI.setValue(String.format("%1$,.2f%%", params.getRPI()));
 		txtRPI.setColumns(10);
 		txtRPI.setToolTipText("<html>RPI must be between -100 and +100.<br>  It is used to increase the amount in years 2 and 3</html>");
-		txtRPI.addPropertyChangeListener("value", new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent e) {
-				JFormattedTextField source = (JFormattedTextField) e
-						.getSource();
-				String strTemp = (String) source.getValue();
-				if (strTemp.endsWith("%")) {
-					strTemp = strTemp.substring(0, strTemp.length() - 1);
-				}
-				try {
-					objParams.setRPI(Double.parseDouble(strTemp));
-					source.setValue(String.format("%1$,.2f%%",
-							objParams.getRPI()));
-					rpiError = false;
-					txtRPI.setBorder(validBorder);
-				} catch (NumberFormatException pe) {
-					rpiError = true;
-					txtRPI.setBorder(invalidBorder);
-				}
-			}
-		});
+		txtRPI.addPropertyChangeListener("value", e -> {
+            JFormattedTextField source = (JFormattedTextField) e
+                    .getSource();
+            String strTemp = (String) source.getValue();
+            if (strTemp.endsWith("%")) {
+                strTemp = strTemp.substring(0, strTemp.length() - 1);
+            }
+            try {
+                params.setRPI(Double.parseDouble(strTemp));
+                source.setValue(String.format("%1$,.2f%%",
+                        params.getRPI()));
+                rpiError = false;
+                txtRPI.setBorder(validBorder);
+            } catch (NumberFormatException pe) {
+                rpiError = true;
+                txtRPI.setBorder(invalidBorder);
+            }
+        });
 
 		panTop.add(txtRPI, GridC.getc(x, y).west().insets(10, 10, 10, 10));
 		this.add(panTop, BorderLayout.PAGE_START);
@@ -537,7 +532,7 @@ public class BudgetValuesWindow extends JPanel {
 		/*
 		 * Middle panel - table
 		 */
-		spScrollPane = new JScrollPane(tabBudget);
+		spScrollPane = new JScrollPane(budgetTable);
 		panMid = new JPanel(new GridLayout(1, 1));
 		panMid.setSize(iMIDWIDTH, iMIDDEPTH);
 		panMid.add(spScrollPane);
@@ -554,17 +549,14 @@ public class BudgetValuesWindow extends JPanel {
 		y = 0;
 		btnAddAccount = new JButton("Add Category");
 		btnAddAccount.setToolTipText("Allows you to add any categories not included in the list above");
-		btnAddAccount.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (startError || endError || rpiError) {
-					JFrame fTemp = new JFrame();
-					JOptionPane.showMessageDialog(fTemp,
-							"Please correct errors");
-				} else
-					addAccount();
-			}
-		});
+		btnAddAccount.addActionListener(e -> {
+            if (startError || endError || rpiError) {
+                JFrame fTemp = new JFrame();
+                JOptionPane.showMessageDialog(fTemp,
+                        "Please correct errors");
+            } else
+                addAccount();
+        });
 		panBot.add(btnAddAccount,
 				GridC.getc(x, y).west().fillx().insets(15, 15, 15, 15));
 		/*
@@ -573,17 +565,14 @@ public class BudgetValuesWindow extends JPanel {
 		x++;
 		btnSelectAll = new JButton("Select All");
 		btnSelectAll.setToolTipText("Selects every line that is valid");
-		btnSelectAll.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (startError || endError || rpiError) {
-					JFrame fTemp = new JFrame();
-					JOptionPane.showMessageDialog(fTemp,
-							"Please correct errors");
-				} else
-					selectAll();
-			}
-		});
+		btnSelectAll.addActionListener(e -> {
+            if (startError || endError || rpiError) {
+                JFrame fTemp = new JFrame();
+                JOptionPane.showMessageDialog(fTemp,
+                        "Please correct errors");
+            } else
+                selectAll();
+        });
 		panBot.add(btnSelectAll,
 				GridC.getc(x, y).west().fillx().insets(15, 15, 15, 15));
 		/*
@@ -592,17 +581,14 @@ public class BudgetValuesWindow extends JPanel {
 		x++;
 		btnCalculateSelected = new JButton("Calculate \r\nSelected");
 		btnCalculateSelected.setToolTipText("Calculates the Year 1, 2 and 3 amounts for the selected lines");
-		btnCalculateSelected.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (startError || endError || rpiError) {
-					JFrame fTemp = new JFrame();
-					JOptionPane.showMessageDialog(fTemp,
-							"Please correct errors");
-				} else
-					calculateSelected();
-			}
-		});
+		btnCalculateSelected.addActionListener(e -> {
+            if (startError || endError || rpiError) {
+                JFrame fTemp = new JFrame();
+                JOptionPane.showMessageDialog(fTemp,
+                        "Please correct errors");
+            } else
+                calculateSelected();
+        });
 		panBot.add(btnCalculateSelected, GridC.getc(x, y).west().fillx()
 				.insets(15, 15, 15, 15));
 		/*
@@ -611,17 +597,14 @@ public class BudgetValuesWindow extends JPanel {
 		x++;
 		btnSave = new JButton("Save Parameters");
 		btnSave.setToolTipText("Saves the parameters. You will be asked for a file name");
-		btnSave.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (startError || endError || rpiError) {
-					JFrame fTemp = new JFrame();
-					JOptionPane.showMessageDialog(fTemp,
-							"Please correct errors");
-				} else
-					save();
-			}
-		});
+		btnSave.addActionListener(e -> {
+            if (startError || endError || rpiError) {
+                JFrame fTemp = new JFrame();
+                JOptionPane.showMessageDialog(fTemp,
+                        "Please correct errors");
+            } else
+                save();
+        });
 		panBot.add(btnSave,
 				GridC.getc(x, y).west().fillx().insets(15, 15, 15, 15));
 		/*
@@ -630,19 +613,16 @@ public class BudgetValuesWindow extends JPanel {
 		x++;
 		btnClose = new JButton("Close");
 		btnClose.setToolTipText("<html>Closes the window.  If the parameters have been changed<br> you will be asked if you wish to save them.<br> You will be asked for a file name</html>");
-		btnClose.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (startError || endError || rpiError) {
-					JFrame fTemp = new JFrame();
-					int iResult = JOptionPane.showConfirmDialog(fTemp,
-							"There are errors, do you wish to close anyway?");
-					if (iResult == JOptionPane.YES_OPTION)
-						close();
-				} else
-					close();
-			}
-		});
+		btnClose.addActionListener(e -> {
+            if (startError || endError || rpiError) {
+                JFrame fTemp = new JFrame();
+                int iResult = JOptionPane.showConfirmDialog(fTemp,
+                        "There are errors, do you wish to close anyway?");
+                if (iResult == JOptionPane.YES_OPTION)
+                    close();
+            } else
+                close();
+        });
 		panBot.add(btnClose,
 				GridC.getc(x, y).west().fillx().insets(15, 15, 15, 15));
 		/*
@@ -652,17 +632,14 @@ public class BudgetValuesWindow extends JPanel {
 		y++;
 		btnDeleteSelected = new JButton("Delete Selected");
 		btnDeleteSelected.setToolTipText("Deletes the selected lines from the parameters");
-		btnDeleteSelected.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (startError || endError || rpiError) {
-					JFrame fTemp = new JFrame();
-					JOptionPane.showMessageDialog(fTemp,
-							"Please correct errors");
-				} else
-					deleteSelected();
-			}
-		});
+		btnDeleteSelected.addActionListener(e -> {
+            if (startError || endError || rpiError) {
+                JFrame fTemp = new JFrame();
+                JOptionPane.showMessageDialog(fTemp,
+                        "Please correct errors");
+            } else
+                deleteSelected();
+        });
 		panBot.add(btnDeleteSelected,
 				GridC.getc(x, y).west().fillx().insets(15, 15, 15, 15));
 		/*
@@ -671,17 +648,14 @@ public class BudgetValuesWindow extends JPanel {
 		x++;
 		btnDeselectAll = new JButton("Deselect All");
 		btnDeselectAll.setToolTipText("Unsets the select flag on all lines");
-		btnDeselectAll.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (startError || endError || rpiError) {
-					JFrame fTemp = new JFrame();
-					JOptionPane.showMessageDialog(fTemp,
-							"Please correct errors");
-				} else
-					deselectAll();
-			}
-		});
+		btnDeselectAll.addActionListener(e -> {
+            if (startError || endError || rpiError) {
+                JFrame fTemp = new JFrame();
+                JOptionPane.showMessageDialog(fTemp,
+                        "Please correct errors");
+            } else
+                deselectAll();
+        });
 		panBot.add(btnDeselectAll,
 				GridC.getc(x, y).west().fillx().insets(15, 15, 15, 15));
 		/*
@@ -690,17 +664,14 @@ public class BudgetValuesWindow extends JPanel {
 		x++;
 		btnCalculateAll = new JButton("Calculate \r\nAll");
 		btnCalculateAll.setToolTipText("Calculates the Year 1, 2 and 3 amounts for all lines with an amount");
-		btnCalculateAll.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (startError || endError || rpiError) {
-					JFrame fTemp = new JFrame();
-					JOptionPane.showMessageDialog(fTemp,
-							"Please correct errors");
-				} else
-					calculateAll();
-			}
-		});
+		btnCalculateAll.addActionListener(e -> {
+            if (startError || endError || rpiError) {
+                JFrame fTemp = new JFrame();
+                JOptionPane.showMessageDialog(fTemp,
+                        "Please correct errors");
+            } else
+                calculateAll();
+        });
 
 		panBot.add(btnCalculateAll,
 				GridC.getc(x, y).west().fillx().insets(15, 15, 15, 15));
@@ -714,17 +685,14 @@ public class BudgetValuesWindow extends JPanel {
 		strTip+="<br>If you have previously entered the figures manually you will overwrite them.";
 		strTip+="<br>You will be asked to confirm this</html>";
 		btnGenerate.setToolTipText(strTip);
-		btnGenerate.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (startError || endError || rpiError) {
-					JFrame fTemp = new JFrame();
-					JOptionPane.showMessageDialog(fTemp,
-							"Please correct errors");
-				} else
-					generate();
-			}
-		});
+		btnGenerate.addActionListener(e -> {
+            if (startError || endError || rpiError) {
+                JFrame fTemp = new JFrame();
+                JOptionPane.showMessageDialog(fTemp,
+                        "Please correct errors");
+            } else
+                generate();
+        });
 		panBot.add(btnGenerate,
 				GridC.getc(x, y).west().fillx().insets(15, 15, 15, 15));
 
@@ -732,26 +700,23 @@ public class BudgetValuesWindow extends JPanel {
 		btnEdit = new JButton("Enter Manually");
 		strTip = "Allows you to enter the Budget Item amounts manually";
 		btnEdit.setToolTipText(strTip);
-		btnEdit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (startError || endError || rpiError) {
-					JFrame fTemp = new JFrame();
-					JOptionPane.showMessageDialog(fTemp,
-							"Please correct errors");
-				} else
-					editfigures();
-			}
-		});
+		btnEdit.addActionListener(e -> {
+            if (startError || endError || rpiError) {
+                JFrame fTemp = new JFrame();
+                JOptionPane.showMessageDialog(fTemp,
+                        "Please correct errors");
+            } else
+                editfigures();
+        });
 		panBot.add(btnEdit,
 				GridC.getc(x, y).west().fillx().insets(15, 15, 15, 15));
 
 		this.add(panBot, BorderLayout.PAGE_END);
-		modBudget.fireTableDataChanged();
+		budgetModel.fireTableDataChanged();
 		/*
 		 * Set dirty back to false so real changes are caught
 		 */
-		objParams.resetDirty();
+		params.resetDirty();
 	}
 
 	/*
@@ -760,41 +725,40 @@ public class BudgetValuesWindow extends JPanel {
 	public void changeDates() {
 		GridBagConstraints con = new GridBagConstraints();
 		if (boxPeriod.getSelectedItem().equals(Constants.PERIOD_FISCAL)) {
-			jdtStartDate.setDate(jdtFiscalStart.getDate());
-			jdtEndDate.setDate(jdtFiscalEnd.getDate());
+			startDate.setDate(fiscalStart.getDate());
+			endDate.setDate(fiscalEnd.getDate());
 		} else if (boxPeriod.getSelectedItem()
 				.equals(Constants.PERIOD_CALENDAR)) {
-			jdtStartDate.setDate(jdtStartYear.getDate());
-			jdtEndDate.setDate(jdtEndYear.getDate());
+			startDate.setDate(startYear.getDate());
+			endDate.setDate(endYear.getDate());
 		}
 		/*
 		 * update budget lines with new start date
 		 */
-		List<BudgetLine> listLines = objParams.getLines();
+		List<BudgetLine> listLines = params.getLines();
 		for (BudgetLine objBline : listLines) {
-			objBline.setStartDate(jdtStartDate.getDateInt());
+			objBline.setStartDate(startDate.getDateInt());
 		}
 		/*
 		 * set parameters
 		 */
-		objParams.setStartDate(jdtStartDate.getDateInt());
-		objParams.setEndDate(jdtEndDate.getDateInt());
+		params.setStartDate(startDate.getDateInt());
+		params.setEndDate(endDate.getDateInt());
 		/*
 		 * Remove and Add back dates to update panel
 		 */
-		panTop.remove(jdtStartDate);
+		panTop.remove(startDate);
 		panTop.validate();
 		con.gridwidth = 1;
 		con.gridheight = 1;
 		con.anchor = GridBagConstraints.FIRST_LINE_START;
-		con.anchor = GridBagConstraints.FIRST_LINE_START;
 		con.insets = new Insets(10, 10, 10, 10);
 		con.gridx = 1;
 		con.gridy = 1;
-		jdtStartDate.setDisabledTextColor(Color.BLACK);
-		panTop.add(jdtStartDate, con);
-		jdtStartDate.setEnabled(false);
-		panTop.remove(jdtEndDate);
+		startDate.setDisabledTextColor(Color.BLACK);
+		panTop.add(startDate, con);
+		startDate.setEnabled(false);
+		panTop.remove(endDate);
 		GridBagConstraints conend = new GridBagConstraints();
 		conend.insets = new Insets(10, 10, 10, 10);
 		conend.gridx = 3;
@@ -802,12 +766,12 @@ public class BudgetValuesWindow extends JPanel {
 		conend.anchor = GridBagConstraints.FIRST_LINE_START;
 		conend.gridwidth = 1;
 		conend.gridheight = 1;
-		jdtEndDate.setDisabledTextColor(Color.BLACK);
-		panTop.add(jdtEndDate, conend);
-		jdtEndDate.setEnabled(false);
+		endDate.setDisabledTextColor(Color.BLACK);
+		panTop.add(endDate, conend);
+		endDate.setEnabled(false);
 		panTop.validate();
 		panTop.repaint();
-		modBudget.fireTableDataChanged();
+		budgetModel.fireTableDataChanged();
 	}
 
 	/*
@@ -819,26 +783,26 @@ public class BudgetValuesWindow extends JPanel {
 		/*
 		 * do not do anything if date has not changed
 		 */
-		if (jdtStart.parseDateInt() == objParams.getStartDate())
+		if (jdtStart.parseDateInt() == params.getStartDate())
 			return;
 		dtTemp.setTime(jdtStart.getDate());
 		dtTemp.add(Calendar.YEAR, 1);
 		dtTemp.add(Calendar.DAY_OF_YEAR, -1);
-		jdtEndDate.setDate(dtTemp.getTime());
+		endDate.setDate(dtTemp.getTime());
 		/*
 		 * update budget lines with new start date
 		 */
-		List<BudgetLine> listLines = objParams.getLines();
+		List<BudgetLine> listLines = params.getLines();
 		for (BudgetLine objBline : listLines) {
-			objBline.setStartDate(jdtStartDate.getDateInt());
+			objBline.setStartDate(startDate.getDateInt());
 		}
 		/*
 		 * set parameters
 		 */
-		objParams.setStartDate(jdtStartDate.getDateInt());
-		objParams.setEndDate(jdtEndDate.getDateInt());
-		jdtEndDate.revalidate();
-		modBudget.fireTableDataChanged();
+		params.setStartDate(startDate.getDateInt());
+		params.setEndDate(endDate.getDateInt());
+		endDate.revalidate();
+		budgetModel.fireTableDataChanged();
 	}
 
 	/*
@@ -847,7 +811,7 @@ public class BudgetValuesWindow extends JPanel {
 	 */
 	private void changeYears() {
 		int iYears = boxYears.getSelectedIndex() + 1;
-		modBudget.alterYears(iYears);
+		budgetModel.alterYears(iYears);
 		panTop.setSize(iTOPWIDTH + (iYears - 1) * 100, Constants.TOPDEPTH);
 		panMid.setSize(iMIDWIDTH + (iYears - 1) * 100, iMIDDEPTH);
 		panBot.setSize(iBOTWIDTH + (iYears - 1) * 100, Constants.BOTDEPTH);
@@ -856,7 +820,7 @@ public class BudgetValuesWindow extends JPanel {
 				Constants.FRAMEDEPTH);
 		topFrame.invalidate();
 		topFrame.validate();
-		tabBudget.resetCombo(iYears);
+		budgetTable.resetCombo(iYears);
 
 	}
 
@@ -867,7 +831,7 @@ public class BudgetValuesWindow extends JPanel {
 	 * Lines
 	 */
 	private void addAccount() {
-		if (objParams.getMissing().isEmpty()) {
+		if (params.getMissing().isEmpty()) {
 			JFrame fTemp = new JFrame();
 			JOptionPane.showMessageDialog(fTemp,
 					"No more categories available.  Please add using Tools/Categories and restart the extension.");
@@ -875,13 +839,10 @@ public class BudgetValuesWindow extends JPanel {
 		}
 		// Schedule a job for the event dispatch thread:
 		// creating and showing this application's GUI.
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				showAddAccountsWindow();
-				modBudget.fireTableDataChanged();
-			}
-		});
+		javax.swing.SwingUtilities.invokeLater(() -> {
+            showAddAccountsWindow();
+            budgetModel.fireTableDataChanged();
+        });
 	}
 
 	/**
@@ -895,7 +856,7 @@ public class BudgetValuesWindow extends JPanel {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setPreferredSize(new Dimension(Constants.ADDSCREENWIDTH,
 				Constants.ADDSCREENHEIGHT));
-		panAcct = new AddAccountsWindow(objParams);
+		panAcct = new AddAccountsWindow(params);
 		frame.getContentPane().add(panAcct);
 
 		// Display the window.
@@ -908,10 +869,10 @@ public class BudgetValuesWindow extends JPanel {
 	 * Select all lines - sets Selected to true for all lines
 	 */
 	private void selectAll() {
-		for (BudgetLine objLine : objParams.getLines()) {
+		for (BudgetLine objLine : params.getLines()) {
 			objLine.setSelect(true);
 		}
-		modBudget.fireTableDataChanged();
+		budgetModel.fireTableDataChanged();
 		panMid.invalidate();
 	}
 
@@ -919,10 +880,10 @@ public class BudgetValuesWindow extends JPanel {
 	 * Deselect all lines - sets Selected to false for all lines
 	 */
 	private void deselectAll() {
-		for (BudgetLine objLine : objParams.getLines()) {
+		for (BudgetLine objLine : params.getLines()) {
 			objLine.setSelect(false);
 		}
-		modBudget.fireTableDataChanged();
+		budgetModel.fireTableDataChanged();
 		panMid.revalidate();
 	}
 
@@ -931,11 +892,11 @@ public class BudgetValuesWindow extends JPanel {
 	 */
 	private void calculateSelected() {
 
-		if (!objParams.calculateSelected()) {
+		if (!params.calculateSelected()) {
 			JFrame fTemp = new JFrame();
 			JOptionPane.showMessageDialog(fTemp, "No lines to calculate");
 		}
-		modBudget.fireTableDataChanged();
+		budgetModel.fireTableDataChanged();
 		panMid.revalidate();
 	}
 
@@ -943,11 +904,11 @@ public class BudgetValuesWindow extends JPanel {
 	 * calculate all lines - use Budget Parameters to do this work
 	 */
 	private void calculateAll() {
-		if (!objParams.calculateAll()) {
+		if (!params.calculateAll()) {
 			JFrame fTemp = new JFrame();
 			JOptionPane.showMessageDialog(fTemp, "No lines to calculate");
 		}
-		modBudget.fireTableDataChanged();
+		budgetModel.fireTableDataChanged();
 		panMid.revalidate();
 	}
 
@@ -956,14 +917,16 @@ public class BudgetValuesWindow extends JPanel {
 	 */
 	private void deleteSelected() {
 		JFrame fTemp = new JFrame();
-		List<BudgetLine> listLines = objParams.getLines();
+		List<BudgetLine> listLines = params.getLines();
 		/*
 		 * determine if there are any lines to delete
 		 */
 		boolean bFound = false;
 		for (BudgetLine objLine : listLines) {
-			if (objLine.getSelect())
+			if (objLine.getSelect()) {
 				bFound = true;
+				break;
+			}
 		}
 		if (!bFound) {
 			JOptionPane.showMessageDialog(fTemp, "No lines to delete");
@@ -976,31 +939,31 @@ public class BudgetValuesWindow extends JPanel {
 			while (bSelected) {
 				bSelected = false;
 				for (int i = 0; i < listLines.size(); i++) {
-					if (objParams.getItem(i).getSelect()) {
+					if (params.getItem(i).getSelect()) {
 						if (i < listLines.size() - 1
-								&& objParams
+								&& params
 										.getItem(i + 1)
 										.getParent()
-										.equals(objParams.getItem(i)
+										.equals(params.getItem(i)
 												.getCategoryIndent())) {
 							JOptionPane
 									.showMessageDialog(fTemp,
 											"You can not delete a line that has children");
 							break;
 						}
-						objParams.deleteLine(i);
+						params.deleteLine(i);
 						bSelected = true;
 						/*
 						 * listLines has changed, need to reload and reiterate
 						 * the list
 						 */
-						listLines = objParams.getLines();
+						listLines = params.getLines();
 						break;
 					}
 				}
 			}
-			objParams.setDirty(true);
-			modBudget.fireTableDataChanged();
+			params.setDirty(true);
+			budgetModel.fireTableDataChanged();
 			panMid.revalidate();
 		}
 	}
@@ -1009,7 +972,7 @@ public class BudgetValuesWindow extends JPanel {
 	 * Generate Budget Items using lines
 	 */
 	private void generate() {
-		if (objParams.getManual()) {
+		if (params.getManual()) {
 			JFrame fTemp = new JFrame();
 			int iResult = JOptionPane
 					.showConfirmDialog(
@@ -1024,7 +987,7 @@ public class BudgetValuesWindow extends JPanel {
 				"Moneydance Budget Generator - Generated Figures");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		panGen = new GenerateWindow(boxYears.getSelectedIndex(), iType,
-				objParams, Constants.GENERATE);
+				params, Constants.GENERATE);
 		frame.getContentPane().add(panGen);
 
 		// Display the window.
@@ -1049,7 +1012,7 @@ public class BudgetValuesWindow extends JPanel {
 				"Moneydance Budget Generator - Generated Figures");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		panGen = new GenerateWindow(boxYears.getSelectedIndex(), iType,
-				objParams, Constants.MANUAL);
+				params, Constants.MANUAL);
 		frame.getContentPane().add(panGen);
 
 		// Display the window.
@@ -1064,13 +1027,13 @@ public class BudgetValuesWindow extends JPanel {
 	 */
 
 	public void close() {
-		if (objParams.isDirty()) {
+		if (params.isDirty()) {
 			JFrame fTemp = new JFrame();
 			int iResult = JOptionPane
 					.showConfirmDialog(fTemp,
 							"The parameters have been changed.  Do you wish to save them?");
 			if (iResult == JOptionPane.YES_OPTION) {
-				objParams.saveParams();
+				params.saveParams();
 			}
 		}
 		/*
@@ -1096,7 +1059,7 @@ public class BudgetValuesWindow extends JPanel {
 	 * save parameters at user request
 	 */
 	private void save() {
-		objParams.saveParams();
+		params.saveParams();
 	}
 
 	/*

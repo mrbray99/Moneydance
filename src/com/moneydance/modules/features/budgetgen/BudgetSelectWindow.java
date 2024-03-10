@@ -63,6 +63,7 @@ import com.infinitekind.moneydance.model.Budget;
 import com.infinitekind.moneydance.model.BudgetList;
 import com.infinitekind.moneydance.model.PeriodType;
 import com.moneydance.apps.md.controller.FeatureModuleContext;
+import com.moneydance.apps.md.view.MoneydanceUI;
 import com.moneydance.awt.AwtUtil;
 import com.moneydance.awt.GridC;
 import com.moneydance.modules.features.mrbutil.MRBPreferences2;
@@ -95,6 +96,7 @@ public class BudgetSelectWindow extends JFrame {
 	private JButton incomeValuesBtn;
 	private JButton closeCB;
 	private JButton chooseBtn;
+	private JButton helpBtn;
 	private JTextField fileNameFld;
 	private JTextField budgetNameFld;
 	private JComboBox<String> budgetTypesCB;
@@ -102,6 +104,8 @@ public class BudgetSelectWindow extends JFrame {
 	private JFileChooser fileChooser = null;
 	private File parameters;
 	public boolean errorFnd;
+	private MoneydanceUI mdGUI;
+	private com.moneydance.apps.md.controller.Main mdMain;
 	/*
 	 * Preferences
 	 */
@@ -118,6 +122,8 @@ public class BudgetSelectWindow extends JFrame {
 	 */
 	public BudgetSelectWindow(Main ext) {
 		super("Budget Generator");
+		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
+		mdGUI = mdMain.getUI();
 		errorFnd = false;
 		fileChooser = new JFileChooser();
 		this.extension = ext;
@@ -259,6 +265,16 @@ public class BudgetSelectWindow extends JFrame {
 			}
 		});
 		panScreen.add(closeCB, GridC.getc(ix++,iy).insets(10, 10, 10, 10));
+		helpBtn = new JButton("Help");
+		helpBtn.setToolTipText("Display help information");
+		helpBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String url = "https://github.com/mrbray99/moneydanceproduction/wiki/Budget-Gen";
+				mdGUI.showInternetURL(url);
+			}
+		});
+		panScreen.add(helpBtn, GridC.getc(ix, iy).west().insets(10, 10, 10, 10));
 		getContentPane().add(panScreen);
 		pack();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

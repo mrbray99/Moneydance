@@ -78,24 +78,4 @@ public class ReportRow {
 			Main.rwDebugInst.debugThread("SelectionRow", "delete", MRBDebug.SUMMARY, "Delete failed "+fileName);
 
 	}
-	public static List<String> getSelections(Parameters params){
-		String reportDirectory = params.getReportDirectory();
-		List<String> list = new ArrayList<>();
-		if (reportDirectory == null || reportDirectory == Constants.NODIRECTORY)
-			return null;
-		
-		list.clear();
-		File folder = new File(reportDirectory);
-		File [] files = folder.listFiles();
-		for (int i=0;i<files.length;i++) {
-			if (files[i].isFile()) {
-				String fileName = files[i].getName();
-				Main.rwDebugInst.debugThread("SelectionRow", "getSelections", MRBDebug.SUMMARY, "Processing "+fileName);
-				if (fileName.toLowerCase().endsWith(Constants.REPORTEXTENSION)) {
-					list.add(fileName.substring(0,fileName.lastIndexOf(".")));
-				}
-			}
-		}
-		return list;
-	}
 }

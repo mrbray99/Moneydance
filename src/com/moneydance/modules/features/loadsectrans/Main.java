@@ -49,8 +49,7 @@ import com.infinitekind.util.CustomDateFormat;
 import com.moneydance.apps.md.controller.FeatureModule;
 import com.moneydance.apps.md.controller.FeatureModuleContext;
 import com.moneydance.apps.md.controller.UserPreferences;
-import com.moneydance.modules.features.mrbutil.MRBDebug;
-import com.moneydance.modules.features.mrbutil.Platform;
+import com.moneydance.modules.features.mrbutil.MRBPlatform;
 
 
 /** Moneydance extension to load security transactions from a file and generates 
@@ -95,7 +94,7 @@ extends FeatureModule
 			e.printStackTrace(System.err);
 		}
 		buildNum = getBuild();
-		buildStr = String.valueOf(buildNum);  
+		buildStr = String.valueOf(buildNum);
 	}
 	/*
 	 * Get Icon is not really needed as Icons are not used.  Included as the 
@@ -109,8 +108,8 @@ extends FeatureModule
 					cl.getResourceAsStream("/com/moneydance/modules/features/loadsectrans/"+action);
 			if (in != null) {
 				ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
-				byte buf[] = new byte[256];
-				int n = 0;
+				byte[] buf = new byte[256];
+				int n ;
 				while((n=in.read(buf, 0, buf.length))>=0)
 					bout.write(buf, 0, n);
 				return Toolkit.getDefaultToolkit().createImage(bout.toByteArray());
@@ -129,7 +128,7 @@ extends FeatureModule
 	public void invoke(String uri) {
 		String command = uri;
 		int theIdx = uri.indexOf('?');
-		if (Platform.isUnix() || Platform.isFreeBSD()) {
+		if (MRBPlatform.isUnix() || MRBPlatform.isFreeBSD()) {
 			if(selectedBlack == null) {
 				selectedBlack = getIcon(Constants.SELECTEDBLACKIMAGE);
 				selectedLight = getIcon(Constants.SELECTEDLIGHTIMAGE);
@@ -181,7 +180,7 @@ extends FeatureModule
 	private synchronized void showConsole() {
 		root = context.getRootAccount();
 		acctBook = context.getCurrentAccountBook();
-		mapAccounts = new TreeMap<String, Account> ();
+		mapAccounts = new TreeMap<>();
 		tranSet = acctBook.getTransactionSet();
 		JFrame frame = new JFrame("Load Security Transactions - Build "+buildStr);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -191,10 +190,6 @@ extends FeatureModule
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-	}
-
-	FeatureModuleContext getUnprotectedContext() {
-		return getContext();
 	}
 
 	synchronized void closeConsole() {

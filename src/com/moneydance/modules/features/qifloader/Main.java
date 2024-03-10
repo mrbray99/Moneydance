@@ -50,7 +50,8 @@ import com.moneydance.apps.md.controller.FeatureModule;
 import com.moneydance.apps.md.controller.FeatureModuleContext;
 import com.moneydance.apps.md.controller.UserPreferences;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
-import com.moneydance.modules.features.mrbutil.Platform;
+import com.moneydance.modules.features.mrbutil.MRBPreferences2;
+import com.moneydance.modules.features.mrbutil.MRBPlatform;
 
 
 
@@ -69,7 +70,6 @@ extends FeatureModule
 	public static AccountBook acctBook;
 	public static Main extension;
 	public static TransactionSet tranSet;
-	public static MyTransactionSet generatedTranSet;
 	public static SortedMap<String,Account> mapAccounts;
 	private static int buildNum;
 	public static String buildStr = "2019";
@@ -143,7 +143,7 @@ extends FeatureModule
 				command = uri.substring(0, theIdx);
 			}
 		}
-		if (Platform.isUnix() || Platform.isFreeBSD()) {
+		if (MRBPlatform.isUnix() || MRBPlatform.isFreeBSD()) {
 			if(selectedBlack == null) {
 				selectedBlack = getIcon(Constants.SELECTEDBLACKIMAGE);
 				selectedLight = getIcon(Constants.SELECTEDLIGHTIMAGE);
@@ -177,6 +177,7 @@ extends FeatureModule
 				}
 			}
 		}
+		MRBPreferences2.loadPreferences(context);
 		if(command.equals("showconsole")) {
 			showConsole();
 		}    

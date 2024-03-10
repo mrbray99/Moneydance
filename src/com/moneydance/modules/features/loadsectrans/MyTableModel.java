@@ -42,11 +42,11 @@ import com.infinitekind.moneydance.model.Account;
 
 public class MyTableModel extends DefaultTableModel {
     private List<SecLine>listLines;
-	private static String[] arrColumns = {"Select","Ticker","Settle","C","Reference","Description","Value"};
+	private static String[] arrColumns = {"Select","Ticker","Settle","C","Reference","Description","Value","Units"};
 
 	public MyTableModel(Set<SecLine> setLinesp,SortedMap<String,Account> mapAccountsp){
 		super();
-		listLines = new ArrayList<SecLine> (setLinesp);
+		listLines = new ArrayList<>(setLinesp);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class MyTableModel extends DefaultTableModel {
 
 		@Override
 	public int getColumnCount() {
-			return 7;
+			return 8;
 	}	
 	@Override
 	public String getColumnName(int c) {
@@ -75,23 +75,17 @@ public class MyTableModel extends DefaultTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		DecimalFormat dfNumbers = new DecimalFormat("#0.0000");
-		switch (columnIndex) {
-		case 0:
-			return  listLines.get(rowIndex).getSelect();
-		case 1:
-			return  listLines.get(rowIndex).getTicker();
-		case 2:
-			return  Main.cdate.format(listLines.get(rowIndex).getDate());
-		case 3:
-			return  listLines.get(rowIndex).getCleared();
-		case 4:
-			return  listLines.get(rowIndex).getReference();
-		case 5:
-			return  listLines.get(rowIndex).getDescription();
-		default:
-			
-			return dfNumbers.format(listLines.get(rowIndex).getValue()/100.0);
-		}
+        return switch (columnIndex) {
+            case 0 -> listLines.get(rowIndex).getSelect();
+            case 1 -> listLines.get(rowIndex).getTicker();
+            case 2 -> Main.cdate.format(listLines.get(rowIndex).getDate());
+            case 3 -> listLines.get(rowIndex).getCleared();
+            case 4 -> listLines.get(rowIndex).getTranType();
+            case 5 -> listLines.get(rowIndex).getDescription();
+            case 6 -> dfNumbers.format(listLines.get(rowIndex).getValue() / 100.0);
+            case 7 -> dfNumbers.format(listLines.get(rowIndex).getUnit());
+            default -> "";
+        };
 	}
 	@Override
     public boolean isCellEditable(int row, int col) {
@@ -99,10 +93,7 @@ public class MyTableModel extends DefaultTableModel {
          * Only Select, amount, period, start date and RPI are editable
          * Category, Year 1, Year 2, Year 3 are not
          */
-		if (col ==0 && !listLines.get(row).getIgnore())
-			return true;
-		else
-			return false;
+        return col == 0 && !listLines.get(row).getIgnore();
     }
 	@Override
 	public void setValueAt(Object value, int row, int col){

@@ -38,10 +38,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.moneydance.apps.md.view.MoneydanceUI;
 import com.moneydance.modules.features.mrbutil.HelpMenu;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
-import com.moneydance.modules.features.mrbutil.Platform;
+import com.moneydance.modules.features.mrbutil.MRBPlatform;
 
 public class FileSelectWindow extends JPanel implements ActionListener{
 	  private static final long serialVersionUID = 1L;
@@ -82,14 +81,10 @@ public class FileSelectWindow extends JPanel implements ActionListener{
 	  private JRadioButtonMenuItem rbInfo;
 	  private JRadioButtonMenuItem rbSumm;
 	  private JRadioButtonMenuItem rbDet;
-		private MoneydanceUI mdGUI;
-		private com.moneydance.apps.md.controller.Main mdMain;
 	public FileSelectWindow() throws HeadlessException {
 //		try {
 //	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 //	    } catch (IllegalAccessException | UnsupportedLookAndFeelException | InstantiationException | ClassNotFoundException e) {}
-		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
-		mdGUI = mdMain.getUI();
 		GridBagLayout gbl_panel = new GridBagLayout();
 		this.setLayout(gbl_panel);
 		hmMenu = new HelpMenu ("Help");
@@ -610,7 +605,7 @@ public class FileSelectWindow extends JPanel implements ActionListener{
 		cbVolume.addItem(Parameters.strDoNotLoad);
 		String strDirectory = objParms.getDirectory();
 		String strFileName="";
-		if (Platform.isOSX()) {
+		if (MRBPlatform.isOSX()) {
 			JFrame parentWindow = (JFrame) SwingUtilities.getWindowAncestor(this); 
 		       System.setProperty("com.apple.macos.use-file-dialog-packages", "true");
 	         FileDialog fwin = new FileDialog(parentWindow, "choose_file", FileDialog.LOAD);
@@ -1009,8 +1004,23 @@ public class FileSelectWindow extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent aeMenu) {
 		JMenuItem miSource = (JMenuItem)(aeMenu.getSource());
 		if (miSource == miOnline) {
-		       String url = "http://bitbucket.com/mikerb/moneydance-2019/wiki/Security%20Price%20Load";
-		       mdGUI.showInternetURL(url);
+		       String url = "http://github.com/mrbray99/moneydanceproduction/wiki/Security-Price-and-History-Load";
+
+		        if(Desktop.isDesktopSupported()){
+		            Desktop desktop = Desktop.getDesktop();
+		            try {
+		                desktop.browse(new URI(url));
+		            } catch (IOException | URISyntaxException e) {
+		                e.printStackTrace();
+		            }
+		        }else{
+		            Runtime runtime = Runtime.getRuntime();
+		            try {
+		                runtime.exec("xdg-open " + url);
+		            } catch (IOException e) {
+		                e.printStackTrace();
+		            }
+		        }
 		    }
 		if (miSource == rbOff){
 			objDebug.setDebugLevel(MRBDebug.OFF);

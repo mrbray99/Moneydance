@@ -3,7 +3,7 @@
   "module_build" = "3205"
   "minbuild" = "1860"
   "vendor.url" = "http://https://bitbucket.org/mikerb/moneydance-2019/wiki/Report%20Writer"
-  "module_name" = "Report Writer 3028.01"
+  "module_name" = "Report Writer 3205"
   "module_desc" = "<html><body><title>Report Writer</title>><p>A general purpose reporting and data extraction tool for Moneydance
 </body></html>"
 "desc" ="A general purpose reporting and data extraction tool for Moneydance"

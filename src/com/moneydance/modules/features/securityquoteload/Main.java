@@ -58,7 +58,7 @@ import com.moneydance.apps.md.controller.UserPreferences;
 import com.moneydance.apps.md.view.MoneydanceUI;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.MRBPreferences2;
-import com.moneydance.modules.features.mrbutil.Platform;
+import com.moneydance.modules.features.mrbutil.MRBPlatform;
 import com.moneydance.modules.features.securityquoteload.quotes.QuoteManager;
 import com.moneydance.modules.features.securityquoteload.view.CalculateRunDate;
 
@@ -393,7 +393,7 @@ public class Main extends FeatureModule {
 		/*
 		 * load JCheckBox icons for Unix due to customised UIManager Look and feel
 		 */
-		if (Platform.isUnix() || Platform.isFreeBSD()) {
+		if (MRBPlatform.isUnix() || MRBPlatform.isFreeBSD()) {
 			if (selectedBlack == null) {
 				selectedBlack = getIcon(Constants.SELECTEDBLACKIMAGE);
 				selectedLight = getIcon(Constants.SELECTEDLIGHTIMAGE);

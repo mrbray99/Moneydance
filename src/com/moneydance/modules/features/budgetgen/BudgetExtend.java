@@ -66,15 +66,9 @@ public class BudgetExtend {
 	/*
 	 * map and tuple class for holding current items
 	 */
-	private Map<Account,List<Pair<DateRange,BudgetItem>>> mapItems = new HashMap<Account,List<Pair<DateRange,BudgetItem>>>();
-	public class Pair<S, T> {
-	    public final S x;
-	    public final T y;
+	private Map<Account,List<Pair<DateRange,BudgetItem>>> mapItems = new HashMap<>();
 
-	    public Pair(S x, T y) { 
-	        this.x = x;
-	        this.y = y;
-	    }
+	public record Pair<S, T>(S x, T y) {
 	}
 	/*
 	 * Map for previous items
@@ -89,7 +83,7 @@ public class BudgetExtend {
 	    Calendar gc = Calendar.getInstance();
 	    iYear = gc.get(Calendar.YEAR);
 	    Calendar dtYear = Calendar.getInstance();
-	    dtYear.set(iYear,0, 1);
+	    dtYear.set(iYear,Calendar.JANUARY, 1);
 	    Calendar dtFiscalStart = Calendar.getInstance();
 	    dtFiscalStart.set(iYear,iFiscalMonth-1,iFiscalDay);
 	    Calendar dtToday = new GregorianCalendar();
@@ -154,12 +148,12 @@ public class BudgetExtend {
 			List<Pair<DateRange,BudgetItem>> listPairs = mapItems.get(objItem.getTransferAccount());
 			DateRange drPeriod = new DateRange(objItem.getIntervalStartDate(),objItem.getIntervalEndDate());
 			if (listPairs == null) {
-				List<Pair<DateRange,BudgetItem>> listItems = new ArrayList<Pair<DateRange,BudgetItem>>();
-				listItems.add(new Pair<DateRange,BudgetItem>(drPeriod,objItem));
+				List<Pair<DateRange,BudgetItem>> listItems = new ArrayList<>();
+				listItems.add(new Pair<>(drPeriod, objItem));
 				mapItems.put(objItem.getTransferAccount(), listItems);
 			}
 			else {
-				listPairs.add(new Pair<DateRange,BudgetItem>(drPeriod,objItem));
+				listPairs.add(new Pair<>(drPeriod, objItem));
 			}
 		}
 		
@@ -197,18 +191,8 @@ public class BudgetExtend {
 	public JDateField getFiscalStart() {
 		return jdtFiscalStart;
 	}
-	public int getItemCount() {
-		return listBudItems.size();
-	}
-	public BudgetItem getItem(int index) {
-		try {
-			return listBudItems.get(index);
-		}
-		catch (Exception e) {
- 			System.err.println("MRB Extension Budge Generator - inconsistent Budget Record "+getName());
-			return null;
-		}
-	}
+
+
 	/*
 	 * get current budget values for specified dates and dates
 	 */

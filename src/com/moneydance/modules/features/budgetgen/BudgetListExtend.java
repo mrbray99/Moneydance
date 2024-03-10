@@ -59,7 +59,7 @@ public class BudgetListExtend {
 		resetList();
 	}
 	public void resetList() {
-		mapBudgets = new HashMap<String,Budget>();
+		mapBudgets = new HashMap<>();
 		List<Budget> listBudgets = budgetList.getAllBudgets();
 		for (Budget objBud: listBudgets) {
 			if (objBud.isNewStyle())
@@ -71,8 +71,7 @@ public class BudgetListExtend {
 	 */
 	public String [] getBudgetNames () {
 		Set<String> setNames = mapBudgets.keySet();
-		String [] arrNames = setNames.toArray(new String[0]);
-		return arrNames;
+        return setNames.toArray(new String[0]);
 	}
 	/*
 	 * Return a new BudgetExtend object from a name

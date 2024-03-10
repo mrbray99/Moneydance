@@ -53,7 +53,6 @@ import com.moneydance.modules.features.reportwriter.view.DataRow;
 import com.moneydance.modules.features.reportwriter.view.ReportDataRow;
 import com.moneydance.modules.features.reportwriter.view.ReportRow;
 import com.moneydance.modules.features.reportwriter.view.SelectionRow;
-import com.moneydance.modules.features.reportwriter.view.TemplateRow;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -67,7 +66,6 @@ public class Parameters implements Serializable{
 	private String dataDirectory;
 	private String outputDirectory;
 	private String reportDirectory;
-	private List<TemplateRow> templateList;
 	private List<SelectionRow> selectionList;
 	private List<DataRow> dataList;
 	private List<ReportRow> reportList;
@@ -116,16 +114,12 @@ public class Parameters implements Serializable{
 		}
 		dataDirectory = newParams.getDataDirectory();
 		outputDirectory = newParams.getOutputDirectory();
-		reportDirectory = newParams.getReportDirectory();
 		introScreen = newParams.getIntroScreen();
-		templateList = new ArrayList<>();
 		dataList = new ArrayList<>();
 		selectionList = new ArrayList<>();
 		reportList = new ArrayList<>();
 		setDataTemplates();
-		setReportTemplates();
-
-	} 
+	}
 	public static Parameters getInstance() {
 		return thisObj;
 	}
@@ -205,32 +199,7 @@ public class Parameters implements Serializable{
 		else
 			dataDirectory = Constants.NODIRECTORY;
 	}
-	public void setReportTemplates() {
-		Main.rwDebugInst.debugThread("Parameters", "setReportTemplates", MRBDebug.SUMMARY, "Report Directory "+reportDirectory);
-		if (reportDirectory == null || reportDirectory.equals(Constants.NODIRECTORY))
-			return;
-		templateList.clear();
-		File folder = new File(reportDirectory);
-		File [] files = folder.listFiles();
-		if (files != null && files.length>0) {
-			for (int i=0;i<files.length;i++) {
-				if (files[i].isFile()) {
-					String fileName = files[i].getName();
-					Main.rwDebugInst.debugThread("Parameters", "setReportTemplates", MRBDebug.SUMMARY, "Processing "+fileName);
-					if (fileName.toLowerCase().endsWith(Constants.TEMPLATEEXTENSION)) {
-							TemplateRow newRow = new TemplateRow(this);
-							newRow.setName(fileName.substring(0,fileName.lastIndexOf(".")));
-							newRow.setFileName(files[i].getAbsolutePath());
-							newRow.setLastVerified(Main.cdate.format(new Date(files[i].lastModified())));
-							templateList.add(newRow);
-					}
-				}
-			}
-		}
-		else
-			reportDirectory=Constants.NODIRECTORY;
-	}
-	
+
 	public String getDataDirectory() {
 		return dataDirectory;
 	}
@@ -239,25 +208,10 @@ public class Parameters implements Serializable{
 		this.dataDirectory = dataDirectory;
 	}
 
-	public String getReportDirectory() {
-		return reportDirectory;
-	}
-
-	public void setReportDirectory(String reportDirectory) {
-		this.reportDirectory = reportDirectory;
-	}
-	public List<TemplateRow> getTemplateList() {
-		return templateList;
-	}
-	public void setTemplateList(List<TemplateRow> templateList) {
-		this.templateList = templateList;
-	}
-
 	public List<SelectionRow> getSelectionList() {
 		return selectionList;
 	}
-	
-	
+
 	public String getOutputDirectory() {
 		return outputDirectory;
 	}
@@ -380,7 +334,6 @@ public class Parameters implements Serializable{
 		 * create the file
 		 */
 		newParams.setDataDirectory(dataDirectory);
-		newParams.setReportDirectory(reportDirectory);
 		newParams.setOutputDirectory(outputDirectory);
 		newParams.setIntroScreen(introScreen);
 

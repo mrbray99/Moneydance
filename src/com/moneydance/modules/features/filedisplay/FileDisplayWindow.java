@@ -24,6 +24,7 @@ import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
 
 import com.infinitekind.util.CustomDateFormat;
+import com.moneydance.apps.md.view.MoneydanceUI;
 import com.moneydance.awt.AwtUtil;
 import com.moneydance.awt.GridC;
 import com.moneydance.awt.JDateField;
@@ -67,9 +68,14 @@ public class FileDisplayWindow extends JFrame {
 	private JPanel panButtons;
 	private DetailedFileDisplayWindow detailedWindow;
 	private JButton copyright;
+	private MoneydanceUI mdGUI;
+	private com.moneydance.apps.md.controller.Main mdMain;
+	private JButton helpBtn;
 
 	public FileDisplayWindow(Main extensionp) {
 		super("File Display - Build "+Main.buildStr);
+		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
+		mdGUI = mdMain.getUI();
 		setResizable(false);
 		this.extension = extensionp;
 		panApp = new JPanel(new BorderLayout());
@@ -336,8 +342,14 @@ public class FileDisplayWindow extends JFrame {
 			}
 		});
 		col = 2;
-		panButtons.add(transButton, GridC.getc(col,row).fillx().west().insets(5, 5, 5, 5));
-		row++;
+		panButtons.add(transButton, GridC.getc(col++,row).fillx().west().insets(5, 5, 5, 5));
+		helpBtn = new JButton("Help");
+		helpBtn.setToolTipText("Display help information");
+		helpBtn.addActionListener(e -> {
+			String url = "https://github.com/mrbray99/moneydanceproduction/wiki/File-Display";
+			mdGUI.showInternetURL(url);
+		});
+		panButtons.add(helpBtn, GridC.getc(col, row).west().insets(10, 10, 10, 10));
 		panApp.add(panButtons, BorderLayout.PAGE_END);
 		/*
 		 * Add main panel

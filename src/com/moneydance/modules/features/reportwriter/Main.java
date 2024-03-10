@@ -40,13 +40,10 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -56,7 +53,6 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -91,7 +87,6 @@ import com.moneydance.modules.features.reportwriter.factory.OutputCSV;
 import com.moneydance.modules.features.reportwriter.factory.OutputDatabase;
 import com.moneydance.modules.features.reportwriter.factory.OutputFactory;
 import com.moneydance.modules.features.reportwriter.factory.OutputSpreadsheet;
-import com.moneydance.modules.features.reportwriter.sandbox.MyJarLauncher;
 import com.moneydance.modules.features.reportwriter.view.AccelKeys;
 import com.moneydance.modules.features.reportwriter.view.MyReport;
 import com.moneydance.modules.features.reportwriter.view.ReportDataRow;
@@ -113,8 +108,6 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 {
 	public static String minorBuildNo = "00";
 	public static String databaseChanged = "20210121";
-	private static MyJarLauncher launcher=null;
-	private static MyJarLauncher dbLauncher=null;
 
 	public static SimpleDateFormat cdate;
 	public static DateTimeFormatter cdateFX;
@@ -158,7 +151,6 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	public static Image mainIcon;
 	public static MRBPreferences2 preferences;
 	public static ClassLoader loader;
-	private Database database;
 	private static Scene scene;
 	public int SCREENWIDTH;
 	public int SCREENHEIGHT;
@@ -223,13 +215,15 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 					loader.getResourceAsStream(Constants.RESOURCES+resource);
 			if (in != null) {
 				ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
-				byte buf[] = new byte[256];
-				int n = 0;
+				byte[] buf = new byte[256];
+				int n;
 				while((n=in.read(buf, 0, buf.length))>=0)
 					bout.write(buf, 0, n);
 				return Toolkit.getDefaultToolkit().createImage(bout.toByteArray());
 			}
-		} catch (Throwable e) { }
+		} catch (Throwable e) {
+			rwDebugInst.debug("ReportWriter", "getIcon", MRBDebug.INFO,"Error loading image "+resource );
+		}
 		return null;
 	}
 	/*
@@ -274,7 +268,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 			MRBPreferences2.loadPreferences(context);
 			preferences = MRBPreferences2.getInstance();		
 			rwDebugInst.setDebugLevel(preferences.getInt(Constants.PROGRAMNAME+"."+Constants.DEBUGLEVEL, MRBDebug.INFO));
-			String debug="OFF";
+			String debug;
 			if (rwDebugInst.getDebugLevel()==MRBDebug.INFO)
 				debug = "INFO";
 			else if (rwDebugInst.getDebugLevel()==MRBDebug.SUMMARY)
@@ -292,30 +286,15 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	private boolean setReportDirectory() {
 		File extensionData = MRBDirectoryUtils.getExtensionDataDirectory(Constants.PROGRAMNAME);
 		extensionDir = extensionData.getAbsolutePath();
-		Boolean fileFound = false;
-		Boolean dbFound = false;
+		boolean fileFound = false;
+		boolean dbFound = false;
 		String fileVersion=null;
 		String fileName="";
-		if (extensionData != null && extensionData.exists()) {
+		if (extensionData.exists()) {
 			rwDebugInst.debug("Main", "setReportDirectory", MRBDebug.SUMMARY, "Extension directory found");
 			String [] filenames = extensionData.list();
 			for (String jarFile : filenames) {
 				rwDebugInst.debug("Main", "setReportDirectory", MRBDebug.SUMMARY, "File "+jarFile);
-				if (jarFile.startsWith("MDJasper") && jarFile.endsWith(".jar")) {
-					fileFound = true;
-					int dash = jarFile.indexOf('-');
-					if (fileVersion == null) {
-						fileVersion = jarFile.substring(dash+1,dash+5);
-						fileName=jarFile;
-					}
-					else {
-						if(fileVersion.compareTo(jarFile.substring(dash+1, dash+5))<0) {
-							fileVersion = jarFile.substring(dash+1,dash+5);
-							fileName=jarFile;							
-						}
-					}
-					continue;
-				}
 				if (jarFile.startsWith("h2-") && jarFile.endsWith(".jar")) {
 					dbFound = true;
 					continue;
@@ -338,27 +317,6 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		else {
 			rwDebugInst.debug("Main", "setReportDirectory", MRBDebug.SUMMARY, "Extension directory not found");
 			return false;
-		}
-		if (fileFound && fileVersion.compareTo(Constants.JASPERJAR.substring(15,19)) < 0) {
-			File oldJar = new File(extensionDir+"/"+fileName);
-			if (oldJar.exists())
-				oldJar.delete();
-			fileFound = false;
-		}
-		if (!fileFound) {
-			InputStream stream = this.getClass().getResourceAsStream(Constants.RESOURCES+Constants.JASPERJAR);
-			if (stream != null) {
-				try {
-					String newName = extensionDir+"/"+Constants.JASPERJAR;
-					newName = newName.replace("jarsav", "jar");
-					Files.copy(stream, Paths.get(newName),StandardCopyOption.REPLACE_EXISTING);
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-					rwDebugInst.debug("Main", "setReportDirectory", MRBDebug.SUMMARY, "Error copying jar file ");					
-					return false;
-				}
-			}
 		}
 		if (!dbFound) {
 			InputStream stream = this.getClass().getResourceAsStream(Constants.RESOURCES+Constants.DATABASEJAR);
@@ -414,7 +372,11 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 				command = uri.substring(0, theIdx);
 			}
 		}
-		/*
+		if (Utilities.getPlatform().contains("arm")){
+			JOptionPane.showMessageDialog(null,"This extension will not run on ARM based processors");
+			return;
+		}
+        /*
 		 * showConsole will be on AWT-Event-Queue, all other commands will be on the thread of the calling
 		 * program, make sure all commands are processed on the AWT-Event-Queue to preserve sequence
 		 */
@@ -437,9 +399,10 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 					e.printStackTrace();
 				}
 			}else{
-				Runtime runtime = Runtime.getRuntime();
+				ProcessBuilder process = new ProcessBuilder();
 				try {
-					runtime.exec("xdg-open " + url);
+					process.command("xdg-open " +url);
+					process.start();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -458,8 +421,6 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	 */
 	private void createAndShowGUI() {
 		rwDebugInst.debug("ReportWriter", "createandShowGUI", MRBDebug.SUMMARY, "cleanup  ");
-		if (launcher == null)
-			initServices();
 		if (extensionOpen && frame !=null) {
 			frame.requestFocus();
 			return;
@@ -522,13 +483,10 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 			public void componentHidden(ComponentEvent e) {			
 			}
 		});
-		Platform.runLater(new Runnable () {
-			@Override
-			public void run() {
-				extensionOpen=true;
-				initFX(frameReport);
-			}
-		});
+		Platform.runLater(() -> {
+            extensionOpen=true;
+            initFX(frameReport);
+        });
 	}
 	/*
 	 * Initiate JavaFX, this runs on the FX thread
@@ -549,12 +507,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	 */
 	private synchronized void showConsole() {
 		rwDebugInst.debug("Main", "showConsole", MRBDebug.INFO, "Show Console");
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				createAndShowGUI();
-			}
-		});
+		javax.swing.SwingUtilities.invokeLater(this::createAndShowGUI);
 
 	}
 	/**
@@ -634,8 +587,8 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 				securities.add(row);
 			}
 		}
-		Collections.sort(currencies,new CompareCurrency());		
-		Collections.sort(securities,new CompareCurrency());		
+		currencies.sort(new CompareCurrency());
+		securities.sort(new CompareCurrency());
 	}
 	private synchronized void loadAccounts() {
 		AccountIterator it = new AccountIterator(book);
@@ -721,8 +674,6 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 				row.setInActive(acct.getAccountIsInactive());
 				expenseCategories.add(row);
 				break;
-			case ROOT:
-				break;
 			case SECURITY:
 				row.setText("   "+acct.getAccountName());
 				row.setType("Security");
@@ -730,6 +681,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 				row.setInActive(acct.getCurrentBalance() == 0L);
 				securityAccounts.add(row);
 				break;
+			case ROOT:
 			default:
 				break;
 			}
@@ -743,50 +695,11 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 			
 		}
 	}
-	/*
-	 * find Jasper Server jar and associate with a class loader.  This will create an instance of JasperReports and obtain 
-	 * pointers to the methods
-	 * 
-	 */
-	public void initServices() {
-		rwDebugInst.debug("Main","initServices",MRBDebug.SUMMARY,"Initialising services");
-		File launcherFile = Utilities.getLauncherFile();
-		if ((launcherFile != null) && (launcherFile.exists())) {
-			try {
-				launcher = new MyJarLauncher(launcherFile);
-				Main.setLauncher(launcher);	
-				try {
-				    File direct = MRBDirectoryUtils.getExtensionDataDirectory(Constants.PROGRAMNAME);
-				    String [] args = {direct.getAbsolutePath(),Constants.JASPERJAR};
-					Object [] foldersWrapper = {args};
-					launcher.getSetExtension().invoke(launcher.getInstance(),foldersWrapper);
-				}
-				catch (Exception e) {
-					OptionMessage.displayMessage("Error setting environment "+e.getLocalizedMessage());
-					return;								
-				}
-				
-				rwDebugInst.debug("Main","initServices",MRBDebug.SUMMARY,"launcher: " + getLauncher());
-			} catch (Exception e) {
-				rwDebugInst.debug("Main","initServices",MRBDebug.SUMMARY,e.getMessage());
-				JOptionPane.showMessageDialog(null,"Error initialising Jasper Reports. View Console Log for more details");
-			}
-		}
-	}
-	public static MyJarLauncher getLauncher() {
-		return launcher;
-	}
 
-	private static void setLauncher(MyJarLauncher launcherp) {
-		launcher = launcherp;
-	}
-	public static MyJarLauncher getDbLauncher() {
-		return dbLauncher;
-	}
 
 	/*
 	 * running on EDT
-	 * Obtains data and writes to an h2 database
+	 * Obtains data and writes to a h2 database
 	 * Compiles the Jasper Report producing {name}.jasper
 	 * Fills it with data producing {name}.jrprint
 	 * Displays the report
@@ -794,7 +707,6 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	 * Output files are stored in the defined reports directory
 	 * A temporary file with a .java extension is created in the extension data directory
 	 */
-	@SuppressWarnings("unused")
 	private void viewReport(String uri)  {
 		String name = uri.substring(uri.indexOf("?")+1);
 		Parameters params = Parameters.getInstance();
@@ -808,9 +720,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		try {
 			switch (rowEdit.getType()) {
 			case DATABASE:
-			case JASPER :
 				output = new OutputDatabase(rowEdit,params);
-				database = ((OutputDatabase)output).getDatabase();
 				break;
 			case SPREADSHEET :
 				output = new OutputSpreadsheet(rowEdit,params);
@@ -832,83 +742,12 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 				try {
 					output.closeOutputFile();
 				}
-				catch (RWException e2) {}
+				catch (RWException e2) {
+					JOptionPane.showMessageDialog(null,"Error closing output file "+e2.getLocalizedMessage());
+				}
 			}
 			output = null;
 			return;
-		}
-		if (rowEdit.getType() == Constants.ReportType.JASPER) {
-			try {
-				launcher.getSetEnvironment().invoke(launcher.getInstance(),params.getReportDirectory());
-				rwDebugInst.debug("Main","viewReport",MRBDebug.DETAILED,"Environment set ");
-				updateProgress("Environment set");
-			}
-			catch (Exception e) {
-				OptionMessage.displayMessage("Error setting environment "+rowEdit.getTemplate()+"-"+e.getLocalizedMessage());
-				return;								
-			}
-			try {
-				launcher.getCompileReport().invoke(launcher.getInstance(),rowEdit.getTemplate());
-				rwDebugInst.debug("Main","viewReport",MRBDebug.DETAILED,"Report compiled ");
-				updateProgress("Report compiled");
-			}
-			catch (Exception e) {
-				rwDebugInst.debug("Main","viewReport",MRBDebug.DETAILED,"Error compiling report - "+e.getMessage());
-				OptionMessage.customBtnMessageSwing("Error compiling report "+rowEdit.getTemplate()+"-"+e.getMessage(),"View Jasper Log",new BtnCallBack() {
-					@Override
-					public void callbackAction() {
-						displayJasperLogFile();
-					}
-				});
-				try {
-					if (database != null)
-						database.close();
-				}
-				catch (RWException e1) {}
-				return;								
-			}
-			try {
-				launcher.getFillReport().invoke(launcher.getInstance(),rowEdit.getTemplate(),database.getConnection());
-				rwDebugInst.debug("Main","viewReport",MRBDebug.DETAILED,"Report filled ");
-				database.close();
-				updateProgress("Report filled");
-			}
-			catch (Exception e) {
-				rwDebugInst.debug("Main","viewReport",MRBDebug.DETAILED,"Error filling report - "+e.getMessage());
-				OptionMessage.customBtnMessageSwing("Error filling report "+rowEdit.getTemplate()+"-"+e.getMessage(),"View Jasper Log",new BtnCallBack() {
-					@Override
-					public void callbackAction() {
-						displayJasperLogFile();
-					}
-				});
-				try {
-					if (database != null)
-						database.close();
-				}
-				catch (RWException e1) {}
-				return;								
-			}
-			try {
-				launcher.getViewReport().invoke(launcher.getInstance(),rowEdit.getTemplate());
-				updateProgress("Report displayed");
-				rowEdit.touchFile();
-				frameReport.resetData();
-			}
-			catch (Exception e) {
-				OptionMessage.customBtnMessageSwing("Error viewing report "+rowEdit.getTemplate()+"-"+e.getMessage(),"View Jasper Log",new BtnCallBack() {
-					@Override
-					public void callbackAction() {
-						displayJasperLogFile();
-					}
-				});
-				rwDebugInst.debug("Main","viewReport",MRBDebug.DETAILED,"Error viewing report - "+e.getMessage());
-				try {
-					if (database != null)
-						database.close();
-				}
-				catch (RWException e1) {}
-				return;								
-			}
 		}
 		closeProgressWindow();
 
@@ -937,31 +776,11 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		progressFrame.setVisible(false);
 		progressFrame=null;
 	}
-	private void displayJasperLogFile() {
-		JTextArea fileText = new JTextArea(30,70);
-		String logFileName = MRBDirectoryUtils.getExtensionDataDirectory(Constants.PROGRAMNAME).getAbsolutePath()+"/logs/log.txt";
-		File logFile = new File(logFileName);
-		if (logFile.exists()) {
-			try {
-				BufferedReader input = new BufferedReader(new InputStreamReader(
-						new FileInputStream(logFile)));
-				fileText.read(input,"Jasper Log File");
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		JScrollPane scroll = new JScrollPane(fileText);
-	    frame.getContentPane().add(scroll, BorderLayout.CENTER);
-	    frame.pack();
-	    frame.setVisible(true);		
-	}
+
 	public void openOutput() {
 		Parameters params = Parameters.getInstance();
         Desktop desktop = Desktop.getDesktop();
-        File dirToOpen = null;
+        File dirToOpen;
         try {
             dirToOpen = new File(params.getOutputDirectory());
             desktop.open(dirToOpen);
@@ -1018,16 +837,17 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	public void budgetModified(Budget paramBudget) {
 
 	}
-	public class CompareCurrency implements Comparator<MRBFXSelectionRow>{
-		public int compare(MRBFXSelectionRow a, MRBFXSelectionRow b) {
-			return a.getText().compareTo(b.getText());
-		}
-	}
+
 	@Override
 	public void currencyTableModified(CurrencyTable arg0) {
 		loadCurrencies();
 		if (frameReport !=null)
 			frameReport.resetData();		
+	}
+	public static class CompareCurrency implements Comparator<MRBFXSelectionRow>{
+		public int compare(MRBFXSelectionRow a, MRBFXSelectionRow b) {
+			return a.getText().compareTo(b.getText());
+		}
 	}
 }
 

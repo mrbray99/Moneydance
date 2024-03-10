@@ -143,7 +143,10 @@ public class MyTable extends JTable {
 		 */
 		this.getColumnModel().getColumn(6).setResizable(true);
 		this.getColumnModel().getColumn(6).setPreferredWidth(80);
+		/*
+		 * Unit
+		 */
+		this.getColumnModel().getColumn(7).setResizable(true);
+		this.getColumnModel().getColumn(7).setPreferredWidth(80);
 	}
-
-
 }

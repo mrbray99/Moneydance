@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014, 2016, Michael Bray. All rights reserved.
+ *  Copyright (c) 2014, 2016, 2024 Michael Bray. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,11 +29,7 @@
  */ 
 package com.moneydance.modules.features.loadsectrans;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
+import java.util.*;
 
 import com.infinitekind.moneydance.model.AbstractTxn;
 import com.infinitekind.moneydance.model.Account;
@@ -44,31 +40,31 @@ import com.infinitekind.moneydance.model.TxnSet;
 import com.infinitekind.tiksync.SyncRecord;
 
 public class MyTransactionSet implements TxnSearch, TransactionListener {
-	private TxnSet stlTrans;
+	private TxnSet txnSet;
 	private Account acct;
-	private Map<Integer,List<AbstractTxn>> mapLines;
-	private Parameters objParms;
-	private  List<TableListener> listListeners = new ArrayList<TableListener>();
+	private Map<Integer,List<AbstractTxn>> transactionDates;
+	private Parameters2 params;
+	private  List<TableListener> listListeners = new ArrayList<>();
 	private SortedSet<SecLine> setLine;
-	public MyTransactionSet(Account root, Account acctp, Parameters objParmsp, SortedSet<SecLine> setLinep) {
+	public MyTransactionSet(Account root, Account acctp, Parameters2 params, SortedSet<SecLine> setLine) {
 		acct = acctp;
-		objParms = objParmsp;
-		stlTrans = Main.tranSet.getTransactions(this);
-		setLine = setLinep;
+		this.params = params;
+		txnSet = Main.tranSet.getTransactions(this);
+		this.setLine = setLine;
 		Main.tranSet.addTransactionListener(this);
 		/*
 		 * Create map of transactions by date
 		 */
-		mapLines = new HashMap<Integer, List<AbstractTxn>>();
-		for (int i=0;i<stlTrans.getSize();i++) {
-			AbstractTxn txnLine = stlTrans.getTxn(i);
-			if (mapLines.get(txnLine.getDateInt()) == null) {
-				List<AbstractTxn> listTxn = new ArrayList<AbstractTxn>();
+		transactionDates = new TreeMap<Integer, List<AbstractTxn>>();
+		for (int i = 0; i< txnSet.getSize(); i++) {
+			AbstractTxn txnLine = txnSet.getTxn(i);
+			if (transactionDates.get(txnLine.getDateInt()) == null) {
+				List<AbstractTxn> listTxn = new ArrayList<>();
 				listTxn.add(txnLine);
-				mapLines.put(txnLine.getDateInt(), listTxn);
+				transactionDates.put(txnLine.getDateInt(), listTxn);
 			}
 			else {
-				List<AbstractTxn> listTxn2 = mapLines.get(txnLine.getDateInt());
+				List<AbstractTxn> listTxn2 = transactionDates.get(txnLine.getDateInt());
 				listTxn2.add(txnLine);
 			}
 		}	
@@ -97,7 +93,7 @@ public class MyTransactionSet implements TxnSearch, TransactionListener {
 		/*
 		 * check same date
 		 */
-		List<AbstractTxn> listTxn = mapLines.get(slTran.getDate());
+		List<AbstractTxn> listTxn = transactionDates.get(slTran.getDate());
 		if (listTxn == null) {
 			return;
 		}		
@@ -117,7 +113,7 @@ public class MyTransactionSet implements TxnSearch, TransactionListener {
 			SyncRecord srTran = txnLine.getTags();
 			String strTag = srTran.getString(Constants.TAGGEN,null);
 			if (strTag != null)
-				if (!(objParms.isDefined(strTag)))
+				if (!(params.isDefined(strTag)))
 					continue;
 			
 			slTran.setProcessed(true);
@@ -156,7 +152,7 @@ public class MyTransactionSet implements TxnSearch, TransactionListener {
 			SyncRecord srTran = txnLine.getTags();
 			String strTag = srTran.getString(Constants.TAGGEN,null);
 			if (strTag != null)
-				if (!(objParms.isDefined(strTag)))
+				if (!(params.isDefined(strTag)))
 					continue;
 			
 			slTran.setProcessed(true);

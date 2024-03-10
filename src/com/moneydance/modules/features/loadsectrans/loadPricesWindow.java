@@ -32,18 +32,12 @@ package com.moneydance.modules.features.loadsectrans;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -57,6 +51,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import com.infinitekind.moneydance.model.Account;
+import com.moneydance.apps.md.view.MoneydanceUI;
 import com.moneydance.awt.GridC;
 import com.moneydance.awt.JDateField;
 
@@ -66,17 +61,23 @@ public class loadPricesWindow extends JPanel implements TableListener {
     private MyTableModel pricesModel;
     private MyTable pricesTab;
     private GenerateWindow generateWindow;
-    private Parameters params;
+    private Parameters2 params;
     JScrollPane spPrices;
-    JPanel panBot;
-    JPanel panTop;
-    JPanel panMid;
+    JPanel bottomPane;
+    JPanel topPane;
+    JPanel middlePane;
     JButton btnClose;
     JButton btnGenerate;
-    JCheckBox jcSelect;
-    JTextField txtAccount;
-	public loadPricesWindow(JTextField txtFileName,Account acctp, Parameters objParmsp) {
-		setLine = new TreeSet<SecLine>(new SecLineCompare());
+    JCheckBox select;
+    JTextField accountName;
+	private MoneydanceUI mdGUI;
+	private com.moneydance.apps.md.controller.Main mdMain;
+	private JButton helpBtn;
+
+	public loadPricesWindow(JTextField txtFileName,Account acctp, Parameters2 objParmsp) {
+		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
+		mdGUI = mdMain.getUI();
+		setLine = new TreeSet<>(new SecLineCompare());
 		acct = acctp;
 		params = objParmsp;
 		
@@ -89,73 +90,63 @@ public class loadPricesWindow extends JPanel implements TableListener {
 		 * Top Panel Account
 		 */
 		this.setLayout(new BorderLayout());
-		panTop = new JPanel (new GridBagLayout());
+		topPane = new JPanel (new GridBagLayout());
 		int x=0;
 		int y=0;
-		JLabel lbAccount = new JLabel("Investment Account:");
-		panTop.add(lbAccount,GridC.getc(x,y));
+		JLabel accountLbl = new JLabel("Investment Account:");
+		topPane.add(accountLbl,GridC.getc(x,y));
 		x++;
-		txtAccount = new JTextField(acct.getAccountName());
-		panTop.add(txtAccount,GridC.getc(x,y));
-		this.add(panTop,BorderLayout.PAGE_START);
+		accountName = new JTextField(acct.getAccountName());
+		topPane.add(accountName,GridC.getc(x,y));
+		this.add(topPane,BorderLayout.PAGE_START);
 		/*
 		 * Middle Panel table
 		 */
-		panMid = new JPanel ();
-		panMid.setLayout(new BoxLayout(panMid,BoxLayout.Y_AXIS));
+		middlePane = new JPanel ();
+		middlePane.setLayout(new BoxLayout(middlePane,BoxLayout.Y_AXIS));
 		spPrices = new JScrollPane (pricesTab);
 		spPrices.setAlignmentX(LEFT_ALIGNMENT);
-		panMid.add(spPrices,BorderLayout.LINE_START);
+		middlePane.add(spPrices,BorderLayout.LINE_START);
 		spPrices.setPreferredSize(new Dimension(Constants.LOADSCREENWIDTH,Constants.LOADSCREENHEIGHT));
-		jcSelect = new JCheckBox();
-		jcSelect.setAlignmentX(LEFT_ALIGNMENT);
-		jcSelect.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				boolean bNewValue;
-				if (e.getStateChange() == ItemEvent.DESELECTED)
-					bNewValue = false;
-				else
-					bNewValue = true;
-				for (int i=0;i<pricesModel.getRowCount();i++)
-					pricesModel.setValueAt(bNewValue, i, 0);
-				pricesModel.fireTableDataChanged();
-			}
-		});
-		panMid.add(jcSelect);
-		this.add(panMid,BorderLayout.CENTER);		
+		select = new JCheckBox();
+		select.setAlignmentX(LEFT_ALIGNMENT);
+		select.addItemListener(e -> {
+            boolean bNewValue;
+            bNewValue = e.getStateChange() != ItemEvent.DESELECTED;
+            for (int i=0;i<pricesModel.getRowCount();i++)
+                pricesModel.setValueAt(bNewValue, i, 0);
+            pricesModel.fireTableDataChanged();
+        });
+		middlePane.add(select);
+		this.add(middlePane,BorderLayout.CENTER);
 		/*
 		 * Add Buttons
 		 */
-		panBot = new JPanel(new GridBagLayout());
+		bottomPane = new JPanel(new GridBagLayout());
 		/*
 		 * Button 1
 		 */
 		x=0;
 		y=0;
 		btnClose = new JButton("Close");
-		btnClose.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				close();
-			}
-		});
-		panBot.add(btnClose,GridC.getc(x,y).west().insets(15,15,15,15));
+		btnClose.addActionListener(e -> close());
+		bottomPane.add(btnClose,GridC.getc(x,y).west().insets(15,15,15,15));
 
 		/*
 		 * Button 2
 		 */
 		x++;
 		btnGenerate = new JButton("Generate Transactions");
-		btnGenerate.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				generate();
-			}
+		btnGenerate.addActionListener(e -> generate());
+		bottomPane.add(btnGenerate,GridC.getc(x++,y).insets(15,15,15,15));
+		helpBtn = new JButton("Help");
+		helpBtn.setToolTipText("Display help information");
+		helpBtn.addActionListener(e -> {
+			String url = "https://github.com/mrbray99/moneydanceproduction/wiki/Security-Transaction-Load";
+			mdGUI.showInternetURL(url);
 		});
-		panBot.add(btnGenerate,GridC.getc(x,y).insets(15,15,15,15));
-		
-		this.add(panBot,BorderLayout.PAGE_END);
+		bottomPane.add(helpBtn, GridC.getc(x, y).west().insets(10, 10, 10, 10));
+		this.add(bottomPane,BorderLayout.PAGE_END);
 		
 
 	}
@@ -163,116 +154,127 @@ public class loadPricesWindow extends JPanel implements TableListener {
 	 /*
 	  * try to load selected file
 	  */
-	 private void loadFile(JTextField txtFileName) {
-		 	@SuppressWarnings("unused")
-			String strExchange;
-			String strTicker; 
+	 private void loadFile(JTextField fileName) {
+			String exchange;
+			String ticker;
 		 	Main.generatedTranSet = new MyTransactionSet(Main.root, acct,params,setLine);
 		 	Main.generatedTranSet.addListener(this);
 			try {
-				FileReader frPrices = new FileReader(txtFileName.getText());
+				FileReader frPrices = new FileReader(fileName.getText());
 				BufferedReader brPrices = new BufferedReader(frPrices);
 				/*
 				 * Get the headers
 				 */
-				String strLine = brPrices.readLine(); 
-				String [] arColumns = strLine.split(",");
-				int iDate = 0;
-				int iRef = 0;
-				int iDesc = 0;
-				int iTicker = 0;
-				int iValue = 0;
+				String inputLine = brPrices.readLine();
+				String [] inputColumns = inputLine.split(",");
+				int dateColumn = 0;
+				int transTypeColumn = 0;
+				int descColumn = 0;
+				int tickerColumn = 0;
+				int valueColumn = 0;
+				int unitColumn =0;
 				long lAmount;
-				for (int i=0;i<arColumns.length;i++) {
-					if (arColumns[i].equals(params.getDate()))
-						iDate = i;
-					if (arColumns[i].equals(params.getReference()))
-						iRef = i;
-					if (arColumns[i].equals(params.getDesc()))
-						iDesc = i;
-					if (arColumns[i].equals(params.getTicker()))
-						iTicker = i;
-					if (arColumns[i].equals(params.getValue()))
-						iValue = i;
+				double unitAmount;
+				for (int i=0;i<inputColumns.length;i++) {
+					if (inputColumns[i].equals(params.getDate()))
+						dateColumn = i;
+					if (inputColumns[i].equals(params.getReference()))
+						transTypeColumn = i;
+					if (inputColumns[i].equals(params.getDesc()))
+						descColumn = i;
+					if (inputColumns[i].equals(params.getTicker()))
+						tickerColumn = i;
+					if (inputColumns[i].equals(params.getValue()))
+						valueColumn = i;
+					if (inputColumns[i].equals(params.getUnitsField()))
+						unitColumn = i;
 				}
-				while ((strLine = brPrices.readLine())!= null) {
-					arColumns = splitString(strLine);
+				while ((inputLine = brPrices.readLine())!= null) {
+					inputColumns = splitString(inputLine);
 					/*
 					 * Amount is in pence, change to GBP
 					 * 
 					 * First check to see if amount had commas
 					 */
-					if (arColumns[iValue].startsWith("\"")) {
-						String strAmount = arColumns[iValue].substring(1,arColumns[iValue].length());
-						if (arColumns[iValue+1].endsWith("\"")) {
-							strAmount += arColumns[iValue+1].substring(0,arColumns[iValue+1].length()-1);
+					if (inputColumns[valueColumn].startsWith("\"")) {
+						String amountString = inputColumns[valueColumn].substring(1);
+						if (inputColumns[valueColumn+1].endsWith("\"")) {
+							amountString += inputColumns[valueColumn+1].substring(0,inputColumns[valueColumn+1].length()-1);
 						}
 						else {
-							strAmount += arColumns[iValue+1];
-							strAmount += arColumns[iValue+2].substring(0,arColumns[iValue+2].length()-1);
+							amountString += inputColumns[valueColumn+1];
+							amountString += inputColumns[valueColumn+2].substring(0,inputColumns[valueColumn+2].length()-1);
 						}
-						arColumns[iValue] = strAmount;
+						inputColumns[valueColumn] = amountString;
 					}
-							
+					String settleDate = inputColumns[dateColumn].strip();
+					if (settleDate.contains("00:00"))
+						settleDate=settleDate.substring(0,settleDate.indexOf (" "));
 					JDateField jdtSettle = new JDateField (Main.cdate); 
-					jdtSettle.setDate(jdtSettle.getDateFromString(arColumns[iDate]));
-					int iPoint = arColumns[iValue].indexOf('.');
+					jdtSettle.setDate(jdtSettle.getDateFromString(settleDate));
+					int iPoint = inputColumns[valueColumn].indexOf('.');
 					if ( iPoint != -1) {
-						String strTemp = arColumns[iValue].substring(0,iPoint);
-						String strDecimal = arColumns[iValue].substring(iPoint+1);
-						switch (strDecimal.length()) {
-						case 1:
-							strTemp = strTemp+strDecimal+ "0";
-							break;
-						case 2:
-							strTemp = strTemp+strDecimal;
-							break;
-						default :
-							strTemp = strTemp+strDecimal.substring(0, 2);
-						}
-						lAmount = Long.parseLong(strTemp);
+						String tempStr = inputColumns[valueColumn].substring(0,iPoint);
+						String decimalPoint = inputColumns[valueColumn].substring(iPoint+1);
+                        tempStr = switch (decimalPoint.length()) {
+                            case 1 -> tempStr + decimalPoint + "0";
+                            case 2 -> tempStr + decimalPoint;
+                            default -> tempStr + decimalPoint.substring(0, 2);
+                        };
+						lAmount = Long.parseLong(tempStr);
 					}
 					else
-						lAmount = Long.parseLong(arColumns[iValue]+"00");
-						
+						lAmount = Long.parseLong(inputColumns[valueColumn]+"00");
+					if (lAmount == 0L)
+						continue;
 					if (params.getExch()) {
-						strTicker = arColumns[iTicker];
-						int iPeriod = strTicker.indexOf('.');
+						ticker = inputColumns[tickerColumn];
+						int iPeriod = ticker.indexOf('.');
 						if (iPeriod > -1) {
-							arColumns[iTicker] = strTicker.substring(0,iPeriod);
-							strExchange = strTicker.substring(iPeriod+1);
+							inputColumns[tickerColumn] = ticker.substring(0,iPeriod-1);
+							exchange = ticker.substring(iPeriod+1);
 						}
 						else {
-							iPeriod = strTicker.indexOf(':');
+							iPeriod = ticker.indexOf(':');
 							if (iPeriod > -1) {
-								arColumns[iTicker] = strTicker.substring(0,iPeriod);
-								strExchange = strTicker.substring(iPeriod+1);								
+								inputColumns[tickerColumn] = ticker.substring(0,iPeriod-1);
+								exchange = ticker.substring(iPeriod+1);
 							}
 						}
 							
 					}
 					else {
-						strTicker = arColumns[iTicker];
-						int iPeriod = strTicker.indexOf('.');
+						ticker = inputColumns[tickerColumn];
+						int iPeriod = ticker.indexOf('.');
 						if (iPeriod > -1) {
-							strExchange = strTicker.substring(iPeriod+1);
+							exchange = ticker.substring(iPeriod+1);
 						}
 						else {
-							iPeriod = strTicker.indexOf(':');
+							iPeriod = ticker.indexOf(':');
 							if (iPeriod > -1) {
-								strExchange = strTicker.substring(iPeriod+1);								
+								exchange = ticker.substring(iPeriod+1);
 							}
 						}						
 					}
-					SecLine objLine = new SecLine(jdtSettle.getDateInt(),arColumns[iRef],
-							arColumns[iDesc],arColumns[iTicker]," ",lAmount,Main.mapAccounts.get(arColumns[iTicker]));
-					if (params.isDefined(arColumns[iRef]))
-						objLine.setIgnore(false);
-					else
-						objLine.setIgnore(true);
-					if (params.requiresTicker(arColumns[iRef]) &&
-							objLine.getTicker().equals(Constants.NOTICKER))
+					if(unitColumn < 0 || inputColumns[unitColumn]==null ||inputColumns[unitColumn].isEmpty())
+						unitAmount = 0.0;
+					else {
+						try {
+							unitAmount = Double.parseDouble(inputColumns[unitColumn]);
+						}
+						catch (NumberFormatException e){
+							unitAmount=0.0;
+						}
+					}
+					SecLine objLine = new SecLine(jdtSettle.getDateInt(),inputColumns[transTypeColumn],
+							inputColumns[descColumn],inputColumns[tickerColumn]," ",lAmount,Main.mapAccounts.get(inputColumns[tickerColumn]),unitAmount);
+//					objLine.setValid(true);
+					if (!params.isDefined(inputColumns[transTypeColumn]))
 						objLine.setValid(false);
+					else
+						if (params.requiresTicker(inputColumns[transTypeColumn]) &&
+							objLine.getTicker().equals(Constants.NOTICKER))
+							objLine.setValid(false);
 					Main.generatedTranSet.findTransaction(objLine);
 					setLine.add(objLine);
 				}
@@ -280,12 +282,12 @@ public class loadPricesWindow extends JPanel implements TableListener {
 			}
 			catch (FileNotFoundException e) {
 				JFrame fTemp = new JFrame();
-				JOptionPane.showMessageDialog(fTemp,"File "+txtFileName+" not Found");
+				JOptionPane.showMessageDialog(fTemp,"File "+fileName+" not Found");
 				close();
 			}
 			catch (IOException e) {
 				JFrame fTemp = new JFrame();
-				JOptionPane.showMessageDialog(fTemp,"I//O Error whilst reading "+txtFileName);
+				JOptionPane.showMessageDialog(fTemp,"I//O Error whilst reading "+fileName);
 				close();
 				
 			}
@@ -315,37 +317,33 @@ public class loadPricesWindow extends JPanel implements TableListener {
 	   */
 	  
 	  private String[] splitString(String strInput) {
-		  List<String> listParts = new ArrayList<String>();
+		  List<String> listParts = new ArrayList<>();
 		  int i=0;
-		  String strPart = "";
+		  StringBuilder strPart = new StringBuilder();
 		  boolean bString = false;
 		  while(i<strInput.length()) {
 			switch (strInput.substring(i, i+1)) {
-			case "\"" : 
-				if (bString) {
-					bString = false;
-				}
-				else
-					bString = true;
+			case "\"" :
+                bString = !bString;
 				break;
 			case "," :
 				if (!bString) {
-					listParts.add(strPart);
-					strPart = "";
+					listParts.add(strPart.toString());
+					strPart = new StringBuilder();
 				}
 				break;
 			default :
-				strPart += strInput.substring(i, i+1);
+				strPart.append(strInput.substring(i, i + 1));
 			}
 			i++;
 		  }
-		  listParts.add(strPart);
+		  listParts.add(strPart.toString());
 		  String[] arrString = new String[listParts.size()];
 		  return listParts.toArray(arrString);
 	  }
 	@Override
 	public void tableChanged () {
 		pricesModel.fireTableDataChanged();
-		panMid.revalidate();
+		middlePane.revalidate();
 	}
 }

@@ -15,7 +15,7 @@
 	    </jar>
 
 	    <java newenvironment="true" 
-	      classpathref="classpath"
+	      classpathref="signmxtpath"
 	      classname="SignMxt" fork="yes">
 	      <arg value="signextjar"/>
 	      <arg value="${privkeyfile}"/>

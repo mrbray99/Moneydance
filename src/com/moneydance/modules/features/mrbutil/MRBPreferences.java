@@ -65,7 +65,7 @@ public class MRBPreferences implements java.io.Serializable {
 			 * if MacOS or Unix try to use '\' in file name
 			 */
 			Boolean fileLoaded = false;
-			if (Platform.isOSX() || Platform.isUnix() || Platform.isFreeBSD()) {
+			if (MRBPlatform.isOSX() || MRBPlatform.isUnix() || MRBPlatform.isFreeBSD()) {
 				if (loadOldFile())
 					fileLoaded = true;
 			}

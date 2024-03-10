@@ -1,8 +1,8 @@
 {
   "vendor" = "Mike Bray"
-  "module_build" = "3200"
+  "module_build" = "3206"
 "minbuild" = "1820"
-  "vendor.url" = "http://bitbucket.org/mikerb/wiki/Home"
+  "vendor.url" = "http://github.com/mrbray99/moneydanceproduction/wiki"
   "module_name" = "Load Security Transactions"
   "module_desc" = "<html><body><title>Security Transaction Load</title>><p>Loads miscellaneous transactions generated from brokerage firms
 </body></html>"

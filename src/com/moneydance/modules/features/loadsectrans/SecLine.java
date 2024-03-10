@@ -34,36 +34,38 @@ import com.infinitekind.moneydance.model.Account;
 
 public class SecLine {
 
-	private boolean bSelect;
-	private int iDate;
-	private String strRef;
-	private String strDesc;
-	private String strTicker;
-	private String strCleared;
+	private boolean select;
+	private int lineDate;
+	private String lineType;
+	private String desc;
+	private String ticker;
+	private String cleared;
+	private double unit;
 	private long lAmount;
 	private Account acct;
 	private boolean bValid;
 	private boolean bIgnore;
 	private boolean bProcessed;
 
-	public SecLine(int iDatep,String strRefp,String strDescp, String strTickerp,String strClearedp,long lAmountp, Account acctp) {
+	public SecLine(int lineDate,String lineType,String desc, String ticker,String strClearedp,long lAmount, Account acct,double unit) {
 		
-		bSelect = false;
-		iDate = iDatep;
+		select = false;
+		this.lineDate = lineDate;
 		bValid = true;
 		bIgnore = false;
-		if (strTickerp.equals("#N/A")) 
-			strTicker = Constants.NOTICKER;
+		this.unit =unit;
+		if (ticker.equals("#N/A"))
+			this.ticker = Constants.NOTICKER;
 		else {
-			strTicker = strTickerp;
-			if (acctp == null)
+			this.ticker = ticker;
+			if (acct == null)
 				bValid = false;
 		}
-		strCleared = strClearedp;
-		strDesc = strDescp;
-		strRef = strRefp;
-		lAmount = lAmountp;
-		acct = acctp;
+		cleared = strClearedp;
+		this.desc = desc;
+		this.lineType = lineType;
+		this.lAmount = lAmount;
+		this.acct = acct;
 		setIgnore(false);
         setProcessed(false);
 
@@ -73,27 +75,27 @@ public class SecLine {
 	 * 
 	 */
 	public boolean getSelect() {
-		return bSelect; 
+		return select;
 	}
 
 	public int getDate() {
-		return iDate; 
+		return lineDate;
 	}
 
-	public String getReference() {
-		return strRef; 
+	public String getTranType() {
+		return lineType;
 	}
 
 	public String getDescription() {
-		return strDesc; 
+		return desc;
 	}
 
 	public String getTicker() {
-		return strTicker; 
+		return ticker;
 	}
 
 	public String getCleared() {
-		return strCleared; 
+		return cleared;
 	}
 
 	public long getValue() {
@@ -116,11 +118,15 @@ public class SecLine {
 		return bProcessed;
 	}
 
+	public double getUnit() {
+		return unit;
+	}
+
 	/*
 	 * sets
 	 */
 	public void setSelect(boolean bSelectp) {
-		bSelect = bSelectp;
+		select = bSelectp;
 	}
 	
 	public void setIgnore(boolean bIgnorep) {
@@ -135,5 +141,10 @@ public class SecLine {
 		bValid = bValidp; 
 	}
 	public void setCleared(String strClearedp) {
-		strCleared = strClearedp; 
-	}}
+		cleared = strClearedp;
+	}
+
+	public void setUnit(double unit) {
+		this.unit = unit;
+	}
+}

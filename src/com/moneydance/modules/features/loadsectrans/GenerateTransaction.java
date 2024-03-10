@@ -47,6 +47,7 @@ public class GenerateTransaction {
 	private String reference;
 	private int index;
 	private AbstractTxn txn;
+	private Parameters2 params;
 
 
 	public GenerateTransaction(char tranTypep,
@@ -65,12 +66,35 @@ public class GenerateTransaction {
 		desc = descp;
 		cheque = chequep;
 		tType = tTypep;
-		setInvType();
 		reference = referencep;
+		setInvType();
 		index = -1;
 		txn=txnp;
 	}
-	
+	public GenerateTransaction(char tranTypep,
+							   Account acctp,
+							   int tranDatep,
+							   long amountp,
+							   String descp,
+							   String chequep,
+							   String tTypep,
+							   String referencep,
+							   AbstractTxn txnp,
+							   Parameters2 params) {
+		tranType = tranTypep;
+		acct = acctp;
+		tranDate = tranDatep;
+		amount = amountp;
+		desc = descp;
+		cheque = chequep;
+		tType = tTypep;
+		reference = referencep;
+		this.params=params;
+		setInvType();
+		index = -1;
+		txn=txnp;
+	}
+
 	public int getIndex() {
 		return index;
 	}
@@ -120,6 +144,15 @@ public class GenerateTransaction {
 					return;
 				}
 				invType = InvestTxnType.MISCINC;
+				return;
+			}
+			if (tType.equals("xfrtp_buysell")) {
+				FieldLine line = params.matchType(reference);
+				if (Constants.TRANSTYPES[line.getTranType()].equals(Constants.INVESTMENT_BUY))
+					invType = InvestTxnType.BUY;
+				else {
+					invType = InvestTxnType.SELL;
+				}
 				return;
 			}
 			invType = InvestTxnType.BANK;

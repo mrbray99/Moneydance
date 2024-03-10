@@ -21,7 +21,7 @@ public class MyTranTable extends JTable
 	 */
 	private static final long serialVersionUID = 1L;
 	private int iSelectedRow;
-	private DetailedFileDisplayWindow objDFDW;
+	private DetailedFileDisplayWindow detailWindow;
 	public class LineWrapCellRenderer extends JTextArea implements TableCellRenderer {
 		/**
 		 * 
@@ -64,14 +64,14 @@ public class MyTranTable extends JTable
             }
             ListSelectionModel lsm = (ListSelectionModel)event.getSource();
             iSelectedRow = lsm.getMaxSelectionIndex();
-            objDFDW.displayTransaction(iSelectedRow);
+            detailWindow.displayTransaction(iSelectedRow);
          }
 		
 	}
 	public MyTranTable(DefaultTableModel model, DetailedFileDisplayWindow objDFDWp)
 	{
 		super(model);
-		objDFDW = objDFDWp;
+		detailWindow = objDFDWp;
 		TableColumn detailcolumn = null;
         detailcolumn = getColumnModel().getColumn(0);
         detailcolumn.setPreferredWidth(75);

@@ -38,13 +38,13 @@ public class SecLineCompare implements Comparator<SecLine> {
 		Integer iDate2 = scLine2.getDate();
 		Long lValue1 = scLine1.getValue();
 		Long lValue2 = scLine2.getValue();
-		int iCompare = iDate1.compareTo(iDate2);
+		int iCompare = iDate2.compareTo(iDate1);
 		if (iCompare != 0)
 			return iCompare;
 		iCompare = lValue1.compareTo(lValue2);
 		if (iCompare != 0)
 			return iCompare;
-		iCompare = scLine1.getReference().compareTo(scLine2.getReference());
+		iCompare = scLine1.getTranType().compareTo(scLine2.getTranType());
 		if (iCompare != 0)
 			return iCompare;
 		if (scLine1.getAccount() == null)

@@ -3,7 +3,7 @@ package com.moneydance.modules.features.loadsectrans;
 import javax.swing.JCheckBox;
 
 import com.moneydance.modules.features.mrbutil.MRBDebug;
-import com.moneydance.modules.features.mrbutil.Platform;
+import com.moneydance.modules.features.mrbutil.MRBPlatform;
 
 
 public class MyCheckBox extends JCheckBox{
@@ -14,7 +14,7 @@ public class MyCheckBox extends JCheckBox{
 		debugInst = new MRBDebug();
 		debugInst.setExtension("SecurityLoadTrans");
 		this.setHorizontalAlignment(CENTER);
-		if (Platform.isFreeBSD() || Platform.isUnix()) {
+		if (MRBPlatform.isFreeBSD() || MRBPlatform.isUnix()) {
 			if (Main.extension.selectedIcon != null) {
 				debugInst.debug("MyCheckBox", "construct no label", MRBDebug.DETAILED,"Using check box sel icons");
 				setSelectedIcon(Main.extension.selectedIcon);
@@ -32,7 +32,7 @@ public class MyCheckBox extends JCheckBox{
 	public MyCheckBox(String labelp) {
 		super (labelp);
 		this.setHorizontalAlignment(CENTER);
-		if (Platform.isFreeBSD() || Platform.isUnix()) {
+		if (MRBPlatform.isFreeBSD() || MRBPlatform.isUnix()) {
 			if (Main.extension.selectedIcon != null) {
 				debugInst.debug("MyCheckBox", "construct label", MRBDebug.DETAILED,"Using check box sel icons");
 				setSelectedIcon(Main.extension.selectedIcon);

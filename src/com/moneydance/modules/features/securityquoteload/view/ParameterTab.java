@@ -62,7 +62,7 @@ import com.moneydance.apps.md.view.gui.MDColors;
 import com.moneydance.awt.GridC;
 import com.moneydance.awt.JDateField;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
-import com.moneydance.modules.features.mrbutil.Platform;
+import com.moneydance.modules.features.mrbutil.MRBPlatform;
 import com.moneydance.modules.features.securityquoteload.Constants;
 import com.moneydance.modules.features.securityquoteload.Main;
 import com.moneydance.modules.features.securityquoteload.Parameters;
@@ -883,7 +883,7 @@ public class ParameterTab extends DisplayTab {
 	private void chooseFile() {
 		JFileChooser fileChooser;
 		String directory = params.getExportFolder();
-		if (Platform.isOSX()) {
+		if (MRBPlatform.isOSX()) {
 			JFrame parentWindow = (JFrame) SwingUtilities.getWindowAncestor(this);
 			System.setProperty("com.apple.macos.use-file-dialog-packages", "true");
 			FileDialog fwin = new FileDialog(parentWindow, "choose_directory", FileDialog.LOAD);

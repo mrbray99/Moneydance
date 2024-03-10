@@ -1,6 +1,6 @@
 package com.moneydance.modules.features.reportwriter.view;
 
-import com.moneydance.modules.features.mrbutil.Platform;
+import com.moneydance.modules.features.mrbutil.MRBPlatform;
 
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -46,7 +46,7 @@ public class AccelKeys {
 					rn.run();
 			}
 		});
-		if (Platform.isWindows())
+		if (MRBPlatform.isWindows())
 			scene.getAccelerators().put(closeKey2, rn);
 		
 	}

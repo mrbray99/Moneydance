@@ -109,13 +109,13 @@ public class MRBViewTransactions implements TxnSearch {
     /*
      * Table to link Moneydance transaction status to a string
      */
-    private static final Map<Byte, String> txnStatus;
+    private static final Map<AbstractTxn.ClearedStatus, String> txnStatus;
     static
     {
-    	txnStatus = new HashMap<Byte, String>();
-    	txnStatus.put(AbstractTxn.STATUS_CLEARED,"Cleared");
-    	txnStatus.put(AbstractTxn.STATUS_RECONCILING,"Reconciling");
-    	txnStatus.put(AbstractTxn.STATUS_UNRECONCILED,"Unreconciled");
+    	txnStatus = new HashMap<AbstractTxn.ClearedStatus, String>();
+    	txnStatus.put(AbstractTxn.ClearedStatus.CLEARED,"Cleared");
+    	txnStatus.put(AbstractTxn.ClearedStatus.RECONCILING,"Reconciling");
+    	txnStatus.put(AbstractTxn.ClearedStatus.UNRECONCILED,"Unreconciled");
     }
     /**
      * Creates the window of transactions
@@ -229,7 +229,7 @@ public class MRBViewTransactions implements TxnSearch {
     		else
     			arrRow[5] = "S";
     		arrRow[6] = txn.getCheckNumber();
-    		arrRow[7] = String.valueOf(txnStatus.get(txn.getStatus()));
+    		arrRow[7] = txnStatus.get(txn.getClearedStatus());
     		arrRow[8] = txn.getUUID();
       		tranmodel.addRow(arrRow);
     	}
@@ -330,7 +330,7 @@ public class MRBViewTransactions implements TxnSearch {
 		modTran.addRow(veccheque);
 		Vector<String> vecstatus = new Vector<String>();
 		vecstatus.add("Status");
-   		vecstatus.add(String.valueOf(txn.getStatus()));
+   		vecstatus.add(String.valueOf(txn.getClearedStatus()));
 		modTran.addRow(vecstatus);
 		Vector<String> vecotc = new Vector<String>();
 		vecotc.add("Num other trans");

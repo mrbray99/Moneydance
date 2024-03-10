@@ -18,8 +18,8 @@
 			  <zipgroupfileset  dir="${lib}" includes="**/jsoup-1.11.1.jar" />
 		</jar>
 	    <java newenvironment="true" 
-	      classpathref="classpath"
-	      classname="com.moneydance.admin.KeyAdmin">
+	      classpathref="signmxtpath"
+	      classname="SignMxt">
 	      <arg value="signextjar"/>
 	      <arg value="${privkeyfile}"/>
 	      <arg value="${privkeyid}"/>
