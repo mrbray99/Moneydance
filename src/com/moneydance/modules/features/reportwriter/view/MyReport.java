@@ -26,332 +26,259 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 package com.moneydance.modules.features.reportwriter.view;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.ByteArrayOutputStream;
+import java.awt.event.InputEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 
+import com.moneydance.awt.GridC;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.MRBDirectoryUtils;
+import com.moneydance.modules.features.mrbutil.MRBPlatform;
 import com.moneydance.modules.features.reportwriter.Constants;
 import com.moneydance.modules.features.reportwriter.Main;
 import com.moneydance.modules.features.reportwriter.Parameters;
 import com.moneydance.modules.features.reportwriter.RWException;
 import com.moneydance.modules.features.reportwriter.samples.DownloadException;
 
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.ImageView;
-import javafx.scene.control.Button;
-import javafx.scene.control.MenuItem;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import com.moneydance.modules.features.reportwriter.OptionMessage;
+import com.moneydance.modules.features.securityquoteload.MainPriceWindow;
 
-public class MyReport extends JFXPanel implements EventHandler<ActionEvent>{
-	private Parameters params;
-	/*
-	 * Screen variables
-	 */
-	private Scene scene;
-	private GridPane mainScreen;
-	private ReportPane reportPan;
-	private SelectionPane selectionPan;
-	private DataPane dataPan;
-	private MyReport thisObj;
-	private Button closeBtn;
-	private Button settingsBtn;
-	private Button helpBtn;
-	private HBox buttons;
-	public int iFRAMEWIDTH;
-	public int iFRAMEDEPTH;
-	public int SCREENWIDTH = 0;
-	public int SCREENHEIGHT = 0;
 
-	public MyReport() {
-		thisObj = this;
-	}
+import javax.swing.*;
 
-	public Scene createScene() {
-		mainScreen = new GridPane();
-		scene = new Scene(mainScreen);
-		Main.accels.setSceneClose(scene, () -> {
-            Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.DETAILED, "Accelerator close ");
-            javax.swing.SwingUtilities.invokeLater(() -> Main.extension.closeConsole());
+public class MyReport extends JFrame {
+    private Parameters params;
+    /*
+     * Screen variables
+     */
+    private JPanel mainScreen;
+    private ReportPane reportPan;
+    private SelectionPane selectionPan;
+    private DataPane dataPan;
+    private MyReport thisObj;
+    private JButton closeBtn;
+    private JButton settingsBtn;
+    private JButton helpBtn;
+    private JPanel buttons;
+    public int iFRAMEWIDTH;
+    public int iFRAMEDEPTH;
+    public int SCREENWIDTH = 0;
+    public int SCREENHEIGHT = 0;
+
+    public MyReport() {
+        thisObj = this;
+        mainScreen = new JPanel(new GridBagLayout());
+        this.add(mainScreen);
+        this.getRootPane().getActionMap().put("close-window", new AbstractAction(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Main.extension.closeConsole();
+            }
         });
-		Main.accels.setSceneOpen(scene, () -> {
-            Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.DETAILED, "Accelerator open ");
-            ScreenPanel crntPan = getFocus();
-            if (crntPan != null)
-                crntPan.openMsg();
+        this.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("control W"), "close-window");
+        if (MRBPlatform.isWindows()){
+            this.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                    .put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, InputEvent.CTRL_DOWN_MASK), "close-window");
+        }
+
+        mainScreen.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int width = mainScreen.getWidth();
+                int height = mainScreen.getHeight();
+                Main.rwDebugInst.debugThread("MyReport", "MyReport", MRBDebug.SUMMARY,
+                        "Component New size " + width + "/" + height);
+                Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEWIDTH, width);
+                Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEHEIGHT, height);
+                Main.preferences.isDirty();
+                updatePreferences(width, height);
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+
+            }
         });
-		Main.accels.setSceneDelete(scene, () -> {
-            Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.DETAILED, "Accelerator delete ");
-            ScreenPanel crntPan = getFocus();
-            if (crntPan != null)
-                crntPan.deleteMsg();
-        });
-		Main.accels.setSceneNew(scene, () -> {
-            Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.DETAILED, "Accelerator new ");
-            ScreenPanel crntPan = getFocus();
-            if (crntPan != null)
-                crntPan.newMsg();
-        });
-
-		params = new Parameters();
-		if(params.getIntroScreen()) {
-			new IntroScreen(params);
-		}
-		if (params.getDataDirectory() == null || params.getDataDirectory().equals(Constants.NODIRECTORY)
-				|| params.getOutputDirectory() == null || params.getOutputDirectory().equals(Constants.NODIRECTORY)) {
-			new FirstRun(this,params);
-			if (params.getDataDirectory().equals(Constants.NODIRECTORY)
-					|| params.getOutputDirectory().equals(Constants.NODIRECTORY)) {
-				Alert alert = new Alert(AlertType.ERROR, "Extension can not continue without setting the directories");
-				alert.showAndWait();
-			} else
-				params.save();
-			resetData();
-		} else
-			checkDefaultDb();
-		this.addComponentListener(new ComponentListener() {
-			@Override
-			public void componentResized(ComponentEvent e) {
-				Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.SUMMARY,
-						"Component New size " + thisObj.getWidth() + "/" + thisObj.getHeight());
-				Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEWIDTH, thisObj.getWidth());
-				Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEHEIGHT, thisObj.getHeight());
-				updatePreferences(thisObj.getWidth(), thisObj.getHeight());
-			}
-
-			@Override
-			public void componentMoved(ComponentEvent e) {
-			}
-
-			@Override
-			public void componentShown(ComponentEvent e) {
-
-			}
-
-			@Override
-			public void componentHidden(ComponentEvent e) {
-			}
-		});
-
-		closeBtn = new Button();
-		if (Main.loadedIcons.closeImg == null)
-			closeBtn.setText("Exit");
-		else
-			closeBtn.setGraphic(new ImageView(Main.loadedIcons.closeImg));
-		closeBtn.setOnAction(e -> javax.swing.SwingUtilities.invokeLater(() -> Main.extension.closeConsole()));
-		settingsBtn = new Button();
-		if (Main.loadedIcons.settingsImg == null)
-			settingsBtn.setText("Settings");
-		else
-			settingsBtn.setGraphic(new ImageView(Main.loadedIcons.settingsImg));
-		settingsBtn.setOnAction(e -> Platform.runLater(() -> {
-            new FirstRun(this,params);
-            if (params.getDataDirectory().equals(Constants.NODIRECTORY)) {
-                Alert alert = new Alert(AlertType.ERROR,
-                        "Extension can not continue without setting the directories");
-                alert.showAndWait();
+        params = new Parameters();
+        if (params.getIntroScreen()) {
+            new IntroScreen(params);
+        }
+        if (params.getDataDirectory() == null || params.getDataDirectory().equals(Constants.NODIRECTORY)
+                || params.getOutputDirectory() == null || params.getOutputDirectory().equals(Constants.NODIRECTORY)) {
+            new FirstRun(this, params);
+            if (params.getDataDirectory().equals(Constants.NODIRECTORY)
+                    || params.getOutputDirectory().equals(Constants.NODIRECTORY)) {
+                OptionMessage.displayErrorMessage("Extension can not continue without setting the directories");
             } else
                 params.save();
             resetData();
-        }));
-		helpBtn = new Button();
-		if (Main.loadedIcons.helpImg == null)
-			helpBtn.setText("Help");
-		else
-			helpBtn.setGraphic(new ImageView(Main.loadedIcons.helpImg));
-		helpBtn.setOnAction(e -> Platform.runLater(() -> new HelpScreen(params)));
-		dataPan = new DataPane(params);
-		reportPan = new ReportPane(params);
-		selectionPan = new SelectionPane(params);
-		mainScreen.add(selectionPan, 0, 0);
-		GridPane.setMargin(selectionPan, new Insets(10, 10, 10, 10));
-		mainScreen.add(dataPan, 1, 0);
-		GridPane.setMargin(dataPan, new Insets(10, 10, 10, 10));
-		mainScreen.add(reportPan, 2, 0);
-		GridPane.setMargin(reportPan, new Insets(10, 10, 10, 10));
-		buttons = new HBox();
-		buttons.getChildren().addAll(closeBtn, settingsBtn, helpBtn);
-		buttons.setSpacing(10);
-		mainScreen.add(buttons, 0, 2);
-		GridPane.setMargin(buttons, new Insets(10, 10, 10, 10));
-		String css = "";
-		try {
-			java.io.InputStream in = Main.loader.getResourceAsStream(Constants.RESOURCES + "datadatapane.css");
-			if (in != null) {
-				ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
-				byte[] buf = new byte[256];
-				int n;
-				while ((n = in.read(buf, 0, buf.length)) >= 0)
-					bout.write(buf, 0, n);
-				css = bout.toString();
-			}
-		} catch (Throwable e) {
-			e.printStackTrace();
-			Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.SUMMARY,
-					"css not found " + e.getLocalizedMessage());
-			return scene;
-		}
-		Main.rwDebugInst.debugThread("MyReport", "createScene", MRBDebug.SUMMARY, "css " + css);
-		mainScreen.setStyle(css);
-		return scene;
-	}
+        } else
+            checkDefaultDb();
 
-	/*
-	 * check to see if default database has changed
-	 */
-	private void checkDefaultDb() {
-		String defaultDBLoaded = Main.preferences.getString(Constants.PARMLASTDB, "00000000");
-		if (defaultDBLoaded.compareTo(Main.databaseChanged) < 0) {
-			try {
-				createAdapter(params.getOutputDirectory());
-			} catch (DownloadException | RWException e) {
-				Alert alert = new Alert(AlertType.ERROR, "Issues setting up default database");
-				alert.showAndWait();
-			}
-		}
+        closeBtn = new JButton();
+        if (Main.loadedIcons.closeImg == null)
+            closeBtn.setText("Exit");
+        else
+            closeBtn.setIcon(new ImageIcon(Main.loadedIcons.closeImg));
+        closeBtn.addActionListener(e -> Main.extension.closeConsole());
+        settingsBtn = new JButton();
+        if (Main.loadedIcons.settingsImg == null)
+            settingsBtn.setText("Settings");
+        else
+            settingsBtn.setIcon(new ImageIcon(Main.loadedIcons.settingsImg));
+        settingsBtn.addActionListener(e -> {
+            new FirstRun(this, params);
+            if (params.getDataDirectory().equals(Constants.NODIRECTORY)) {
+                OptionMessage.displayErrorMessage(
+                        "Extension can not continue without setting the directories");
+            } else
+                params.save();
+            resetData();
+        });
+        helpBtn = new JButton();
+        if (Main.loadedIcons.helpImg == null)
+            helpBtn.setText("Help");
+        else
+            helpBtn.setIcon(new ImageIcon(Main.loadedIcons.helpImg));
+        helpBtn.addActionListener(e -> new HelpScreen(params));
+        dataPan = new DataPane(params);
+        reportPan = new ReportPane(params);
+        selectionPan = new SelectionPane(params);
+        mainScreen.add(selectionPan, GridC.getc(0, 0).insets(0, 10, 5, 10));
+        mainScreen.add(dataPan, GridC.getc(1, 0).insets(0, 5, 5, 5));
+        mainScreen.add(reportPan, GridC.getc(2, 0).insets(0, 5, 5, 10));
+        buttons = new JPanel();
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+        buttons.add(closeBtn);
+        buttons.add(Box.createRigidArea(new Dimension(10, 0)));
+        buttons.add(settingsBtn);
+        buttons.add(Box.createRigidArea(new Dimension(10, 0)));
+        buttons.add(helpBtn);
+        mainScreen.add(buttons, GridC.getc(0, 1).west().colspan(5).insets(10,10,10,10));
+        setPreferences();
+        mainScreen.setPreferredSize(new Dimension(iFRAMEWIDTH,iFRAMEDEPTH));
+        pack();
+     }
 
-	}
+    /*
+     * check to see if default database has changed
+     */
+    private void checkDefaultDb() {
+        String defaultDBLoaded = Main.preferences.getString(Constants.PARMLASTDB, "00000000");
+        if (defaultDBLoaded.compareTo(Main.databaseChanged) < 0) {
+            try {
+                createAdapter(params.getOutputDirectory());
+            } catch (DownloadException | RWException e) {
+                OptionMessage.displayErrorMessage("Issues setting up default database");
+            }
+        }
+
+    }
 
 
-	public void createAdapter(String directory) throws RWException {
-		Main.rwDebugInst.debug("MyReport", "createAdapter", MRBDebug.DETAILED, "Creating database adapter");
-		String outFile = directory + "/Moneydance.xml";
-		File extensionData = MRBDirectoryUtils.getExtensionDataDirectory(Constants.PROGRAMNAME);
-		String dirName = extensionData.getAbsolutePath();
+    public void createAdapter(String directory) throws RWException {
+        Main.rwDebugInst.debug("MyReport", "createAdapter", MRBDebug.DETAILED, "Creating database adapter");
+        String outFile = directory + "/Moneydance.xml";
+        File extensionData = MRBDirectoryUtils.getExtensionDataDirectory(Constants.PROGRAMNAME);
+        String dirName = extensionData.getAbsolutePath();
 
-		try {
-			java.io.InputStream in = getClass().getResourceAsStream(Constants.RESOURCES + Constants.DATABASEADAPTER);
-			byte[] buffer;
-			if (in != null) {
-				buffer = new byte[in.available()];
-				in.read(buffer);
-				File outputFile = new File(outFile);
-				OutputStream outStream = new FileOutputStream(outputFile);
-				String tempStr = new String(buffer, StandardCharsets.UTF_8);
-				tempStr = tempStr.replace("##database##", directory + "/Moneydance");
-				tempStr = tempStr.replace("##jar##", dirName + "/" + Constants.DATABASEJAR);
-				tempStr = tempStr.replace(".jarsav", ".jar");
-				buffer = tempStr.getBytes();
-				outStream.write(buffer);
-				outStream.close();
-			}
-		} catch (Throwable e) {
-			e.printStackTrace();
-			throw new RWException("Error creating Database Adapter");
-		}
-	}
+        try {
+            java.io.InputStream in = getClass().getResourceAsStream(Constants.RESOURCES + Constants.DATABASEADAPTER);
+            byte[] buffer;
+            if (in != null) {
+                buffer = new byte[in.available()];
+                in.read(buffer);
+                File outputFile = new File(outFile);
+                OutputStream outStream = new FileOutputStream(outputFile);
+                String tempStr = new String(buffer, StandardCharsets.UTF_8);
+                tempStr = tempStr.replace("##database##", directory + "/Moneydance");
+                tempStr = tempStr.replace("##jar##", dirName + "/" + Constants.DATABASEJAR);
+                tempStr = tempStr.replace(".jarsav", ".jar");
+                buffer = tempStr.getBytes();
+                outStream.write(buffer);
+                outStream.close();
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw new RWException("Error creating Database Adapter");
+        }
+    }
 
-	@Override
-	public void handle(ActionEvent event) {
-		if (event.getSource() instanceof MenuItem mItem) {
-			String command = mItem.getText();
-			switch (command) {
-			case Constants.ITEMFILECLOSE:
-				javax.swing.SwingUtilities.invokeLater(() -> Main.extension.closeConsole());
-				break;
-			case Constants.ITEMFILESAVE:
-				params.save();
-				break;
-			case Constants.ITEMFILEOPTIONS:
-				new FirstRun(this,params);
-				if (params.getDataDirectory().equals(Constants.NODIRECTORY)) {
-					Alert alert = new Alert(AlertType.ERROR,
-							"Extension can not continue without setting the directories");
-					alert.showAndWait();
-				} else
-					params.save();
-				resetData();
-			}
-		}
 
-	}
+    private ScreenPanel getFocus() {
+        Component node = Main.frame.getFocusOwner();
+        while (node != null) {
+            if (node == selectionPan)
+                return selectionPan;
+            if (node == dataPan)
+                return dataPan;
+            if (node == reportPan)
+                return reportPan;
+            node = node.getParent();
+        }
+        return null;
+    }
 
-	private ScreenPanel getFocus() {
-		Node node = scene.getFocusOwner();
-		while (node != null) {
-			if (node == selectionPan)
-				return selectionPan;
-			if (node == dataPan)
-				return dataPan;
-			if (node == reportPan)
-				return reportPan;
-			node = node.getParent();
-		}
-		return null;
-	}
 
-	public void setSizes() {
-		setPreferences();
-		if (mainScreen != null) {
-			SCREENWIDTH = (int) Math.round(mainScreen.getWidth());
-			SCREENHEIGHT = (int) Math.round(mainScreen.getHeight());
-			updatePreferences(SCREENWIDTH, SCREENHEIGHT);
-		}
-		Main.rwDebugInst.debugThread("MyReport", "setSizes", MRBDebug.SUMMARY,
-				"New size " + "/" + SCREENHEIGHT + "/" + SCREENWIDTH);
-	}
+    /*
+     * preferences
+     */
+    private void setPreferences() {
+        iFRAMEWIDTH = Main.preferences.getInt(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEWIDTH,
+                Constants.MAINSCREENWIDTH);
+        iFRAMEDEPTH = Main.preferences.getInt(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEHEIGHT,
+                Constants.MAINSCREENHEIGHT);
+    }
 
-	/*
-	 * preferences
-	 */
-	private void setPreferences() {
-		iFRAMEWIDTH = Main.preferences.getInt(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEWIDTH,
-				Constants.MAINSCREENWIDTH);
-		iFRAMEDEPTH = Main.preferences.getInt(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEHEIGHT,
-				Constants.MAINSCREENHEIGHT);
-	}
+    private void updatePreferences(int width, int height) {
+        SCREENHEIGHT = height;
+        SCREENWIDTH = width;
+        int dataWidth = (width - 100) / 3;
+        int dataHeight = (height - 150);
+        Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.DATAPANEWIDTH, dataWidth);
+        Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.DATAPANEHEIGHT, dataHeight);
+        Main.preferences.isDirty();
+        if (selectionPan != null)
+            selectionPan.resize();
+        if (reportPan != null)
+            reportPan.resize();
+        if (dataPan != null)
+            dataPan.resize();
+        Main.rwDebugInst.debugThread("MyReport", "updatePreferences", MRBDebug.DETAILED,
+                "New size " + width + "/" + height + "/" + dataWidth + "/" + dataHeight);
+    }
 
-	private void updatePreferences(int width, int height) {
-		SCREENHEIGHT = height;
-		SCREENWIDTH = width;
-		int dataWidth = (width) / 2;
-		int dataHeight = (height) / 2;
-		if (dataWidth < Constants.DATASCREENWIDTHMIN)
-			dataWidth = Constants.DATASCREENWIDTHMIN;
-		if (dataHeight < Constants.DATASCREENHEIGHTMIN)
-			dataHeight = Constants.DATASCREENHEIGHTMIN;
+    public void resetData() {
+        if (dataPan != null)
+            dataPan.resetData();
+        if (selectionPan != null)
+            selectionPan.resetData();
+        if (reportPan != null)
+            reportPan.resetData();
+    }
 
-		Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.DATAPANEWIDTH, dataWidth);
-		Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.DATAPANEHEIGHT, dataHeight);
-		Main.preferences.isDirty();
-		if (selectionPan != null)
-			selectionPan.resize();
-		if (reportPan != null)
-			reportPan.resize();
-		if (dataPan != null)
-			dataPan.resize();
-		Main.rwDebugInst.debugThread("MyReport", "updatePreferences", MRBDebug.SUMMARY,
-				"New size " + width + "/" + height + "/" + dataWidth + "/" + dataHeight);
-	}
-
-	public void resetData() {
-		if (dataPan != null)
-			dataPan.resetData();
-		if (selectionPan != null)
-			selectionPan.resetData();
-		if (reportPan != null)
-			reportPan.resetData();
-	}
-
-	public void closeDown() {
-	}
+    public void closeDown() {
+    }
 }

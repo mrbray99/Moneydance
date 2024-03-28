@@ -30,10 +30,6 @@
 			<zipgroupfileset dir="${lib}" includes="**/jaxb-impl-2.3.2.jar" />
 			<zipgroupfileset dir="${lib}" includes="**/org.apache.commons.io.jar" />
 			<zipgroupfileset dir="${lib}" includes="**/xmlbeans-3.1.0.jar" />
-			<zipgroupfileset dir="${lib}" includes="**/javafx.base.jar" />
-			<zipgroupfileset dir="${lib}" includes="**/javafx.controls.jar" />
-			<zipgroupfileset dir="${lib}" includes="**/javafx.graphics.jar" />
-			<zipgroupfileset dir="${lib}" includes="**/javafx.swing.jar" />
 		</jar>
 		<java newenvironment="true" classpathref="signmxtpath" classname="SignMxt" fork="yes">
 			<arg value="signextjar" />

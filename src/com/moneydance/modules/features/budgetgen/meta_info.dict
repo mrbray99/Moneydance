@@ -2,7 +2,7 @@
   "vendor" = "Mike Bray"
   "module_build" = "3206"
   "minbuild" = "1820"
-  "vendor.url" = ""http://github.com/mrbray99/moneydanceproduction/wiki""
+  "vendor.url" = "http://github.com/mrbray99/moneydanceproduction/wiki"
   "module_name" = "Budget Generator"
   "module_desc" = "<html><body><title>Budget Generator</title>><p>Generates entries for the new style budgets from budget lines based on period of expense, amount and first date of payment
 </body></html>"

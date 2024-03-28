@@ -37,10 +37,6 @@ import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.MRBDirectoryUtils;
 import com.moneydance.util.Platform;
 
-import javafx.util.StringConverter;
-
-
-
 public abstract class Utilities {
    public static final File getLauncherFile() {
         File direct = MRBDirectoryUtils.getExtensionDataDirectory(Constants.PROGRAMNAME);
@@ -261,35 +257,6 @@ public abstract class Utilities {
 	    }
 	}
 
-	public static class FxDatePickerConverter extends StringConverter<LocalDate>
-	{
-	     
-	    // Change String to LocalDate
-	    public LocalDate fromString(String text) 
-	    {
-	        LocalDate date = null;
-	         
-	        if (text != null && !text.trim().isEmpty()) 
-	        {
-	            date = LocalDate.parse(text, Main.cdateFX);
-	        }
-	     
-	        return date;
-	    }
-	     
-
-		@Override
-		public String toString(LocalDate date) {
-	        String text = null;
-	         
-	        if (date != null) 
-	        {
-	            text = Main.cdateFX.format(date);
-	        }
-	     
-	        return text;
-		}   
-	}
     public static String getPlatform(){
        return Platform.architecture().toString();
     }

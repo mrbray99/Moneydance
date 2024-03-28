@@ -30,7 +30,9 @@
  */
 package com.moneydance.modules.features.reportwriter.view;
 
-import java.time.LocalDate;
+import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,101 +41,88 @@ import java.util.TreeMap;
 
 import com.infinitekind.moneydance.model.Account;
 import com.infinitekind.util.DateUtil;
-import com.moneydance.modules.features.mrbutil.MRBFXSelectionPanel;
-import com.moneydance.modules.features.mrbutil.MRBFXSelectionRow;
+import com.moneydance.awt.GridC;
+import com.moneydance.awt.JDateField;
 import com.moneydance.modules.features.reportwriter.Constants;
 import com.moneydance.modules.features.reportwriter.Main;
 import com.moneydance.modules.features.reportwriter.OptionMessage;
 import com.moneydance.modules.features.reportwriter.Parameters;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+
+
+import javax.swing.*;
+
 public class DataDataPane extends ScreenDataPane {
 	private Parameters params;
-	private TextField name;
+	private JTextField name;
 	private SelectionDataRow selRow;
 	private SortedMap<String,DataParameter> parameters;
-	private Scene scene;
 	private MyGridPane pane;
 	private DataDataRow row;
-	private GridPane parmPanes;
-	private HBox buttons;
+	private JPanel parmPanes;
+	private JPanel buttons;
 	private boolean newRow = false;
-	private DatePicker fromDate;
-	private DatePicker toDate;
-	private CheckBox selectDates;
-	private CheckBox selectAccounts;
-	private CheckBox selectCategories;
-	private CheckBox selectBudgets;
-	private CheckBox selectCurrencies;
-	private CheckBox selectSecurities;
-	private CheckBox selectTrans;
-	private CheckBox selectInvestTrans;
-	private CheckBox selAsset;
-	private CheckBox selBank;
-	private CheckBox selCredit;
-	private CheckBox selInvestment;
-	private CheckBox selLiability;
-	private CheckBox selLoan;
-	private CheckBox today;
-	private CheckBox inactiveAccts;
-	private Button acctSelBtn;
-	private CheckBox selIncome;
-	private CheckBox selExpense;
-	private Button catSelBtn;
-	private Button budgets;
-	private Button currSelBtn;
-	private Button secSelBtn;
-	private CheckBox selCleared;
-	private CheckBox selReconciling;
-	private CheckBox selUnreconciled;
-	private Button tagsSelBtn;
-	private TextField fromCheque;
-	private TextField toCheque;
-	private Button ttypSelBtn;
-	private Button invAcctBtn;
+	private JDateField fromDate;
+	private JDateField toDate;
+	private JCheckBox selectDates;
+	private JCheckBox selectAccounts;
+	private JCheckBox selectCategories;
+	private JCheckBox selectBudgets;
+	private JCheckBox selectCurrencies;
+	private JCheckBox selectSecurities;
+	private JCheckBox selectTrans;
+	private JCheckBox selectInvestTrans;
+	private JCheckBox selAsset;
+	private JCheckBox selBank;
+	private JCheckBox selCredit;
+	private JCheckBox selInvestment;
+	private JCheckBox selLiability;
+	private JCheckBox selLoan;
+	private JCheckBox today;
+	private JCheckBox inactiveAccts;
+	private  JButton acctSelBtn;
+	private JCheckBox selIncome;
+	private JCheckBox selExpense;
+	private  JButton catSelBtn;
+	private  JButton budgets;
+	private  JButton currSelBtn;
+	private  JButton secSelBtn;
+	private JCheckBox selCleared;
+	private JCheckBox selReconciling;
+	private JCheckBox selUnreconciled;
+	private  JButton tagsSelBtn;
+	private JTextField fromCheque;
+	private JTextField toCheque;
+	private  JButton ttypSelBtn;
+	private  JButton invAcctBtn;
 	private boolean dirty=false;
-	private MRBFXSelectionPanel acctPanel=null;
-	private MRBFXSelectionPanel catPanel=null;
-	private MRBFXSelectionPanel budPanel=null;
-	private MRBFXSelectionPanel currPanel=null;
-	private MRBFXSelectionPanel secPanel=null;
-	private MRBFXSelectionPanel invPanel=null;
-	private MRBFXSelectionPanel ttypPanel=null;
-	private MRBFXSelectionPanel tagsPanel=null;
+	private   BeanSelectionPanel acctPanel=null;
+	private   BeanSelectionPanel catPanel=null;
+	private   BeanSelectionPanel budPanel=null;
+	private   BeanSelectionPanel currPanel=null;
+	private   BeanSelectionPanel secPanel=null;
+	private   BeanSelectionPanel invPanel=null;
+	private   BeanSelectionPanel ttypPanel=null;
+	private   BeanSelectionPanel tagsPanel=null;
 	
 
 
-	public DataDataPane(Parameters paramsp) {
+	public DataDataPane(Parameters params) {
 		super();
 		screenName = "DataDataPane";
 		screenTitle = "Data Filter Parameters";
-		params = paramsp;
+		this.params = params;
 		row = new DataDataRow();
-		parameters = new TreeMap<String,DataParameter>();
+		parameters = new TreeMap<>();
 		row.setParameters(parameters);
 		newRow= true;
 		selRow = new SelectionDataRow();
 	}
-	public DataDataPane(Parameters paramsp, DataDataRow rowp) {
+	public DataDataPane(Parameters params, DataDataRow row) {
 		super();
 		screenName = "DataDataPane";
-		row = rowp;
-		params = paramsp;
+		this.row = row;
+		this.params = params;
 		selRow = new SelectionDataRow();
 		selRow.loadRow(row.getName(), params);
 		parameters = row.getParameters();
@@ -141,28 +130,56 @@ public class DataDataPane extends ScreenDataPane {
 	public DataDataRow displayPanel() {
 		DEFAULTSCREENWIDTH = Constants.DATADATASCREENWIDTH;
 		DEFAULTSCREENHEIGHT = Constants.DATADATASCREENHEIGHT;
-		setStage(new Stage());
+		setStage(new JDialog());
 		stage.setResizable(true);
-		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		stage.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 		pane = new MyGridPane(Constants.WINDATADATA);
-		scene = new Scene(pane);
-		stage.setScene(scene);
-		stage.setOnCloseRequest(ev->{
-			if (dirty) {
-				if (OptionMessage.yesnoMessage("Parameters have changed.  Do you wish to abandon them?")) {
-					row = null;
-					stage.close();
-				}
-				else
-					ev.consume();
+		stage.add(pane);
+		stage.addWindowListener(new WindowListener() {
+			@Override
+			public void windowOpened(WindowEvent e) {
+
 			}
-			else {
-				row = null;
-				stage.close();
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if (dirty) {
+					if (OptionMessage.yesnoMessage(Constants.ABANDONMSG)) {
+						row = null;
+						dirty=false;
+						stage.setVisible(false);
+					}
+				}
+					stage.setVisible(false);
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+
 			}
 		});
-		Main.accels.setSceneSave(scene, new Runnable () {
-			@Override
+//TODO		Main.accels.setSceneSave(scene, new Runnable () {
+/*			@Override
 			public void run() {
 				if (saveRow(name.getText()))
 					stage.close();
@@ -183,48 +200,50 @@ public class DataDataPane extends ScreenDataPane {
 				}
 			}
 		});
-
+*/
 
 		int ix = 0;
 		int iy=0;
 		parmPanes = setParameters();
-		pane.add(parmPanes, ix, iy++);
-		GridPane.setMargin(parmPanes, new Insets(10,10,10,10));
-		GridPane.setColumnSpan(parmPanes, 3);
-		ix = 0;
-		buttons = new HBox();
-		Button okBtn = new Button();
+		pane.add(parmPanes, GridC.getc(ix, iy++).insets(10,10,10,10).colspan(3));
+        buttons = new JPanel();
+		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+		JButton okBtn = new JButton();
 		if (Main.loadedIcons.okImg == null)
 			okBtn.setText("OK");
 		else
-			okBtn.setGraphic(new ImageView(Main.loadedIcons.okImg));
-		okBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				if (saveRow(name.getText()))
-						stage.close();
-			}
-		});
-		Button cancelBtn = new Button();
+			okBtn.setIcon(new ImageIcon(Main.loadedIcons.okImg));
+		okBtn.addActionListener(e -> {
+            if (saveRow(name.getText()))
+				stage.setVisible(false);
+        });
+		JButton cancelBtn = new JButton();
 		if (Main.loadedIcons.cancelImg == null)
 			cancelBtn.setText("Cancel");
 		else
-			cancelBtn.setGraphic(new ImageView(Main.loadedIcons.cancelImg));
-		cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				row = null;
-				stage.close();
+			cancelBtn.setIcon(new ImageIcon(Main.loadedIcons.cancelImg));
+		cancelBtn.addActionListener(e -> {
+			if (dirty){
+				boolean result = OptionMessage.yesnoMessage(Constants.ABANDONMSG);
+				if (result) {
+					row=null;
+					stage.setVisible(false);
+				}
 			}
-		});
-		buttons.getChildren().addAll(okBtn,cancelBtn);
-		HBox.setMargin(okBtn, new Insets(10,10,10,10));
-		HBox.setMargin(cancelBtn, new Insets(10,10,10,10));
-		pane.add(buttons, 0, iy);
-		GridPane.setColumnSpan(buttons,2);
-		dirty=false;
+			else {
+				row = null;
+				stage.setVisible(false);
+			}
+        });
+		buttons.add(okBtn);
+		buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+		buttons.add(cancelBtn);
+		pane.add(buttons,GridC.getc(0, iy).colspan(2).west().insets(5,5,5,5));
 		resize();
-		stage.showAndWait();
+		dirty=false;
+		stage.pack();
+		setLocation();
+		stage.setVisible(true);
 		return row;
 	}
 	private boolean saveRow(String fileName) {
@@ -257,393 +276,363 @@ public class DataDataPane extends ScreenDataPane {
 		return true;
 	}
 
-	private GridPane setParameters() {
-		GridPane pane = new GridPane();
-		name = new TextField();
+	private JPanel setParameters() {
+		JPanel pane = new JPanel();
+		pane.setLayout(new GridBagLayout());
+		name = new JTextField();
+		name.setColumns(40);
 		if (!newRow) {
 			name.setText(row.getName());
 		}
-		name.textProperty().addListener((ov,oldv,newv)->{if(newv!=oldv)dirty=true;});
-		Label nameLbl = new Label("Name");
-		Label fromDateLbl = new Label("From Date");
-		fromDate = new DatePicker();
-		fromDate.setConverter(Main.dateConverter); 
-	    fromDate.focusedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) {
-	            if (!newValue){
-	                fromDate.setValue(fromDate.getConverter().fromString(fromDate.getEditor().getText()));
-	            }
-				
-			}
-	    });
-	    fromDate.valueProperty().addListener((ov, oldDate, newDate)->{if (oldDate!=newDate)dirty=true;});
+		name.addPropertyChangeListener("value", evt -> dirty=true);
+		JLabel nameLbl = new JLabel("Name");
+		JLabel fromDateLbl = new JLabel("From Date");
+		fromDate = new JDateField(Main.cdate);
+
+		fromDate.addPropertyChangeListener(arg0 -> dirty = true);
 	    if (parameters.containsKey(Constants.PARMFROMDATE)) {
-			Date tempDate = DateUtil.convertIntDateToLong(Integer.valueOf(parameters.get(Constants.PARMFROMDATE).getValue()));
-			fromDate.setValue(tempDate.toInstant().atZone(Main.zone).toLocalDate());
+			Date tempDate = DateUtil.convertIntDateToLong(Integer.parseInt(parameters.get(Constants.PARMFROMDATE).getValue()));
+			fromDate.setDate(tempDate);
 		}
 		else
-			fromDate.setValue(LocalDate.now());
-		Label toDateLbl = new Label("To Date");
-		toDate = new DatePicker();
-		toDate.setConverter(Main.dateConverter);
-	    toDate.focusedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) {
-	            if (!newValue){
-	                toDate.setValue(toDate.getConverter().fromString(toDate.getEditor().getText()));
-	            }
-				
-			}
-	    });
-	    toDate.valueProperty().addListener((ov, oldDate, newDate)->{if (oldDate!=newDate)dirty=true;});
-	    today = new CheckBox("Today");
+			fromDate.setDate(new Date());
+		JLabel toDateLbl = new JLabel("To Date");
+		toDate = new JDateField(Main.cdate);
+
+		toDate.addPropertyChangeListener(arg0 -> dirty = true);
+	    today = new JCheckBox("Today");
 	    if (parameters.containsKey(Constants.PARMTODATE)) {
-			Date tempDate = DateUtil.convertIntDateToLong(Integer.valueOf(parameters.get(Constants.PARMTODATE).getValue()));
-			toDate.setValue(tempDate.toInstant().atZone(Main.zone).toLocalDate());
+			Date tempDate = DateUtil.convertIntDateToLong(Integer.parseInt(parameters.get(Constants.PARMTODATE).getValue()));
+			toDate.setDate(tempDate);
 		}
 		else
-			toDate.setValue(LocalDate.now());
-    	today.setSelected(parameters.containsKey(Constants.PARMTODAY)?true:false);
-		selectDates = new CheckBox("Filter by Dates");
-		selectDates.setSelected(parameters.containsKey(Constants.PARMSELDATES)?true:false);
-		selectAccounts = new CheckBox("Filter by Accounts");
-		selectAccounts.setSelected(parameters.containsKey(Constants.PARMSELACCT)?true:false);
-		selectAccounts.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selectCategories = new CheckBox("Filter by Categories");
-		selectCategories.setSelected(parameters.containsKey(Constants.PARMSELCAT)?true:false);
-		selectCategories.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selectBudgets = new CheckBox("Filter by Budgets");
-		selectBudgets.setSelected(parameters.containsKey(Constants.PARMSELBUDGET)?true:false);
-		selectBudgets.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selectCurrencies = new CheckBox("Filter by Currencies");
-		selectCurrencies.setSelected(parameters.containsKey(Constants.PARMSELCURRENCY)?true:false);
-		selectCurrencies.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selectSecurities = new CheckBox("Filter by Securities");
-		selectSecurities.setSelected(parameters.containsKey(Constants.PARMSELSECURITY)?true:false);
-		selectSecurities.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selectTrans = new CheckBox ("Filter by Transactions");
-		selectTrans.setSelected(parameters.containsKey(Constants.PARMSELTRANS)?true:false);
-		selectTrans.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selectInvestTrans = new CheckBox ("Filter by Invest. Transactions");
-		selectInvestTrans.setSelected(parameters.containsKey(Constants.PARMSELINVTRANS)?true:false);
-		selectInvestTrans.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selAsset = new CheckBox("Assets");
-		selAsset.setSelected(parameters.containsKey(Constants.PARMASSET)?true:false);
-		selAsset.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selBank = new CheckBox("Banks");
-		selBank.setSelected(parameters.containsKey(Constants.PARMBANK)?true:false);
-		selBank.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selCredit = new CheckBox("Credit Cards");
-		selCredit.setSelected(parameters.containsKey(Constants.PARMCREDIT)?true:false);
-		selCredit.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selInvestment = new CheckBox("Investments");
-		selInvestment.setSelected(parameters.containsKey(Constants.PARMINVESTMENT)?true:false);
-		selInvestment.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selLiability = new CheckBox("Liabilities");
-		selLiability.setSelected(parameters.containsKey(Constants.PARMLIABILITY)?true:false);
-		selLiability.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selLoan = new CheckBox("Loans");
-		selLoan.setSelected(parameters.containsKey(Constants.PARMLOAN)?true:false);
-		selLoan.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		inactiveAccts = new CheckBox("Include Inactive");
+			toDate.setDate(new Date());
+    	today.setSelected(parameters.containsKey(Constants.PARMTODAY));
+		selectDates = new JCheckBox("Filter by Dates");
+		selectDates.setSelected(parameters.containsKey(Constants.PARMSELDATES));
+		selectAccounts = new JCheckBox("Filter by Accounts");
+		selectAccounts.setSelected(parameters.containsKey(Constants.PARMSELACCT));
+		selectAccounts.addActionListener(e -> {
+            JCheckBox tmp = (JCheckBox)e.getSource();
+            if (tmp.isSelected() != selectAccounts.isSelected())
+                dirty=true;
+        });
+		selectCategories = new JCheckBox("Filter by Categories");
+		selectCategories.setSelected(parameters.containsKey(Constants.PARMSELCAT));
+		selectCategories.addActionListener(e -> {
+            JCheckBox tmp = (JCheckBox)e.getSource();
+            if (tmp.isSelected() != selectCategories.isSelected())
+                dirty=true;
+        });		selectBudgets = new JCheckBox("Filter by Budgets");
+		selectBudgets.setSelected(parameters.containsKey(Constants.PARMSELBUDGET));
+		selectBudgets.addActionListener(e -> dirty = true);
+		selectCurrencies = new JCheckBox("Filter by Currencies");
+		selectCurrencies.setSelected(parameters.containsKey(Constants.PARMSELCURRENCY));
+		selectCurrencies.addActionListener(e -> dirty = true);
+		selectSecurities = new JCheckBox("Filter by Securities");
+		selectSecurities.setSelected(parameters.containsKey(Constants.PARMSELSECURITY));
+		selectSecurities.addActionListener(e -> dirty = true);
+		selectTrans = new JCheckBox ("Filter by Transactions");
+		selectTrans.setSelected(parameters.containsKey(Constants.PARMSELTRANS));
+		selectTrans.addActionListener(e -> dirty = true);
+		selectInvestTrans = new JCheckBox ("Filter by Invest. Transactions");
+		selectInvestTrans.setSelected(parameters.containsKey(Constants.PARMSELINVTRANS));
+		selectInvestTrans.addActionListener(e -> dirty = true);
+		selAsset = new JCheckBox("Assets");
+		selAsset.setSelected(parameters.containsKey(Constants.PARMASSET));
+		selAsset.addActionListener(e -> dirty = true);
+		selBank = new JCheckBox("Banks");
+		selBank.setSelected(parameters.containsKey(Constants.PARMBANK));
+		selBank.addActionListener(e -> dirty = true);
+		selCredit = new JCheckBox("Credit Cards");
+		selCredit.setSelected(parameters.containsKey(Constants.PARMCREDIT));
+		selCredit.addActionListener(e -> dirty = true);
+		selInvestment = new JCheckBox("Investments");
+		selInvestment.setSelected(parameters.containsKey(Constants.PARMINVESTMENT));
+		selInvestment.addActionListener(e -> dirty = true);
+		selLiability = new JCheckBox("Liabilities");
+		selLiability.setSelected(parameters.containsKey(Constants.PARMLIABILITY));
+		selLiability.addActionListener(e -> dirty = true);
+		selLoan = new JCheckBox("Loans");
+		selLoan.setSelected(parameters.containsKey(Constants.PARMLOAN));
+		selLoan.addActionListener(e -> dirty = true);
+		inactiveAccts = new JCheckBox("Include Inactive");
 	    if (parameters.containsKey(Constants.PARMINACTIVE))
 	    	inactiveAccts.setSelected(parameters.containsKey(Constants.PARMINACTIVE));
 	    else
 	    	inactiveAccts.setSelected(false);
-		acctSelBtn = new Button("Select");
-		acctSelBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				List<MRBFXSelectionRow> list = new ArrayList<MRBFXSelectionRow>();
-				List<String> selected;
-				SortedMap<String,String> selMap = new TreeMap<String, String>();
-				if (parameters.containsKey(Constants.PARMACCOUNTS))
-					selected = parameters.get(Constants.PARMACCOUNTS).getList();
-				else
-					selected = new ArrayList<>();
-				if (selAsset.isSelected())
-					addAccounts(list,Main.extension.assetAccounts);
-				if (selBank.isSelected())
-					addAccounts(list,Main.extension.bankAccounts);
-				if (selCredit.isSelected())
-					addAccounts(list,Main.extension.creditAccounts);
-				if (selLiability.isSelected())
-					addAccounts(list,Main.extension.liabilityAccounts);
-				if (selInvestment.isSelected())
-					addAccounts(list,Main.extension.investmentAccounts);
-				if (selLoan.isSelected())
-					addAccounts(list,Main.extension.loanAccounts);
-				if (list.isEmpty()) {
-					OptionMessage.displayMessage("Please select at least one type of account");
-					return;
-				}
-				for (String acct : selected) {
-					selMap.put(acct,acct);
-				}
-				for (MRBFXSelectionRow row : list) {
-					if (selMap.get(row.getRowId()) != null)
-						row.setSelected(true);;
-				}
-				acctPanel = new MRBFXSelectionPanel(list,null,"Select Accounts");
-				acctPanel.display();
-			}
-		});
-		selIncome = new CheckBox("Income");
-		selIncome.setSelected(parameters.containsKey(Constants.PARMINCOME)?true:false);
-		selIncome.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selExpense = new CheckBox("Expense");
-		selExpense.setSelected(parameters.containsKey(Constants.PARMEXPENSE)?true:false);
-		selExpense.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		catSelBtn = new Button("Select");
-		catSelBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				List<MRBFXSelectionRow> list = new ArrayList<MRBFXSelectionRow>();
-				List<String> selected;
-				SortedMap<String,String> selMap = new TreeMap<String, String>();
-				if (parameters.containsKey(Constants.PARMCATEGORIES))
-					selected = parameters.get(Constants.PARMCATEGORIES).getList();
-				else
-					selected = new ArrayList<>();
-				if (selExpense.isSelected())
-					list.addAll(Main.extension.expenseCategories);
-				if (selIncome.isSelected())
-					list.addAll(Main.extension.incomeCategories);
-				if (list.isEmpty()) {
-					OptionMessage.displayMessage("Please select at least one type of category");
-					return;
-				}
-				for (String acct : selected) {
-					selMap.put(acct,acct);
-				}
-				for (MRBFXSelectionRow row : list) {
-					if (selMap.get(row.getRowId()) != null)
-						row.setSelected(true);;
-				}
-				catPanel = new MRBFXSelectionPanel(list,"Select Active","Select Categories");
-				catPanel.display();
-				dirty=true;
-			}
-		});
-		budgets = new Button("Select");
-		budgets.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				List<MRBFXSelectionRow> list = new ArrayList<MRBFXSelectionRow>(Main.extension.budgets);
-				List<String> selected;
-				SortedMap<String,String> selMap = new TreeMap<String, String>();
-				if (parameters.containsKey(Constants.PARMBUDGET))
-					selected = parameters.get(Constants.PARMBUDGET).getList();
-				else
-					selected = new ArrayList<>();
-				for (String acct : selected) {
-					selMap.put(acct,acct);
-				}
-				for (MRBFXSelectionRow row : list) {
-					if (selMap.get(row.getRowId()) != null)
-						row.setSelected(true);;
-				}
-				budPanel = new MRBFXSelectionPanel(list,null,"Select Budgets");
-				budPanel.display();
-				dirty=true;
-			}
-		});		
-		currSelBtn = new Button("Select");
-		currSelBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				List<MRBFXSelectionRow> list = new ArrayList<MRBFXSelectionRow>(Main.extension.currencies);
-				List<String> selected;
-				SortedMap<String,String> selMap = new TreeMap<String, String>();
-				if (parameters.containsKey(Constants.PARMCURRENCY))
-					selected = parameters.get(Constants.PARMCURRENCY).getList();
-				else
-					selected = new ArrayList<>();
-				for (String acct : selected) {
-					selMap.put(acct,acct);
-				}
-				for (MRBFXSelectionRow row : list) {
-					if (selMap.get(row.getRowId()) != null)
-						row.setSelected(true);;
-				}
-				currPanel = new MRBFXSelectionPanel(list,"Shown on Summary Page","Select Currencies");
-				currPanel.display();
-				dirty=true;
-			}
-		});		
-		secSelBtn = new Button("Select");
-		secSelBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				List<MRBFXSelectionRow> list = new ArrayList<MRBFXSelectionRow>(Main.extension.securities);
-				List<String> selected;
-				SortedMap<String,String> selMap = new TreeMap<String, String>();
-				if (parameters.containsKey(Constants.PARMSECURITY))
-					selected = parameters.get(Constants.PARMSECURITY).getList();
-				else
-					selected = new ArrayList<>();
-				for (String acct : selected) {
-					selMap.put(acct,acct);
-				}
-				for (MRBFXSelectionRow row : list) {
-					if (selMap.get(row.getRowId()) != null)
-						row.setSelected(true);;
-				}
-				secPanel = new MRBFXSelectionPanel(list,"Shown on Summary Page","Select Securities");
-				secPanel.display();
-				dirty=true;
-			}
-		});		
-		selCleared = new CheckBox("Cleared");
-		selCleared.setSelected(parameters.containsKey(Constants.PARMCLEARED)?true:false);
-		selCleared.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selReconciling = new CheckBox("Reconciling");
-		selReconciling.setSelected(parameters.containsKey(Constants.PARMRECON)?true:false);
-		selReconciling.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		selUnreconciled = new CheckBox("Unreconciled");
-		selUnreconciled.setSelected(parameters.containsKey(Constants.PARMUNRECON)?true:false);
-		selUnreconciled.selectedProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
-		tagsSelBtn = new Button("Filter by Tags");
-		tagsSelBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				List<MRBFXSelectionRow> list = new ArrayList<MRBFXSelectionRow>(Main.extension.tags);
-				List<String> selected;
-				SortedMap<String,String> selMap = new TreeMap<String, String>();
-				if (parameters.containsKey(Constants.PARMTAGS))
-					selected = parameters.get(Constants.PARMTAGS).getList();
-				else
-					selected = new ArrayList<>();
-				for (String acct : selected) {
-					selMap.put(acct,acct);
-				}
-				for (MRBFXSelectionRow row : list) {
-					if (selMap.get(row.getRowId()) != null)
-						row.setSelected(true);;
-				}
-				tagsPanel = new MRBFXSelectionPanel(list,null,"Select Tags");
-				tagsPanel.display();
-				dirty=true;
-			}
-		});
+		acctSelBtn = new JButton("Select");
+		acctSelBtn.addActionListener(e -> {
+            List<BeanSelectionRow> list = new ArrayList<>();
+            List<String> selected;
+            SortedMap<String,String> selMap = new TreeMap<>();
+            if (parameters.containsKey(Constants.PARMACCOUNTS))
+                selected = parameters.get(Constants.PARMACCOUNTS).getList();
+            else
+                selected = new ArrayList<>();
+            if (selAsset.isSelected())
+                addAccounts(list,Main.extension.assetAccounts);
+            if (selBank.isSelected())
+                addAccounts(list,Main.extension.bankAccounts);
+            if (selCredit.isSelected())
+                addAccounts(list,Main.extension.creditAccounts);
+            if (selLiability.isSelected())
+                addAccounts(list,Main.extension.liabilityAccounts);
+            if (selInvestment.isSelected())
+                addAccounts(list,Main.extension.investmentAccounts);
+            if (selLoan.isSelected())
+                addAccounts(list,Main.extension.loanAccounts);
+            if (list.isEmpty()) {
+                OptionMessage.displayMessage("Please select at least one type of account");
+                return;
+            }
+            for (String acct : selected) {
+                selMap.put(acct,acct);
+            }
+            for (BeanSelectionRow row : list) {
+                if (selMap.get(row.getRowId()) != null)
+                    row.setSelected(true);
+            }
+            acctPanel = new BeanSelectionPanel(list,null,"Select Accounts");
+            acctPanel.display();
+        });
+		selIncome = new JCheckBox("Income");
+		selIncome.setSelected(parameters.containsKey(Constants.PARMINCOME));
+		selIncome.addActionListener(e -> dirty = true);
+		selExpense = new JCheckBox("Expense");
+		selExpense.setSelected(parameters.containsKey(Constants.PARMEXPENSE));
+		selExpense.addActionListener(e -> dirty = true);		catSelBtn = new JButton("Select");
+		catSelBtn.addActionListener(e -> {
+            List<BeanSelectionRow> list = new ArrayList<>();
+            List<String> selected;
+            SortedMap<String,String> selMap = new TreeMap<>();
+            if (parameters.containsKey(Constants.PARMCATEGORIES))
+                selected = parameters.get(Constants.PARMCATEGORIES).getList();
+            else
+                selected = new ArrayList<>();
+            if (selExpense.isSelected())
+                list.addAll(Main.extension.expenseCategories);
+            if (selIncome.isSelected())
+                list.addAll(Main.extension.incomeCategories);
+            if (list.isEmpty()) {
+                OptionMessage.displayMessage("Please select at least one type of category");
+                return;
+            }
+            for (String acct : selected) {
+                selMap.put(acct,acct);
+            }
+            for (BeanSelectionRow row : list) {
+                if (selMap.get(row.getRowId()) != null)
+                    row.setSelected(true);
+            }
+            catPanel = new BeanSelectionPanel(list,"Select Active","Select Categories");
+            catPanel.display();
+            dirty=true;
+        });
+		budgets = new JButton("Select");
+		budgets.addActionListener(e -> {
+            List<BeanSelectionRow> list = new ArrayList<>(Main.extension.budgets);
+            List<String> selected;
+            SortedMap<String,String> selMap = new TreeMap<>();
+            if (parameters.containsKey(Constants.PARMBUDGET))
+                selected = parameters.get(Constants.PARMBUDGET).getList();
+            else
+                selected = new ArrayList<>();
+            for (String acct : selected) {
+                selMap.put(acct,acct);
+            }
+            for (BeanSelectionRow row : list) {
+                if (selMap.get(row.getRowId()) != null)
+                    row.setSelected(true);
+            }
+            budPanel = new BeanSelectionPanel(list,null,"Select Budgets");
+            budPanel.display();
+            dirty=true;
+        });
+		currSelBtn = new JButton("Select");
+		currSelBtn.addActionListener(e -> {
+            List<BeanSelectionRow> list = new ArrayList<>(Main.extension.currencies);
+            List<String> selected;
+            SortedMap<String,String> selMap = new TreeMap<>();
+            if (parameters.containsKey(Constants.PARMCURRENCY))
+                selected = parameters.get(Constants.PARMCURRENCY).getList();
+            else
+                selected = new ArrayList<>();
+            for (String acct : selected) {
+                selMap.put(acct,acct);
+            }
+            for (BeanSelectionRow row : list) {
+                if (selMap.get(row.getRowId()) != null)
+                    row.setSelected(true);
+            }
+            currPanel = new BeanSelectionPanel(list,"Shown on Summary Page","Select Currencies");
+            currPanel.display();
+            dirty=true;
+        });
+		secSelBtn = new JButton("Select");
+		secSelBtn.addActionListener(e -> {
+            List<BeanSelectionRow> list = new ArrayList<>(Main.extension.securities);
+            List<String> selected;
+            SortedMap<String,String> selMap = new TreeMap<>();
+            if (parameters.containsKey(Constants.PARMSECURITY))
+                selected = parameters.get(Constants.PARMSECURITY).getList();
+            else
+                selected = new ArrayList<>();
+            for (String acct : selected) {
+                selMap.put(acct,acct);
+            }
+            for (BeanSelectionRow row : list) {
+                if (selMap.get(row.getRowId()) != null)
+                    row.setSelected(true);
+            }
+            secPanel = new BeanSelectionPanel(list,"Shown on Summary Page","Select Securities");
+            secPanel.display();
+            dirty=true;
+        });
+		selCleared = new JCheckBox("Cleared");
+		selCleared.setSelected(parameters.containsKey(Constants.PARMCLEARED));
+		selCleared.addActionListener(e -> dirty = true);		selReconciling = new JCheckBox("Reconciling");
+		selReconciling.setSelected(parameters.containsKey(Constants.PARMRECON));
+		selReconciling.addActionListener(e -> dirty = true);		selUnreconciled = new JCheckBox("Unreconciled");
+		selUnreconciled.setSelected(parameters.containsKey(Constants.PARMUNRECON));
+		selUnreconciled.addActionListener(e -> dirty = true);		tagsSelBtn = new JButton("Filter by Tags");
+		tagsSelBtn.addActionListener(e -> {
+            List<BeanSelectionRow> list = new ArrayList<>(Main.extension.tags);
+            List<String> selected;
+            SortedMap<String,String> selMap = new TreeMap<>();
+            if (parameters.containsKey(Constants.PARMTAGS))
+                selected = parameters.get(Constants.PARMTAGS).getList();
+            else
+                selected = new ArrayList<>();
+            for (String acct : selected) {
+                selMap.put(acct,acct);
+            }
+            for (BeanSelectionRow row : list) {
+                if (selMap.get(row.getRowId()) != null)
+                    row.setSelected(true);
+            }
+            tagsPanel = new BeanSelectionPanel(list,null,"Select Tags");
+            tagsPanel.display();
+            dirty=true;
+        });
 		Label fromChequeLbl = new Label("From Cheque No");
-		fromCheque = new TextField();
-		fromCheque.textProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
+		fromCheque = new JTextField();
+		fromCheque.setColumns(15);
+		fromCheque.addActionListener(e -> dirty = true);
 		if (parameters.containsKey(Constants.PARMFROMCHEQUE))
 			fromCheque.setText(parameters.get(Constants.PARMFROMCHEQUE).getValue());
 		Label toChequeLbl = new Label("To Cheque No");
-		toCheque = new TextField();
-		toCheque.textProperty().addListener((ov,oldv,newv)->{if (oldv!=newv)dirty=true;});
+		toCheque = new JTextField();
+		toCheque.setColumns(15);
+		toCheque.addActionListener(e -> dirty = true);
 		if (parameters.containsKey(Constants.PARMTOCHEQUE))
 			toCheque.setText(parameters.get(Constants.PARMTOCHEQUE).getValue());
-		invAcctBtn = new Button("Select Accounts and Securities");
-		invAcctBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				List<MRBFXSelectionRow> list = new ArrayList<MRBFXSelectionRow>(Main.extension.securityAccounts);
-				List<String> selected;
-				SortedMap<String,String> selMap = new TreeMap<String, String>();
-				if (parameters.containsKey(Constants.PARMINVACCTS))
-					selected = parameters.get(Constants.PARMINVACCTS).getList();
-				else
-					selected = new ArrayList<>();
-				for (String acct : selected) {
-					selMap.put(acct,acct);
-				}
-				for (MRBFXSelectionRow row : list) {
-					if (selMap.get(row.getRowId()) != null)
-						row.setSelected(true);;
-				}
-				invPanel = new MRBFXSelectionPanel(list,"Select with Holdings","Select Investment Accounts and Security Holdings");
-				invPanel.display();
-				dirty=true;
-			}
-		});		
-		ttypSelBtn = new Button("Filter by Transfer Types");
-		ttypSelBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				List<MRBFXSelectionRow> list = new ArrayList<MRBFXSelectionRow>(Main.extension.transferTypes);
-				List<String> selected;
-				SortedMap<String,String> selMap = new TreeMap<String, String>();
-				if (parameters.containsKey(Constants.PARMTRANSFER))
-					selected = parameters.get(Constants.PARMTRANSFER).getList();
-				else
-					selected = new ArrayList<>();
-				for (String acct : selected) {
-					selMap.put(acct,acct);
-				}
-				for (MRBFXSelectionRow row : list) {
-					if (selMap.get(row.getRowId()) != null)
-						row.setSelected(true);;
-				}
-				ttypPanel = new MRBFXSelectionPanel(list,null,"Select Investment Transfer Types");
-				ttypPanel.display();
-				dirty=true;
-			}
-		});		
+		invAcctBtn = new JButton("Select Accounts and Securities");
+		invAcctBtn.addActionListener(e -> {
+            List<BeanSelectionRow> list = new ArrayList<>(Main.extension.securityAccounts);
+            List<String> selected;
+            SortedMap<String,String> selMap = new TreeMap<>();
+            if (parameters.containsKey(Constants.PARMINVACCTS))
+                selected = parameters.get(Constants.PARMINVACCTS).getList();
+            else
+                selected = new ArrayList<>();
+            for (String acct : selected) {
+                selMap.put(acct,acct);
+            }
+            for (BeanSelectionRow row : list) {
+                if (selMap.get(row.getRowId()) != null)
+                    row.setSelected(true);
+            }
+            invPanel = new BeanSelectionPanel(list,"Select with Holdings","Select Investment Accounts and Security Holdings");
+            invPanel.display();
+            dirty=true;
+        });
+		ttypSelBtn = new JButton("Filter by Transfer Types");
+		ttypSelBtn.addActionListener(e -> {
+            List<BeanSelectionRow> list = new ArrayList<>(Main.extension.transferTypes);
+            List<String> selected;
+            SortedMap<String,String> selMap = new TreeMap<>();
+            if (parameters.containsKey(Constants.PARMTRANSFER))
+                selected = parameters.get(Constants.PARMTRANSFER).getList();
+            else
+                selected = new ArrayList<>();
+            for (String acct : selected) {
+                selMap.put(acct,acct);
+            }
+            for (BeanSelectionRow row : list) {
+                if (selMap.get(row.getRowId()) != null)
+                    row.setSelected(true);
+            }
+            ttypPanel = new BeanSelectionPanel(list,null,"Select Investment Transfer Types");
+            ttypPanel.display();
+            dirty=true;
+        });
 
 		int ix = 0;
 		int iy = 0;
-		pane.add(nameLbl, ix++,iy);
-		pane.add(name, ix, iy++);
+		pane.add(nameLbl, GridC.getc(ix++,iy).west());
+		pane.add(name, GridC.getc(ix, iy++).west().colspan(3));
 		ix= 0;
-		pane.add(selectDates, ix++, iy);
-		HBox datePane = new HBox();
-		datePane.setSpacing(5.0);
-		datePane.getChildren().addAll(fromDateLbl,fromDate,toDateLbl,toDate,today);
-		pane.add(datePane, ix, iy++);
-		GridPane.setColumnSpan(datePane, 5);
+		pane.add(selectDates,GridC.getc( ix++, iy).west().insets(5,5,5,5));
+		JPanel datePane = new JPanel();
+		datePane.setLayout(new BoxLayout(datePane,BoxLayout.X_AXIS));
+		datePane.add(fromDateLbl);
+		datePane.add(Box.createRigidArea(new Dimension(5,0)));
+		datePane.add(fromDate);
+		datePane.add(Box.createRigidArea(new Dimension(5,0)));
+		datePane.add(toDateLbl);
+		datePane.add(Box.createRigidArea(new Dimension(5,0)));
+		datePane.add(toDate);
+		datePane.add(Box.createRigidArea(new Dimension(5,0)));
+		datePane.add(today);
+		pane.add(datePane, GridC.getc(ix, iy++).colspan(5).west());
 		ix=0;
-		pane.add(selectAccounts, ix++, iy);
-		pane.add(selAsset, ix++, iy);
-		pane.add(selBank, ix++, iy);
-		pane.add(selCredit, ix++, iy);
-		pane.add(inactiveAccts, ix++, iy);
-		pane.add(acctSelBtn, ix, iy++);
+		pane.add(selectAccounts, GridC.getc(ix++, iy).west().insets(5,5,5,5));
+		pane.add(selAsset, GridC.getc(ix++, iy).west().insets(5,5,5,5));
+		pane.add(selBank, GridC.getc(ix++, iy).west().insets(5,5,5,5));
+		pane.add(selCredit,GridC.getc( ix++, iy).west().insets(5,5,5,5));
+		pane.add(inactiveAccts,GridC.getc( ix++, iy).west().insets(5,5,5,5));
+		pane.add(acctSelBtn, GridC.getc(ix, iy++).west().insets(5,5,5,5));
 		ix=1;
-		pane.add(selInvestment,ix++,iy);
-		pane.add(selLiability, ix++, iy);
-		pane.add(selLoan, ix, iy++);
+		pane.add(selInvestment,GridC.getc(ix++,iy).west().insets(5,5,5,5));
+		pane.add(selLiability,GridC.getc( ix++, iy).west().insets(5,5,5,5));
+		pane.add(selLoan, GridC.getc(ix, iy++).west().insets(5,5,5,5));
 		ix = 0;
-		pane.add(selectCategories,ix++,iy);
-		pane.add(selIncome, ix++, iy);
-		pane.add(selExpense, ix++, iy);
-		pane.add(catSelBtn, ix, iy++);
+		pane.add(selectCategories,GridC.getc(ix++,iy).west().insets(5,5,5,5));
+		pane.add(selIncome, GridC.getc(ix++, iy).west().insets(5,5,5,5));
+		pane.add(selExpense,GridC.getc( ix++, iy).west().insets(5,5,5,5));
+		pane.add(catSelBtn, GridC.getc(ix, iy++).west().insets(5,5,5,5));
 		ix=0;
-		pane.add(selectBudgets, ix++, iy);
-		pane.add(budgets, ix, iy++);
+		pane.add(selectBudgets,GridC.getc( ix++, iy).west().insets(5,5,5,5));
+		pane.add(budgets,GridC.getc( ix, iy++).west().insets(5,5,5,5));
 		ix=0;
-		pane.add(selectCurrencies, ix++, iy);
-		pane.add(currSelBtn, ix, iy++);
+		pane.add(selectCurrencies, GridC.getc(ix++, iy).west().insets(5,5,5,5));
+		pane.add(currSelBtn, GridC.getc(ix, iy++).west().insets(5,5,5,5));
 		ix=0;
-		pane.add(selectSecurities, ix++, iy);
-		pane.add(secSelBtn, ix, iy++);
+		pane.add(selectSecurities, GridC.getc(ix++, iy).west().insets(5,5,5,5));
+		pane.add(secSelBtn, GridC.getc(ix, iy++).west().insets(5,5,5,5));
 		ix=0;
-		pane.add(selectTrans, ix++, iy);
-		pane.add(selCleared, ix++, iy);
-		pane.add(selUnreconciled, ix++, iy);
-		pane.add(selReconciling, ix, iy++);
+		pane.add(selectTrans, GridC.getc(ix++, iy).west().insets(5,5,5,5));
+		pane.add(selCleared, GridC.getc(ix++, iy).west().insets(5,5,5,5));
+		pane.add(selUnreconciled,GridC.getc( ix++, iy).west().insets(5,5,5,5));
+		pane.add(selReconciling, GridC.getc(ix, iy++).west().insets(5,5,5,5));
 		ix=1;
-		pane.add(fromChequeLbl, ix++, iy);
-		pane.add(fromCheque, ix, iy++);
+		pane.add(fromChequeLbl, GridC.getc(ix++, iy).west().insets(5,5,5,5));
+		pane.add(fromCheque, GridC.getc(ix, iy++).west().insets(5,5,5,5));
 		ix=1;
-		pane.add(toChequeLbl, ix++, iy);
-		pane.add(toCheque, ix, iy++);
+		pane.add(toChequeLbl,GridC.getc( ix++, iy).west().insets(5,5,5,5));
+		pane.add(toCheque, GridC.getc(ix, iy++).west().insets(5,5,5,5));
 		ix=1;
-		pane.add(tagsSelBtn, ix, iy++);
+		pane.add(tagsSelBtn, GridC.getc(ix, iy++).west().insets(5,5,5,5));
 		ix=0;
-		pane.add(selectInvestTrans, ix++, iy);
-		pane.add(invAcctBtn, ix++, iy);
-		pane.add(ttypSelBtn, ix, iy++);
-		ix=0;
-		pane.setHgap(10.0);
-		pane.setVgap(10.0);
+		pane.add(selectInvestTrans,GridC.getc( ix++, iy).west().insets(5,5,5,5));
+		pane.add(invAcctBtn, GridC.getc(ix++, iy).west().insets(5,5,5,5));
+		pane.add(ttypSelBtn, GridC.getc(ix, iy).west().insets(5,5,5,5));
+
 		return pane;
 	}
-	private void addAccounts(List<MRBFXSelectionRow> list,List<MRBFXSelectionRow> accounts) {
-		for (MRBFXSelectionRow row:accounts) {
+	private void addAccounts(List<BeanSelectionRow> list,List<BeanSelectionRow> accounts) {
+		for (BeanSelectionRow row:accounts) {
 			String uuid = row.getRowId();
 			Account acct = Main.book.getAccountByUUID(uuid);
 			if(acct !=null && acct.getAccountIsInactive() && !inactiveAccts.isSelected())
@@ -660,16 +649,11 @@ public class DataDataPane extends ScreenDataPane {
 		if (selectDates.isSelected()) {
 			nullParm.setValue(null);
 			DataParameter fromDateParm = new DataParameter();
-			Date tempDate =Date.from(fromDate.getValue().atStartOfDay().atZone(Main.zone).toInstant());
-			int intDate=DateUtil.convertDateToInt(tempDate);
+			int intDate=fromDate.getDateInt();
 			fromDateParm.setValue(String.valueOf(intDate));
 			parameters.put(Constants.PARMFROMDATE, fromDateParm);
 			DataParameter toDateParm = new DataParameter();
-			if (toDate.getValue() == null)
-				tempDate = Main.now;
-			else
-				tempDate =Date.from(toDate.getValue().atStartOfDay().atZone(Main.zone).toInstant());
-			int toIntDate=DateUtil.convertDateToInt(tempDate);
+			int toIntDate=toDate.getDateInt();
 			toDateParm.setValue(String.valueOf(toIntDate));
 			parameters.put(Constants.PARMTODATE, toDateParm);
 			if (today.isSelected())

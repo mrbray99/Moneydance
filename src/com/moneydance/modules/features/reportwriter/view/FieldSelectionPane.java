@@ -30,58 +30,46 @@
  */
 package com.moneydance.modules.features.reportwriter.view;
 
+import java.awt.*;
+import java.awt.event.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.moneydance.modules.features.mrbutil.MRBFXSelectionRow;
+import com.moneydance.awt.GridC;
+import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.reportwriter.Constants;
 import com.moneydance.modules.features.reportwriter.Main;
 import com.moneydance.modules.features.reportwriter.databeans.DataBean;
 import com.moneydance.modules.features.reportwriter.databeans.BeanAnnotations.ColumnName;
 import com.moneydance.modules.features.reportwriter.databeans.BeanAnnotations.ColumnTitle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javax.swing.*;
 
 public class FieldSelectionPane {
-	private Stage stage;
-	private Scene scene;
+	private JDialog stage;
 	private MyGridPane pane;
-	private HBox buttons;
-	private ObservableList<FieldSelectionRow> model;
-	private TableView<FieldSelectionRow> thisTable = null;
-	private HBox includeAll;
-	private Label includeLbl;
-	private CheckBox includeAllCB;
+	private JPanel buttons;
+	private JScrollPane scroll;
+	private List<FieldSelectionRow> model;
+	private FieldSelectionTable thisTable = null;
+	private FieldSelectionTableModel tableModel;
 	private List<String> current;
 	private String windowName;
 	private int SCREENWIDTH;
 	private int SCREENHEIGHT;
 	private DataBean bean;
+	private int mainWidth;
+	private int mainHeight;
+	private int locationX;
+	private int locationY;
 
 	public FieldSelectionPane(String windowName, DataBean bean, List<String> current) {
 		this.current = current;
 		this.windowName = windowName;
 		this.bean = bean;
 		Field[] fields = this.bean.getClass().getDeclaredFields();
-		List<FieldSelectionRow> fieldList = new ArrayList<FieldSelectionRow>();
+		List<FieldSelectionRow> fieldList = new ArrayList<>();
 		for (Field field : fields) {
 			if (!field.isAnnotationPresent(ColumnName.class)) // not database field
 				continue;
@@ -93,120 +81,127 @@ public class FieldSelectionPane {
 			} else
 				fldTitle = name.value();
 			boolean selected;
-			if (current.contains(name.value()))
-				selected = true;
-			else
-				selected = false;
-			;
+            selected = current.contains(name.value());
 			FieldSelectionRow fldRow = new FieldSelectionRow(name.value(), fldTitle, selected);
 			fieldList.add(fldRow);
 
 		}
-		model = FXCollections.observableArrayList(fieldList);
+		model = fieldList;
 
 	}
 
 	public List<String> displayPanel() {
-		stage = new Stage();
-		stage.initModality(Modality.APPLICATION_MODAL);
+		stage = new JDialog();
+		stage.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 		pane = new MyGridPane(windowName);
-		scene = new Scene(pane);
-		stage.setScene(scene);
+		stage.add(pane);
 		stage.setTitle("Select " + bean.getScreenTitle() + " Fields");
-		stage.widthProperty().addListener((ov, oldv, newv) -> {
-			SCREENWIDTH = newv.intValue();
-			Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.FIELDPANEWIDTH, SCREENWIDTH);
-			if (thisTable != null)
-				thisTable.setPrefWidth(SCREENWIDTH);
+		stage.addComponentListener(new ComponentListener(){
 
-		});
-		stage.heightProperty().addListener((ov, oldv, newv) -> {
-			SCREENHEIGHT = newv.intValue();
-			Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.FIELDPANEHEIGHT, SCREENHEIGHT);
-		});
+			@Override
+			public void componentResized(ComponentEvent e) {
+				JDialog tmp = (JDialog)e.getComponent();
+				SCREENWIDTH = tmp.getWidth();
+				Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.FIELDPANEWIDTH, SCREENWIDTH);
+				SCREENHEIGHT=tmp.getHeight();
+				Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.FIELDPANEHEIGHT, SCREENHEIGHT);
+				Main.rwDebugInst.debug("FieldSelectionPane","componentListener",
+						MRBDebug.DETAILED,"Field Pane size set to "+SCREENWIDTH+"/"+SCREENHEIGHT);
+			}
 
+			@Override
+			public void componentMoved(ComponentEvent e) {
+
+			}
+
+			@Override
+			public void componentShown(ComponentEvent e) {
+
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e) {
+
+			}
+		});
 		int ix = 0;
 		int iy = 0;
 		setUpTable();
-		pane.add(thisTable, ix, iy++);
-		GridPane.setColumnSpan(thisTable, 2);
-		GridPane.setHgrow(thisTable, Priority.ALWAYS);
-		GridPane.setVgrow(thisTable, Priority.ALWAYS);
-		ix = 0;
-		buttons = new HBox();
-		Button selectAllBtn = new Button("Select All");
-		selectAllBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				selectAll();
-			}
-		});
-		Button deSelectAllBtn = new Button("Deselect All");
-		deSelectAllBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				deSelectAll();
-			}
-		});
-		Button okBtn = new Button();
+		scroll = new JScrollPane(thisTable);
+		pane.add(scroll, GridC.getc(ix, iy++).colspan(2));
+		buttons = new JPanel();
+		buttons.setLayout(new BoxLayout(buttons,BoxLayout.X_AXIS));
+		JButton selectAllBtn = new JButton("Select All");
+		selectAllBtn.addActionListener(e -> selectAll());
+		JButton deSelectAllBtn = new JButton("Deselect All");
+		deSelectAllBtn.addActionListener(e -> deSelectAll());
+		JButton okBtn = new JButton();
 		if (Main.loadedIcons.okImg == null)
 			okBtn.setText("OK");
 		else
-			okBtn.setGraphic(new ImageView(Main.loadedIcons.okImg));
-		okBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
+			okBtn.setIcon(new ImageIcon(Main.loadedIcons.okImg));
+		okBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
 				updateParms();
-				stage.close();
+				stage.setVisible(false);
 			}
 		});
-		Button cancelBtn = new Button();
+		JButton cancelBtn = new JButton();
 		if (Main.loadedIcons.cancelImg == null)
 			cancelBtn.setText("Cancel");
 		else
-			cancelBtn.setGraphic(new ImageView(Main.loadedIcons.cancelImg));
-		cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				stage.close();
+			cancelBtn.setIcon(new ImageIcon(Main.loadedIcons.cancelImg));
+		cancelBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				stage.setVisible(false);
 			}
 		});
-		buttons.getChildren().addAll(selectAllBtn, deSelectAllBtn, okBtn, cancelBtn);
-		HBox.setMargin(selectAllBtn, new Insets(10, 10, 10, 10));
-		HBox.setMargin(deSelectAllBtn, new Insets(10, 10, 10, 10));
-		HBox.setMargin(okBtn, new Insets(10, 10, 10, 10));
-		HBox.setMargin(cancelBtn, new Insets(10, 10, 10, 10));
-		pane.add(buttons, 0, iy);
-		GridPane.setColumnSpan(buttons, 2);
-		stage.showAndWait();
+		buttons.add(okBtn);
+		buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+		buttons.add(selectAllBtn);
+		buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+		buttons.add(deSelectAllBtn);
+		buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+		buttons.add(cancelBtn);
+		buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+		pane.add(buttons,GridC.getc( 0, iy).colspan(2).insets(10,5,5,5));
+		resize();
+		stage.pack();
+		setLocation();
+		stage.setVisible(true);
 		return current;
 	}
-
+	public void setLocation(){
+		mainWidth = Main.frame.getWidth();
+		mainHeight = Main.frame.getHeight();
+		locationX = (mainWidth-SCREENWIDTH)/2;
+		locationY = (mainHeight-SCREENHEIGHT)/2;
+		stage.setLocation(locationX,locationY);
+	}
 	public void resize() {
 		SCREENWIDTH = Main.preferences.getInt(Constants.PROGRAMNAME + "." + Constants.FIELDPANEWIDTH,
 				Constants.FIELDSCREENWIDTH);
 		SCREENHEIGHT = Main.preferences.getInt(Constants.PROGRAMNAME + "." + Constants.FIELDPANEHEIGHT,
 				Constants.FIELDSCREENHEIGHT);
 		if (stage != null) {
-			if (SCREENWIDTH != Constants.DATASCREENWIDTH)
-				stage.setWidth(SCREENWIDTH);
-			if (SCREENHEIGHT != Constants.DATASCREENHEIGHT)
-				stage.setHeight(SCREENHEIGHT);
+			stage.setPreferredSize(new Dimension(SCREENWIDTH,SCREENHEIGHT));
 		}
+
+
 	}
 
 	private void selectAll() {
 		for (FieldSelectionRow row : model) {
 			row.setSelected(true);
 		}
-		thisTable.refresh();
+		tableModel.fireTableDataChanged();
 	}
 
 	private void deSelectAll() {
 		for (FieldSelectionRow row : model) {
 			row.setSelected(false);
 		}
-		thisTable.refresh();
+		tableModel.fireTableDataChanged();
 	}
 
 	private void updateParms() {
@@ -219,23 +214,8 @@ public class FieldSelectionPane {
 
 	@SuppressWarnings("unchecked")
 	private void setUpTable() {
-		thisTable = new TableView<>();
-		thisTable.setEditable(true);
-		thisTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-		/*
-		 * Name
-		 */
-		TableColumn<FieldSelectionRow, String> name = new TableColumn<>("Field Name");
-		/*
-		 * Last Created
-		 */
-		TableColumn<FieldSelectionRow, CheckBox> included = new TableColumn<>("Included");
-		thisTable.getColumns().addAll(name, included);
-		thisTable.setItems(model);
-		name.setCellValueFactory(new PropertyValueFactory<>("fieldTitle"));
-		included.setCellValueFactory(new PropertyValueFactory<>("included"));
-		thisTable.setPrefWidth(SCREENWIDTH);
+		tableModel = new FieldSelectionTableModel(model);
+		thisTable = new FieldSelectionTable(tableModel);
 
 	}
 

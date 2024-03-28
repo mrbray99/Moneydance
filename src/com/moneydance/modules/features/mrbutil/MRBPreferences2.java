@@ -48,15 +48,10 @@ public class MRBPreferences2 {
 			this.mapData = temp.getMapData();
 			reader.close();
 		}
-		catch (JsonParseException e) {
+		catch (Exception  e) {
 			createFile = true;
 		}
-		catch (IOException e){
-			createFile = true;
-		}
-		catch (Exception e) {
-			createFile = true;
-		}
+
 		if (createFile) {
 			mapData = new HashMap<>();
 			/*
@@ -358,6 +353,21 @@ public class MRBPreferences2 {
 		dirty = false;
 
 	}
+	public synchronized void writeMap() {
+		try {
+			fileName = fiCurFolder.getAbsolutePath() + "/" + MRBConstants.NEWPARAMETERFILE;
+			FileWriter writer2 = new FileWriter(fileName);
+			String jsonString = new Gson().toJson(this);
+			writer2.write(jsonString);
+			writer2.close();
+		} catch (IOException i) {
+			i.printStackTrace();
+		}
+		/*
+		 * clear dirty flags
+		 */
+		dirty = false;
 
+	}
 
 }

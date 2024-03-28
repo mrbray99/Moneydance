@@ -30,117 +30,92 @@
  */
 package com.moneydance.modules.features.reportwriter.view;
 
+import com.moneydance.awt.GridC;
 import com.moneydance.modules.features.reportwriter.Constants;
 import com.moneydance.modules.features.reportwriter.Main;
 import com.moneydance.modules.features.reportwriter.OptionMessage;
 import com.moneydance.modules.features.reportwriter.Parameters;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.TextAlignment;
+
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /*
  * Displays a panel of available data parameters.  The user can create, update and delete data parameters
  * A data parameter group determines how individual records are selected
  */
 public class DataPane extends ScreenPanel {
 	private Parameters params;
-	private ObservableList<DataRow> model;
-    private TableView<DataRow> thisTable;
-    private Button editBtn;
-    private Button deleteBtn;
-    private Button addBtn;
-    private Button copyBtn;
-    private Tooltip editTip = new Tooltip();
-    private Tooltip deleteTip = new Tooltip();
-    private Tooltip addTip = new Tooltip();
-    private Tooltip copyTip = new Tooltip();
+    private DataPaneTable thisTable;
+	private DataPaneTableModel thisTableModel;
+    private JButton editBtn;
+    private JButton deleteBtn;
+    private JButton addBtn;
+    private JButton copyBtn;
+	private JScrollPane scroll;
 	public DataPane(Parameters paramsp) {
 		params = paramsp;
+		setLayout(new BorderLayout());
 		setUpTable();
-		Label templateLbl = new Label("Data Filter Parameters");
-		templateLbl.setTextAlignment(TextAlignment.CENTER);
-		templateLbl.setFont(Font.font("Veranda",FontWeight.BOLD,20.0));
-		add(templateLbl,0,0);
-		setMargin(templateLbl,new Insets(10,10,10,10));
-		setColumnSpan(templateLbl,4);
-		GridPane.setHalignment(templateLbl, HPos.CENTER);
-		add(thisTable,0,1);
-		setColumnSpan(thisTable,4);
-		editBtn = new Button();
-		setMargin(editBtn,new Insets(10,10,10,10));
+		scroll = new JScrollPane();
+		scroll.setViewportView(thisTable);
+		JLabel templateLbl = new JLabel("Data Filter Parameters",SwingConstants.CENTER);
+		templateLbl.setFont(new Font("Veranda",Font.BOLD,20));
+		add(templateLbl, BorderLayout.PAGE_START);
+		add(scroll,BorderLayout.CENTER);
+		editBtn = new JButton();
 		if (Main.loadedIcons.editImg == null)
 			editBtn.setText("Edit");
 		else
-			editBtn.setGraphic(new ImageView(Main.loadedIcons.editImg));
-		editBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
+			editBtn.setIcon(new ImageIcon(Main.loadedIcons.editImg));
+		editBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				editRow();
 			}
 		});
-		editTip.setText("Edit an existing Data Filter Parameters set");
-		editBtn.setTooltip(editTip);
-		deleteBtn = new Button();
-		setMargin(deleteBtn,new Insets(10,10,10,10));
+		editBtn.setToolTipText("Edit an existing Data Filter Parameters set");
+		deleteBtn = new JButton();
 		if (Main.loadedIcons.deleteImg == null)
 			deleteBtn.setText("Delete");
 		else
-			deleteBtn.setGraphic(new ImageView(Main.loadedIcons.deleteImg));
-		deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
+			deleteBtn.setIcon(new ImageIcon(Main.loadedIcons.deleteImg));
+		deleteBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				deleteRow();
 			}
 		});
-		deleteTip.setText("Delete an existing Data Filter Parameters set");
-		deleteBtn.setTooltip(deleteTip);
-		addBtn = new Button();
-		setMargin(addBtn,new Insets(10,10,10,10));
+		deleteBtn.setToolTipText("Delete an existing Data Filter Parameters set");
+		addBtn = new JButton();
 		if (Main.loadedIcons.addImg == null)
 			addBtn.setText("+");
 		else
-			addBtn.setGraphic(new ImageView(Main.loadedIcons.addImg));
-		addBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
+			addBtn.setIcon(new ImageIcon(Main.loadedIcons.addImg));
+		addBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				addRow();
 			}
 		});
-		addTip.setText("Add a new Data Filter Parameters set");
-		addBtn.setTooltip(addTip);
-		copyBtn = new Button();
-		setMargin(copyBtn,new Insets(10,10,10,10));
+		addBtn.setToolTipText("Add a new Data Filter Parameters set");
+		copyBtn = new JButton();
 		if (Main.loadedIcons.addImg == null)
 			copyBtn.setText("+");
 		else
-			copyBtn.setGraphic(new ImageView(Main.loadedIcons.copyImg));
-		copyBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
+			copyBtn.setIcon(new ImageIcon(Main.loadedIcons.copyImg));
+		copyBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				copyRow();
 			}
 		});
-		copyTip.setText("Copy a Data Filter Parameters set");
-		copyBtn.setTooltip(copyTip);
-		add(addBtn,0,2);
-		add(editBtn,1,2);
-		add(copyBtn,2,2);
-		add(deleteBtn,3,2);
+		copyBtn.setToolTipText("Copy a Data Filter Parameters set");
+		JPanel buttons = new JPanel(new GridBagLayout());
+		buttons.add(addBtn, GridC.getc(0,0).insets(5,10,10,10));
+		buttons.add(editBtn,GridC.getc(1,0).insets(5,10,10,10));
+		buttons.add(copyBtn,GridC.getc(2,0).insets(5,10,10,10));
+		buttons.add(deleteBtn,GridC.getc(3,0).insets(5,10,10,10));
+		add(buttons, BorderLayout.PAGE_END);
 		resize();
 	}
 	@Override
@@ -167,11 +142,12 @@ public class DataPane extends ScreenPanel {
 		editRow();
 	}
 	private void editRow() {
-		DataRow row = thisTable.getSelectionModel().getSelectedItem();
-		if (row ==null) {
+		int index = thisTable.getSelectedRow();
+		if (index <0) {
 			OptionMessage.displayMessage("Please Select a parameter set");
 			return;
 		}
+		DataRow row = thisTableModel.getRow(index);
 		DataDataRow rowEdit = new DataDataRow();
 		if (rowEdit.loadRow(row.getName(), params)) {
 			DataDataPane pane = new DataDataPane(params,rowEdit);
@@ -189,11 +165,12 @@ public class DataPane extends ScreenPanel {
 		deleteRow();
 	}
 	private void deleteRow() {
-		DataRow row = thisTable.getSelectionModel().getSelectedItem();
-		if (row ==null) {
+		int index = thisTable.getSelectedRow();
+		if (index <0) {
 			OptionMessage.displayMessage("Please Select a Parameter Set");
 			return;
 		}
+		DataRow row = thisTableModel.getRow(index);
 		if(params.checkDataGroup(row.getName())) {
 			OptionMessage.displayMessage("This Data Filter Parameters entry is used in a report.  It can not be deleted.");
 			return;
@@ -210,11 +187,12 @@ public class DataPane extends ScreenPanel {
 		
 	}
 	private void copyRow() {
-		DataRow row = thisTable.getSelectionModel().getSelectedItem();
-		if (row ==null) {
+		int index= thisTable.getSelectedRow();
+		if (index<0 ) {
 			OptionMessage.displayMessage("Please Select a Parameter Set");
 			return;
 		}
+		DataRow row = thisTableModel.getRow(index);
 		String result = "";
 		while (result.isEmpty()) {
 			result = OptionMessage.inputMessage("Enter the name of the new row");
@@ -239,54 +217,17 @@ public class DataPane extends ScreenPanel {
 	}
 	public void resetData() {
 		params.setDataTemplates();
-		model =FXCollections.observableArrayList(params.getDataList());
-		thisTable.setItems(model);	
-		thisTable.refresh();
+		thisTableModel.resetData(params.getDataList());
+		thisTableModel.fireTableDataChanged();
 	}
 
 	public void resize() {
 		super.resize();
-		thisTable.setPrefWidth(SCREENWIDTH);
-		thisTable.setPrefHeight(SCREENHEIGHT);
+		scroll.setMinimumSize(new Dimension(SCREENWIDTH,SCREENHEIGHT));
 	}
 	private void setUpTable () {
-		thisTable = new TableView<>();
-		thisTable.setEditable(true);
-		thisTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		thisTable.setMaxWidth(Double.MAX_VALUE);
-		thisTable.setMaxHeight(Double.MAX_VALUE);
-		/*
-		 * Name
-		 */
-		TableColumn<DataRow,String> name = new TableColumn<>("Name");
-		/*
-		 * Last Created
-		 */
-		TableColumn<DataRow,String> created = new TableColumn<>("Created");
-		/*
-		 * Last Modified
-		 */
-		TableColumn<DataRow,String> lastModified = new TableColumn<>("Modified");
-		/*
-		 * Last Used
-		 */
-		TableColumn<DataRow,String> lastUsed = new TableColumn<>("Used");
-		thisTable.setRowFactory(tv->{
-			TableRow<DataRow> row = new TableRow<>();
-			row.setOnMouseClicked(event->{
-				if (event.getClickCount()==2 && (!row.isEmpty())) {
-					editRow();
-				}
-			});
-			return row;
-		});
-		thisTable.getColumns().addAll(name,created,lastModified,lastUsed);
-		model =FXCollections.observableArrayList(params.getDataList());
-		thisTable.setItems(model);
-		name.setCellValueFactory(new PropertyValueFactory<>("name"));
-		created.setCellValueFactory(new PropertyValueFactory<>("created"));
-		lastModified.setCellValueFactory(new PropertyValueFactory<>("lastModified"));
-		lastUsed.setCellValueFactory(new PropertyValueFactory<>("lastUsed"));
+		thisTableModel = new DataPaneTableModel(params,params.getDataList());
+		thisTable = new DataPaneTable(params,thisTableModel);
 	}
 
 }

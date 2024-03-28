@@ -24,7 +24,7 @@ http://jakarta.apache.org/ant/index.html
   <property name="tmp"  value="../tmp"/>
   <property name="debug"  value="on"/>
   <property name="optimize"  value="off"/>
-  <property name="install" value="C:\Users\mrbmo\.moneydance\fmodules\released"/>
+  <property name="install" value="C:\Users\mrbmo\.moneydance\fmodules"/>
 
 	  <path id="classpath">
 	    <pathelement path="${md_ext_lib_dir}/moneydance.jar"/>
@@ -81,6 +81,8 @@ http://jakarta.apache.org/ant/index.html
 	<import file="qlerroranalyserbuild.xml"/>
 	<import file="securityquoteloadbuild.xml"/>
 	<import file="reportwriterbuild.xml"/>
+	<import file="mrbtoolboxbuild.xml"/>
+	<import file="testext.xml"/>
 	<target name="genkeys">
 		<java classpathref="classpath" classname="com.moneydance.admin.KeyAdmin">
 			<arg value="genkey" />

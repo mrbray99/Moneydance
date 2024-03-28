@@ -54,9 +54,6 @@ import com.moneydance.modules.features.reportwriter.view.ReportDataRow;
 import com.moneydance.modules.features.reportwriter.view.ReportRow;
 import com.moneydance.modules.features.reportwriter.view.SelectionRow;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-
 public class Parameters implements Serializable{
 	private AccountBook curAcctBook;
 	private File curFolder;
@@ -65,7 +62,6 @@ public class Parameters implements Serializable{
 	private Boolean introScreen;
 	private String dataDirectory;
 	private String outputDirectory;
-	private String reportDirectory;
 	private List<SelectionRow> selectionList;
 	private List<DataRow> dataList;
 	private List<ReportRow> reportList;
@@ -134,67 +130,69 @@ public class Parameters implements Serializable{
 		File [] files = folder.listFiles();
 		if (files != null && files.length > 0) {
 			Arrays.sort(files);
-			for (int i=0;i<files.length;i++) {
-				if (files[i].isFile()) {
-					String fileName = files[i].getName();
-					Main.rwDebugInst.debugThread("Parameters", "setDataTemplates", MRBDebug.SUMMARY, "Processing "+fileName);
-					if (fileName.toLowerCase().endsWith(Constants.DATAEXTENSION)) {
-							DataRow newRow = new DataRow();
-							newRow.setName(fileName.substring(0,fileName.lastIndexOf(".")));
-							newRow.setFileName(files[i].getAbsolutePath());
-							DataDataRow dataRow = new DataDataRow();
-							dataRow.loadRow(newRow.getName(), this);
-							BasicFileAttributes atts;
-							try {
-								atts = Files.readAttributes(files[i].toPath(), BasicFileAttributes.class);
-								newRow.setLastModified(Main.cdate.format(new Date(atts.lastModifiedTime().to(TimeUnit.MILLISECONDS))));
-								newRow.setCreated(Main.cdate.format(new Date(atts.creationTime().to(TimeUnit.MILLISECONDS))));
-								newRow.setLastUsed(Main.cdate.format(new Date(atts.lastAccessTime().to(TimeUnit.MILLISECONDS))));
-							}
-							catch (IOException e) {
-								newRow.setLastModified("");
-								newRow.setCreated("");
-								newRow.setLastUsed("");
-							}
-							dataList.add(newRow);
-					}
-					if (fileName.toLowerCase().endsWith(Constants.SELEXTENSION)) {
-						SelectionRow newRow = new SelectionRow();
-						newRow.setName(fileName.substring(0,fileName.lastIndexOf(".")));
-						newRow.setFileName(files[i].getAbsolutePath());
-						BasicFileAttributes atts;
-						try {
-							atts = Files.readAttributes(files[i].toPath(), BasicFileAttributes.class);
-							newRow.setLastModified(Main.cdate.format(new Date(atts.lastModifiedTime().to(TimeUnit.MILLISECONDS))));
-							newRow.setCreated(Main.cdate.format(new Date(atts.creationTime().to(TimeUnit.MILLISECONDS))));
-							newRow.setLastUsed(Main.cdate.format(new Date(atts.lastAccessTime().to(TimeUnit.MILLISECONDS))));
-						}
-						catch (IOException e) {
-							newRow.setLastModified("");
-							newRow.setCreated("");
-							newRow.setLastUsed("");
-						}
-						selectionList.add(newRow);
-					}
-					if (fileName.toLowerCase().endsWith(Constants.REPORTEXTENSION)) {
-						ReportRow newRow = new ReportRow();
-						newRow.setName(fileName.substring(0,fileName.lastIndexOf(".")));
-						newRow.setFileName(files[i].getAbsolutePath());
-						ReportDataRow dataRow = new ReportDataRow();
-						if (!dataRow.loadRow(newRow.getName(), this)) {
-							Main.rwDebugInst.debugThread("Parameters", "setReportTemplates", MRBDebug.SUMMARY, "Processing "+fileName);
-							Alert alert = new Alert(AlertType.ERROR,"Could not load data for data row "+newRow.getName());
-							alert.showAndWait();
-							continue;
-						}
-						newRow.setTemplate(dataRow.getTemplate());
-						newRow.setSelection(dataRow.getSelection());
-						newRow.setData(dataRow.getDataParms());
-						newRow.setLastUsed(Main.cdate.format(new Date(files[i].lastModified())));
-						reportList.add(newRow);
-					}
-				}
-			}
+            for (File file : files) {
+                if (file.isFile()) {
+                    String fileName = file.getName();
+                    Main.rwDebugInst.debugThread("Parameters", "setDataTemplates", MRBDebug.SUMMARY, "Processing " + fileName);
+                    if (fileName.toLowerCase().endsWith(Constants.DATAEXTENSION)) {
+                        DataRow newRow = new DataRow();
+                        newRow.setName(fileName.substring(0, fileName.lastIndexOf(".")));
+                        newRow.setFileName(file.getAbsolutePath());
+                        DataDataRow dataRow = new DataDataRow();
+                        dataRow.loadRow(newRow.getName(), this);
+                        BasicFileAttributes atts;
+                        try {
+                            atts = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+                            newRow.setLastModified(Main.cdate.format(new Date(atts.lastModifiedTime().to(TimeUnit.MILLISECONDS))));
+                            newRow.setCreated(Main.cdate.format(new Date(atts.creationTime().to(TimeUnit.MILLISECONDS))));
+                            newRow.setLastUsed(Main.cdate.format(new Date(atts.lastAccessTime().to(TimeUnit.MILLISECONDS))));
+                        } catch (IOException e) {
+                            newRow.setLastModified("");
+                            newRow.setCreated("");
+                            newRow.setLastUsed("");
+                        }
+                        dataList.add(newRow);
+                    }
+                    if (fileName.toLowerCase().endsWith(Constants.SELEXTENSION)) {
+                        SelectionRow newRow = new SelectionRow();
+                        newRow.setName(fileName.substring(0, fileName.lastIndexOf(".")));
+                        newRow.setFileName(file.getAbsolutePath());
+                        BasicFileAttributes atts;
+                        try {
+                            atts = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+                            newRow.setLastModified(Main.cdate.format(new Date(atts.lastModifiedTime().to(TimeUnit.MILLISECONDS))));
+                            newRow.setCreated(Main.cdate.format(new Date(atts.creationTime().to(TimeUnit.MILLISECONDS))));
+                            newRow.setLastUsed(Main.cdate.format(new Date(atts.lastAccessTime().to(TimeUnit.MILLISECONDS))));
+                        } catch (IOException e) {
+                            newRow.setLastModified("");
+                            newRow.setCreated("");
+                            newRow.setLastUsed("");
+                        }
+                        selectionList.add(newRow);
+                    }
+                    if (fileName.toLowerCase().endsWith(Constants.REPORTEXTENSION)) {
+                        ReportRow newRow = new ReportRow();
+                        newRow.setName(fileName.substring(0, fileName.lastIndexOf(".")));
+                        newRow.setFileName(file.getAbsolutePath());
+                        ReportDataRow dataRow = new ReportDataRow();
+                        if (!dataRow.loadRow(newRow.getName(), this)) {
+                            Main.rwDebugInst.debugThread("Parameters", "setReportTemplates", MRBDebug.SUMMARY, "Processing " + fileName);
+                            OptionMessage.displayErrorMessage("Could not load data for data row " + newRow.getName());
+                            continue;
+                        }
+                        newRow.setTemplate(dataRow.getTemplate());
+                        newRow.setSelection(dataRow.getSelection());
+                        newRow.setData(dataRow.getDataParms());
+                        newRow.setType(switch (dataRow.getType()) {
+                            case DATABASE -> 2;
+                            case SPREADSHEET -> 3;
+                            case CSV -> 4;
+                        });
+                        newRow.setLastUsed(Main.cdate.format(new Date(file.lastModified())));
+                        reportList.add(newRow);
+                    }
+                }
+            }
 		}
 		else
 			dataDirectory = Constants.NODIRECTORY;
@@ -245,17 +243,11 @@ public class Parameters implements Serializable{
 	public void removeSelectionRow(SelectionRow row) {
 		selectionList.remove(row);
 	}
-	public void setSelectionList(List<SelectionRow> selectionList) {
-		this.selectionList = selectionList;
-	}
 
 	public List<DataRow> getDataList() {
 		return dataList;
 	}
 
-	public void setDataList(List<DataRow> dataList) {
-		this.dataList = dataList;
-	}
 	public void addDataRow(DataRow row) {
 		for (DataRow tempRow : dataList) {
 			if (tempRow.getName().equalsIgnoreCase(row.getName())) {
@@ -286,10 +278,6 @@ public class Parameters implements Serializable{
 	
 	public List<ReportRow> getReportList() {
 		return reportList;
-	}
-
-	public void setReportList(List<ReportRow> reportList) {
-		this.reportList = reportList;
 	}
 
 	public void addReportRow(ReportRow row) {
@@ -351,13 +339,6 @@ public class Parameters implements Serializable{
 	public boolean checkDataGroup(String groupName) {
 		for (ReportRow row : reportList) {
 			if (row.getData()!=null && row.getData().equals(groupName))
-				return true;
-		}
-		return false;
-	}
-	public boolean checkSelectionGroup(String groupName) {
-		for (ReportRow row : reportList) {
-			if (row.getSelection() !=null && row.getSelection().equals(groupName))
 				return true;
 		}
 		return false;

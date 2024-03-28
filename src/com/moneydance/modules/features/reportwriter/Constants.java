@@ -49,7 +49,12 @@ public abstract class Constants {
 	public static final String ABOUT2 = "         By Mike Bray (2021)\n";
 	public static final String ABOUT3 = "         Build ";
 	public static final String ABOUT4 = " Icons used with this extension are supplied by http://icons8.com\n";
-   /*
+	public static final String SELECTEDBLACKIMAGE = "selectedblack.png";
+	public static final String SELECTEDLIGHTIMAGE = "selectedlight.png";
+	public static final String UNSELECTEDBLACKIMAGE = "unselectedblack.png";
+	public static final String UNSELECTEDLIGHTIMAGE = "unselectedlight.png";
+	public static final String ABANDONMSG = "Parameters have changed, do you wish to abandon the changes?";
+	/*
 	 * Program control
 	 */
 	public static final String PROGRAMNAME = "reportwriter";
@@ -65,7 +70,7 @@ public abstract class Constants {
 	public static final String RESOURCES = "/com/moneydance/modules/features/reportwriter/resources/";
 	public static final String VIEWREPORTCMD = "ViewReport";
 	public static final String DEFAULTDATABASE = "database.mv.db";
-	public static final String REPOSITORY = "https://github.com/mrbray99/moneydanceproduction/tree/main/downloads";
+	public static final String REPOSITORY = "http://github.com/mrbray99/moneydanceproduction/blob/main/downloads";
 	public static final String SAMPLESFILE = "rwsamples.zip";
 	public static final String HELPURL = "https://github.com/mrbray99/moneydanceproduction/wiki/Report-Writer";
 	public static final String SHOWHELP = "showhelp";
@@ -83,24 +88,34 @@ public abstract class Constants {
 	public static final String CRNTFRAMEX = "framex";
 	public static final String CRNTFRAMEY = "framey";
 	public static final String DEBUGLEVEL="debuglevel";
-/*
+	public static final String CRNTCOLWIDTH = "columnwidth";
+	public static final String CRNTBEANCOLWIDTH = "beancolumnwidth";
+	public static final String CRNTBEANPANEWIDTH= "crntbeanpanewidth";
+	public static final String CRNTBEANPANEHEIGHT= "crntbeanpaneheight";
+
+	/*
  * Screen parameters
  */
 	public static final int FRAMEWIDTH = 800;
-	public static final int MAINSCREENWIDTH = 1000;
-	public static final int MAINSCREENHEIGHT = 800;
-	public static final int DATASCREENHEIGHT = 300;
-	public static final int DATASCREENWIDTH = 800;
-	public static final int DATADATASCREENHEIGHT = 550;
-	public static final int DATADATASCREENWIDTH = 830;
+	public static final int MAINSCREENWIDTH = 1430;
+	public static final int MAINSCREENHEIGHT = 510;
+	public static final int DATASCREENHEIGHT = 100;
+	public static final int DATASCREENWIDTH = 100;
+	public static final int DATADATASCREENHEIGHT = 500;
+	public static final int DATADATASCREENWIDTH = 500;
 	public static final int DATASELECTSCREENHEIGHT = 350;
 	public static final int DATASELECTSCREENWIDTH = 800;
 	public static final int DATAREPORTSCREENHEIGHT = 370;
 	public static final int DATAREPORTSCREENWIDTH = 800;
-	public static final int DATASCREENWIDTHMIN =800;
-	public static final int DATASCREENHEIGHTMIN = 600;
-	public static final int FIELDSCREENHEIGHT = 400;
-	public static final int FIELDSCREENWIDTH = 300;
+	public static final int FIELDSCREENHEIGHT = 530;
+	public static final int FIELDSCREENWIDTH = 530;
+	public static final int BEANSCREENWIDTH=600;
+	public static final int BEANSCREENHEIGHT=600;
+	public static final int[]  DATDEFAULTCOLWIDTH = {100,100,100,100};
+	public static final int[]  SELDEFAULTCOLWIDTH = {100,100,100,100};
+	public static final int[]  FIELDDEFAULTCOLWIDTH = {100,100};
+	public static final int[]  BEANDEFAULTCOLWIDTH = {100,100,50};
+	public static final int[]  REPDEFAULTCOLWIDTH = {100,100,100,100,100};
 	/*
 	 * Window Names
 	 */
@@ -117,20 +132,7 @@ public abstract class Constants {
 	public static final Double MISSINGDOUBLE=-99999999.9;
 	public static final String CANCELPRESSED="***cancel***";
 	
-    /*
-     * Menu names
-     * 
-     */
-    public static final String MENUFILE = "File";
-    public static final String MENUREPORT = "Manage Reports";
-    public static final String MENUDATA = "Manage Data";
-    public static final String MENUVIEW = "View Reports";
-    public static final String MENUHELP= "Help";
-    public static final String ITEMFILEOPTIONS = "Set Options";
-    public static final String ITEMFILECLOSE = "Close Extension";
-    public static final String ITEMFILESAVE = "Save Parameters";
-    public static final String ITEMFILESAVEAS = "Save Parameters As";
-    /*
+     /*
      * parameter field names
      */
     public static final String PARMFROMDATE=  "parmfromdate";
@@ -223,7 +225,7 @@ public abstract class Constants {
 		intervaltypes.put(BudgetItem.INTERVAL_TRI_WEEKLY, "Tri-Weekly");
 		intervaltypes.put(BudgetItem.INTERVAL_WEEKLY, "Weekly");
 	}
-	public static String[] INTROTEXT = {"**Welcome to the Report Writer extension by Mike Bray**",
+	public static String[] INTROTEXT = {"**Welcome to the Report Writer extension by Mike Bray**::",
 			"This extension takes the data in your Moneydance file and outputs it into easy to use files. These files can be in Comma Separated Value format, an Excel workbook or an SQL Database.::",
 			"Before the extension can be used you need to tell it where you will store the parameters and the data output.  These can all be the same folder.::",
 			"To make best use of the extension it is important that you read the Help information. To access this click on the Question Mark at the bottom of the screen and click on 'Show Help'.::",

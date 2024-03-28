@@ -1,13 +1,9 @@
 package com.moneydance.modules.features.reportwriter.view;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.moneydance.modules.features.mrbutil.MRBDebug;
-import com.moneydance.modules.features.reportwriter.Constants;
 import com.moneydance.modules.features.reportwriter.Main;
-import com.moneydance.modules.features.reportwriter.Parameters;
 
 public class ReportRow {
 	private String name;

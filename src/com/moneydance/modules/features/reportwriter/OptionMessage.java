@@ -1,54 +1,29 @@
 package com.moneydance.modules.features.reportwriter;
 
+
 import java.util.Optional;
 
 import javax.swing.JOptionPane;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextInputDialog;
-
 public abstract class OptionMessage {
 	
 	public static void displayMessage(String message) {
-		if (Thread.currentThread().getName().contains("FX"))
-			displayMessageFX(message);
-		else
-			displayMessageSwing(message);
-	}
-	private static void displayMessageFX(String message) {
-		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setTitle("Information");
-		alert.setHeaderText(null);
-		alert.setContentText(message);
-		alert.showAndWait();
+		displayMessageSwing(message);
 	}
 	private static void displayMessageSwing(String message) {
 		JOptionPane.showMessageDialog(null, message);
 	}
+	public static void displayErrorMessage(String message) {
+		displayErrorMessageSwing(message);
+	}
+	private static void displayErrorMessageSwing(String message) {
+		JOptionPane.showMessageDialog(null, message,"Report Writer",JOptionPane.ERROR_MESSAGE);
+	}
 	public static boolean yesnoMessage(String message) {
-		if (Thread.currentThread().getName().contains("FX"))
-			return yesnoMessageFX(message);
-		else
-			return yesnoMessageSwing(message);
+		return yesnoMessageSwing(message);
 
 	}
-	public static boolean yesnoMessageFX(String message) {
-		ButtonType yesButton = new ButtonType("Yes",ButtonBar.ButtonData.YES);
-		ButtonType noButton = new ButtonType("No",ButtonBar.ButtonData.NO);
-		Alert alert = new Alert(AlertType.CONFIRMATION,message,yesButton,noButton);
-		alert.setTitle("Confirm");
-		alert.setHeaderText(null);
-		alert.getButtonTypes().setAll(yesButton, noButton);
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == yesButton)
-			return true;
-		else
-			return false;
-	}
-	
+
 	private static boolean yesnoMessageSwing(String message) {
         if (JOptionPane.showConfirmDialog(null,message,"Confirm", 
 	            JOptionPane.YES_NO_OPTION,
@@ -58,23 +33,7 @@ public abstract class OptionMessage {
         return false;
 	}
 	public static boolean okMessage(String message) {
-		if (Thread.currentThread().getName().contains("FX"))
-			return okMessageFX(message);
-		else
-			return okMessageSwing(message);
-
-	}
-	public static boolean okMessageFX(String message) {
-		ButtonType okButton = new ButtonType("OK",ButtonBar.ButtonData.OK_DONE);
-		Alert alert = new Alert(AlertType.CONFIRMATION,message,okButton);
-		alert.setTitle("Confirm");
-		alert.setHeaderText(null);
-		alert.getButtonTypes().setAll(okButton);
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == okButton)
-			return true;
-		else
-			return false;
+		return okMessageSwing(message);
 	}
 	private static boolean okMessageSwing(String message) {
         if (JOptionPane.showConfirmDialog(null,message,"Confirm", 
@@ -85,20 +44,8 @@ public abstract class OptionMessage {
         return false;
 	}
 	public static String inputMessage(String message) {
-		if (Thread.currentThread().getName().contains("FX"))
-			return inputMessageFX(message);
-		else
-			return inputMessageSwing(message);
+		return inputMessageSwing(message);
 
-	}
-	private static String inputMessageFX(String message) {
-		TextInputDialog tf = new TextInputDialog();
-		tf.setTitle("Data Input");
-		tf.setHeaderText(message);
-		Optional<String> result = tf.showAndWait();
-		if (result.isPresent())
-			return tf.getResult();
-		return Constants.CANCELPRESSED;
 	}
 	private static String inputMessageSwing(String message) {
         return JOptionPane.showInputDialog(null,message);

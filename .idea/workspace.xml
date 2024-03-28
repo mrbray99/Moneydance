@@ -4,135 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="To align with github&#10;&#10;# Conflicts:&#10;#&#9;dist/securityquoteload.mxt">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ant.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ant.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/lib.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/lib.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/bin/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/Moneydance Released Extensions.iml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Moneydance Released Extensions.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/budgetgenbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/budgetgenbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/budgetreportbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/budgetreportbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/build.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/build.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/filedisplaybuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/filedisplaybuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/loadsectransbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/loadsectransbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/priceloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/priceloadbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/qifloaderbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/qifloaderbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/reportwriterbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/reportwriterbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/securityhistoryloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/securityhistoryloadbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/securitypriceloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/securitypriceloadbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/securityquoteloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/securityquoteloadbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/budgetgen.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/budgetgen.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/budgetreport.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/budgetreport.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/loadsectrans.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/loadsectrans.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securityhistoryload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityhistoryload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securitypriceload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securitypriceload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securityquoteload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityquoteload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Moneydance Released Extensions.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Moneydance Released Extensions.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/budgetgenbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/budgetgenbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/budgetreportbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/budgetreportbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/build.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/build.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/AccountDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/AccountDetails.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/AddAccountsModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/AddAccountsModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/AddAccountsWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/AddAccountsWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/BudgetExtend.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/BudgetExtend.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/BudgetLine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/BudgetLine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/BudgetListExtend.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/BudgetListExtend.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/BudgetSelectWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/BudgetSelectWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/BudgetValuesWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/BudgetValuesWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/meta_info.dict" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetreport/BudgetValuesWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetreport/BudgetValuesWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetreport/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetreport/meta_info.dict" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/filedisplay/DetailedFileDisplayWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/filedisplay/DetailedFileDisplayWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/filedisplay/FileDisplayWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/filedisplay/FileDisplayWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/filedisplay/MyTranTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/filedisplay/MyTranTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/filedisplay/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/filedisplay/meta_info.dict" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/Constants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/FieldLine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/FieldLine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/FileSelectWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/FileSelectWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/GenerateTransaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/GenerateTransaction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/GenerateWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/GenerateWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/MyCheckBox.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/MyCheckBox.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/MyTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/MyTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/MyTableModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/MyTableModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/MyTransactionSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/MyTransactionSet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/Parameters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/Parameters.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/SecLine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/SecLine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/SecLineCompare.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/SecLineCompare.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/loadPricesWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/loadPricesWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/meta_info.dict" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBDebug.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBDebug.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBPreferences.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBPreferences.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBPrinter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBPrinter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBReportPrinter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBReportPrinter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBReportViewer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBReportViewer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBViewTransactions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBViewTransactions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/qifloader/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/qifloader/Constants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/qifloader/FileSelectWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/qifloader/FileSelectWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/qifloader/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/qifloader/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/qifloader/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/qifloader/meta_info.dict" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Constants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/FirstRun.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Images.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Images.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Parameters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Parameters.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Utilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Utilities.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/factory/CategoryFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/factory/CategoryFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/meta_info.dict" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/sandbox/MyJarLauncher.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/sandbox/MyLaunchedURLClassLoader.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/sandbox/WriterServiceException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/AccelKeys.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/AccelKeys.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/HelpScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/HelpScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/MyReport.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/MyReport.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/ReportDataPane.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/ReportDataPane.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/ReportDataRow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/ReportDataRow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/ReportPane.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/ReportPane.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/ReportRow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/ReportRow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/TemplateDataPane.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/TemplateListRow.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/TemplatePane.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/TemplateRow.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/Constants.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/XmlWriter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/edit/UndoDetail.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/report/ReportPage.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/formatdetailpane.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/resources/reportwriter.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/selection/FormatSelectModel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/selection/TreeSelectionModel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/DetailPane.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/Pattern.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/LayoutTreeNode.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/ReportFormat.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/controls/ReportTemplate.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/FieldDetailController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/FieldExpressionController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/FormatDetailController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter2/view/screenctrl/LayoutPaneController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityhistoryload/FileSelectWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityhistoryload/FileSelectWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityhistoryload/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityhistoryload/meta_info.dict" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securitypriceload/FileSelectWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securitypriceload/FileSelectWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securitypriceload/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securitypriceload/meta_info.dict" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/MainPriceWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/MainPriceWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/meta_info.dict" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/resources/stockexchanges.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/resources/stockexchanges.dict" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/CurTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/CurTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/MyCheckBox.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/MyCheckBox.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/ParameterTab.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/ParameterTab.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/filedisplaybuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/filedisplaybuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/loadsectransbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/loadsectransbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/priceloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/priceloadbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/qifloaderbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/qifloaderbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reportwriterbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportwriterbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/securityhistoryloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/securityhistoryloadbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/securitypriceloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/securitypriceloadbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/securityquoteloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/securityquoteloadbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/updaterelease.bat" beforeDir="false" afterPath="$PROJECT_DIR$/updaterelease.bat" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -201,7 +74,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706794949828</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="To align with github&#10;&#10;# Conflicts:&#10;#&#9;dist/securityquoteload.mxt">
+      <option name="closed" value="true" />
+      <created>1710077642234</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1710077642234</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
