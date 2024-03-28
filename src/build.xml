@@ -81,8 +81,6 @@ http://jakarta.apache.org/ant/index.html
 	<import file="qlerroranalyserbuild.xml"/>
 	<import file="securityquoteloadbuild.xml"/>
 	<import file="reportwriterbuild.xml"/>
-	<import file="mrbtoolboxbuild.xml"/>
-	<import file="testext.xml"/>
 	<target name="genkeys">
 		<java classpathref="classpath" classname="com.moneydance.admin.KeyAdmin">
 			<arg value="genkey" />
