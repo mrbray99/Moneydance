@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,12 +14,12 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Merge.Settings">
-    <option name="BRANCH" value="3205" />
+    <option name="BRANCH" value="3208" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="3208" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -82,7 +83,15 @@
       <option name="project" value="LOCAL" />
       <updated>1710077642234</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Delete FX">
+      <option name="closed" value="true" />
+      <created>1711615469697</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1711615469697</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -101,6 +110,9 @@
     <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="To align with github&#10;&#10;# Conflicts:&#10;#&#9;dist/securityquoteload.mxt&#10;" />
     <MESSAGE value="To align with github&#10;&#10;# Conflicts:&#10;#&#9;dist/securityquoteload.mxt" />
-    <option name="LAST_COMMIT_MESSAGE" value="To align with github&#10;&#10;# Conflicts:&#10;#&#9;dist/securityquoteload.mxt" />
+    <MESSAGE value="Latest update from removing javafx" />
+    <MESSAGE value="Remove toolbox" />
+    <MESSAGE value="Delete FX" />
+    <option name="LAST_COMMIT_MESSAGE" value="Delete FX" />
   </component>
 </project>

@@ -407,10 +407,6 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 				command = uri.substring(0, theIdx);
 			}
 		}
-		if (Utilities.getPlatform().contains("arm")){
-			JOptionPane.showMessageDialog(null,"This extension will not run on ARM based processors");
-			return;
-		}
         /*
 		 * showConsole will be on AWT-Event-Queue, all other commands will be on the thread of the calling
 		 * program, make sure all commands are processed on the AWT-Event-Queue to preserve sequence
