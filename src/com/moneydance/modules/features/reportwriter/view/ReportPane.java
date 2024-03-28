@@ -2,180 +2,106 @@ package com.moneydance.modules.features.reportwriter.view;
 
 
 
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
+import java.awt.*;
 
-import com.moneydance.apps.md.controller.io.FileUtils;
+import java.util.List;
+
+import com.moneydance.awt.GridC;
 import com.moneydance.modules.features.reportwriter.Constants;
 import com.moneydance.modules.features.reportwriter.Main;
 import com.moneydance.modules.features.reportwriter.OptionMessage;
 import com.moneydance.modules.features.reportwriter.Parameters;
 
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.TextAlignment;
+import javax.swing.*;
 
 public class ReportPane extends ScreenPanel {
 	private Parameters params;
-	private ObservableList<ReportRow> model;
-    private TableView<ReportRow> thisTable;
-    private Button editBtn;
-    private Button deleteBtn;
-    private Button addBtn;
-    private Button viewBtn;
-    private Button openOutBtn;
-    private Button copyBtn;
-    private Tooltip editTip = new Tooltip();
-    private Tooltip deleteTip = new Tooltip();
-    private Tooltip addTip = new Tooltip();
- //   private ImageView reportIcon=null;
-    private ImageView csvIcon=null;
-    private ImageView spreadIcon=null;
-    private ImageView dbIcon=null;
-    private GridPane thisObj;
-    private Tooltip reportRunTip = new Tooltip();
-    private Tooltip csvRunTip = new Tooltip();
-    private Tooltip spreadRunTip = new Tooltip();
-    private Tooltip dbRunTip = new Tooltip();
-    private Tooltip copyTip = new Tooltip();
+	private List<ReportRow> rows;
+    private ReportPaneTable thisTable;
+	private ReportPaneTableModel thisModel;
+    private JButton editBtn;
+    private JButton deleteBtn;
+    private JButton addBtn;
+    private JButton viewBtn;
+    private JButton openOutBtn;
+    private JButton copyBtn;
+	private String csvRunTip;
+	private String spreadRunTip;
+	private String dbRunTip;
+
+    private ImageIcon csvIcon;
+    private ImageIcon spreadIcon;
+    private ImageIcon dbIcon;
+    private ScreenPanel thisObj;
+	private JScrollPane scroll;
+
 	public ReportPane(Parameters paramsp) {
 		params = paramsp;
 		thisObj = this;
-//		reportIcon = new ImageView(Main.loadedIcons.viewImg);
-		csvIcon = new ImageView(Main.loadedIcons.csvImg);
-		spreadIcon = new ImageView(Main.loadedIcons.spreadImg);
-		dbIcon = new ImageView(Main.loadedIcons.dbImg);
-
+		csvIcon = Main.loadedIcons.csvImg==null?null:new ImageIcon(Main.loadedIcons.csvImg);
+		spreadIcon = Main.loadedIcons.spreadImg==null?null:new ImageIcon(Main.loadedIcons.spreadImg);
+		dbIcon = Main.loadedIcons.dbImg==null?null:new ImageIcon(Main.loadedIcons.dbImg);
+		setLayout(new BorderLayout());
 		setUpTable();
-		Label templateLbl = new Label("Reports");
-		templateLbl.setTextAlignment(TextAlignment.CENTER);
-		templateLbl.setFont(Font.font("Veranda",FontWeight.BOLD,20.0));
-		add(templateLbl,0,0);
-		setMargin(templateLbl,new Insets(10,10,10,10));
-		GridPane.setColumnSpan(templateLbl,6);
-		GridPane.setHalignment(templateLbl, HPos.CENTER);
-		add(thisTable,0,1);
-		GridPane.setColumnSpan(thisTable,6);
-		editBtn = new Button();
-		setMargin(editBtn,new Insets(10,10,10,10));
+		scroll = new JScrollPane();
+		scroll.setViewportView(thisTable);
+		JLabel templateLbl = new JLabel("Reports",SwingConstants.CENTER);
+		templateLbl.setFont(new Font("Veranda",Font.BOLD,20));
+		add(templateLbl, BorderLayout.PAGE_START);
+		add(scroll,BorderLayout.CENTER);
+		editBtn = new JButton();
 		if (Main.loadedIcons.editImg == null)
 			editBtn.setText("Edit");
 		else
-			editBtn.setGraphic(new ImageView(Main.loadedIcons.editImg));
-		editBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				editRow();
-			}
-		});
-		editTip.setText("Edit an existing Reports set");
-		editBtn.setTooltip(editTip);
-		deleteBtn = new Button();
-		setMargin(deleteBtn,new Insets(10,10,10,10));
+			editBtn.setIcon(new ImageIcon(Main.loadedIcons.editImg));
+		editBtn.addActionListener(e -> editRow());
+		editBtn.setToolTipText("Edit an existing Reports set");
+		deleteBtn = new JButton();
 		if (Main.loadedIcons.deleteImg == null)
 			deleteBtn.setText("Delete");
 		else
-			deleteBtn.setGraphic(new ImageView(Main.loadedIcons.deleteImg));
-		deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				deleteRow();
-			}
-		});
-		deleteTip.setText("Delete an existing Reports set");
-		deleteBtn.setTooltip(deleteTip);
-		addBtn = new Button();
-		setMargin(addBtn,new Insets(10,10,10,10));
+			deleteBtn.setIcon(new ImageIcon(Main.loadedIcons.deleteImg));
+		deleteBtn.addActionListener(e -> deleteRow());
+		deleteBtn.setToolTipText("Delete an existing Reports set");
+		addBtn = new JButton();
 		if (Main.loadedIcons.addImg == null)
 			addBtn.setText("+");
 		else
-			addBtn.setGraphic(new ImageView(Main.loadedIcons.addImg));
-		addBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				addRow();
-			}
-		});
-		addTip.setText("Add a new Reports set");
-		addBtn.setTooltip(addTip);
-		reportRunTip.setText("Run the selected Jasper Report");
-		csvRunTip.setText("Create the selected .csv file");
-		spreadRunTip.setText("Create the selected Spreadsheet");
-		dbRunTip.setText("Create the selected Database");
-		viewBtn = new Button();
-		setMargin(viewBtn,new Insets(10,10,10,10));
+			addBtn.setIcon(new ImageIcon(Main.loadedIcons.addImg));
+		addBtn.addActionListener(e -> addRow());
+		addBtn.setToolTipText("Add a new Reports set");
+		csvRunTip ="Create the selected .csv file";
+		spreadRunTip = "Create the selected Spreadsheet";
+		dbRunTip = "Create the selected Database";
+		viewBtn = new JButton();
 		if (csvIcon == null)
 			viewBtn.setText("Create CSV file");
 		else
-			viewBtn.setGraphic(csvIcon);
-		viewBtn.setTooltip(csvRunTip);
-		viewBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				viewReport();
-			}
-		}); 
-		openOutBtn = new Button();
+			viewBtn.setIcon(csvIcon);
+		viewBtn.setToolTipText(csvRunTip);
+		viewBtn.addActionListener(e -> viewReport());
+		openOutBtn = new JButton();
 		if (Main.loadedIcons.searchImg == null)
 			openOutBtn.setText("Output Directory");
 		else
-			openOutBtn.setGraphic(new ImageView(Main.loadedIcons.searchImg));
-		GridPane.setMargin(openOutBtn,new Insets(10, 10, 10, 10));
-		openOutBtn.setTooltip(new Tooltip("Click to open Output folder"));
-		openOutBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Main.extension.openOutput();
-					}
-				});	
-			}
-		});  
-		copyBtn = new Button();
-		setMargin(copyBtn,new Insets(10,10,10,10));
+			openOutBtn.setIcon(new ImageIcon(Main.loadedIcons.searchImg));
+		openOutBtn.setToolTipText("Click to open Output folder");
+		openOutBtn.addActionListener(e -> SwingUtilities.invokeLater(() -> Main.extension.openOutput()));
+		copyBtn = new JButton();
 		if (Main.loadedIcons.addImg == null)
 			copyBtn.setText("+");
 		else
-			copyBtn.setGraphic(new ImageView(Main.loadedIcons.copyImg));
-		copyBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				copyRow();
-			}
-		});
-		copyTip.setText("Copy a Data Selection Group");
-		copyBtn.setTooltip(copyTip);		add(addBtn,0,2);
-		add(editBtn,1,2);
-		add(copyBtn,2,2);
-		add(deleteBtn,3,2);	
-		add(viewBtn,4,2);
-		add(openOutBtn,5,2);
+			copyBtn.setIcon(new ImageIcon(Main.loadedIcons.copyImg));
+		copyBtn.addActionListener(e -> copyRow());
+		copyBtn.setToolTipText("Copy a Data Selection Group");
+		JPanel buttons = new JPanel(new GridBagLayout());
+		buttons.add(addBtn,GridC.getc(0,0).insets(5,10,10,10));
+		buttons.add(editBtn,GridC.getc(1,0).insets(5,10,10,10));
+		buttons.add(copyBtn,GridC.getc(2,0).insets(5,10,10,10));
+		buttons.add(deleteBtn,GridC.getc(3,0).insets(5,10,10,10));
+		buttons.add(viewBtn,GridC.getc(4,0).insets(5,10,10,10));
+		buttons.add(openOutBtn,GridC.getc(5,0).insets(5,10,10,10));
+		add(buttons,BorderLayout.PAGE_END);
 		resize();
 	}
 	@Override
@@ -206,7 +132,7 @@ public class ReportPane extends ScreenPanel {
 		editRow();
 	}
 	private void editRow() {
-		ReportRow row = thisTable.getSelectionModel().getSelectedItem();
+		ReportRow row = thisTable.getRow();
 		if (row ==null) {
 			OptionMessage.displayMessage("Please Select a report");
 			return;
@@ -231,14 +157,14 @@ public class ReportPane extends ScreenPanel {
 		deleteRow();
 	}
 	private void deleteRow() {
-		ReportRow row = thisTable.getSelectionModel().getSelectedItem();
+		ReportRow row = thisTable.getRow();
 		if (row ==null) {
 			OptionMessage.displayMessage("Please Select a report");
 			return;
 		}
 		ReportDataRow rowEdit = new ReportDataRow();
 		if (rowEdit.loadRow(row.getName(), params)) {
-			Boolean result = OptionMessage.yesnoMessage("Are you sure you wish to delete report "+row.getName());
+			boolean result = OptionMessage.yesnoMessage("Are you sure you wish to delete report "+row.getName());
 			if (result) {
 				row.delete();
 				params.removeReportRow(row);
@@ -249,7 +175,7 @@ public class ReportPane extends ScreenPanel {
 	}
 	
 	private void viewReport() {
-		ReportRow row = thisTable.getSelectionModel().getSelectedItem();
+		ReportRow row = thisTable.getRow();
 		if (row ==null) {
 			OptionMessage.displayMessage("Please Select a report");
 			return;
@@ -269,18 +195,13 @@ public class ReportPane extends ScreenPanel {
 			/*
 			 * send command to read data and view report running it on the EDT rather than FX Thread
 			 */
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.VIEWREPORTCMD+"?"+row.getName());
-				}
-			});
+			javax.swing.SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.VIEWREPORTCMD+"?"+row.getName()));
 
 		}
 
 	}
 	private void copyRow() {
-		ReportRow row = thisTable.getSelectionModel().getSelectedItem();
+		ReportRow row = thisTable.getRow();
 		if (row ==null) {
 			OptionMessage.displayMessage("Please Select a Report");
 			return;
@@ -310,105 +231,69 @@ public class ReportPane extends ScreenPanel {
 
 	public void resize() {
 		super.resize();
-		thisTable.setPrefWidth(SCREENWIDTH);
-		thisTable.setPrefHeight(SCREENHEIGHT);
+		scroll.setMinimumSize(new Dimension(SCREENWIDTH,SCREENHEIGHT));
 	}
 	public void resetData() {
 		params.setDataTemplates();
-		model =FXCollections.observableArrayList(params.getReportList());
-		thisTable.setItems(model);	
-		thisTable.refresh();
+		rows=params.getReportList();
+		thisModel.resetData(rows);
+		thisModel.fireTableDataChanged();
 	}
 	
 	private void setUpTable () {
-		thisTable = new TableView<ReportRow>();
-		thisTable.setEditable(true);
-		thisTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		thisTable.setMaxWidth(Double.MAX_VALUE);
-		thisTable.setMaxHeight(Double.MAX_VALUE);
-		/*
-		 * Name
-		 */
-		TableColumn <ReportRow,String>name = new TableColumn<>("Name");
-		/*
-		 * Report
-		 */
-		TableColumn<ReportRow,String> reportCol = new TableColumn<>("Template");
-		/*
-		 * Selection
-		 */
-		TableColumn<ReportRow,String> selectionCol = new TableColumn<>("Selection");
-		/*
-		 * Data
-		 */
-		TableColumn<ReportRow,String> dataCol = new TableColumn<>("Data Parms");
-		/*
-		 * Last verified
-		 */
-		TableColumn<ReportRow,String> lastVerified = new TableColumn<>("Last Verified Date");
-		thisTable.setRowFactory(tv->{
-			TableRow<ReportRow> row = new TableRow<>();
-			row.setOnMouseClicked(event->{
-				if (event.getClickCount()==2 && (!row.isEmpty())) {
-					editRow();
-				}
-			});
-			return row;
-		});
-		thisTable.getColumns().addAll(name,reportCol,selectionCol,dataCol,lastVerified);
-		model =FXCollections.observableArrayList(params.getReportList());
-		thisTable.setItems(model);
-		name.setCellValueFactory(new PropertyValueFactory<>("name"));
-		reportCol.setCellValueFactory(new PropertyValueFactory<>("template"));
-		selectionCol.setCellValueFactory(new PropertyValueFactory<>("selection"));
-		dataCol.setCellValueFactory(new PropertyValueFactory<>("data"));
-		lastVerified.setCellValueFactory(new PropertyValueFactory<>("lastUsed"));
-		thisTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ReportRow>() {
-  
-			@Override
-	           public void changed(ObservableValue<? extends ReportRow> observable,ReportRow oldValue, ReportRow newValue){
-                if(newValue!=null){
-                    ReportDataRow rowEdit = new ReportDataRow();
-             		if (rowEdit.loadRow(newValue.getName(), params)) {
-            			switch (rowEdit.getType()) {
-            			case DATABASE:
-               				removeBtnImages();
-            				if (dbIcon == null)
-            					viewBtn.setText("Create Database");
-            				else
-            					viewBtn.setGraphic(dbIcon);
-            				viewBtn.setTooltip(dbRunTip);
-            				break;
-             			case SPREADSHEET :
-            				if (spreadIcon == null)
-            					viewBtn.setText("Output Spreadsheet");
-            				else
-            					viewBtn.setGraphic(spreadIcon);
-            				viewBtn.setTooltip(spreadRunTip);
-            				break;
-            			case CSV:
-            				if (csvIcon == null)
-            					viewBtn.setText("Output CSV");
-            				else
-            					viewBtn.setGraphic(csvIcon);
-            				viewBtn.setTooltip(csvRunTip);
-            				break;
-            			}
-            		}
+		rows = params.getReportList();
+		thisModel = new ReportPaneTableModel(rows);
+		thisTable = new ReportPaneTable(thisModel);
+		thisTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+  		ListSelectionModel tableSelectionModel = thisTable.getSelectionModel();
+		tableSelectionModel.addListSelectionListener(e -> {
+         if (e.getValueIsAdjusting())
+             return;
+         ReportRow row = rows.get(e.getFirstIndex());
+         if(row!=null){
+             ReportDataRow rowEdit = new ReportDataRow();
+              if (rowEdit.loadRow(row.getName(), params)) {
+                 switch (rowEdit.getType()) {
+                 case DATABASE:
+                        removeBtnImages();
+                     if (dbIcon == null)
+                         viewBtn.setText("Create Database");
+                     else
+                         viewBtn.setIcon(dbIcon);
+                     viewBtn.setToolTipText(dbRunTip);
+                     break;
+                  case SPREADSHEET :
+                     if (spreadIcon == null)
+                         viewBtn.setText("Output Spreadsheet");
+                     else
+                         viewBtn.setIcon(spreadIcon);
+                     viewBtn.setToolTipText(spreadRunTip);
+                     break;
+                 case CSV:
+                     if (csvIcon == null)
+                         viewBtn.setText("Output CSV");
+                     else
+                         viewBtn.setIcon(csvIcon);
+                     viewBtn.setToolTipText(csvRunTip);
+                     break;
+                 }
+             }
 
-                }
- 				
-			}
+         }
 
-		});
+     });
 	}
 	private void removeBtnImages() {
-		if (dbIcon != null)
-			thisObj.getChildren().remove(dbIcon);		
-		if (csvIcon != null)
-			thisObj.getChildren().remove(csvIcon);		
-		if (spreadIcon != null)
-			thisObj.getChildren().remove(spreadIcon);		
+		for (Component comp :thisObj.getComponents()){
+			if (comp instanceof JButton){
+				if (((JButton)comp).getIcon()==dbIcon)
+					((JButton)comp).setIcon(null);
+				if (((JButton)comp).getIcon()==csvIcon)
+					((JButton)comp).setIcon(null);
+				if (((JButton)comp).getIcon()==spreadIcon)
+					((JButton)comp).setIcon(null);
+			}
+		}
 	}
 
 

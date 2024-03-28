@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.reportwriter.Main;
@@ -53,27 +55,17 @@ public class HttpDownloadUtility {
 	private static String saveFilePath = "";
 
 	public static String downloadFile(String fileURL, String saveDir) throws DownloadException, IOException {
-		URL url = new URL(fileURL);
+		String link = fileURL+"?raw=true";
+		URL url = new URL(link);
 		HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
 		Main.rwDebugInst.debug("HttpDownloadUtility", "downloadFile", MRBDebug.SUMMARY, "Connection Made");
 		int responseCode = httpConn.getResponseCode();
 
 		// always check HTTP response code first
 		if (responseCode == HttpURLConnection.HTTP_OK) {
+			Map< String, List< String >> header = httpConn.getHeaderFields();
 			Main.rwDebugInst.debug("HttpDownloadUtility", "downloadFile", MRBDebug.SUMMARY, "Response OK");
-			String fileName = "";
-			String disposition = httpConn.getHeaderField("Content-Disposition");
-
-			if (disposition != null) {
-				// extracts file name from header field
-				int index = disposition.indexOf("filename=");
-				if (index > 0) {
-					fileName = disposition.substring(index + 10, disposition.length() - 1);
-				}
-			} else {
-				// extracts file name from URL
-				fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1, fileURL.length());
-			}
+			String fileName = fileURL.substring(fileURL.lastIndexOf("/")+1);
 			Main.rwDebugInst.debug("HttpDownloadUtility", "downloadFile", MRBDebug.SUMMARY, "File found " + fileName);
 			// opens input stream from the HTTP connection
 			InputStream inputStream = httpConn.getInputStream();

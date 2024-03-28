@@ -30,14 +30,7 @@
  */
 package com.moneydance.modules.features.reportwriter;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.ByteArrayOutputStream;
@@ -57,12 +50,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 
 import com.infinitekind.moneydance.model.Account;
 import com.infinitekind.moneydance.model.AccountBook;
@@ -76,28 +64,25 @@ import com.infinitekind.moneydance.model.CurrencyTable;
 import com.infinitekind.moneydance.model.CurrencyType;
 import com.infinitekind.moneydance.model.InvestTxnType;
 import com.infinitekind.moneydance.model.TxnUtil;
+import com.infinitekind.util.CustomDateFormat;
 import com.moneydance.apps.md.controller.FeatureModule;
 import com.moneydance.apps.md.controller.FeatureModuleContext;
 import com.moneydance.apps.md.controller.UserPreferences;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.MRBDirectoryUtils;
-import com.moneydance.modules.features.mrbutil.MRBFXSelectionRow;
+import com.moneydance.modules.features.mrbutil.MRBPlatform;
 import com.moneydance.modules.features.mrbutil.MRBPreferences2;
 import com.moneydance.modules.features.reportwriter.factory.OutputCSV;
 import com.moneydance.modules.features.reportwriter.factory.OutputDatabase;
 import com.moneydance.modules.features.reportwriter.factory.OutputFactory;
 import com.moneydance.modules.features.reportwriter.factory.OutputSpreadsheet;
-import com.moneydance.modules.features.reportwriter.view.AccelKeys;
+import com.moneydance.modules.features.reportwriter.view.BeanSelectionRow;
 import com.moneydance.modules.features.reportwriter.view.MyReport;
 import com.moneydance.modules.features.reportwriter.view.ReportDataRow;
-import com.moneydance.modules.features.reportwriter.Utilities.FxDatePickerConverter;
-
-import javafx.application.Platform;
-import javafx.scene.Scene;
+import com.moneydance.modules.features.reportwriter.view.SwingAccelerator;
 
 
-
-/** 
+/**
  * Generalized Moneydance extension to extract data
  * <p>
  * Main class to create main window
@@ -109,26 +94,14 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	public static String minorBuildNo = "00";
 	public static String databaseChanged = "20210121";
 
-	public static SimpleDateFormat cdate;
+	public static CustomDateFormat cdate;
 	public static DateTimeFormatter cdateFX;
 	public static ZoneId zone;
 	public static String datePattern;
-	public static FxDatePickerConverter dateConverter;
-	public static AccelKeys accels;
-	public List<MRBFXSelectionRow> currencies;
-	public List<MRBFXSelectionRow> transferTypes;
-	public List<MRBFXSelectionRow> bankAccounts;
-	public List<MRBFXSelectionRow> assetAccounts;
-	public List<MRBFXSelectionRow> liabilityAccounts;
-	public List<MRBFXSelectionRow> creditAccounts;
-	public List<MRBFXSelectionRow> loanAccounts;
-	public List<MRBFXSelectionRow> investmentAccounts;
-	public List<MRBFXSelectionRow> securityAccounts;
-	public List<MRBFXSelectionRow> incomeCategories;
-	public List<MRBFXSelectionRow> expenseCategories;
-	public List<MRBFXSelectionRow> tags;
-	public List<MRBFXSelectionRow> securities;
-	public List<MRBFXSelectionRow> budgets;
+	public static SwingAccelerator accels;
+	public static Image mainIcon;
+	public static MRBPreferences2 preferences;
+	public static ClassLoader loader;
 	public static Date now;
 	public static char decimalChar;
 	public static FeatureModuleContext context;
@@ -138,9 +111,29 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	public static MRBDebug rwDebugInst;
 	public static Main extension;
 	public static String buildNo;
-	public static MyReport frameReport=null;
-	public static JFrame frame;
+	public static MyReport frame;
 	public static Images loadedIcons;
+	private Image selectedBlack = null;
+	private Image selectedLight;
+	private Image unselectedBlack;
+	private Image unselectedLight;
+	public ImageIcon selectedIcon;
+	public ImageIcon unselectedIcon;
+	public List<BeanSelectionRow> currencies;
+	public List<BeanSelectionRow> transferTypes;
+	public List<BeanSelectionRow> bankAccounts;
+	public List<BeanSelectionRow> assetAccounts;
+	public List<BeanSelectionRow> liabilityAccounts;
+	public List<BeanSelectionRow> creditAccounts;
+	public List<BeanSelectionRow> loanAccounts;
+	public List<BeanSelectionRow> investmentAccounts;
+	public List<BeanSelectionRow> securityAccounts;
+	public List<BeanSelectionRow> incomeCategories;
+	public List<BeanSelectionRow> expenseCategories;
+	public List<BeanSelectionRow> tags;
+	public List<BeanSelectionRow> securities;
+	public List<BeanSelectionRow> budgets;
+
 	private JFrame progressFrame;
 	private JScrollPane progressScroll;
 	private JTextArea progressArea;
@@ -148,12 +141,11 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	private String uri;
 	private String command;
 	private String extensionDir;
-	public static Image mainIcon;
-	public static MRBPreferences2 preferences;
-	public static ClassLoader loader;
-	private static Scene scene;
+
 	public int SCREENWIDTH;
 	public int SCREENHEIGHT;
+	private int SCREENX;
+	private int SCREENY;
 	public static Font labelFont;
 	private boolean extensionOpen = false;
 	/*
@@ -186,13 +178,12 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		}
 		up = UserPreferences.getInstance();
 		datePattern = up.getSetting(UserPreferences.DATE_FORMAT);
-		cdate = new SimpleDateFormat(datePattern);
+		cdate = new CustomDateFormat(datePattern);
 		cdateFX = DateTimeFormatter.ofPattern(datePattern);
-		dateConverter = new FxDatePickerConverter();
 		zone= ZoneId.systemDefault();
 		now = new Date();
 		decimalChar = up.getDecimalChar();
-		loadedIcons = new Images();
+		loadedIcons = new Images(this);
 		labelFont = UIManager.getFont("Label.font");
 		/*
 		 * Need to ensure Jasper Server is available in the .moneydance/fmodule/.reportwriter folder
@@ -263,7 +254,6 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		rwDebugInst.debug("Main", "HandleEventFileOpened", MRBDebug.INFO, "File Opened");
 		if (!extensionOpen) {
 			MRBPreferences2.forgetInstance();
-//			context = getContext();
 			book=context.getCurrentAccountBook();
 			MRBPreferences2.loadPreferences(context);
 			preferences = MRBPreferences2.getInstance();		
@@ -355,10 +345,55 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		if (book == null)
 			book=context.getCurrentAccountBook();
 		baseCurrency = book.getCurrencies().getBaseType();
-		accels = new AccelKeys();
+		accels = new SwingAccelerator();
 		if (preferences == null){
 			MRBPreferences2.loadPreferences(context);
 			preferences = MRBPreferences2.getInstance();
+		}
+		/*
+		 * load JCheckBox icons for Unix due to customised UIManager Look and feel
+		 */
+		if (MRBPlatform.isUnix() || MRBPlatform.isFreeBSD()) {
+			if (selectedBlack == null) {
+				selectedBlack = getIcon(Constants.SELECTEDBLACKIMAGE);
+				selectedLight = getIcon(Constants.SELECTEDLIGHTIMAGE);
+				unselectedBlack = getIcon(Constants.UNSELECTEDBLACKIMAGE);
+				unselectedLight = getIcon(Constants.UNSELECTEDLIGHTIMAGE);
+				UIDefaults uiDefaults = UIManager.getDefaults();
+				Color theme = uiDefaults.getColor("Panel.foreground");
+				double darkness = 0;
+				if (theme != null) {
+					darkness = 1 - (0.299 * theme.getRed() + 0.587 * theme.getGreen()
+							+ 0.114 * theme.getBlue()) / 255;
+					rwDebugInst.debug("Quote Load", "Init", MRBDebug.DETAILED,
+							"Panel.foreground Color " + theme.toString() + " Red " + theme.getRed()
+									+ " Green " + theme.getGreen() + " Blue " + theme.getBlue()
+									+ " Darkness " + darkness);
+				}
+				if (darkness > 0.5) {
+					if (selectedBlack != null) {
+						rwDebugInst.debug("Quote Load", "Init", MRBDebug.DETAILED, "selected black loaded");
+						selectedIcon = new ImageIcon(
+								selectedBlack.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
+					}
+					if (unselectedBlack != null) {
+						rwDebugInst.debug("Quote Load", "Init", MRBDebug.DETAILED, "unselected black loaded");
+						unselectedIcon = new ImageIcon(
+								unselectedBlack.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
+					}
+				} else {
+					if (selectedLight != null) {
+						rwDebugInst.debug("Quote Load", "Init", MRBDebug.DETAILED, "selected light loaded");
+						selectedIcon = new ImageIcon(
+								selectedLight.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
+					}
+					if (unselectedLight != null) {
+						rwDebugInst.debug("Quote Load", "Init", MRBDebug.DETAILED, "unselected light loaded");
+						unselectedIcon = new ImageIcon(
+								unselectedLight.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
+					}
+				}
+			}
 		}
 		uri = urip;
 		command = uri;
@@ -371,10 +406,6 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 			if(theIdx>=0) {
 				command = uri.substring(0, theIdx);
 			}
-		}
-		if (Utilities.getPlatform().contains("arm")){
-			JOptionPane.showMessageDialog(null,"This extension will not run on ARM based processors");
-			return;
 		}
         /*
 		 * showConsole will be on AWT-Event-Queue, all other commands will be on the thread of the calling
@@ -429,8 +460,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		book.addAccountListener(this);
 		book.getBudgets().addListener(this);
 		book.getCurrencies().addCurrencyListener(this);
-		frame = new JFrame();
-		frameReport = new MyReport();
+		frame = new MyReport();
 		frame.setTitle(Constants.EXTENSIONNAME+" "+buildNo+"."+minorBuildNo);
 		frame.setIconImage(mainIcon);
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -439,7 +469,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-				if (JOptionPane.showConfirmDialog(frameReport, 
+				if (JOptionPane.showConfirmDialog(frame,
 						"Are you sure you want to close Report Writer?", "Close Window?", 
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
@@ -448,20 +478,20 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 				}
 			}
 		});
-		SCREENWIDTH =preferences.getInt(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEWIDTH,Constants.MAINSCREENWIDTH);
-		rwDebugInst.debug("Main", "createAndShowGUI", MRBDebug.SUMMARY, "Width "+SCREENWIDTH);
-		SCREENHEIGHT =preferences.getInt(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEHEIGHT,Constants.MAINSCREENHEIGHT);
-		rwDebugInst.debug("Main", "createAndShowGUI", MRBDebug.SUMMARY, "Height "+SCREENHEIGHT);
-		frame.add(frameReport);
-		frame.getContentPane().setPreferredSize(new Dimension(SCREENWIDTH,SCREENHEIGHT));
 		frame.pack();
 		rwDebugInst.debug("Main",  "createAndShowGUI", MRBDebug.SUMMARY, "frame "+frame.getWidth()+"/"+frame.getHeight());
 		frame.setVisible(true);
-		frame.setLocation(preferences.getInt(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEX,0),preferences.getInt(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEY,0));
-
+		SCREENX = preferences.getInt(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEX,0);
+		SCREENY = preferences.getInt(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEY,0);
+		if (SCREENX !=0 || SCREENY!=0)
+			frame.setLocation(SCREENX,SCREENY);
+		else
+			frame.setLocationRelativeTo(null);
+		frame.getContentPane().requestFocus();
 		frame.addComponentListener(new ComponentListener() {
 			@Override
 			public void componentResized(ComponentEvent e) {
+
 			}
 	
 			@Override
@@ -483,20 +513,6 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 			public void componentHidden(ComponentEvent e) {			
 			}
 		});
-		Platform.runLater(() -> {
-            extensionOpen=true;
-            initFX(frameReport);
-        });
-	}
-	/*
-	 * Initiate JavaFX, this runs on the FX thread
-	 */
-	private static void initFX(MyReport fxPanel) {
-		rwDebugInst.debugThread("ReportWriter", "initFX", MRBDebug.SUMMARY, "setting javafx scene");
-		// This method is invoked on the JavaFX thread
-		scene = fxPanel.createScene();
-		fxPanel.setScene(scene);
-		fxPanel.setSizes();
 	}
 
 	/**
@@ -523,12 +539,6 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	public synchronized void closeConsole() {
 		rwDebugInst.debug("Main", "closeConsole", MRBDebug.DETAILED, "closing Console ");
 		extensionOpen=false;
-		if (frameReport !=null) {
-			frameReport.closeDown();
-			Platform.exit();
-			scene=null;
-			frameReport=null;
-		}
 		if(frame != null){
 			frame.setVisible(false);
 			frame=null;
@@ -552,7 +562,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		InvestTxnType[] txnTypes = InvestTxnType.ALL_TXN_TYPES;
 		transferTypes = new ArrayList<>();
 		for (InvestTxnType type : txnTypes) {
-			MRBFXSelectionRow row = new MRBFXSelectionRow(type.toString(),type.getIDString(), "Transfer Type", false);
+			BeanSelectionRow row = new BeanSelectionRow(type.toString(),type.getIDString(), "Transfer Type", false);
 			row.setDepth(0);
 			transferTypes.add(row);
 		}
@@ -562,7 +572,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		BudgetList budgetList = book.getBudgets();
 		if (budgetList != null) {
 			for (Budget budget : budgetList.getAllBudgets()) {
-				MRBFXSelectionRow row = new MRBFXSelectionRow(budget.getUUID(),budget.toString(), "Budget", false);
+				BeanSelectionRow row = new BeanSelectionRow(budget.getUUID(),budget.toString(), "Budget", false);
 				row.setDepth(0);
 				budgets.add(row);
 			}
@@ -575,13 +585,13 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		List<CurrencyType> currencyTable = book.getCurrencies().getAllCurrencies();
 		for (CurrencyType type : currencyTable) {
 			if (type.getCurrencyType()== CurrencyType.Type.CURRENCY) {
-				MRBFXSelectionRow row = new MRBFXSelectionRow(type.getUUID(),type.getName()+"("+type.getIDString()+")", "Currency", false);
+				BeanSelectionRow row = new BeanSelectionRow(type.getUUID(),type.getName()+"("+type.getIDString()+")", "Currency", false);
 				row.setDepth(0);
 				row.setInActive(type.getHideInUI());
 				currencies.add(row);
 			}
 			if (type.getCurrencyType()== CurrencyType.Type.SECURITY) {
-				MRBFXSelectionRow row = new MRBFXSelectionRow(type.getUUID(),type.getName()+"("+type.getIDString()+")", "Security", false);
+				BeanSelectionRow row = new BeanSelectionRow(type.getUUID(),type.getName()+"("+type.getIDString()+")", "Security", false);
 				row.setDepth(0);
 				row.setInActive(type.getHideInUI());
 				securities.add(row);
@@ -630,7 +640,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 			expenseCategories.clear();
 		while (it.hasNext()) {
 			Account acct = it.next();
-			MRBFXSelectionRow row = new MRBFXSelectionRow(acct.getUUID(),acct.getAccountName(),"Account",false);
+			BeanSelectionRow row = new BeanSelectionRow(acct.getUUID(),acct.getAccountName(),"Account",false);
 			row.setInActive(false);
 			row.setSortText(acct.getFullAccountName());
 			row.setDepth(0);
@@ -691,7 +701,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		tags = new ArrayList<>();
 		List<String> tagList = TxnUtil.getListOfAllUsedTransactionTags(book.getTransactionSet().getAllTxns());
 		for (String tagStr : tagList) {
-			tags.add(new MRBFXSelectionRow(tagStr,tagStr,"Tag",false));
+			tags.add(new BeanSelectionRow(tagStr,tagStr,"Tag",false));
 			
 		}
 	}
@@ -724,13 +734,13 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 				break;
 			case SPREADSHEET :
 				output = new OutputSpreadsheet(rowEdit,params);
-				frameReport.resetData();
+				frame.resetData();
 				output = null;
 				closeProgressWindow();
 				return;
 			case CSV:
 				output = new OutputCSV(rowEdit,params);
-				frameReport.resetData();
+				frame.resetData();
 				output = null;
 				closeProgressWindow();
 				return;
@@ -795,8 +805,8 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	@Override
 	public void accountModified(Account paramAccount) {
 		loadAccounts();
-		if (frameReport !=null)
-			frameReport.resetData();
+		if (frame !=null)
+			frame.resetData();
 	}
 	@Override
 	public void accountBalanceChanged(Account paramAccount) {
@@ -806,32 +816,32 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	@Override
 	public void accountDeleted(Account paramAccount1, Account paramAccount2) {
 		loadAccounts();
-		if (frameReport !=null)
-			frameReport.resetData();
+		if (frame !=null)
+			frame.resetData();
 	}
 	@Override
 	public void accountAdded(Account paramAccount1, Account paramAccount2) {
 		loadAccounts();
-		if (frameReport !=null)
-			frameReport.resetData();
+		if (frame !=null)
+			frame.resetData();
 	}
 	@Override
 	public void budgetListModified(BudgetList paramBudgetList) {
 		loadAccounts();
-		if (frameReport !=null)
-			frameReport.resetData();
+		if (frame !=null)
+			frame.resetData();
 	}
 	@Override
 	public void budgetAdded(Budget paramBudget) {
 		loadBudgets();
-		if (frameReport !=null)
-			frameReport.resetData();
+		if (frame !=null)
+			frame.resetData();
 	}
 	@Override
 	public void budgetRemoved(Budget paramBudget) {
 		loadBudgets();
-		if (frameReport !=null)
-			frameReport.resetData();
+		if (frame !=null)
+			frame.resetData();
 	}
 	@Override
 	public void budgetModified(Budget paramBudget) {
@@ -841,11 +851,11 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 	@Override
 	public void currencyTableModified(CurrencyTable arg0) {
 		loadCurrencies();
-		if (frameReport !=null)
-			frameReport.resetData();		
+		if (frame !=null)
+			frame.resetData();
 	}
-	public static class CompareCurrency implements Comparator<MRBFXSelectionRow>{
-		public int compare(MRBFXSelectionRow a, MRBFXSelectionRow b) {
+	public static class CompareCurrency implements Comparator<BeanSelectionRow>{
+		public int compare(BeanSelectionRow a, BeanSelectionRow b) {
 			return a.getText().compareTo(b.getText());
 		}
 	}

@@ -1,59 +1,45 @@
 package com.moneydance.modules.features.reportwriter.view;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.moneydance.awt.GridC;
 import com.moneydance.modules.features.reportwriter.Constants;
 import com.moneydance.modules.features.reportwriter.Main;
 import com.moneydance.modules.features.reportwriter.OptionMessage;
 import com.moneydance.modules.features.reportwriter.Parameters;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class ReportDataPane extends ScreenDataPane {
 	private Parameters params;
-	private TextField name;
-	private ComboBox<String> selections;
-	private ComboBox<String> dataParms;
-	private ComboBox<String> csvDelimiter;
-	private Label delimiterLbl;
-	private RadioButton createDatabase;
-	private RadioButton createSpreadsheet;
-	private RadioButton createCsvFile;
-	private CheckBox addBOM;
-	private CheckBox generateName;
-	private CheckBox overWriteFile;
-	private CheckBox addDateStamp;
-	private TextField fileName;
-	private ToggleGroup group;
-	private HBox csvBox;
+	private JTextField name;
+	private JComboBox<String> selections;
+	private JComboBox<String> dataParms;
+	private JComboBox<String> csvDelimiter;
+	private JLabel delimiterLbl;
+	private JRadioButton createDatabase;
+	private JRadioButton createSpreadsheet;
+	private JRadioButton createCsvFile;
+	private JCheckBox addBOM;
+	private JCheckBox generateName;
+	private JCheckBox overWriteFile;
+	private JCheckBox addDateStamp;
+	private JTextField fileName;
+	private ButtonGroup group;
+	private JPanel csvBox;
 	private List<SelectionRow> listSelections;
 	private List<DataRow> listDataParms;
-	private ObservableList<String> listTempNames;
-	private ObservableList<String> listSelNames;
-	private ObservableList<String> listDataNames;
-	private Scene scene;
-	private GridPane pane;
+	private List<String> listSelNames;
+	private List<String> listDataNames;
+	private JPanel pane;
 	private ReportDataRow row;
 	private boolean newRow = false;
 	private boolean dirty = false;
@@ -75,27 +61,59 @@ public class ReportDataPane extends ScreenDataPane {
 	public ReportDataRow displayPanel() {
 		DEFAULTSCREENWIDTH = Constants.DATAREPORTSCREENWIDTH;
 		DEFAULTSCREENHEIGHT = Constants.DATAREPORTSCREENHEIGHT;
-		setStage(new Stage());
-		stage.initModality(Modality.APPLICATION_MODAL);
+		setStage(new JDialog());
+		stage.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 		pane = new MyGridPane(Constants.WINREPORTDATA);
-		scene = new Scene(pane);
-		stage.setScene(scene);
-		stage.setOnCloseRequest(ev->{
-			if (dirty) {
-				if (OptionMessage.yesnoMessage("Parameters have changed.  Do you wish to abandon them?")) {
-					row = null;
-					stage.close();
-				}
-				else
-					ev.consume();
+		stage.add(pane);
+		stage.addWindowListener(new WindowListener() {
+			@Override
+			public void windowOpened(WindowEvent e) {
+
 			}
-			else {
-				row = null;
-				stage.close();
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if (dirty) {
+					if (OptionMessage.yesnoMessage(Constants.ABANDONMSG)) {
+						row = null;
+						dirty=false;
+					}
+				}
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+				if (dirty) {
+					if (OptionMessage.yesnoMessage(Constants.ABANDONMSG)) {
+						row = null;
+						dirty=false;
+					}
+				}
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+
 			}
 		});
-		Main.accels.setSceneSave(scene, new Runnable () {
-			@Override
+
+//TODO		Main.accels.setSceneSave(scene, new Runnable () {
+/*			@Override
 			public void run() {
 				if (saveRow())
 					stage.close();
@@ -115,201 +133,213 @@ public class ReportDataPane extends ScreenDataPane {
 					stage.close();
 				}
 			}
-		});
+		}); */
 		resize();
 		listSelections = params.getSelectionList();
 		listDataParms = params.getDataList();
-		Label reportLbl = new Label("Name");
-		GridPane.setMargin(reportLbl,new Insets(10,10,10,10));
-		name = new TextField();
-		name.setPadding(new Insets(10,10,10,10));
+		JLabel reportLbl = new JLabel("Name");
+		name = new JTextField();
+		name.setColumns(40);
 		if (!newRow) {
 			name.setText(row.getName());	
 		}
-		name.textProperty().addListener((ov,oldv,newv)->{if(newv!=oldv)dirty=true;});
-		delimiterLbl = new Label("CSV Delimiter");
-		delimiterLbl.setVisible(true);
-		csvDelimiter = new ComboBox<String>();
-		csvDelimiter.setItems(FXCollections.observableArrayList(Constants.DELIMITERS));
-		csvDelimiter.getSelectionModel().selectedItemProperty().addListener((ov,oldv,newv)->{if(newv!=oldv)dirty=true;});
-		Label addBOMLbl = new Label("Target Excel");
-		addBOM = new CheckBox();
-		addBOM.selectedProperty().addListener((ov,oldv,newv)->{if(newv!=oldv)dirty=true;});
-		csvBox = new HBox(delimiterLbl, csvDelimiter, addBOMLbl, addBOM);
-		csvBox.setSpacing(10.0);
-		GridPane.setMargin(csvBox,new Insets(10,10,10,10));
-		createDatabase = new RadioButton ("Create Database");
-		createSpreadsheet = new RadioButton ("Create Spreadsheet");
-		createCsvFile = new RadioButton ("Create .CSV file");
-		GridPane.setMargin(createDatabase,new Insets(10,10,10,10));
-		GridPane.setMargin(createSpreadsheet,new Insets(10,10,10,10));
-		GridPane.setMargin(createCsvFile,new Insets(10,10,10,10));
-		group = new ToggleGroup();
-		group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-			public void changed(ObservableValue<? extends Toggle> ob, Toggle o, Toggle n) {
-				RadioButton rb = (RadioButton) group.getSelectedToggle();
-				dirty = true;
-				csvBox.setVisible(false);
-				 if (rb==createCsvFile)
-						csvBox.setVisible(true);
-
+		name.getDocument().addDocumentListener(new DocumentListener(){
+			public void changedUpdate(DocumentEvent e){
+				dirty=true;
 			}
+			public void insertUpdate(DocumentEvent e){}
+			public void removeUpdate(DocumentEvent e){}
 		});
-		createDatabase.setToggleGroup(group);
-		createSpreadsheet.setToggleGroup(group);
-		createCsvFile.setToggleGroup(group);
-		csvBox.setVisible(false);
-		if (newRow)
+
+		delimiterLbl = new JLabel("CSV Delimiter");
+		delimiterLbl.setVisible(true);
+		csvDelimiter = new JComboBox<>(Constants.DELIMITERS);
+		csvDelimiter.addActionListener(e -> dirty = true);
+		JLabel addBOMLbl = new JLabel("Target Excel");
+		addBOM = new JCheckBox();
+		addBOM.addActionListener(e -> dirty = true);
+		csvBox = new JPanel();
+		csvBox.setLayout(new BoxLayout(csvBox,BoxLayout.X_AXIS));
+		csvBox.add(delimiterLbl);
+		csvBox.add(Box.createRigidArea(new Dimension(10,0)));
+		csvBox.add(csvDelimiter);
+		csvBox.add(Box.createRigidArea(new Dimension(10,0)));
+		csvBox.add(addBOMLbl);
+		csvBox.add(Box.createRigidArea(new Dimension(10,0)));
+		csvBox.add(addBOM);
+		createDatabase = new JRadioButton ("Create Database");
+		createSpreadsheet = new JRadioButton ("Create Spreadsheet");
+		createCsvFile = new JRadioButton ("Create .CSV file");
+		group = new ButtonGroup();
+		class GroupListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				JRadioButton rb = (JRadioButton) e.getSource();
+				dirty = true;
+				csvDelimiter.setEnabled(false);
+				addBOM.setEnabled(false);
+				 if (rb==createCsvFile && rb.isSelected()) {
+					 csvDelimiter.setEnabled(true);
+					 addBOM.setEnabled(true);
+
+				 }
+			}
+		}
+		GroupListener listener = new GroupListener();
+		createDatabase.addActionListener(listener);
+		createSpreadsheet.addActionListener(listener);
+		createCsvFile.addActionListener(listener);
+		group.add(createDatabase);
+		group.add(createSpreadsheet);
+		group.add(createCsvFile);
+		csvDelimiter.setEnabled(false);
+		addBOM.setEnabled(false);
+		if (newRow) {
 			createCsvFile.setSelected(true);
+			csvDelimiter.setEnabled(true);
+			addBOM.setEnabled(true);
+			csvDelimiter.setSelectedItem(row.getDelimiter());
+			addBOM.setSelected(row.getTargetExcel());
+		}
 		else {
 			switch (row.getType()) {
 			case DATABASE:
-				createDatabase.setSelected(true);;
+				createDatabase.setSelected(true);
 				break;
 			case SPREADSHEET:
-				createSpreadsheet.setSelected(true);;
+				createSpreadsheet.setSelected(true);
 				break;
 			case CSV:
-				createCsvFile.setSelected(true);;
-				csvBox.setVisible(true);
-				csvDelimiter.setValue(row.getDelimiter());
+				createCsvFile.setSelected(true);
+				csvDelimiter.setEnabled(true);
+				addBOM.setEnabled(true);
+				csvDelimiter.setSelectedItem(row.getDelimiter());
 				addBOM.setSelected(row.getTargetExcel());
 				break;
 			}
 		}
-		Label fileNameLbl = new Label("File Name");
-		fileName = new TextField();
-		fileName.textProperty().addListener((ov,oldv,newv)->{if(newv!=oldv)dirty=true;});
-		fileName.setPadding(new Insets(10,10,10,10));
-		generateName = new CheckBox("Generate Name");
-		generateName.selectedProperty().addListener((ov,oldv,newv)->{dirty=true;
-			if(newv) {
-				fileName.setDisable(true);
-				addDateStamp.setDisable(true);
+		JLabel fileNameLbl = new JLabel("File Name");
+		fileName = new JTextField();
+		fileName.setColumns(50);
+		fileName.addPropertyChangeListener("value", evt -> dirty=true);
+		generateName = new JCheckBox("Generate Name");
+		generateName.addActionListener(e -> {
+			JCheckBox tmp = (JCheckBox)e.getSource();
+			dirty = true;
+
+			if(tmp.isSelected()) {
+				fileName.setEnabled(false);
+				addDateStamp.setEnabled(false);
 			}
 			else {
-				fileName.setDisable(false);
-				addDateStamp.setDisable(false);
+				fileName.setEnabled(true);
+				addDateStamp.setEnabled(true);
 			}
 		});
-		overWriteFile = new CheckBox("Ovewrwrite");
-		overWriteFile.selectedProperty().addListener((ov,oldv,newv)->{if(newv!=oldv)dirty=true;});
-		addDateStamp = new CheckBox("Add Date Stamp");
-		addDateStamp.selectedProperty().addListener((ov,oldv,newv)->{if(newv!=oldv)dirty=true;});
-		GridPane.setMargin(fileNameLbl,new Insets(10,10,10,10));
-		GridPane.setMargin(fileName,new Insets(10,10,10,10));
-		GridPane.setMargin(generateName,new Insets(10,10,10,10));
-		GridPane.setMargin(overWriteFile,new Insets(10,10,10,10));
-		GridPane.setMargin(addDateStamp,new Insets(10,10,10,10));
+		overWriteFile = new JCheckBox("Ovewrwrite");
+		overWriteFile.addActionListener(e -> dirty = true);
+		addDateStamp = new JCheckBox("Add Date Stamp");
+		addDateStamp.addActionListener(e -> dirty = true);
 		if(!newRow) {
 			fileName.setText(row.getOutputFileName());
 			generateName.setSelected(row.getGenerate());
 			if (row.getGenerate()) {
-				fileName.setDisable(true);
-				addDateStamp.setDisable(true);
+				fileName.setEnabled(false);
+				addDateStamp.setEnabled(false);
 			}
 			else {
-				fileName.setDisable(false);
-				addDateStamp.setDisable(false);
+				fileName.setEnabled(true);
+				addDateStamp.setEnabled(true);
 			}
 			overWriteFile.setSelected(row.getOverWrite());
 			addDateStamp.setSelected(row.getAddDate());
 		}
-		Label selectionLbl = new Label("Selection Group");
-		selections = new ComboBox<>();
-		selections.getSelectionModel().selectedItemProperty().addListener((ov,oldv,newv)->{if(newv!=oldv)dirty=true;});
-		GridPane.setMargin(selectionLbl,new Insets(10,10,10,10));
-		listSelNames = FXCollections.observableArrayList();
+		JLabel selectionLbl = new JLabel("Selection Group");
+		listSelNames = new ArrayList<>();
 		for (SelectionRow rowT : listSelections) {
 			listSelNames.add(rowT.getName());
 		}
-		selections.setItems(listSelNames);
+		selections = new JComboBox(listSelNames.toArray());
+		selections.addActionListener(e -> dirty=true);
 		if (!newRow)
-			selections.getSelectionModel().select(row.getSelection());
-		GridPane.setMargin(selections,new Insets(10,10,10,10));
-		Label dataParmsLbl = new Label("Data Parameters");
-		dataParms = new ComboBox<>();
-		dataParms.getSelectionModel().selectedItemProperty().addListener((ov,oldv,newv)->{if(newv!=oldv)dirty=true;});
-		GridPane.setMargin(dataParmsLbl,new Insets(10,10,10,10));
-		listDataNames = FXCollections.observableArrayList();
+			selections.setSelectedItem(row.getSelection());
+		JLabel dataParmsLbl = new JLabel("Data Parameters");
+		listDataNames = new ArrayList<>();
 		for (DataRow rowT : listDataParms) {
 			listDataNames.add(rowT.getName());
 		}
-		dataParms.setItems(listDataNames);
+		dataParms = new JComboBox(listDataNames.toArray());
+		dataParms.addActionListener(e -> dirty=true);
 		if (!newRow)
-			dataParms.getSelectionModel().select(row.getDataParms());
-		GridPane.setMargin(dataParms,new Insets(10,10,10,10));
-		Button okBtn = new Button();
+			dataParms.setSelectedItem(row.getDataParms());
+		JButton okBtn = new JButton();
 		if (Main.loadedIcons.okImg == null)
 			okBtn.setText("OK");
 		else
-			okBtn.setGraphic(new ImageView(Main.loadedIcons.okImg));
-		okBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				saveRow();
-			}
-		});
-		Button cancelBtn = new Button();
+			okBtn.setIcon(new ImageIcon(Main.loadedIcons.okImg));
+		okBtn.addActionListener(e -> saveRow());
+		JButton cancelBtn = new JButton();
 		if (Main.loadedIcons.cancelImg == null)
 			cancelBtn.setText("Cancel");
 		else
-			cancelBtn.setGraphic(new ImageView(Main.loadedIcons.cancelImg));
-		cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				row=null;
-				stage.close();
-			}
-		});
-		GridPane.setMargin(okBtn,new Insets(10,10,10,10));
-		GridPane.setMargin(cancelBtn,new Insets(10,10,10,10));
+			cancelBtn.setIcon(new ImageIcon(Main.loadedIcons.cancelImg));
+		cancelBtn.addActionListener(e -> {
+            if (dirty){
+                boolean result = OptionMessage.yesnoMessage(Constants.ABANDONMSG);
+            if (!result)
+                    return;
+            }
+            row=null;
+            closePane();
+        });
+
 		int ix=0;
 		int iy=0;
-		pane.add(reportLbl, ix++, iy);
-		pane.add(name, ix, iy++);
+		pane.add(reportLbl, GridC.getc(ix++, iy).insets(10,10,10,10).west());
+		pane.add(name, GridC.getc(ix, iy++).insets(10,10,10,10).west().colspan(5));
 		ix=1;
-		pane.add(createDatabase, ix, iy++);
-		pane.add(createSpreadsheet, ix, iy++);
-		pane.add(createCsvFile, ix++, iy);
-		pane.add(csvBox, ix, iy++);
-		GridPane.setColumnSpan(csvBox, 3);
+		pane.add(createDatabase, GridC.getc(ix++, iy).insets(10,10,10,10).west());
+		pane.add(createSpreadsheet, GridC.getc(ix++, iy).insets(10,10,10,10).west());
+		pane.add(createCsvFile, GridC.getc(ix++, iy));
+		pane.add(csvBox, GridC.getc(ix, iy++).colspan(3).insets(10,10,10,10).west());
 		ix=0;
-		pane.add(fileNameLbl, ix++, iy);
-		pane.add(fileName, ix++, iy);
-		pane.add(generateName, ix++, iy);
-		pane.add(overWriteFile, ix++, iy);
-		pane.add(addDateStamp, ix, iy++);
+		pane.add(fileNameLbl,GridC.getc( ix++, iy).insets(10,10,10,10).west());
+		pane.add(fileName, GridC.getc(ix, iy++).insets(10,10,10,10).west().colspan(3));
+		ix=1;
+		pane.add(generateName,GridC.getc( ix++, iy).insets(10,10,10,10).west());
+		pane.add(overWriteFile, GridC.getc(ix++, iy).insets(10,10,10,10).west());
+		pane.add(addDateStamp, GridC.getc(ix, iy++).insets(10,10,10,10).west());
 		ix=0;
-		pane.add(selectionLbl, ix++, iy);
-		pane.add(selections, ix, iy++);
+		pane.add(selectionLbl,GridC.getc( ix++, iy).insets(10,10,10,10).west());
+		pane.add(selections, GridC.getc(ix, iy++).insets(10,10,10,10).west());
 		ix=0;
-		pane.add(dataParmsLbl, ix++, iy);
-		pane.add(dataParms, ix, iy++);
+		pane.add(dataParmsLbl,GridC.getc( ix++, iy).insets(10,10,10,10).west());
+		pane.add(dataParms, GridC.getc(ix, iy++).insets(10,10,10,10).west());
 		ix=0;
-		pane.add(okBtn, ix++, iy);
-		pane.add(cancelBtn,ix++, iy);
+		pane.add(okBtn, GridC.getc(ix++, iy).insets(10,10,10,10).west());
+		pane.add(cancelBtn,GridC.getc(ix, iy).insets(10,10,10,10).west());
 		dirty=false;
-		stage.showAndWait();
+		stage.pack();
+		setLocation();
+		stage.setVisible(true);
 		return row;
 	}
 
-	private boolean saveRow() {
+	private void saveRow() {
 		if (name.getText().isEmpty()) {
 			OptionMessage.displayMessage("Name must be entered");
-			return false;
+			return;
 		}
-		if (selections.getSelectionModel().isEmpty()) {
+		if (selections.getSelectedIndex()<0) {
 			OptionMessage.displayMessage("A Selection Group must be selected");
-			return false;
+			return;
 		}
-		if (dataParms.getSelectionModel().isEmpty()) { 
+		if (dataParms.getSelectedIndex()<0) {
 			OptionMessage.displayMessage("A Data Parameter Group must be selected");
-			return false;
+			return;
 		}
 		if (fileName.getText().isEmpty() && !generateName.isSelected()) {
 			OptionMessage.displayMessage("You must either enter a file name or select Generate Name");
-			return false;					
+			return;
 		}
 		boolean updateName=false;
 		ReportDataRow tempRow = new ReportDataRow();
@@ -319,7 +349,7 @@ public class ReportDataPane extends ScreenDataPane {
 			if (OptionMessage.yesnoMessage("Report already exists.  Do you wish to overwrite them?"))  
 				tempRow.delete(params);
 			else
-				return false;
+				return;
 		}
 		updateParms();
 		if (newRow) {
@@ -332,30 +362,26 @@ public class ReportDataPane extends ScreenDataPane {
 			else
 				row.saveRow(params);
 		}
-		stage.close();
-		return true;
+		closePane();
 	}
 	private void updateParms() {
-		row.setSelection(selections.getSelectionModel().getSelectedItem());
-		row.setDataParms(dataParms.getSelectionModel().getSelectedItem());
-		RadioButton selectedType = (RadioButton) group.getSelectedToggle();
-		if (selectedType == createCsvFile) {
+		row.setSelection((String)selections.getSelectedItem());
+		row.setDataParms((String)dataParms.getSelectedItem());
+		if (createCsvFile.isSelected()) {
 			row.setType(Constants.ReportType.CSV);
 		}
 		else {
-			if (selectedType == createDatabase) {
+			if (createDatabase.isSelected()) {
 				row.setType(Constants.ReportType.DATABASE);
 			}
 			else 
-				if (selectedType == createSpreadsheet) {
-					row.setType(Constants.ReportType.SPREADSHEET);
-				}
+				row.setType(Constants.ReportType.SPREADSHEET);
 		}
 		row.setOutputFileName(fileName.getText());
 		row.setGenerate(generateName.isSelected());
 		row.setOverWrite(overWriteFile.isSelected());
 		row.setAddDate(addDateStamp.isSelected());
-		row.setDelimiter(csvDelimiter.getValue());
+		row.setDelimiter((String)csvDelimiter.getSelectedItem());
 		row.setTargetExcel(addBOM.isSelected());
 		
 	}

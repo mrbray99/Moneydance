@@ -1,8 +1,8 @@
 package com.moneydance.modules.features.reportwriter.view;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.CheckBox;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class FieldSelectionRow {
 	private String fieldName;
@@ -32,12 +32,13 @@ public class FieldSelectionRow {
 	public void setSelected(Boolean selected) {
 		this.selected = selected;
 	}
-	public CheckBox getIncluded() {
-		CheckBox includedBox = new CheckBox();
-		includedBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+	public JCheckBox getIncluded() {
+		JCheckBox includedBox = new JCheckBox();
+		includedBox.addActionListener(new ActionListener() {
 			@Override
-			public void changed(ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) {
-				setSelected(new_val);
+			public void actionPerformed(ActionEvent e) {
+				JCheckBox tmp = (JCheckBox)e.getSource();
+				setSelected(tmp.isSelected());
 			}
 			
 		});

@@ -1,262 +1,201 @@
 package com.moneydance.modules.features.reportwriter.view;
 
+import com.moneydance.awt.GridC;
 import com.moneydance.modules.features.reportwriter.Constants;
 import com.moneydance.modules.features.reportwriter.Main;
 import com.moneydance.modules.features.reportwriter.OptionMessage;
 import com.moneydance.modules.features.reportwriter.Parameters;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.TextAlignment;
+
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 public class SelectionPane extends ScreenPanel{
-		private Parameters params;
-		private ObservableList<SelectionRow> model;
-	    private TableView<SelectionRow> thisTable;
-	    private Button editBtn;
-	    private Button deleteBtn;
-	    private Button addBtn;
-	    private Button copyBtn;
-	    private Tooltip editTip = new Tooltip();
-	    private Tooltip deleteTip = new Tooltip();
-	    private Tooltip addTip = new Tooltip();
-	    private Tooltip copyTip = new Tooltip();
-		public SelectionPane(Parameters paramsp) {
-			params = paramsp;
-			setUpTable();
-			Label templateLbl = new Label("Data Selection Groups");
-			templateLbl.setTextAlignment(TextAlignment.CENTER);
-			templateLbl.setFont(Font.font("Veranda",FontWeight.BOLD,20.0));
-			add(templateLbl,0,0);
-			setMargin(templateLbl,new Insets(10,10,10,10));
-			setColumnSpan(templateLbl,4);
-			GridPane.setHalignment(templateLbl, HPos.CENTER);
-			add(thisTable,0,1);
-			setColumnSpan(thisTable,4);
-			editBtn = new Button();
-			setMargin(editBtn,new Insets(10,10,10,10));
-			if (Main.loadedIcons.editImg == null)
-				editBtn.setText("Edit");
-			else
-				editBtn.setGraphic(new ImageView(Main.loadedIcons.editImg));
-			editBtn.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent e) {
-					editRow();
-				}
-			});
-			editTip.setText("Edit an existing Data Selection Group");
-			editBtn.setTooltip(editTip);
-			deleteBtn = new Button();
-			setMargin(deleteBtn,new Insets(10,10,10,10));
-			if (Main.loadedIcons.deleteImg == null)
-				deleteBtn.setText("Delete");
-			else
-				deleteBtn.setGraphic(new ImageView(Main.loadedIcons.deleteImg));
-			deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent e) {
-					deleteRow();
-				}
-			});
-			deleteTip.setText("Delete an existing Data Selection Group");
-			deleteBtn.setTooltip(deleteTip);
-			addBtn = new Button();
-			setMargin(addBtn,new Insets(10,10,10,10));
-			if (Main.loadedIcons.addImg == null)
-				addBtn.setText("+");
-			else
-				addBtn.setGraphic(new ImageView(Main.loadedIcons.addImg));
-			addBtn.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent e) {
-					addRow();
-				}
-			});
-			addTip.setText("Add a new Data Selection Group");
-			addBtn.setTooltip(addTip);
-			copyBtn = new Button();
-			setMargin(copyBtn,new Insets(10,10,10,10));
-			if (Main.loadedIcons.addImg == null)
-				copyBtn.setText("+");
-			else
-				copyBtn.setGraphic(new ImageView(Main.loadedIcons.copyImg));
-			copyBtn.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent e) {
-					copyRow();
-				}
-			});
-			copyTip.setText("Copy a Data Selection Group");
-			copyBtn.setTooltip(copyTip);
-			add(addBtn,0,2);
-			add(editBtn,1,2);
-			add(copyBtn,2,2);
-			add(deleteBtn,3,2);
-			resize();
-		}
-		@Override
-		protected void newMsg() {
-			addRow();
-		}	
-		private void addRow() {
-			SelectionDataPane selectDataPan = new SelectionDataPane(params);
-			SelectionDataRow row = selectDataPan.displayPanel();
-			if(row != null) {
-				SelectionRow tabRow = new SelectionRow();
-				tabRow.setName(row.getName());
-				tabRow.setFileName(params.getDataDirectory()+"/"+row.getName()+Constants.SELEXTENSION);
-				tabRow.setLastModified(Main.cdate.format(Main.now));
-				tabRow.setLastUsed(Main.cdate.format(Main.now));
-				tabRow.setCreated(Main.cdate.format(Main.now));
-				params.addSelectionRow(tabRow);
-				resetData();
+	private Parameters params;
+	private SelectPaneTable thisTable;
+	private SelectPaneTableModel thisTableModel;
+	private JButton editBtn;
+	private JButton deleteBtn;
+	private JButton addBtn;
+	private JButton copyBtn;
+	private JScrollPane scroll;
+	public SelectionPane(Parameters paramsp) {
+		params = paramsp;
+		setLayout(new BorderLayout());
+		setUpTable();
+		scroll = new JScrollPane();
+		JLabel templateLbl = new JLabel("Data Selection Groups",SwingConstants.CENTER);
+		templateLbl.setFont(new Font("Veranda",Font.BOLD,20));
+		scroll.setViewportView(thisTable);
+		add(templateLbl, BorderLayout.PAGE_START);
+		add(scroll,BorderLayout.CENTER);
+		editBtn = new JButton();
+		if (Main.loadedIcons.editImg == null)
+			editBtn.setText("Edit");
+		else
+			editBtn.setIcon(new ImageIcon(Main.loadedIcons.editImg));
+		editBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editRow();
 			}
-		}
-		@Override
-		protected void openMsg() {
-			editRow();
-		}
-		private void editRow() {
-			SelectionRow row = thisTable.getSelectionModel().getSelectedItem();
-			if (row ==null) {
-				OptionMessage.displayMessage("Please Select a group");
-				return;
+		});
+		editBtn.setToolTipText("Edit an existing Data Filter Parameters set");
+		deleteBtn = new JButton();
+		if (Main.loadedIcons.deleteImg == null)
+			deleteBtn.setText("Delete");
+		else
+			deleteBtn.setIcon(new ImageIcon(Main.loadedIcons.deleteImg));
+		deleteBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				deleteRow();
 			}
-			SelectionDataRow rowEdit = new SelectionDataRow();
-			if (rowEdit.loadRow(row.getName(), params)) {
-				SelectionDataPane pane = new SelectionDataPane(params,rowEdit);
-				rowEdit = pane.displayPanel();
+		});
+		deleteBtn.setToolTipText("Delete an existing Data Filter Parameters set");
+		addBtn = new JButton();
+		if (Main.loadedIcons.addImg == null)
+			addBtn.setText("+");
+		else
+			addBtn.setIcon(new ImageIcon(Main.loadedIcons.addImg));
+		addBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				addRow();
+			}
+		});
+		addBtn.setToolTipText("Add a new Data Filter Parameters set");
+		copyBtn = new JButton();
+		if (Main.loadedIcons.addImg == null)
+			copyBtn.setText("+");
+		else
+			copyBtn.setIcon(new ImageIcon(Main.loadedIcons.copyImg));
+		copyBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				copyRow();
+			}
+		});
+		copyBtn.setToolTipText("Copy a Data Filter Parameters set");
+		JPanel buttons = new JPanel(new GridBagLayout());
+		buttons.add(addBtn, GridC.getc(0,0).insets(5,10,10,10));
+		buttons.add(editBtn,GridC.getc(1,0).insets(5,10,10,10));
+		buttons.add(copyBtn,GridC.getc(2,0).insets(5,10,10,10));
+		buttons.add(deleteBtn,GridC.getc(3,0).insets(5,10,10,10));
+		add(buttons, BorderLayout.PAGE_END);
+		resize();
+	}
+	@Override
+	protected void newMsg() {
+		addRow();
+	}
+	private void addRow() {
+		SelectionDataPane selectPan = new SelectionDataPane(params);
+		SelectionDataRow row = selectPan.displayPanel();
+		if(row != null) {
+			SelectionRow tabRow = new SelectionRow();
+			tabRow.setName(row.getName());
+			tabRow.setFileName(params.getDataDirectory()+"/"+row.getName()+Constants.DATAEXTENSION);
+			tabRow.setLastModified(Main.cdate.format(Main.now));
+			tabRow.setLastUsed(Main.cdate.format(Main.now));
+			tabRow.setCreated(Main.cdate.format(Main.now));
+			params.addSelectionRow(tabRow);
+			row.saveRow(params);
+			resetData();
+		}
+	}
+	@Override
+	protected void openMsg() {
+		editRow();
+	}
+	private void editRow() {
+		int index = thisTable.getSelectedRow();
+		if (index <0) {
+			OptionMessage.displayMessage("Please Select a parameter set");
+			return;
+		}
+		SelectionRow row = thisTableModel.getRow(index);
+		SelectionDataRow rowEdit = new SelectionDataRow();
+		if (rowEdit.loadRow(row.getName(), params)) {
+			SelectionDataPane pane = new SelectionDataPane(params,rowEdit);
+			rowEdit = pane.displayPanel();
+			if (rowEdit != null) {
 				row.setLastModified(Main.cdate.format(Main.now));
-				row.setLastUsed(Main.cdate.format(Main.now));
 				params.updateSelectionRow(row);
+				rowEdit.saveRow(params);
 				resetData();
 			}
-			
 		}
-		protected void deleteMsg() {
-			deleteRow();
+
+	}
+	protected void deleteMsg() {
+		deleteRow();
+	}
+	private void deleteRow() {
+		int index = thisTable.getSelectedRow();
+		if (index <0) {
+			OptionMessage.displayMessage("Please Select a Parameter Set");
+			return;
 		}
-		private void deleteRow() {
-			SelectionRow row = thisTable.getSelectionModel().getSelectedItem();
-			if (row ==null) {
-				OptionMessage.displayMessage("Please Select a group");
-				return;
-			}
-			if(params.checkSelectionGroup(row.getName())) {
-				OptionMessage.displayMessage("This Selection Group is used in a report.  It can not be deleted.");
-				return;
-			}
-			SelectionDataRow rowEdit = new SelectionDataRow();
-			if (rowEdit.loadRow(row.getName(), params)) {
-				Boolean result = OptionMessage.yesnoMessage("Are you sure you wish to delete group "+row.getName());
-				if (result) {
-					rowEdit.delete(params);
-					params.removeSelectionRow(row);
-				}
-				resetData();
-			}
-			
+		SelectionRow row = thisTableModel.getRow(index);
+		if(params.checkDataGroup(row.getName())) {
+			OptionMessage.displayMessage("This Data Filter Parameters entry is used in a report.  It can not be deleted.");
+			return;
 		}
-		private void copyRow() {
-			SelectionRow row = thisTable.getSelectionModel().getSelectedItem();
-			if (row ==null) {
-				OptionMessage.displayMessage("Please Select a Data Selection Group");
-				return;
-			}
-			String result = "";
-			while (result.isEmpty()) {
-				result = OptionMessage.inputMessage("Enter the name of the new row");
-				if (result.equals(Constants.CANCELPRESSED))
-					return;
-				if (result.isEmpty())
-					OptionMessage.displayMessage("A name must be entered");
-				else {
-					SelectionDataRow newRow = new SelectionDataRow();
-					if (newRow.loadRow(result,params)) {
-						OptionMessage.displayMessage("New Name already exists");
-						result = "";
-					}
-					else {
-						newRow.loadRow(row.getName(), params);
-						newRow.setName(result);
-						newRow.saveRow(params);
-					}				
-				}
+		SelectionDataRow rowEdit = new SelectionDataRow();
+		if (rowEdit.loadRow(row.getName(), params)) {
+			Boolean result = OptionMessage.yesnoMessage("Are you sure you wish to delete data filter parameters "+row.getName());
+			if (result) {
+				rowEdit.delete(params);
+				params.removeSelectionRow(row);
 			}
 			resetData();
 		}
-		@Override
-		public void resize() {
-			super.resize();
-			thisTable.setPrefWidth(SCREENWIDTH);
-			thisTable.setPrefHeight(SCREENHEIGHT);
+
+	}
+	private void copyRow() {
+		int index= thisTable.getSelectedRow();
+		if (index<0 ) {
+			OptionMessage.displayMessage("Please Select a Parameter Set");
+			return;
 		}
-		public void resetData() {
-			params.setDataTemplates();
-			model =FXCollections.observableArrayList(params.getSelectionList());
-			thisTable.setItems(model);		
-			thisTable.refresh();
+		SelectionRow row = thisTableModel.getRow(index);
+		String result = "";
+		while (result.isEmpty()) {
+			result = OptionMessage.inputMessage("Enter the name of the new row");
+			if (result.equals(Constants.CANCELPRESSED))
+				return;
+			if (result.isEmpty())
+				OptionMessage.displayMessage("A name must be entered");
+			else {
+				SelectionDataRow newRow = new SelectionDataRow();
+				if (newRow.loadRow(result,params)) {
+					OptionMessage.displayMessage("New Name already exists");
+					result = "";
+				}
+				else {
+					newRow.loadRow(row.getName(), params);
+					newRow.setName(result);
+					newRow.saveRow(params);
+				}
+			}
 		}
-		private void setUpTable () {
-			thisTable = new TableView<>();
-			thisTable.setEditable(true);
-			thisTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-			thisTable.setMaxWidth(Double.MAX_VALUE);
-			thisTable.setMaxHeight(Double.MAX_VALUE);
+		resetData();
+	}
+	public void resetData() {
+		params.setDataTemplates();
+		thisTableModel.resetData(params.getSelectionList());
+		thisTableModel.fireTableDataChanged();
+	}
 
-
-			/*
-			 * Name
-			 */
-			TableColumn<SelectionRow,String> name = new TableColumn<>("Name");
-			/*
-			 * Last Created
-			 */
-			TableColumn<SelectionRow,String> created = new TableColumn<>("Created");
-			/*
-			 * Last Modified
-			 */
-			TableColumn<SelectionRow,String> lastModified = new TableColumn<>("Modified");
-			/*
-			 * Last Used
-			 */
-			TableColumn<SelectionRow,String> lastUsed = new TableColumn<>("Used");
-			thisTable.setRowFactory(tv->{
-				TableRow<SelectionRow> row = new TableRow<>();
-				row.setOnMouseClicked(event->{
-					if (event.getClickCount()==2 && (!row.isEmpty())) {
-						editRow();
-					}
-				});
-				return row;
-			});
-			thisTable.getColumns().addAll(name,created,lastModified,lastUsed);
-			model =FXCollections.observableArrayList(params.getSelectionList());
-			thisTable.setItems(model);
-			name.setCellValueFactory(new PropertyValueFactory<>("name"));
-			created.setCellValueFactory(new PropertyValueFactory<>("created"));
-			lastModified.setCellValueFactory(new PropertyValueFactory<>("lastModified"));
-			lastUsed.setCellValueFactory(new PropertyValueFactory<>("lastUsed"));
-
-
-		}
+	public void resize() {
+		super.resize();
+		scroll.setMinimumSize(new Dimension(SCREENWIDTH,SCREENHEIGHT));
+	}
+	private void setUpTable () {
+		thisTableModel = new SelectPaneTableModel(params,params.getSelectionList());
+		thisTable = new SelectPaneTable(params,thisTableModel);
+	}
 
 
 }

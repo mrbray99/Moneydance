@@ -4,11 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
-import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
@@ -46,11 +41,10 @@ public class ReportDataRow {
 		if (type == null)
 			return Constants.ReportType.CSV;
 		switch (type) {
-		case 2: return Constants.ReportType.DATABASE;
-		case 3: return Constants.ReportType.SPREADSHEET;
-		case 4:
-		default :
-			return Constants.ReportType.CSV;
+		case 2-> {return Constants.ReportType.DATABASE;}
+		case 3-> {return Constants.ReportType.SPREADSHEET;}
+		default -> {
+			return Constants.ReportType.CSV;}
 		}
 	}
 	public void setType(Constants.ReportType typep) {
@@ -59,18 +53,10 @@ public class ReportDataRow {
 			return;
 		}
 		switch (typep) {
-		case DATABASE :
-			type = 2;
-			return;
-		case SPREADSHEET :
-			type = 3;
-			return;
-		case CSV :
-			type = 4;
-			return;
-		default :
-			type = 1;
-			return;
+		case DATABASE -> type = 2;
+		case SPREADSHEET -> type = 3;
+		case CSV ->	type = 4;
+		default -> type = 1;
 		}
 	}
 	public String getTemplate() {
@@ -146,7 +132,7 @@ public class ReportDataRow {
 	public boolean loadRow(String name,Parameters paramsp) {
 		String dir = paramsp.getDataDirectory();
 		fileName = dir+"/"+name+Constants.REPORTEXTENSION;
-		ReportDataRow row = new ReportDataRow();
+		ReportDataRow row;
 		try {
 			JsonReader reader = new JsonReader(new FileReader(fileName));
 			row = new Gson().fromJson(reader,ReportDataRow.class);
@@ -173,13 +159,6 @@ public class ReportDataRow {
 			return false;
 		}
 		return true;
-	}
-	public void touchFile() {
-		Path touchFile = Paths.get(fileName);
-		try {
-			Files.setAttribute(touchFile, "basic:lastAccessTime", FileTime.fromMillis(new Date().getTime()));
-		}
-		catch (IOException e) {}
 	}
 
 	public void saveRow(Parameters paramsp) {
