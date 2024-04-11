@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/AccelKeys.java" beforeDir="false" />
     </list>
     <list id="515d24e9-28b0-477a-9756-57997cfa20ab" name="Not to be deployed" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/reportwriterbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/reportwriterbuild.xml" afterDir="false" />
     </list>
@@ -41,17 +40,6 @@
         <option name="url" value="https://github.com/mrbray99/Moneydance" />
       </UrlAndAccount>
     </option>
-  </component>
-  <component name="LineStatusTrackerManager">
-    <file path="$PROJECT_DIR$/.idea/workspace.xml">
-      <ranges>
-        <range start1="6" end1="7" start2="6" end2="8" changelist="e31fe38f-80ef-42ef-bfa7-d26c393db14f" />
-        <range start1="8" end1="15" start2="9" end2="11" changelist="e31fe38f-80ef-42ef-bfa7-d26c393db14f" />
-        <range start1="70" end1="70" start2="66" end2="67" changelist="e31fe38f-80ef-42ef-bfa7-d26c393db14f" />
-        <range start1="107" end1="108" start2="104" end2="121" changelist="e31fe38f-80ef-42ef-bfa7-d26c393db14f" />
-        <range start1="130" end1="131" start2="143" end2="145" changelist="515d24e9-28b0-477a-9756-57997cfa20ab" />
-      </ranges>
-    </file>
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -131,7 +119,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712842303448</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Moved files in reportwriter">
+      <option name="closed" value="true" />
+      <created>1712842961988</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1712842961988</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -155,6 +151,7 @@
     <MESSAGE value="Delete FX" />
     <MESSAGE value="Remove restriction on ARM" />
     <MESSAGE value="Update build number" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update build number" />
+    <MESSAGE value="Moved files in reportwriter" />
+    <option name="LAST_COMMIT_MESSAGE" value="Moved files in reportwriter" />
   </component>
 </project>
