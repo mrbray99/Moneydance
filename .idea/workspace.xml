@@ -6,13 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/budgetgen.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/budgetgen.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/budgetreport.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/budgetreport.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/loadsectrans.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/loadsectrans.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securityhistoryload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityhistoryload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securitypriceload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securitypriceload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securityquoteload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityquoteload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/meta_info.dict" afterDir="false" />
+    </list>
+    <list id="515d24e9-28b0-477a-9756-57997cfa20ab" name="Not to be deployed" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/reportwriterbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/reportwriterbuild.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +42,17 @@
       </UrlAndAccount>
     </option>
   </component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/.idea/workspace.xml">
+      <ranges>
+        <range start1="6" end1="7" start2="6" end2="8" changelist="e31fe38f-80ef-42ef-bfa7-d26c393db14f" />
+        <range start1="8" end1="15" start2="9" end2="11" changelist="e31fe38f-80ef-42ef-bfa7-d26c393db14f" />
+        <range start1="70" end1="70" start2="66" end2="67" changelist="e31fe38f-80ef-42ef-bfa7-d26c393db14f" />
+        <range start1="107" end1="108" start2="104" end2="121" changelist="e31fe38f-80ef-42ef-bfa7-d26c393db14f" />
+        <range start1="130" end1="131" start2="143" end2="145" changelist="515d24e9-28b0-477a-9756-57997cfa20ab" />
+      </ranges>
+    </file>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -68,6 +77,7 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="" />
+      <changelist id="515d24e9-28b0-477a-9756-57997cfa20ab" name="Not to be deployed" comment="" />
       <created>1706792503623</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -105,7 +115,23 @@
       <option name="project" value="LOCAL" />
       <updated>1711615966269</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Update build number">
+      <option name="closed" value="true" />
+      <created>1711618606188</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1711618606188</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Update build number">
+      <option name="closed" value="true" />
+      <created>1712842303448</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1712842303448</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -128,6 +154,7 @@
     <MESSAGE value="Remove toolbox" />
     <MESSAGE value="Delete FX" />
     <MESSAGE value="Remove restriction on ARM" />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove restriction on ARM" />
+    <MESSAGE value="Update build number" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update build number" />
   </component>
 </project>
