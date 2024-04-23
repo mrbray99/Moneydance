@@ -5,14 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/budgetgen.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/budgetgen.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/budgetreport.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/budgetreport.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/loadsectrans.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/loadsectrans.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securityhistoryload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityhistoryload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securitypriceload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securitypriceload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securityquoteload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityquoteload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/meta_info.dict" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/AccelKeys.java" beforeDir="false" />
+    </list>
+    <list id="515d24e9-28b0-477a-9756-57997cfa20ab" name="Not to be deployed" comment="">
+      <change beforePath="$PROJECT_DIR$/bin/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/reportwriterbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/bin/reportwriterbuild.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,6 +65,7 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="" />
+      <changelist id="515d24e9-28b0-477a-9756-57997cfa20ab" name="Not to be deployed" comment="" />
       <created>1706792503623</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -105,7 +103,31 @@
       <option name="project" value="LOCAL" />
       <updated>1711615966269</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Update build number">
+      <option name="closed" value="true" />
+      <created>1711618606188</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1711618606188</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Update build number">
+      <option name="closed" value="true" />
+      <created>1712842303448</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1712842303448</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Moved files in reportwriter">
+      <option name="closed" value="true" />
+      <created>1712842961988</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1712842961988</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -128,6 +150,8 @@
     <MESSAGE value="Remove toolbox" />
     <MESSAGE value="Delete FX" />
     <MESSAGE value="Remove restriction on ARM" />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove restriction on ARM" />
+    <MESSAGE value="Update build number" />
+    <MESSAGE value="Moved files in reportwriter" />
+    <option name="LAST_COMMIT_MESSAGE" value="Moved files in reportwriter" />
   </component>
 </project>
