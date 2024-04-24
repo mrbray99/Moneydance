@@ -1047,7 +1047,7 @@ public class  FileSelectWindow extends JPanel implements ActionListener{
 			        }else{
 			            Runtime runtime = Runtime.getRuntime();
 			            try {
-			                runtime.exec("xdg-open " + url);
+			                //runtime.exec("xdg-open " + url);
 			            } catch (IOException e) {
 			                e.printStackTrace();
 			            }
