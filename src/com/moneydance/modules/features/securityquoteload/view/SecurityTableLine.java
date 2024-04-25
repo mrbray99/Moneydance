@@ -116,7 +116,7 @@ public class SecurityTableLine {
 		alternateTicker="";
 		if ((source == Constants.FTINDEX ||source==Constants.FTHISTINDEX)&& ftAlternate != null)
 			alternateTicker=ftAlternate;
-		if ((source == Constants.YAHOOINDEX ||source==Constants.YAHOOHISTINDEX || source==Constants.YAHOOTDINDEX)&& yahooAlternate != null)
+		if ((source == Constants.YAHOOINDEX ||source==Constants.YAHOOHISTINDEX)&& yahooAlternate != null)
 				alternateTicker=yahooAlternate;
 			
 	}
@@ -253,7 +253,6 @@ public class SecurityTableLine {
 			break;
 		case YAHOO:
 		case YAHOOHD:
-		case YAHOOTD:
 			yahooAlternate = alternate;
 		}
 	}

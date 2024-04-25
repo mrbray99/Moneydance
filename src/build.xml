@@ -8,8 +8,8 @@ http://jakarta.apache.org/ant/index.html
   <property name="src" value="."/>
   <property name="build" value="./build"/>
   <property name="build.compiler" value="modern" />
-  <property name="target" value="21" />
-  <property name="srccode" value="21" />
+  <property name="target" value="17" />
+  <property name="srccode" value="17" />
   <property name="lib" value="../lib"/>
   <property name="md_ext_lib_dir" value="c:/Program Files/Moneydance20235064/lib"/>
    <property environment="env" />
@@ -38,11 +38,6 @@ http://jakarta.apache.org/ant/index.html
 	  	<pathelement path="${lib}/h2-1.4.200.jar"/>
 		<pathelement path="${lib}/jsoup-1.11.3.jar"/>
 	   	<pathelement path="${lib}/mrbutil.jar"/>
-		<pathelement path="${md_ext_lib_dir}/jackson-core-2.7.4.jar"/>
-		<pathelement path="${lib}/jackson-databind-2.7.4.jar"/>
-		<pathelement path="${lib}/jackson-dataformat-xml-2.7.4.jar"/>
-		<pathelement path="${md_ext_lib_dir}/jackson-annotations-2.8.4.jar"/>
-		<pathelement path="${lib}/jasperreports-6.13.0.jar"/>
 	  	<pathelement path="${lib}/exp4j-0.4.8.jar"/>
 	  	<pathelement path="${lib}/org.apache.commons.io.jar"/>	  	
 	  	<pathelement path="${lib}/opencsv-5.2.jar"/>
@@ -51,18 +46,8 @@ http://jakarta.apache.org/ant/index.html
 	  	<pathelement path="${lib}/poi-ooxml-4.1.2.jar"/>
 	  	<pathelement path="${lib}/poi-ooxml-schemas-4.1.2.jar"/>
 		  <pathelement path="${lib}/SparseBitSet-1.2.jar"/>
-	  	<pathelement path="${lib}/javafx.base.jar"/>
-	  	<pathelement path="${lib}/javafx.controls.jar"/>
-	  	<pathelement path="${lib}/javafx.fxml.jar"/>
-		<pathelement path="${lib}/javafx.graphics.jar"/>
-	  	<pathelement path="${lib}/javafx.swing.jar"/>
 
 	  </path>
-	<path id="signmxtpath">
-		<pathelement path="${md_ext_lib_dir}/moneydance.jar"/>
-		<pathelement path="${lib}/extadmin.jar"/>
-		<pathelement path="${lib}/signmxt.jar"/>
-	</path>
 	<target name="init">
 		<mkdir dir="${dist}" />
 		<mkdir dir="${build}" />
@@ -78,7 +63,6 @@ http://jakarta.apache.org/ant/index.html
 	<import file="securitypriceloadbuild.xml"/>
 	<import file="mrbutilbuild.xml"/>
 	<import file="qifloaderbuild.xml"/>
-	<import file="qlerroranalyserbuild.xml"/>
 	<import file="securityquoteloadbuild.xml"/>
 	<import file="reportwriterbuild.xml"/>
 	<target name="genkeys">
