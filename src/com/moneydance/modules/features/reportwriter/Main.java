@@ -429,14 +429,14 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 				} catch (IOException | URISyntaxException e) {
 					e.printStackTrace();
 				}
-			}else{
-				ProcessBuilder process = new ProcessBuilder();
-				try {
-					process.command("xdg-open " +url);
-					process.start();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+//			}else{
+//				ProcessBuilder process = new ProcessBuilder();
+//				try {
+//					process.command("xdg-open " +url);
+//					process.start();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
 			}
 			break;
 		}

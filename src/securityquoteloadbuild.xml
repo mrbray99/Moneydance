@@ -1,5 +1,5 @@
-<project name="securityquoteload">
-	<target name="securityquoteload" depends="mrbutil">
+<project name="securityquoteload"  basedir=".">
+	<target name="securityquoteload">
 	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath"  destdir="${build}"
 	      includes="com/moneydance/modules/features/securityquoteload/**"/>
