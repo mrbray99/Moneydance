@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="">
+    <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="Build 3209 for quote loader">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/securityquoteloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/securityquoteloadbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityhistoryload/FileSelectWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityhistoryload/FileSelectWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityhistoryload/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityhistoryload/meta_info.dict" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securitypriceload/FileSelectWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securitypriceload/FileSelectWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securitypriceload/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securitypriceload/meta_info.dict" afterDir="false" />
     </list>
     <list id="515d24e9-28b0-477a-9756-57997cfa20ab" name="Not to be deployed" comment="">
       <change beforePath="$PROJECT_DIR$/bin/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/bin/.gitignore" afterDir="false" />
@@ -22,7 +25,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Merge.Settings">
-    <option name="BRANCH" value="3208" />
+    <option name="BRANCH" value="3209" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
