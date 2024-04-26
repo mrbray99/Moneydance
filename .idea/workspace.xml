@@ -5,36 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ant.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ant.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/lib.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/lib.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securityquoteload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityquoteload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/httpclient-4.5.6.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/httpcore-4.4.10.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/httpmime-4.5.6.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/jackson-annotations-2.7.4.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/jackson-core-2.7.4.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/jackson-databind-2.7.4.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/jackson-dataformat-xml-2.7.4.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/jasperreports-6.13.0.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/json_simple-1.1.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/build.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/build.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/Constants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/MainPriceWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/MainPriceWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/NewParameters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/NewParameters.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/Parameters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/Parameters.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/meta_info.dict" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetBloombergQuote.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetYahooHistQuote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetYahooHistQuote.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetYahooQuote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetYahooQuote.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetYahooTDQuote.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/QuoteManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/QuoteManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/CurTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/CurTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecTableModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecTableModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecurityTableLine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecurityTableLine.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/securityquoteloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/securityquoteloadbuild.xml" afterDir="false" />
     </list>
     <list id="515d24e9-28b0-477a-9756-57997cfa20ab" name="Not to be deployed" comment="">
@@ -177,7 +148,23 @@
       <option name="project" value="LOCAL" />
       <updated>1712843148291</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Build 3209 for quote loader">
+      <option name="closed" value="true" />
+      <created>1714051135904</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1714051135904</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Build 3209 for quote loader">
+      <option name="closed" value="true" />
+      <created>1714051815209</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1714051815209</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -202,6 +189,8 @@
     <MESSAGE value="Remove restriction on ARM" />
     <MESSAGE value="Update build number" />
     <MESSAGE value="Moved files in reportwriter" />
-    <option name="LAST_COMMIT_MESSAGE" value="Moved files in reportwriter" />
+    <MESSAGE value="Build 3209" />
+    <MESSAGE value="Build 3209 for quote loader" />
+    <option name="LAST_COMMIT_MESSAGE" value="Build 3209 for quote loader" />
   </component>
 </project>
