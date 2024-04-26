@@ -107,6 +107,11 @@ public class NewParameters {
 	 * @return the listAccounts
 	 */
 	public List<NewAccountLine> getListAccounts() {
+		// remove YAHOOTD from source arrays;
+		for(NewAccountLine line : listAccounts){
+			if (line.getSource()==5)
+				line.setSource(Constants.YAHOOINDEX);
+		}
 		return listAccounts;
 	}
 	/**

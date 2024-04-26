@@ -92,7 +92,6 @@ public class SecTable extends JTable {
 	private JPopupMenu sourcePopup;
 	private JMenuItem sourceDoNotLoad;
 	private JMenuItem sourceYahoo;
-	private JMenuItem sourceYahooTD;
 	private JMenuItem sourceYahooHist;
 	private JMenuItem sourceFT;
 	private JMenuItem sourceFTHD;
@@ -531,10 +530,6 @@ public class SecTable extends JTable {
 		sourceFTHD.setText("Set all to FT HD");
 		sourcePopup.add(sourceFTHD);
 		sourceFTHD.addActionListener(popupListener);
-		sourceYahooTD = new JMenuItem();
-		sourceYahooTD.setText("Set all to Yahoo + TD");
-		sourcePopup.add(sourceYahooTD);
-		sourceYahooTD.addActionListener(popupListener);
 		excludeSource= new JMenuItem();
 		excludeSource.setText("Exclude 'Do not load'");
 		sourcePopup.add(excludeSource);

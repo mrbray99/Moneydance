@@ -7,3 +7,5 @@ lib/mrbutil.jar
 src/priv_key
 src/pub_key
 src/sign_pw.txt
+src/s-*.mxt
+src/user.properties.sh

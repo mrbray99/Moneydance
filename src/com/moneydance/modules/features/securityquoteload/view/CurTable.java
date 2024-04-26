@@ -458,10 +458,6 @@ public class CurTable extends JTable {
 		sourceFT.setText("Set all to FT");
 		sourcePopup.add(sourceFT);
 		sourceFT.addActionListener(popupListener);
-		sourceYahooTD = new JMenuItem();
-		sourceYahooTD.setText("Set all to Yahoo + TD");
-		sourcePopup.add(sourceYahooTD);
-		sourceYahooTD.addActionListener(popupListener);
 	}
 
 	@Override

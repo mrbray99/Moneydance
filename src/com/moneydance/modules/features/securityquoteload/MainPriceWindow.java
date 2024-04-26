@@ -300,62 +300,54 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		if (selectAllReturned)
 			selectAll = new JButton(Constants.SELECTALL);
 		selectAll.setToolTipText("Selects/deselects all lines on the screen with prices");
-		selectAll.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				switch (tabs.getSelectedIndex()) {
-				case 0:
-					if (selectAllReturned) {
-						secPricesModel.selectAll(true);
-						secPricesModel.fireTableDataChanged();
-						if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME) {
-							curRatesModel.selectAll(true);
-							curRatesModel.fireTableDataChanged();
-						}
-						selectAllReturned = false;
-						selectAll.setText(Constants.DESELECTALL);
-					} else {
-						secPricesModel.selectAll(false);
-						secPricesModel.fireTableDataChanged();
-						if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME) {
-							curRatesModel.selectAll(false);
-							curRatesModel.fireTableDataChanged();
-						}
-						selectAllReturned = true;
-						selectAll.setText(Constants.SELECTALL);
-					}
-					break;
-				case 1:
-					if (selectAllReturned) {
-						if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE) {
-							curRatesModel.selectAll(true);
-							curRatesModel.fireTableDataChanged();
-						}
-						selectAllReturned = false;
-						selectAll.setText(Constants.DESELECTALL);
-					} else {
-						if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE) {
-							curRatesModel.selectAll(false);
-							curRatesModel.fireTableDataChanged();
-						}
-						selectAllReturned = true;
-						selectAll.setText(Constants.SELECTALL);
-					}
-				}
-			}
-		});
+		selectAll.addActionListener(e -> {
+            switch (tabs.getSelectedIndex()) {
+            case 0:
+                if (selectAllReturned) {
+                    secPricesModel.selectAll(true);
+                    secPricesModel.fireTableDataChanged();
+                    if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME) {
+                        curRatesModel.selectAll(true);
+                        curRatesModel.fireTableDataChanged();
+                    }
+                    selectAllReturned = false;
+                    selectAll.setText(Constants.DESELECTALL);
+                } else {
+                    secPricesModel.selectAll(false);
+                    secPricesModel.fireTableDataChanged();
+                    if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME) {
+                        curRatesModel.selectAll(false);
+                        curRatesModel.fireTableDataChanged();
+                    }
+                    selectAllReturned = true;
+                    selectAll.setText(Constants.SELECTALL);
+                }
+                break;
+            case 1:
+                if (selectAllReturned) {
+                    if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE) {
+                        curRatesModel.selectAll(true);
+                        curRatesModel.fireTableDataChanged();
+                    }
+                    selectAllReturned = false;
+                    selectAll.setText(Constants.DESELECTALL);
+                } else {
+                    if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE) {
+                        curRatesModel.selectAll(false);
+                        curRatesModel.fireTableDataChanged();
+                    }
+                    selectAllReturned = true;
+                    selectAll.setText(Constants.SELECTALL);
+                }
+            }
+        });
 		buttonsPanel.add(selectAll, GridC.getc(gridX++, gridY).insets(10, 10, 10, 10));
 		/*
 		 * Button Save Selected Values
 		 */
 		saveValBtn = new JButton("Save Selected Lines");
 		saveValBtn.setToolTipText("Save the selected prices");
-		saveValBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				save();
-			}
-		});
+		saveValBtn.addActionListener(e -> save());
 		buttonsPanel.add(saveValBtn, GridC.getc(gridX++, gridY).insets(10, 10, 10, 10));
 
 		/*
@@ -364,129 +356,114 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		getRatesBtn = new JButton("Get Exchange Rates");
 		buttonsPanel.add(getRatesBtn, GridC.getc(gridX++, gridY).west().insets(10, 10, 10, 10));
 		getRatesBtn.setToolTipText("Retrieve the exchange rates from the Internet");
-		getRatesBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				processCurrency = false;
-				processSecurity = false;
-				switch (tabs.getSelectedIndex()) {
-				case 0:
-					if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME)
-						processCurrency = true;
-					break;
-				case 1:
-					if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE)
-						processCurrency = true;
-				}
-				if (processCurrency)
-					getPrices();
-			}
-		});
+		getRatesBtn.addActionListener(e -> {
+            processCurrency = false;
+            processSecurity = false;
+            switch (tabs.getSelectedIndex()) {
+            case 0:
+                if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME)
+                    processCurrency = true;
+                break;
+            case 1:
+                if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE)
+                    processCurrency = true;
+            }
+            if (processCurrency)
+                getPrices();
+        });
 		/*
 		 * Get
 		 */
 		getPricesBtn = new JButton("Get Prices");
 		buttonsPanel.add(getPricesBtn, GridC.getc(gridX++, gridY).west().insets(10, 10, 10, 10));
 		getPricesBtn.setToolTipText("Retrieve the quotes from the Internet");
-		getPricesBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				processCurrency = false;
-				processSecurity = false;
-				switch (tabs.getSelectedIndex()) {
-				case 0:
-					processSecurity = true;
-					if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME)
-						processCurrency = true;
-					break;
-				case 1:
-					if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE)
-						processCurrency = true;
-				}
-				if (processCurrency || processSecurity)
-					getPrices();
-			}
-		});
+		getPricesBtn.addActionListener(e -> {
+            processCurrency = false;
+            processSecurity = false;
+            switch (tabs.getSelectedIndex()) {
+            case 0:
+                processSecurity = true;
+                if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME)
+                    processCurrency = true;
+                break;
+            case 1:
+                if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE)
+                    processCurrency = true;
+            }
+            if (processCurrency || processSecurity)
+                getPrices();
+        });
 		/*
 		 * Save
 		 */
 		saveBtn = new JButton("Save Changes");
 		buttonsPanel.add(saveBtn, GridC.getc(gridX++, gridY).insets(10, 10, 10, 10));
 		saveBtn.setToolTipText("Save the changes to the sources/ticker information");
-		saveBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Constants.SaveAction action = null;
-				switch (tabs.getSelectedIndex()) {
-				case 0:
-					if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE) 
-						action = Constants.SaveAction.SECURITIES;
-					else if (params.getCurrency())
-						action = Constants.SaveAction.BOTH;
-					else
-						action = Constants.SaveAction.SECURITIES;
-					break;
-				case 1:
-					if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE
-							&& params.getCurrency())
-						action = Constants.SaveAction.CURRENCIES;
-				}
-				if (action != null) {
-					saveSourceChanges(action);
-					switch (action) {
-					case SECURITIES:
-						isSecDirty=false;
-						break;
-					case CURRENCIES:
-						isCurDirty=false;
-						break;
-					case BOTH:
-						isSecDirty=false;
-						isCurDirty=false;
-						break;
-					}
-					JFrame fTemp = new JFrame();
-					JOptionPane.showMessageDialog(fTemp, "Source/ticker information saved");
-				}
-			}
-		});
+		saveBtn.addActionListener(e -> {
+            Constants.SaveAction action = null;
+            switch (tabs.getSelectedIndex()) {
+            case 0:
+                if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE)
+                    action = Constants.SaveAction.SECURITIES;
+                else if (params.getCurrency())
+                    action = Constants.SaveAction.BOTH;
+                else
+                    action = Constants.SaveAction.SECURITIES;
+                break;
+            case 1:
+                if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE
+                        && params.getCurrency())
+                    action = Constants.SaveAction.CURRENCIES;
+            }
+            if (action != null) {
+                saveSourceChanges(action);
+                switch (action) {
+                case SECURITIES:
+                    isSecDirty=false;
+                    break;
+                case CURRENCIES:
+                    isCurDirty=false;
+                    break;
+                case BOTH:
+                    isSecDirty=false;
+                    isCurDirty=false;
+                    break;
+                }
+                JFrame fTemp = new JFrame();
+                JOptionPane.showMessageDialog(fTemp, "Source/ticker information saved");
+            }
+        });
 		/*
 		 * Export
 		 */
 		exportBtn = new JButton("Create Prices CSV");
 		exportBtn.setToolTipText("Output selected prices to a .csv file");
-		exportBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				processCurrency = false;
-				processSecurity = false;
-				switch (tabs.getSelectedIndex()) {
-				case 0:
-					processSecurity = true;
-					if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME)
-						processCurrency = true;
-					break;
-				case 1:
-					if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE)
-						processCurrency = true;
-				}
-				if (processCurrency || processSecurity)
-					export();
-			}
-		});
+		exportBtn.addActionListener(e -> {
+            processCurrency = false;
+            processSecurity = false;
+            switch (tabs.getSelectedIndex()) {
+            case 0:
+                processSecurity = true;
+                if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME)
+                    processCurrency = true;
+                break;
+            case 1:
+                if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE)
+                    processCurrency = true;
+            }
+            if (processCurrency || processSecurity)
+                export();
+        });
 		buttonsPanel.add(exportBtn, GridC.getc(gridX++, gridY).west().insets(10, 10, 10, 10));
 		/*
 		 * Help button
 		 */
 		helpBtn = new JButton("Help");
 		helpBtn.setToolTipText("Display help information");
-		helpBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String url = "http://github.com/mrbray99/moneydanceproduction/wiki/New-Quote-Loader";
-				mdGUI.showInternetURL(url);
-			}
-		});
+		helpBtn.addActionListener(e -> {
+            String url = "http://github.com/mrbray99/moneydanceproduction/wiki/New-Quote-Loader";
+            mdGUI.showInternetURL(url);
+        });
 		buttonsPanel.add(helpBtn, GridC.getc(gridX++, gridY).west().insets(10, 10, 10, 10));
 
 		/*
@@ -494,12 +471,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		 */
 		closeBtn = new JButton("Close");
 		closeBtn.setToolTipText("Close Quote Loader");
-		closeBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				close();
-			}
-		});
+		closeBtn.addActionListener(e -> close());
 		buttonsPanel.add(closeBtn, GridC.getc(gridX++, gridY).west().insets(10, 10, 10, 10));
 		closeBtnx = gridX;
 		closeBtny = gridY;
@@ -1157,7 +1129,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		sourceList = new TreeMap<QuoteSource, List<SecurityPrice>>();
 		for (Integer srce : Constants.SOURCELIST) {
 			QuoteSource.findSource(srce).setUuid(UUID.randomUUID().toString());
-			sourceList.put(QuoteSource.findSource(srce), new ArrayList<SecurityPrice>());
+			sourceList.put(QuoteSource.findSource(srce), new ArrayList<>());
 		}
 		if (processSecurity) {
 			for (SecurityTableLine secLine : securitiesTable.values()) {
@@ -1204,22 +1176,12 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 
 			else {
 				if (Main.standAloneRequested && processCurrency) {
-					javax.swing.SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-									+ Constants.RUNSECONDRUNCMD);
-						}
-					});
+					javax.swing.SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                            + Constants.RUNSECONDRUNCMD));
 				}
 				else {
-					javax.swing.SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-									+ Constants.AUTODONECMD);
-						}
-					});
+					javax.swing.SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                            + Constants.AUTODONECMD));
 				}
 			}
 
@@ -1256,7 +1218,6 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 							break;
 						case YAHOO:
 						case YAHOOHD:
-						case YAHOOTD:
 							if (baseCurrencyID.equals("USD"))
 								ticker = currency + Constants.CURRENCYTICKER;
 							else
@@ -1280,7 +1241,6 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 						break;
 					case FT:
 					case YAHOO:
-					case YAHOOTD:
 						lastPriceDate = -1;
 						break;
 					default:
@@ -1395,7 +1355,6 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 						break;
 					case YAHOO:
 					case YAHOOHD:
-					case YAHOOTD:
 						if (baseCurrencyID.equals("USD"))
 							ticker = Constants.CURRENCYID
 									+ ticker.substring(0, ticker.indexOf(Constants.CURRENCYTICKER));
@@ -1417,7 +1376,6 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 							break;
 						case YAHOO:
 						case YAHOOHD:
-						case YAHOOTD:
 							if (baseCurrencyID.equals("USD") && !uuid.isEmpty())
 								ticker = Constants.CURRENCYID + ticker.substring(0, 2);
 							else
@@ -1957,7 +1915,6 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 						break;
 					case YAHOO:
 					case YAHOOHD:
-					case YAHOOTD:
 						if (baseCurrencyID.equals("USD"))
 							ticker = Constants.CURRENCYID
 									+ ticker.substring(0, ticker.indexOf(Constants.CURRENCYTICKER));
@@ -1977,7 +1934,6 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 							break;
 						case YAHOO:
 						case YAHOOHD:
-						case YAHOOTD:
 							if (baseCurrencyID.equals("USD") && !uuid.isEmpty())
 								ticker = Constants.CURRENCYID + ticker.substring(0, 2);
 							else

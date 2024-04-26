@@ -224,6 +224,8 @@ public class SecTableModel extends DefaultTableModel {
 			int source = rowData.getSource();
 			if (rowData.getTicker().indexOf(Constants.TICKEREXTID)>0)
 				return "Copy from primary";
+			if (source==5)
+				return arrSource[1];
 			if (source > -1 && source < arrSource.length)
 				return arrSource[source];
 			return arrSource[0];

@@ -66,8 +66,8 @@ public class Parameters{
 	public  static Integer [] decimals = {2,3,4,5,6,7,8};
 	public  static String [] maximums = {"No Limit","6","7","8","9"};
 	private  MRBDebug debugInst = Main.debugInst;
-	private  String[] arrSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT,Constants.YAHOOHIST,Constants.FTHIST,Constants.YAHOOTD};;
-	private  String[] curSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.YAHOOHIST,Constants.FT,Constants.YAHOOTD};
+	private  String[] arrSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT,Constants.YAHOOHIST,Constants.FTHIST};
+	private  String[] curSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.YAHOOHIST,Constants.FT};
 	private  List<NewAccountLine>listNewAccounts;
 	private SortedMap<String, NewAccountLine> savedAccounts;
 	private  NewParameters newParams;
@@ -490,7 +490,7 @@ public class Parameters{
 			return newTicker;
 		ExchangeLine line = mapExchangeLines.get(exchange);
 		if (line!=  null) {
-			if (source == Constants.YAHOOINDEX || source == Constants.YAHOOHISTINDEX|| source==Constants.YAHOOTDINDEX)
+			if (source == Constants.YAHOOINDEX || source == Constants.YAHOOHISTINDEX || source == 5)
 				newTicker = line.getYahooPrefix()+newTicker+line.getYahooSuffix();
 			if (source == Constants.FTINDEX || source ==Constants.FTHISTINDEX)
 				newTicker = line.getFtPrefix()+newTicker+line.getFtSuffix();
