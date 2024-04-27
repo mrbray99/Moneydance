@@ -41,7 +41,7 @@
 		<copy file="./s-reportwriter.mxt" tofile="${install}/reportwriter.mxt" verbose="true" failonerror="false" />
 		<copy file="${install}/reportwriter.mxt" tofile="${dist}/reportwriter.mxt" verbose="true" failonerror="false" />
 		<delete file="./s-reportwriter.mxt" />
-		<echo>the current time is ${TODAY_UK}</echo>
+		<echo level="info">the current time is ${TODAY_UK}</echo>
 	</target>
 	<target name="cleanreportwriter" >
 		<delete>

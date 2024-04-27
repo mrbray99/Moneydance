@@ -27,7 +27,7 @@
 			<arg line="${dist}/securityquoteload.mxt"/>
 		</java>
 		<move file="${src}/s-budgetgen.mxt" tofile="${dist}/budgetgen.mxt"/>
-		<echo>the current time is ${TODAY_UK}</echo>
+		<echo level="info">the current time is ${TODAY_UK}</echo>
 	</target> 
 	<target name="cleansecurityquoteload">
 		<delete>

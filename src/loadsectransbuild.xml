@@ -3,7 +3,6 @@
 	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath"  destdir="${build}"
 	      includes="com/moneydance/modules/features/loadsectrans/**"/>
-
 	    <jar destfile="${dist}/loadsectrans.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/loadsectrans/meta_info.dict
@@ -27,7 +26,7 @@
 		<copy file="./s-loadsectrans.mxt" tofile="${install}/loadsectrans.mxt" verbose="true" failonerror="false" />
 		<copy file="${install}/loadsectrans.mxt" tofile="${dist}/loadsectrans.mxt" verbose="true" failonerror="false" />
 		<delete file="./s-loadsectrans.mxt" />
-		<echo>the current time is ${TODAY_UK}</echo>
+		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanloadsectrans">
 		<delete>

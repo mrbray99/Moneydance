@@ -15,7 +15,7 @@
 	             com/moneydance/modules/features/mrbutil/resources/*.jpeg"/>
 	      <fileset dir="${build}" includes="com/moneydance/modules/features/mrbutil/**"/>
 	    </jar>
-		<echo>the current time is ${TODAY_UK}</echo>
+		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 
 	</target> 
 	<target name="cleanmrbutil">

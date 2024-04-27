@@ -2,8 +2,7 @@
 	<target name="qifloader">
 	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath"  destdir="${build}"
-	      includes="com/moneydance/modules/features/qifloader/**"/>
-
+	      includes="com/moneydance/modules/features/qifloader/**" />
 	    <jar destfile="${dist}/qifloader.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/qifloader/meta_info.dict
@@ -27,7 +26,7 @@
 		<copy file="./s-qifloader.mxt" tofile="${install}/qifloader.mxt" verbose="true" failonerror="false" />
 		<copy file="${install}/qifloader.mxt" tofile="${dist}/qifloader.mxt" verbose="true" failonerror="false" />
 		<delete file="./s-qifloader.mxt" />
-		<echo>the current time is ${TODAY_UK}</echo>
+		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanqifloader">
 		<delete>

@@ -15,19 +15,17 @@
 	      <zipgroupfileset  dir="${lib}" includes="**/mrbutil.jar" />
 	    </jar>
 
-	    <java newenvironment="true"
-	      classpathref="signmxtpath"
-	      classname="SignMxt" fork="yes">
-	      <arg value="signextjar"/>
-	      <arg value="${privkeyfile}"/>
-	      <arg value="${privkeyid}"/>
-	      <arg value="budgetgen"/>
-	      <arg line="${dist}/budgetgen.mxt"/>
-	    </java>
-	<copy file="./s-budgetgen.mxt" tofile="${install}/budgetgen.mxt" verbose="true" failonerror="false" />
-	<copy file="${install}/budgetgen.mxt" tofile="${dist}/budgetgen.mxt" verbose="true" failonerror="false" />
-	<delete file="./s-budgetgen.mxt" />
-	<echo>the current time is ${TODAY_UK}</echo>
+		<java newenvironment="true"
+			  classpathref="classpath"
+			  classname="com.moneydance.admin.KeyAdmin">
+			<arg value="signextjar"/>
+			<arg value="${privkeyfile}"/>
+			<arg value="${privkeyid}"/>
+			<arg value="budgetgen"/>
+			<arg line="${dist}/budgetgen.mxt"/>
+		</java>
+		<move file="${src}/s-budgetgen.mxt" tofile="${dist}/budgetgen.mxt"/>
+	<echo level="info">the current time is ${TODAY_UK}</echo>
 	</target>
 	<target name="cleanbudgetgen">
 		<delete>

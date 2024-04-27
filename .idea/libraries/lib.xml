@@ -6,13 +6,11 @@
       <root url="jar://$PROJECT_DIR$/lib/commons-compress-1.19.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/commons-math3-3.6.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/h2-1.4.200.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/hsqldb.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jaxb-api-2.3.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jaxb-core-2.3.0.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jaxb-impl-2.3.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jep-2.23.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jsoup-1.11.3.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/mrbutil.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/org.apache.commons.io.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/poi-4.1.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/poi-excelant-4.1.2.jar!/" />

@@ -3,7 +3,6 @@
 	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath"  destdir="${build}"
 	      includes="com/moneydance/modules/features/budgetreport/**"/>
-
 	    <jar destfile="${dist}/budgetreport.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/budgetreport/meta_info.dict
@@ -15,19 +14,17 @@
 	      <zipgroupfileset  dir="${lib}" includes="**/mrbutil.jar" />
 	    </jar>
 
-	    <java newenvironment="true" 
-	      classpathref="signmxtpath"
-	      classname="SignMxt" fork="yes">
-	      <arg value="signextjar"/>
-	      <arg value="${privkeyfile}"/>
-	      <arg value="${privkeyid}"/>
-	      <arg value="budgetreport"/>
-	      <arg line="${dist}/budgetreport.mxt"/>
-	    </java>
-		<copy file="./s-budgetreport.mxt" tofile="${install}/budgetreport.mxt" verbose="true" failonerror="false" />
-		<copy file="${install}/budgetreport.mxt" tofile="${dist}/budgetreport.mxt" verbose="true" failonerror="false" />
-		<delete file="./s-budgetreport.mxt" />
-		<echo>the current time is ${TODAY_UK}</echo>
+		<java newenvironment="true"
+			  classpathref="classpath"
+			  classname="com.moneydance.admin.KeyAdmin">
+			<arg value="signextjar"/>
+			<arg value="${privkeyfile}"/>
+			<arg value="${privkeyid}"/>
+			<arg value="budgetgen"/>
+			<arg line="${dist}/budgetreport.mxt"/>
+		</java>
+		<move file="${src}/s-budgetreport.mxt" tofile="${dist}/budgetreport.mxt"/>
+		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanbudgetreport">
 		<delete>
