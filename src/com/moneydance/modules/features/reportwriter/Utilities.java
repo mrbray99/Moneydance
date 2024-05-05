@@ -256,8 +256,4 @@ public abstract class Utilities {
 	        return buffer;
 	    }
 	}
-
-    public static String getPlatform(){
-       return Platform.architecture().toString();
-    }
- }
+   }

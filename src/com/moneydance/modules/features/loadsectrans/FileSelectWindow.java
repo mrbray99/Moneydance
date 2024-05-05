@@ -133,8 +133,10 @@ public class FileSelectWindow extends JPanel implements TreeSelectionListener {
                                                           boolean leaf, int row, boolean hasFocus){
                 NodeEntry entry;
                 if (value != null && value instanceof DefaultMutableTreeNode) {
-                    entry = (NodeEntry) (((DefaultMutableTreeNode) value).getUserObject());
-                    setText(entry.getAccount().getAccountName());
+                    if (((DefaultMutableTreeNode) value).getUserObject() instanceof NodeEntry) {
+                        entry = (NodeEntry) (((DefaultMutableTreeNode) value).getUserObject());
+                        setText(entry.getAccount().getAccountName());
+                    }
                 }
                 if (expanded && !leaf&& openImage != null)
                     setIcon(openImage);
@@ -784,29 +786,5 @@ public class FileSelectWindow extends JPanel implements TreeSelectionListener {
             selectedCategory = entry.getAccount();
         }
     }
-    public class NodeEntry{
-        private Account account;
-        private String entry;
-        public NodeEntry(Account account, String entry){
-            this.account = account;
-            this.entry = entry;
-        }
 
-        public Account getAccount() {
-            return account;
-        }
-
-        public void setAccount(Account account) {
-            this.account = account;
-        }
-
-        public String getEntry() {
-            return entry;
-        }
-
-        public void setEntry(String entry) {
-            this.entry = entry;
-        }
-
-    }
 }
