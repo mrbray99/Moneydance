@@ -112,13 +112,21 @@ public class SecTableModel extends DefaultTableModel {
 	}
 
 	public void resetData(SortedMap<String, SecurityTableLine> mapAccounts) {
-		savedAccounts=new TreeMap<String, SecurityTableLine>();
+		if (savedAccounts==null)
+			savedAccounts=new TreeMap<String, SecurityTableLine>();
+		else
+			savedAccounts.clear();
 		for (Entry<String, SecurityTableLine> line : mapAccounts.entrySet())
 			savedAccounts.put(line.getKey(),line.getValue());
 		for (SecurityTableLine line : savedAccounts.values())
 			line.setSelected(false);
 		resetIncluded();
-		listAccounts = new ArrayList<Entry<String, SecurityTableLine>>(this.accounts.entrySet());
+		if (listAccounts == null)
+			listAccounts = new ArrayList<Entry<String, SecurityTableLine>>(this.accounts.entrySet());
+		else {
+			listAccounts.clear();
+			listAccounts.addAll(this.accounts.entrySet());
+		}
 		resetNumberFormat();
 	}
 
@@ -144,7 +152,9 @@ public class SecTableModel extends DefaultTableModel {
 		this.fireTableDataChanged();
 	}
 	public void resetIncluded() {
-		accounts=new TreeMap<String, SecurityTableLine>();
+		if (accounts==null)
+			accounts=new TreeMap<String, SecurityTableLine>();
+		else accounts.clear();
 		for (Entry<String, SecurityTableLine> line :savedAccounts.entrySet()) {
 			if (line.getValue().getSource()==0 && !line.getValue().getTicker().contains(Constants.TICKEREXTID)) {
 				if (includeDonotload)
@@ -354,6 +364,31 @@ public class SecTableModel extends DefaultTableModel {
 		 * Alternate ticker
 		 */
 		case 2:
+			rowData.setInError(false);
+			for (Entry<String,SecurityTableLine> rowTmp :listAccounts){
+				if (rowTmp.getKey().equalsIgnoreCase(listAccounts.get(row).getKey()))
+					continue;
+				if (value instanceof String) {
+					if (rowTmp.getValue().getAlternateTicker() == null || rowTmp.getValue().getAlternateTicker().isEmpty()) {
+						if (rowTmp.getValue().getTicker().equals((String) value)) {
+							debugInst.debug("SecTableModel", "setValueAt", MRBDebug.DETAILED, "duplicate ticker found with "+rowTmp.getKey());
+							rowData.setInError(true);
+							break;
+						}
+					} else {
+						if (rowTmp.getValue().getAlternateTicker().equals((String) value)) {
+							debugInst.debug("SecTableModel", "setValueAt", MRBDebug.DETAILED, "duplicate alternate ticker found with "+rowTmp.getKey());
+							rowData.setInError(true);
+							break;
+						}
+					}
+				}
+
+			}
+			if (rowData.getInError()) {
+				JOptionPane.showMessageDialog(null, "Alternate Ticker already exists");
+				break;
+			}
 			rowData.setAlternateTicker((String) value);
 			controller.setIsSecDirty(true);
 			rowData.setInError(false);
@@ -361,9 +396,10 @@ public class SecTableModel extends DefaultTableModel {
 		/*
 		 * Source
 		 */
-		case 5: 
+		case 5:
+
 			for (int i = 0; i < arrSource.length; i++) {
-				if ((String) value == arrSource[i]) {
+				if (((String) value).contentEquals(arrSource[i])) {
 					rowData.setSource(i);
 					debugInst.debug("MyTableModel", "setValueAt", MRBDebug.DETAILED,
 							"Source updated " + rowData.getTicker() + " " + i);

@@ -4,13 +4,46 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="">
+    <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="MIS-290 Yahoo Throttling">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/lib1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/lib1.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/budgetreport.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/budgetreport.mxt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/loadsectrans.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/loadsectrans.mxt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/securityhistoryload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityhistoryload.mxt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/securitypriceload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securitypriceload.mxt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/securityquoteload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityquoteload.mxt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/budgetgenbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/budgetgenbuild.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/budgetreportbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/budgetreportbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/build.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/build.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/BudgetLine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/BudgetLine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetreport/BudgetReport.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetreport/BudgetReport.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetreport/BudgetValuesWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetreport/BudgetValuesWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/filedisplay/DetailedFileDisplayWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/filedisplay/DetailedFileDisplayWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/filedisplay/FileDisplayWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/filedisplay/FileDisplayWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/FileSelectWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/loadsectrans/FileSelectWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBViewTransactions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/mrbutil/MRBViewTransactions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/qifloader/FileSelectWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/qifloader/FileSelectWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/databeans/CurrencyRateBean.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/databeans/CurrencyRateBean.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/factory/AccountFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/factory/AccountFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/factory/CategoryFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/factory/CategoryFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/DataDataRow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/DataDataRow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/ReportDataRow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/ReportDataRow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/SelectionDataRow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/view/SelectionDataRow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityhistoryload/loadPricesWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityhistoryload/loadPricesWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securitypriceload/loadPricesWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securitypriceload/loadPricesWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/MainPriceWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/MainPriceWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/ScanDate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/ScanDate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/meta_info.dict" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetFTHDQuote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetFTHDQuote.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetFTQuote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetFTQuote.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetQuoteTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetQuoteTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetYahooHistQuote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetYahooHistQuote.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetYahooQuote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/GetYahooQuote.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/QuoteManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/quotes/QuoteManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecTableModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecTableModel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/filedisplaybuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/filedisplaybuild.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/loadsectransbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/loadsectransbuild.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mrbutilbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/mrbutilbuild.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/qifloaderbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/qifloaderbuild.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/reportwriterbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportwriterbuild.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/securityhistoryloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/securityhistoryloadbuild.xml" afterDir="false" />
@@ -31,6 +64,19 @@
     <option name="BRANCH" value="3209" />
   </component>
   <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="3210" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="master" />
@@ -60,18 +106,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "jdk.selected.JAVA_MODULE": "temurin-21",
-    "last_opened_file_path": "D:/F/mrbmo/eclipse-workspace/Moneydance2021/Build_Changes.patch",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "project.propDebugger"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;temurin-21&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib2&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propDebugger&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -178,7 +225,23 @@
       <option name="project" value="LOCAL" />
       <updated>1714137354076</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Build 3210 remove unneeded files, update build files to remove warnings">
+      <option name="closed" value="true" />
+      <created>1714219954349</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1714219954349</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Build 3210 remove unneeded files, update build files to remove warnings">
+      <option name="closed" value="true" />
+      <created>1714219969416</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1714219969416</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -206,6 +269,7 @@
     <MESSAGE value="Build 3209" />
     <MESSAGE value="Build 3209 for quote loader" />
     <MESSAGE value="Build 3210 remove use of runtime in SecurityPriceLoad and SecurityHistoryLoad" />
-    <option name="LAST_COMMIT_MESSAGE" value="Build 3210 remove use of runtime in SecurityPriceLoad and SecurityHistoryLoad" />
+    <MESSAGE value="Build 3210 remove unneeded files, update build files to remove warnings" />
+    <option name="LAST_COMMIT_MESSAGE" value="Build 3210 remove unneeded files, update build files to remove warnings" />
   </component>
 </project>

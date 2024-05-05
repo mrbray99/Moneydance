@@ -37,7 +37,6 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -91,11 +90,9 @@ public class Main extends FeatureModule {
 	public ImageIcon selectedIcon;
 	public ImageIcon unselectedIcon;
 	private String mdVersion;
-	private MainPriceWindow frame;
-	private Thread iamhereTimeout;
+	public MainPriceWindow frame;
 	private Thread overallTimeout;
 	private AtomicBoolean quotesCompleted = new AtomicBoolean(false);
-	private AtomicBoolean timerInterrupt = new AtomicBoolean(false);
 	private int timeoutCount = 0;
 	private String uri;
 	private String command;
@@ -103,20 +100,18 @@ public class Main extends FeatureModule {
 	public static MRBPreferences2 preferences;
 	private String secMode;
 	private String curMode;
-	public String serverName = Constants.PROGRAMNAME;;
+	public String serverName = Constants.PROGRAMNAME;
 	public int runtype = Constants.NORUN;
 	public List<String> errorTickers;
 	private TaskExecutor autoRun = null;
 	public static ClassLoader loader;
 	public boolean startUp = true;
-	public static ZoneId defaultZone = ZoneId.systemDefault();
 	private Boolean closingRequested = false;
 	public static boolean autoRunning = false;
 	public static boolean secondRunRequired = false;
 	public static boolean isUpdating = false;
 	public static boolean isGUIOpen = false;
 	public static boolean isQuotesRunning = false;
-	private boolean isSyncing=false;
 	private int timeoutMax = Constants.TIMEOUTCOUNT;
 	private Timer autoDelay;
 	private MoneydanceUI mdGUI;
@@ -149,7 +144,7 @@ public class Main extends FeatureModule {
 		if (mdVersionNo < Constants.MINIMUMVERSIONNO) {
 			JOptionPane.showMessageDialog(null,
 					"This version of Quote Loader is designed to be run on Moneydance version "
-							+ Constants.MINIMUMVERSIONNO.toString() + ". You are running version "
+							+ Constants.MINIMUMVERSIONNO + ". You are running version "
 							+ mdVersion,
 					"Quote Loader", JOptionPane.ERROR_MESSAGE);
 			return;
@@ -179,13 +174,14 @@ public class Main extends FeatureModule {
 			java.io.InputStream in = loader.getResourceAsStream(Constants.RESOURCEPATH + "/" + action);
 			if (in != null) {
 				ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
-				byte buf[] = new byte[256];
-				int n = 0;
+				byte[] buf = new byte[256];
+				int n;
 				while ((n = in.read(buf, 0, buf.length)) >= 0)
 					bout.write(buf, 0, n);
 				return Toolkit.getDefaultToolkit().createImage(bout.toByteArray());
 			}
 		} catch (Throwable e) {
+			return null;
 		}
 		return null;
 	}
@@ -238,7 +234,7 @@ public class Main extends FeatureModule {
 		params=Parameters.getParameters();
 		debugInst.setDebugLevel(
 				preferences.getInt(Constants.PROGRAMNAME + "." + Constants.DEBUGLEVEL, MRBDebug.INFO));
-		String debug = "OFF";
+		String debug;
 		if (debugInst.getDebugLevel() == MRBDebug.INFO)
 			debug = "INFO";
 		else if (debugInst.getDebugLevel() == MRBDebug.SUMMARY)
@@ -260,89 +256,67 @@ public class Main extends FeatureModule {
 		debugInst.debug("Quote Load", "sendAuto", MRBDebug.DETAILED, "checking syncing ");
 		if (context != null && context.getCurrentAccountBook().getSyncer().isSyncing()) {
 			debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO, "Syncing - delay set ");
-			isSyncing=true;
 			if (autoDelay == null) {
-				autoDelay = new Timer(1, ((ae) -> {
-					javax.swing.SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO,
-									"Check Auto Sync after delay ");
-							context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-									+ Constants.CHECKAUTOSYNC);
-						}
-					});
-
-				}));
+				autoDelay = new Timer(1, ((ae) -> javax.swing.SwingUtilities.invokeLater(() -> {
+                    debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO,
+                            "Check Auto Sync after delay ");
+                    context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                            + Constants.CHECKAUTOSYNC);
+                })));
 				autoDelay.setInitialDelay(30000);
 			}
 			autoDelay.start();
 			return;
 		} 
-		isSyncing=false;
 		if (standAloneRequested) {
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-							+ Constants.STANDALONEREQUESTED);
-				}
-			});
+			javax.swing.SwingUtilities.invokeLater(() -> context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                    + Constants.STANDALONEREQUESTED));
 		}
 		else {
 			debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO, "Check Auto without delay ");
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":" + Constants.CHECKAUTOCMD);
-				}
-			});
+			javax.swing.SwingUtilities.invokeLater(() -> context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":" + Constants.CHECKAUTOCMD));
 		}
 	}
 
 	private void resetAutoRun() {
-		if (autoRun == null)
-			autoRun = new TaskExecutor(this);
-		else {
+		if (autoRun != null)
 			autoRun.stop();
-			autoRun = new TaskExecutor(this);
-
-		}
-		LocalTime now = LocalTime.now();
+        autoRun = new TaskExecutor(this);
+        LocalTime now = LocalTime.now();
 		LocalTime next;
-		if (now.compareTo(LocalTime.of(2, 0)) < 0)
+		if (now.isBefore(LocalTime.of(2, 0)))
 			next = LocalTime.of(2, 0);
-		else if (now.compareTo(LocalTime.of(4, 0)) < 0)
+		else if (now.isBefore(LocalTime.of(4, 0)))
 			next = LocalTime.of(4, 0);
-		else if (now.compareTo(LocalTime.of(6, 0)) < 0)
+		else if (now.isBefore(LocalTime.of(6, 0)))
 			next = LocalTime.of(6, 0);
-		else if (now.compareTo(LocalTime.of(8, 0)) < 0)
+		else if (now.isBefore(LocalTime.of(8, 0)))
 			next = LocalTime.of(8, 0);
-		else if (now.compareTo(LocalTime.of(9, 0)) < 0)
+		else if (now.isBefore(LocalTime.of(9, 0)))
 			next = LocalTime.of(9, 0);
-		else if (now.compareTo(LocalTime.of(11, 0)) < 0)
+		else if (now.isBefore(LocalTime.of(11, 0)))
 			next = LocalTime.of(11, 0);
-		else if (now.compareTo(LocalTime.of(13, 0)) < 0)
+		else if (now.isBefore(LocalTime.of(13, 0)))
 			next = LocalTime.of(13, 0);
-		else if (now.compareTo(LocalTime.of(15, 0)) < 0)
+		else if (now.isBefore(LocalTime.of(15, 0)))
 			next = LocalTime.of(15, 0);
-		else if (now.compareTo(LocalTime.of(17, 0)) < 0)
+		else if (now.isBefore(LocalTime.of(17, 0)))
 			next = LocalTime.of(17, 0);
-		else if (now.compareTo(LocalTime.of(19, 0)) < 0)
+		else if (now.isBefore(LocalTime.of(19, 0)))
 			next = LocalTime.of(19, 0);
-		else if (now.compareTo(LocalTime.of(21, 0)) < 0)
+		else if (now.isBefore(LocalTime.of(21, 0)))
 			next = LocalTime.of(21, 0);
-		else if (now.compareTo(LocalTime.of(22, 0)) < 0)
+		else if (now.isBefore(LocalTime.of(22, 0)))
 			next = LocalTime.of(22, 0);
-		else if (now.compareTo(LocalTime.of(23, 0)) < 0)
+		else if (now.isBefore(LocalTime.of(23, 0)))
 			next = LocalTime.of(23, 0);
 		else
 			next = LocalTime.of(23, 59);
 		LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), next);
-		if (dateTime.compareTo(LocalDateTime.now()) < 0)
-			dateTime.plusDays(1l);
+		if (dateTime.isBefore(LocalDateTime.now()))
+			dateTime.plusDays(1L);
 		debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO,
-				"now " + now.toString() + " next " + dateTime.toString());
+				"now " + now + " next " + dateTime);
 		autoRun.startExecutionAt(dateTime);
 	}
 
@@ -406,7 +380,7 @@ public class Main extends FeatureModule {
 					darkness = 1 - (0.299 * theme.getRed() + 0.587 * theme.getGreen()
 							+ 0.114 * theme.getBlue()) / 255;
 					debugInst.debug("Quote Load", "Init", MRBDebug.DETAILED,
-							"Panel.foreground Color " + theme.toString() + " Red " + theme.getRed()
+							"Panel.foreground Color " + theme + " Red " + theme.getRed()
 									+ " Green " + theme.getGreen() + " Blue " + theme.getBlue()
 									+ " Darkness " + darkness);
 				}
@@ -499,186 +473,183 @@ public class Main extends FeatureModule {
 
 	private synchronized void processCommand(String command,String uri) {
 		debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED, "process command invoked " + command);
-		if (command.equals(Constants.CHECKAUTOSYNC)) {
-			if (autoDelay != null) {
-				autoDelay.stop();
-			}
-			sendAuto();
-			return;
-		}
-		if (command.equals(Constants.CHECKAUTOCMD)) {
-			/*
-			 *  Check if an Auto run is due
-			 */
-			if (params==null)
-				Parameters.getParameters();
-			debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED, "Running Checkautocmd");
-			autoSettingsChanged=false;
-			secMode = preferences.getString(Constants.PROGRAMNAME + "." + Constants.SECRUNMODE,
-					Constants.MANUALMODE);
-			curMode = preferences.getString(Constants.PROGRAMNAME + "." + Constants.CURRUNMODE,
-					Constants.MANUALMODE);
-			boolean secRunAuto = false;
-			boolean curRunAuto = false;
-			int secNextrun = 0;
-			int curNextrun = 0;
-			int today = DateUtil.getStrippedDateInt();
-			/*
-			 * check for securities
-			 */
-			if (secMode.equals(Constants.AUTOMODE)) {
-				debugInst.debug("Quote Load", "Process Command", MRBDebug.DETAILED,
-						"Security Auto mode detected");
-				secNextrun = preferences.getInt(Constants.PROGRAMNAME + "." + Constants.SECNEXTRUN, today);
-				if (secNextrun <= today)
-					secRunAuto = true;
-			}
-			/*
-			 * check for currencies
-			 */
-			if (params.getCurrency()&&curMode.equals(Constants.AUTOMODE)) {
-				debugInst.debug("Quote Load", "Process Command", MRBDebug.DETAILED,
-						"Currency Auto mode detected");
-				curNextrun = preferences.getInt(Constants.PROGRAMNAME + "." + Constants.CURNEXTRUN, today);
-				if (curNextrun <= today)
-					curRunAuto = true;
-			}
-			debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
-					"Date check " + secRunAuto + " " + curRunAuto);
-			int startTime = preferences.getInt(Constants.PROGRAMNAME + "." + Constants.STARTTIME,
-					Constants.RUNSTARTUP);
-			if (secRunAuto || curRunAuto) {
-				if (startTime != Constants.RUNSTARTUP) {
-					/*
-					 * Not a run at startup - check if time has been reached
-					 */
-					LocalTime now = LocalTime.now();
-					LocalTime runTime = LocalTime.of(23, 59);
-					for (int i = 0; i < Constants.TIMEVALUES.length; i++) {
-						if (Constants.TIMEVALUES[i] == startTime) {
-							if (Constants.TIMESTART[i] != 24)
-								runTime = LocalTime.of(Constants.TIMESTART[i], 0);
-						}
-					}
+        switch (command) {
+            case Constants.CHECKAUTOSYNC -> {
+                if (autoDelay != null) {
+                    autoDelay.stop();
+                }
+                sendAuto();
+                return;
+            }
+            case Constants.CHECKAUTOCMD -> {
+                /*
+                 *  Check if an Auto run is due
+                 */
+                if (params == null)
+                    Parameters.getParameters();
+                debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED, "Running Checkautocmd");
+                autoSettingsChanged = false;
+                secMode = preferences.getString(Constants.PROGRAMNAME + "." + Constants.SECRUNMODE,
+                        Constants.MANUALMODE);
+                curMode = preferences.getString(Constants.PROGRAMNAME + "." + Constants.CURRUNMODE,
+                        Constants.MANUALMODE);
+                boolean secRunAuto = false;
+                boolean curRunAuto = false;
+                int secNextrun = 0;
+                int curNextrun = 0;
+                int today = DateUtil.getStrippedDateInt();
+                /*
+                 * check for securities
+                 */
+                if (secMode.equals(Constants.AUTOMODE)) {
+                    debugInst.debug("Quote Load", "Process Command", MRBDebug.DETAILED,
+                            "Security Auto mode detected");
+                    secNextrun = preferences.getInt(Constants.PROGRAMNAME + "." + Constants.SECNEXTRUN, today);
+                    if (secNextrun <= today)
+                        secRunAuto = true;
+                }
+                /*
+                 * check for currencies
+                 */
+                if (params.getCurrency() && curMode.equals(Constants.AUTOMODE)) {
+                    debugInst.debug("Quote Load", "Process Command", MRBDebug.DETAILED,
+                            "Currency Auto mode detected");
+                    curNextrun = preferences.getInt(Constants.PROGRAMNAME + "." + Constants.CURNEXTRUN, today);
+                    if (curNextrun <= today)
+                        curRunAuto = true;
+                }
+                debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
+                        "Date check " + secRunAuto + " " + curRunAuto);
+                int startTime = preferences.getInt(Constants.PROGRAMNAME + "." + Constants.STARTTIME,
+                        Constants.RUNSTARTUP);
+                if (secRunAuto || curRunAuto) {
+                    if (startTime != Constants.RUNSTARTUP) {
+                        /*
+                         * Not a run at startup - check if time has been reached
+                         */
+                        LocalTime now = LocalTime.now();
+                        LocalTime runTime = LocalTime.of(23, 59);
+                        for (int i = 0; i < Constants.TIMEVALUES.length; i++) {
+                            if (Constants.TIMEVALUES[i] == startTime) {
+                                if (Constants.TIMESTART[i] != 24)
+                                    runTime = LocalTime.of(Constants.TIMESTART[i], 0);
+                            }
+                        }
 
-					LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), runTime);
-					if (dateTime.compareTo(LocalDateTime.now()) < 0)
-						dateTime.plusDays(1l);
-					debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
-							"Time check - Sec " + secRunAuto + " "+secNextrun +" "+startUp);
-					debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
-							"Time check - Cur " + curRunAuto + " "+curNextrun +" "+startUp);
-					debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
-							"Time check - run time " + runTime + " "+now );
-					if (!((secRunAuto && secNextrun < today && startUp)
-							|| (curRunAuto && curNextrun < today && startUp))) {
-						if (runTime.isAfter(now)) {
-							/*
-							 * start time not reached - reset auto run
-							 */
-							resetAutoRun();
-							return;
-						}
-						startUp = false;
-					}
-				}
-				if (secRunAuto || curRunAuto) {
-					if (frame != null && runtype == Constants.MANUALRUN) {
-						/*
-						 * check to see if Quote Loader is open
-						 */
-						if (JOptionPane.showConfirmDialog(frame,
-								"Quote Loader is trying to run an Automatic update.  Do you wish to close this window to allow it to run",
-								"Quote Loader", JOptionPane.YES_NO_OPTION,
-								JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-							/*
-							 * user has replied yes
-							 */
-							if (frame!=null)
-								frame.close();
-							else
-								closeConsole();
-						} else {
-							/*
-							 * user has replied no
-							 */
-							resetAutoRun();
-							return;
-						}
-					}
-				}
-				/*
-				 * determine what type of run
-				 */
-				if (secRunAuto && !curRunAuto)
-					runtype = Constants.SECAUTORUN;
-				if (!secRunAuto && curRunAuto)
-					runtype = Constants.CURAUTORUN;
-				if (secRunAuto && curRunAuto)
-					runtype = Constants.BOTHAUTORUN;
-				debugInst.debug("Quote Load", "Process Command", MRBDebug.DETAILED, "Submitting Auto Run");
-				/*
-				 * send Run Auto Cmd
-				 */
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-								+ Constants.RUNAUTOCMD);
-						context.showURL("moneydance:setprogress?meter=0&label="
-								+ "Quote Loader Updating Prices");
+                        LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), runTime);
+                        if (dateTime.isBefore(LocalDateTime.now()))
+                            dateTime.plusDays(1L);
+                        debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
+                                "Time check - Sec " + secRunAuto + " " + secNextrun + " " + startUp);
+                        debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
+                                "Time check - Cur " + curRunAuto + " " + curNextrun + " " + startUp);
+                        debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
+                                "Time check - run time " + runTime + " " + now);
+                        if (!((secRunAuto && secNextrun < today && startUp)
+                                || (curRunAuto && curNextrun < today && startUp))) {
+                            if (runTime.isAfter(now)) {
+                                /*
+                                 * start time not reached - reset auto run
+                                 */
+                                resetAutoRun();
+                                return;
+                            }
+                            startUp = false;
+                        }
+                    }
+                    if (secRunAuto || curRunAuto) {
+                        if (frame != null && runtype == Constants.MANUALRUN) {
+                            /*
+                             * check to see if Quote Loader is open
+                             */
+                            if (JOptionPane.showConfirmDialog(frame,
+                                    "Quote Loader is trying to run an Automatic update.  Do you wish to close this window to allow it to run",
+                                    "Quote Loader", JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                                /*
+                                 * user has replied yes
+                                 */
+                                if (frame != null)
+                                    frame.close();
+                                else
+                                    closeConsole();
+                            } else {
+                                /*
+                                 * user has replied no
+                                 */
+                                resetAutoRun();
+                                return;
+                            }
+                        }
+                    }
+                    /*
+                     * determine what type of run
+                     */
+                    if (secRunAuto && !curRunAuto)
+                        runtype = Constants.SECAUTORUN;
+                    if (!secRunAuto && curRunAuto)
+                        runtype = Constants.CURAUTORUN;
+                    if (secRunAuto && curRunAuto)
+                        runtype = Constants.BOTHAUTORUN;
+                    debugInst.debug("Quote Load", "Process Command", MRBDebug.DETAILED, "Submitting Auto Run");
+                    /*
+                     * send Run Auto Cmd
+                     */
+                    javax.swing.SwingUtilities.invokeLater(() -> {
+                        context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                                + Constants.RUNAUTOCMD);
+                        context.showURL("moneydance:setprogress?meter=0&label="
+                                + "Quote Loader Updating Prices");
 
-					}
-				});
-				if (secRunAuto) {
-					/*
-					 * reset security next run date
-					 */
-					preferences.put(Constants.PROGRAMNAME + "." + Constants.SECLASTRUN, today);
-					CalculateRunDate secRun = new CalculateRunDate(Constants.SECRUNTYPE,
-							Constants.SECRUNPARAM, Constants.SECLASTRUN);
-					preferences.put(Constants.PROGRAMNAME + "." + Constants.SECNEXTRUN, secRun.getDate());
-					preferences.isDirty();
-				}
-				/*
-				 * reset currency next run date
-				 */
-				if (curRunAuto) {
-					preferences.put(Constants.PROGRAMNAME + "." + Constants.CURLASTRUN, today);
-					CalculateRunDate curRun = new CalculateRunDate(Constants.CURRUNTYPE,
-							Constants.CURRUNPARAM, Constants.CURLASTRUN);
-					preferences.put(Constants.PROGRAMNAME + "." + Constants.CURNEXTRUN, curRun.getDate());
-					preferences.isDirty();
-				}
-				resetAutoRun();
-			} else {
-				debugInst.debug("Quote Load", "Process Command", MRBDebug.DETAILED, "Nothing to run");
-				resetAutoRun();
-			}
-			return;
-		}
-		if (command.equals(Constants.GETQUOTECMD)) {
-			Runnable task = new Runnable() {
-				public void run() {
-					QuoteManager manager = new QuoteManager();
-					manager.getQuotes(uri);
-				}
-			};
-			new Thread(task).start();
-			return;
-		}
-		if (command.equals(Constants.TIMEOUTCMD)) {
-			debugInst.debug("Quote Load", "invoke", MRBDebug.SUMMARY, "time out received");
-			return;
-		}
-		Integer totalQuotes;
+                    });
+                    if (secRunAuto) {
+                        /*
+                         * reset security next run date
+                         */
+                        preferences.put(Constants.PROGRAMNAME + "." + Constants.SECLASTRUN, today);
+                        CalculateRunDate secRun = new CalculateRunDate(Constants.SECRUNTYPE,
+                                Constants.SECRUNPARAM, Constants.SECLASTRUN);
+                        preferences.put(Constants.PROGRAMNAME + "." + Constants.SECNEXTRUN, secRun.getDate());
+                        preferences.isDirty();
+                    }
+                    /*
+                     * reset currency next run date
+                     */
+                    if (curRunAuto) {
+                        preferences.put(Constants.PROGRAMNAME + "." + Constants.CURLASTRUN, today);
+                        CalculateRunDate curRun = new CalculateRunDate(Constants.CURRUNTYPE,
+                                Constants.CURRUNPARAM, Constants.CURLASTRUN);
+                        preferences.put(Constants.PROGRAMNAME + "." + Constants.CURNEXTRUN, curRun.getDate());
+                        preferences.isDirty();
+                    }
+                    resetAutoRun();
+                } else {
+                    debugInst.debug("Quote Load", "Process Command", MRBDebug.DETAILED, "Nothing to run");
+                    resetAutoRun();
+                }
+                return;
+            }
+            case Constants.GETQUOTECMD -> {
+                Runnable task = () -> {
+                    QuoteManager manager = new QuoteManager();
+                    manager.getQuotes(uri);
+                };
+                new Thread(task).start();
+                return;
+            }
+            case Constants.TIMEOUTCMD -> {
+                debugInst.debug("Quote Load", "invoke", MRBDebug.SUMMARY, "time out received");
+                return;
+            }
+        }
+        Integer totalQuotes;
 		if (command.equals(Constants.STARTQUOTECMD)) {
 			try {
 				totalQuotes = Integer.valueOf(uri.substring(uri.indexOf("?numquotes=") + 11));
 			} catch (NumberFormatException e) {
 				totalQuotes = 0;
 			}
-			timeoutMax = totalQuotes < 100 ? 12 : totalQuotes > 99 & totalQuotes < 200 ? 24 : 36;
+			timeoutMax = totalQuotes < 100 ? 30 : totalQuotes < 200 ? 50 : 100;
 			debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
 					"total quotes=" + totalQuotes + " maximum timeout set to " + timeoutMax);
 			overallTimeout = new Thread(new QuoteTimer());
@@ -687,24 +658,14 @@ public class Main extends FeatureModule {
 			return;
 		}
 		if (command.equalsIgnoreCase(Constants.TESTTICKERCMD)) {
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					frame.testTicker(uri);
-				}
-			});
+			javax.swing.SwingUtilities.invokeLater(() -> frame.testTicker(uri));
 			return;
 		}
 		if (command.equals(Constants.LOADPRICECMD)) {
 			if (frame != null) {
 				timeoutCount = 0;
 				debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED, "updating price " + uri);
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						frame.updatePrices(uri);
-					}
-				});
+				javax.swing.SwingUtilities.invokeLater(() -> frame.updatePrices(uri));
 			}
 			return;
 		}
@@ -712,12 +673,7 @@ public class Main extends FeatureModule {
 			if (frame != null) {
 				timeoutCount = 0;
 				debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED, "updating history " + uri);
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						frame.updateHistory(uri);
-					}
-				});
+				javax.swing.SwingUtilities.invokeLater(() -> frame.updateHistory(uri));
 			}
 			return;
 		}
@@ -725,12 +681,7 @@ public class Main extends FeatureModule {
 			if (frame != null) {
 				timeoutCount = 0;
 				debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED, "error returned " + uri);
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						frame.failedQuote(uri);
-					}
-				});
+				javax.swing.SwingUtilities.invokeLater(() -> frame.failedQuote(uri));
 			}
 			return;
 		}
@@ -738,12 +689,7 @@ public class Main extends FeatureModule {
 			if (frame != null) {
 				timeoutCount = 0;
 				debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED, "Done " + uri);
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						frame.doneQuote(uri);
-					}
-				});
+				javax.swing.SwingUtilities.invokeLater(() -> frame.doneQuote(uri));
 			}
 			return;
 		}
@@ -779,13 +725,8 @@ public class Main extends FeatureModule {
 			context.showURL("moneydance:setprogress?meter=0&label=" + "Quote Loader Update Completed");
 			debugInst.debug("Quote Load", "ProcessCommand", MRBDebug.DETAILED, "Auto run done");
 			if (standAloneRequested && cmdParam.equalsIgnoreCase("quit")) {
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-								+ Constants.STANDALONEDONE);
-					}
-				});
+				javax.swing.SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                        + Constants.STANDALONEDONE));
 			}
 			return;
 		}
@@ -794,16 +735,13 @@ public class Main extends FeatureModule {
 		 */
 		if (command.equals(Constants.STANDALONEDONE)) {
 			debugInst.debug("Quote Load", "ProcessCommand", MRBDebug.INFO, "Standalone  run done");
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-		
-					mdMain = com.moneydance.apps.md.controller.Main.mainObj;
-					mdGUI = mdMain.getUI();
-					mdMain.saveCurrentAccount();
-					mdGUI.shutdownApp(false);
-				}
-			}); 
+			javax.swing.SwingUtilities.invokeLater(() -> {
+
+                mdMain = com.moneydance.apps.md.controller.Main.mainObj;
+                mdGUI = mdMain.getUI();
+                mdMain.saveCurrentAccount();
+                mdGUI.shutdownApp(false);
+            });
 		}
 		/*
 		 * check for manual run done
@@ -880,56 +818,33 @@ public class Main extends FeatureModule {
 
 		debugInst.debug("Quote Load", "showConsole", MRBDebug.DETAILED, "Starting Quote Load - runtype "+runtype);
 		if (runtype != Constants.MANUALRUN) {
-			String runmsg="";
-			switch (runtype) {
-			case 2:
-				runmsg="Auto Run - Securities Only";
-				break;
-			case 3:
-				runmsg="Auto Run - Currencies Only";
-				break;
-			case 4:
-				runmsg="Auto Run - Securities and Currencies";
-				break;
-			case 5:
-				runmsg="Standalone  Run";
-				break;
-			}
-			debugInst.debug("Quote Load", "showConsole", MRBDebug.INFO, runmsg);
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					try {
-					frame = new AutomaticRun(Main.this, runtype);
-					}
-					catch (Exception e) {
-						JOptionPane.showMessageDialog(null,
-								"The Quote Loader extension has encountered an unexpected error while running an automatic run.  Please see the Console Log for details",
-								"Quote Loader", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-			});
+			String runmsg = switch (runtype) {
+                case 2 -> "Auto Run - Securities Only";
+                case 3 -> "Auto Run - Currencies Only";
+                case 4 -> "Auto Run - Securities and Currencies";
+                case 5 -> "Standalone  Run";
+                default -> "";
+            };
+            debugInst.debug("Quote Load", "showConsole", MRBDebug.INFO, runmsg);
+			javax.swing.SwingUtilities.invokeLater(() -> {
+                try {
+                frame = new AutomaticRun(Main.this, runtype);
+                }
+                catch (Exception e) {
+                    JOptionPane.showMessageDialog(null,
+                            "The Quote Loader extension has encountered an unexpected error while running an automatic run.  Please see the Console Log for details",
+                            "Quote Loader", JOptionPane.ERROR_MESSAGE);
+                }
+            });
 		} else {
 			debugInst.debug("Quote Load", "showConsole", MRBDebug.INFO, "Manual Run");
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					isGUIOpen = true;
-					createAndShowGUI();
-				}
-			});
+			javax.swing.SwingUtilities.invokeLater(() -> {
+                isGUIOpen = true;
+                createAndShowGUI();
+            });
 		}
 //		}
 
-	}
-
-	/**
-	 * Get the extension context
-	 * 
-	 * @return FeatureModuleContext context
-	 */
-	FeatureModuleContext getUnprotectedContext() {
-		return getContext();
 	}
 
 	/**
@@ -940,10 +855,6 @@ public class Main extends FeatureModule {
 		isGUIOpen = false;
 		if (frame != null)
 			frame.checkUnsaved();
-		if (iamhereTimeout != null && iamhereTimeout.isAlive()) {
-			timerInterrupt.set(true);
-			iamhereTimeout.interrupt();
-		}
 		quotesCompleted.set(true);
 		if (overallTimeout != null && overallTimeout.isAlive())
 			overallTimeout.interrupt();
@@ -980,13 +891,8 @@ public class Main extends FeatureModule {
 				if (quotesCompleted.get())
 					debugInst.debug("Quote Load", "QuoteTimer", MRBDebug.INFO, "Quotes Completed");
 				else {
-					javax.swing.SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-									+ Constants.CHECKPROGRESSCMD);
-						}
-					});
+					javax.swing.SwingUtilities.invokeLater(() -> context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                            + Constants.CHECKPROGRESSCMD));
 				}
 			}
 		}

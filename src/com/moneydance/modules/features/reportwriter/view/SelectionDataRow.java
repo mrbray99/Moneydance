@@ -10,8 +10,6 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
 import java.util.SortedMap;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
@@ -37,9 +35,7 @@ public class SelectionDataRow {
 	Boolean currencyRates;
 	Boolean reminders;
 	private SortedMap<String,DataParameter> parameters;
-
-	@JsonIgnore
-	String fileName; 	
+	String fileName;
 	public String getName() {
 		return name;
 	}

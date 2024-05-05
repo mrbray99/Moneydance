@@ -6,17 +6,14 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -24,7 +21,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.stream.Collectors;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -46,9 +42,8 @@ import javax.swing.tree.TreeSelectionModel;
 
 import com.infinitekind.moneydance.model.*;
 import com.infinitekind.tiksync.SyncRecord;
-import com.infinitekind.util.DateUtil;
+import com.infinitekind.util.CustomDateFormat;
 import com.moneydance.awt.GridC;
-import com.moneydance.util.CustomDateFormat;
 
 /**
  * File Detail. Creates a tree with the chosen options split into three groups
@@ -1699,66 +1694,72 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		top.add(datatype);
 		if (this.includeBankAccounts) {
 			List<Account> l = accounts.get(Account.AccountType.BANK);
-			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
-			else
+			else {
 				noaccounts = l.size();
-			dataitem = new DefaultMutableTreeNode(new myNodeObject(BANK_NODE,
+				l.sort((Account a1, Account a2) -> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
+			}
+				dataitem = new DefaultMutableTreeNode(new myNodeObject(BANK_NODE,
 					"Banks(" + noaccounts + ")"));
 			datatype.add(dataitem);
 		}
 		if (this.includeInvestments) {
 			List<Account> l = accounts.get(Account.AccountType.INVESTMENT);
-			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
-			else
+			else {
 				noaccounts = l.size();
+				l.sort((Account a1, Account a2) -> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
+			}
 			dataitem = new DefaultMutableTreeNode(new myNodeObject(
 					INVESTMENT_NODE, "Investments(" + noaccounts + ")"));
 			datatype.add(dataitem);
 		}
 		if (this.includeAssets) {
 			List<Account> l = accounts.get(Account.AccountType.ASSET);
-			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
-			else
+			else {
 				noaccounts = l.size();
-			dataitem = new DefaultMutableTreeNode(new myNodeObject(ASSET_NODE,
+				l.sort((Account a1, Account a2) -> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
+			}
+				dataitem = new DefaultMutableTreeNode(new myNodeObject(ASSET_NODE,
 					"Assets(" + noaccounts + ")"));
 			datatype.add(dataitem);
 		}
 		if (this.includeCreditCards) {
 			List<Account> l = accounts.get(Account.AccountType.CREDIT_CARD);
-			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
-			else
+			else {
 				noaccounts = l.size();
-			dataitem = new DefaultMutableTreeNode(new myNodeObject(
+				l.sort((Account a1, Account a2) -> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
+			}
+				dataitem = new DefaultMutableTreeNode(new myNodeObject(
 					CREDIT_CARD_NODE, "Credit Cards(" + noaccounts + ")"));
 			datatype.add(dataitem);
 		}
 		if (this.includeLiabilities) {
 			List<Account> l = accounts.get(Account.AccountType.LIABILITY);
-			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
-			else
+			else {
 				noaccounts = l.size();
-			dataitem = new DefaultMutableTreeNode(new myNodeObject(
+				l.sort((Account a1, Account a2) -> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
+			}
+				dataitem = new DefaultMutableTreeNode(new myNodeObject(
 					LIABILITY_NODE, "Liabilities(" + noaccounts + ")"));
 			datatype.add(dataitem);
 		}
 		if (this.includeLoans) {
 			List<Account> l = accounts.get(Account.AccountType.LOAN);
-			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
-			else
+			else {
 				noaccounts = l.size();
+				l.sort((Account a1, Account a2) -> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
+			}
 			dataitem = new DefaultMutableTreeNode(new myNodeObject(LOAN_NODE,
 					"Loans(" + noaccounts + ")"));
 			datatype.add(dataitem);
@@ -1768,43 +1769,51 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		top.add(datatype);
 		if (this.includeIncomecat) {
 			List<Account> l = accounts.get(Account.AccountType.INCOME);
-			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
-			else
+			else {
 				noaccounts = l.size();
-			dataitem = new DefaultMutableTreeNode(new myNodeObject(INCOME_NODE,
+				l.sort((Account a1, Account a2) -> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
+			}
+				dataitem = new DefaultMutableTreeNode(new myNodeObject(INCOME_NODE,
 					"Income(" + noaccounts + ")"));
 			datatype.add(dataitem);
 		}
 		if (this.includeExpensecat) {
 			List<Account> l = accounts.get(Account.AccountType.EXPENSE);
-			l.sort((Account a1, Account a2)-> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
 			if (l == null)
 				noaccounts = 0;
-			else
+			else {
 				noaccounts = l.size();
-			dataitem = new DefaultMutableTreeNode(new myNodeObject(
+				l.sort((Account a1, Account a2) -> a1.getAccountName().compareToIgnoreCase(a2.getAccountName()));
+			}
+				dataitem = new DefaultMutableTreeNode(new myNodeObject(
 					EXPENSE_NODE, "Expense(" + noaccounts + ")"));
 			datatype.add(dataitem);
 		}
-		@SuppressWarnings("unused")
-		Account root = Main.context.getRootAccount();
 		datatype = new DefaultMutableTreeNode(new myNodeObject(EXTRAS_NODE,
 				"Extras"));
 		top.add(datatype);
 		if (this.includeAddressBook) {
 			AddressBook lab = objAcctBook.getAddresses();
 			List<AddressBookEntry> listABE = lab.getAllEntries();
-			dataitem = new DefaultMutableTreeNode(new myNodeObject(
-					EXTRAS_ADDRESS_NODE, "Addresses Book(" + listABE.size()
+			if (listABE == null)
+				noaccounts=0;
+			else
+				noaccounts=listABE.size();
+				dataitem = new DefaultMutableTreeNode(new myNodeObject(
+					EXTRAS_ADDRESS_NODE, "Addresses Book(" +noaccounts
 							+ ")"));
 			datatype.add(dataitem);
 		}
 		if (this.includeBudgets) {
 			BudgetList lab = objAcctBook.getBudgets();
+			if (lab==null)
+				noaccounts=0;
+			else
+				noaccounts=lab.getAllBudgets().size();
 			dataitem = new DefaultMutableTreeNode(new myNodeObject(
-					EXTRAS_BUDGET_NODE, "Budgets(" + lab.getAllBudgets().size()
+					EXTRAS_BUDGET_NODE, "Budgets(" + noaccounts
 							+ ")"));
 			datatype.add(dataitem);
 		}

@@ -1,5 +1,5 @@
 <project name="qifloader"  basedir=".">
-	<target name="qifloader">
+	<target name="qifloader" depends="mrbutil">
 	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath"  destdir="${build}"
 	      includes="com/moneydance/modules/features/qifloader/**" />
@@ -10,25 +10,25 @@
            		 com/moneydance/modules/features/qifloader/*.png
 	             com/moneydance/modules/features/qifloader/*.jpg
 	             com/moneydance/modules/features/qifloader/*.jpeg"/>
-	      <fileset dir="${build}" includes="com/moneydance/modules/features/qifloader/**"/>
-		      <zipgroupfileset  dir="${lib}" includes="**/mrbutil.jar" />
+			<fileset dir="${build}">
+				<include name="com/moneydance/modules/features/qifloader/**"/>
+				<include name="com/moneydance/modules/features/mrbutil/**"/>
+			</fileset>
 	    </jar>
 
-	    <java newenvironment="true" 
-	      classpathref="signmxtpath"
-	      classname="SignMxt" fork="yes">
-	      <arg value="signextjar"/>
-	      <arg value="${privkeyfile}"/>
-	      <arg value="${privkeyid}"/>
-	      <arg value="qifloader"/>
-	      <arg line="${dist}/qifloader.mxt"/>
-	    </java>
-		<copy file="./s-qifloader.mxt" tofile="${install}/qifloader.mxt" verbose="true" failonerror="false" />
-		<copy file="${install}/qifloader.mxt" tofile="${dist}/qifloader.mxt" verbose="true" failonerror="false" />
-		<delete file="./s-qifloader.mxt" />
+		<java newenvironment="true"
+			  classpathref="classpath"
+			  classname="com.moneydance.admin.KeyAdmin">
+			<arg value="signextjar"/>
+			<arg value="${privkeyfile}"/>
+			<arg value="${privkeyid}"/>
+			<arg value="qifloader"/>
+			<arg line="${dist}/qifloader.mxt"/>
+		</java>
+		<move file="${src}/s-qifloader.mxt" tofile="${dist}/qifloader.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target>
-	<target name="cleanqifloader">
+	<target name="cleanqifloader" depends="cleanmrbutil">
 		<delete>
 			<fileset dir="${build}">
 			    <include name="com/moneydance/modules/features/qifloader/*.class"/>

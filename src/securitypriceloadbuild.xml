@@ -1,5 +1,5 @@
 <project name="securitypriceload"  basedir=".">
-	<target name="securitypriceload" >
+	<target name="securitypriceload"  depends="mrbutil">
 	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath"  destdir="${build}"
 	      includes="com/moneydance/modules/features/securitypriceload/**"/>
@@ -10,25 +10,25 @@
 	             com/moneydance/modules/features/securitypriceload/*.gif
 	              com/moneydance/modules/features/securitypriceload/*.jpg
 	             com/moneydance/modules/features/securitypriceload/*.jpeg"/>
-	      <fileset dir="${build}" includes="com/moneydance/modules/features/securitypriceload/**"/>
-	      <zipgroupfileset  dir="${lib}" includes="**/mrbutil.jar" />
+			<fileset dir="${build}">
+				<include name="com/moneydance/modules/features/securitypriceload/**"/>
+				<include name="com/moneydance/modules/features/mrbutil/**"/>
+			</fileset>
 	    </jar>
 
-	    <java newenvironment="true" 
-	      classpathref="signmxtpath"
-	      classname="SignMxt" fork="yes">
-	      <arg value="signextjar"/>
-	      <arg value="${privkeyfile}"/>
-	      <arg value="${privkeyid}"/>
-	      <arg value="securitypriceload"/>
-	      <arg line="${dist}/securitypriceload.mxt"/>
-	    </java>
-		<copy file="./s-securitypriceload.mxt" tofile="${install}/securitypriceload.mxt" verbose="true" failonerror="false" />
-		<copy file="${install}/securitypriceload.mxt" tofile="${dist}/securitypriceload.mxt" verbose="true" failonerror="false" />
-		<delete file="./s-securitypriceload.mxt" />
+		<java newenvironment="true"
+			  classpathref="classpath"
+			  classname="com.moneydance.admin.KeyAdmin">
+			<arg value="signextjar"/>
+			<arg value="${privkeyfile}"/>
+			<arg value="${privkeyid}"/>
+			<arg value="securitypriceload"/>
+			<arg line="${dist}/securitypriceload.mxt"/>
+		</java>
+		<move file="${src}/s-securitypriceload.mxt" tofile="${dist}/securitypriceload.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target> 
-	<target name="cleansecuritypriceload">
+	<target name="cleansecuritypriceload" depends="cleanmrbutil">
 		<delete>
 			<fileset dir="${build}">
 			    <include name="com/moneydance/modules/features/securitypriceload/*.class"/>

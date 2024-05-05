@@ -1,5 +1,5 @@
  <project name="filedisplay">
- 	<target name="filedisplay" >
+ 	<target name="filedisplay">
     <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
       classpathref="classpath"  destdir="${build}"
       includes="com/moneydance/modules/features/filedisplay/**"/>
@@ -14,21 +14,19 @@
       <fileset dir="${build}" includes="com/moneydance/modules/features/filedisplay/**"/>
     </jar>
 
-    <java newenvironment="true" 
-      classpathref="signmxtpath"
-      classname="SignMxt" fork="yes">
-      <arg value="signextjar"/>
-      <arg value="${privkeyfile}"/>
-      <arg value="${privkeyid}"/>
-      <arg value="filedisplay"/>
-      <arg line="${dist}/filedisplay.mxt"/>
-    </java>
-		<copy file="./s-filedisplay.mxt" tofile="${install}/filedisplay.mxt" verbose="true" failonerror="false" />
-		<copy file="${install}/filedisplay.mxt" tofile="${dist}/filedisplay.mxt" verbose="true" failonerror="false" />
-        <delete file="./s-filedisplay.mxt" />
+        <java newenvironment="true"
+              classpathref="classpath"
+              classname="com.moneydance.admin.KeyAdmin">
+            <arg value="signextjar"/>
+            <arg value="${privkeyfile}"/>
+            <arg value="${privkeyid}"/>
+            <arg value="filedisplay"/>
+            <arg line="${dist}/filedisplay.mxt"/>
+        </java>
+        <move file="${src}/s-filedisplay.mxt" tofile="${dist}/filedisplay.mxt"/>
 	<echo level="info">the current time is ${TODAY_UK}</echo>
  </target>
-	<target name="cleanfiledisplay">
+	<target name="cleanfiledisplay" >
 		<delete>
 			<fileset dir="${build}">
 			    <include name="com/moneydance/modules/features/filedisplay/*.class"/>

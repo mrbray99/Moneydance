@@ -101,7 +101,13 @@ public class CurTableModel extends DefaultTableModel {
 	}
 
 	public void resetData(SortedMap<String, CurrencyTableLine> mapAccounts) {
-		listCurrencies = new ArrayList<Entry<String, CurrencyTableLine>>(mapAccounts.entrySet());
+		if (listCurrencies == null)
+			listCurrencies = new ArrayList<Entry<String, CurrencyTableLine>>(mapAccounts.entrySet());
+		else{
+			listCurrencies.clear();
+			listCurrencies.addAll(mapAccounts.entrySet());
+		}
+
 		this.currencies = mapAccounts;
 		for (CurrencyTableLine line : currencies.values())
 			line.setSelected(false);

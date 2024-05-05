@@ -39,6 +39,9 @@ import java.net.MalformedURLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -232,32 +235,31 @@ public class GetFTQuote extends GetQuoteTask {
 	private void findDate(Element topDiv, QuotePrice quotePrice) throws IOException {
 		String cssQuery;
 		ScanDate scanD = new ScanDate();
-		Date date;
+		ZonedDateTime date;
 		cssQuery = "div.mod-disclaimer";
+		SimpleDateFormat simpleFormat = new SimpleDateFormat("MMM dd yyyy");
 		Elements dateElement = topDiv.select(cssQuery);
 		if (dateElement == null) {
-			throw new IOException("Cannot find " + cssQuery);
-		}
-		String dateText = dateElement.text();
-		int asof = dateText.indexOf("as of ");
-		SimpleDateFormat simpleFormat = new SimpleDateFormat("MMM dd yyyy");
-		if (asof < 0) {
-			date=new Date();
+			date=ZonedDateTime.now(ZoneOffset.UTC);
 		}
 		else {
-			asof += 6;   // length 'as of '
-			String dateString = dateText.substring(asof);
-/*			String monthStr = dateString.substring(0,3);
-			String dayStr = dateString.substring(4,6);
-			String yearStr = dateString.substring(7,11); */
-			try {
-				date=scanD.parseString(dateString);
-			}
-			catch (IOException e) {
-					throw new IOException("Trade Date parse error "+e.getMessage());
+			String dateText = dateElement.text();
+			int asof = dateText.indexOf("as of ");
+			if (asof < 0) {
+				date = ZonedDateTime.now(ZoneOffset.UTC);
+			} else {
+				asof += 6;   // length 'as of '
+				String dateString = dateText.substring(asof);
+	/*			String monthStr = dateString.substring(0,3);
+				String dayStr = dateString.substring(4,6);
+				String yearStr = dateString.substring(7,11); */
+				try {
+					date = scanD.parseString(dateString);
+				} catch (IOException e) {
+					throw new IOException("Trade Date parse error " + e.getMessage());
+				}
 			}
 		}
-		simpleFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-		quotePrice.setTradeDate(simpleFormat.format(date));
+		quotePrice.setTradeDate(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")));
 	}
 }

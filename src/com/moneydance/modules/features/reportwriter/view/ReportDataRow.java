@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
@@ -26,7 +24,6 @@ public class ReportDataRow {
 	Boolean addDate;
 	String delimiter;
 	Boolean targetExcel;
-	@JsonIgnore
 	String fileName;
 	public String getName() {
 		return name;

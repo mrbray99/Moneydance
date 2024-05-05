@@ -307,7 +307,7 @@ public class  loadPricesWindow extends JFrame{
 				    	  if (ctssLast == null) 
 					    	  mapCurrent.put(Constants.CURRENCYID+ctType.getIDString(),1.0);
 					      else
-					    	  mapCurrent.put(Constants.CURRENCYID+ctType.getIDString(),ctssLast.getRate(baseCurrency));
+					    	  mapCurrent.put(Constants.CURRENCYID+ctType.getIDString(),ctssLast.getRate());
 				    	  mapDates.put(Constants.CURRENCYID+ctType.getIDString(), ctssLast.getDateInt());
 				    	  mapCurrencies.put(Constants.CURRENCYID+ctType.getIDString(), ctType);
 					 }

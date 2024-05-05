@@ -82,11 +82,11 @@ public class FileSelectWindow extends JPanel {
 
     private List<Account> listCategories;
     private Map<String, Account> mapAccts;
-    private SortedMap<String, Account> categories= new TreeMap();
+    private SortedMap<String, Account> categories= new TreeMap<>();
     private String name = "";
     private Account acct;
-    private List<QIFEntry> transactions = new ArrayList();
-    private List<GenerateTransaction> listTrans= new ArrayList();
+    private List<QIFEntry> transactions = new ArrayList<>();
+    private List<GenerateTransaction> listTrans= new ArrayList<>();
     private MRBPreferences2 preferences;
 
     public FileSelectWindow() throws HeadlessException {

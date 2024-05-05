@@ -64,8 +64,8 @@ public class GetYahooQuote extends GetQuoteTask {
     private String yahooCurrURL = "https://query1.finance.yahoo.com/v8/finance/chart/";
     private SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public GetYahooQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp, String tickerTypep, String tidp) {
-        super(tickerp, listenerp, httpClientp, tickerTypep, tidp);
+    public GetYahooQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp, String tickerTypep, String tidp,boolean throttleRequired) {
+        super(tickerp, listenerp, httpClientp, tickerTypep, tidp, throttleRequired);
         String convTicker = ticker.replace("^", "%5E");
         if (tickerType == Constants.STOCKTYPE)
             url = yahooSecURL + convTicker + "?p=" + convTicker + "&.tscr=fin-srch";

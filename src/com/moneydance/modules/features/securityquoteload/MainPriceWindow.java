@@ -30,12 +30,8 @@
  */
 package com.moneydance.modules.features.securityquoteload;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
@@ -46,6 +42,7 @@ import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.time.LocalDateTime;
@@ -60,17 +57,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JTabbedPane;
-import javax.swing.KeyStroke;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.*;
+
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -100,14 +88,13 @@ import com.moneydance.modules.features.securityquoteload.view.SecurityCurrencyTa
 import com.moneydance.modules.features.securityquoteload.view.SecurityTab;
 import com.moneydance.modules.features.securityquoteload.view.SecurityTableLine;
 
-public class MainPriceWindow extends JFrame implements TaskListener, AccountListener, CurrencyListener {
+public class MainPriceWindow extends JFrame implements TaskListener {
 	/**
 	 * 
 	 */
 	protected SortedMap<String, SecurityTableLine> securitiesTable;
 	protected SortedMap<String, CurrencyTableLine> currenciesTable;
 	protected SortedMap<String, PseudoCurrency> pseudoCurrencies;
-	protected SortedMap<String, String> selectedExchanges;
 	protected SortedMap<String, String> alteredTickers;
 	protected SortedMap<String, ExtraFields> volumes;
 	protected SortedMap<QuoteSource, List<SecurityPrice>> sourceList;
@@ -123,8 +110,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 	protected Boolean completed = false;
 	protected Boolean processCurrency = false;
 	protected Boolean processSecurity = false;
-	protected Boolean addVolume = false;
-	protected int runtype = 0;
+	protected int runtype;
 	protected double multiplier;
 	protected boolean isSecDirty = false;
 	protected boolean isCurDirty = false;
@@ -146,7 +132,8 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 	private JButton exportBtn;
 	private JButton selectAll;
 	private JButton helpBtn;
-	private Charset charSet = Charset.forName("UTF-8");
+	private JLabel throttleMessage;
+	private Charset charSet = StandardCharsets.UTF_8;
 	private MoneydanceUI mdGUI;
 	private com.moneydance.apps.md.controller.Main mdMain;
 	/*
@@ -159,7 +146,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 	protected String testTicker = "";
 	protected String testTID = "";
 	protected String command;
-	protected boolean errorsFound = false;;
+	protected boolean errorsFound = false;
 	protected List<String> errorTickers;
 	protected SecurityTab securityScreen = null;
 	protected SecurityCurrencyTab securityCurrencyScreen = null;
@@ -167,6 +154,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 	protected ParameterTab parameterScreen = null;
 	private String selectedTab;
 	private boolean selectAllReturned = true;
+//	private boolean getPricesRunning=false;
 
 	public MainPriceWindow(Main main, int runtype) {
 		this.runtype = runtype;
@@ -179,8 +167,8 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		params = Parameters.getParameters();
 		errorTickers = null;
 		AccountBook book = Main.context.getCurrentAccountBook();
-		book.addAccountListener(this);
-		book.getCurrencies().addCurrencyListener(this);
+	//	book.addAccountListener(this);
+	//	book.getCurrencies().addCurrencyListener(this);
 		/*
 		 * start of screen, set up tabs
 		 */
@@ -198,21 +186,18 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		} else
 			tabs.add(Constants.SECURITYTITLE, securityScreen);
 		tabs.add(Constants.PARAMETERTITLE, parameterScreen);
-		tabs.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				JTabbedPane tabbedPaneT = (JTabbedPane) e.getSource();
-				int selectedIndex = tabbedPaneT.getSelectedIndex();
-				setButtons(selectedIndex);
-				setPreferences();
-				Main.debugInst.debug("MainPriceWindow", "tabChanged", MRBDebug.DETAILED,
-						"New size for  " + selectedTab + " to " + iFRAMEWIDTH + "/" + iFRAMEDEPTH);
-				Dimension newSize = new Dimension(iFRAMEWIDTH, iFRAMEDEPTH);
-				getContentPane().setPreferredSize(newSize);
-				pack();
+		tabs.addChangeListener(e -> {
+            JTabbedPane tabbedPaneT = (JTabbedPane) e.getSource();
+            int selectedIndex = tabbedPaneT.getSelectedIndex();
+            setButtons(selectedIndex);
+            setPreferences();
+            Main.debugInst.debug("MainPriceWindow", "tabChanged", MRBDebug.DETAILED,
+                    "New size for  " + selectedTab + " to " + iFRAMEWIDTH + "/" + iFRAMEDEPTH);
+            Dimension newSize = new Dimension(iFRAMEWIDTH, iFRAMEDEPTH);
+            getContentPane().setPreferredSize(newSize);
+            pack();
 
-			}
-		});
+        });
 		tabs.setSelectedIndex(0);
 		mainScreen = new JPanel();
 		this.add(mainScreen);
@@ -268,8 +253,8 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		/*
 		 * set up screen tables
 		 */
-		int gridX = 0;
-		int gridY = 0;
+		int gridX;
+		int gridY;
 		secPricesModel = new SecTableModel(params, securitiesTable, this);
 		secPricesDisplayTab = new SecTable(params, secPricesModel);
 		curRatesModel = new CurTableModel(params, currenciesTable, this);
@@ -297,6 +282,11 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		buttonsPanel = new JPanel(new GridBagLayout());
 		gridX = 0;
 		gridY = 0;
+		throttleMessage = new JLabel("Yahoo Throttling Active. Call speed reduced");
+		throttleMessage.setForeground(Color.RED);
+		buttonsPanel.add(throttleMessage, GridC.getc(gridX++, gridY).insets(10, 10, 10, 10));
+		unsetThrottleMessage();
+
 		if (selectAllReturned)
 			selectAll = new JButton(Constants.SELECTALL);
 		selectAll.setToolTipText("Selects/deselects all lines on the screen with prices");
@@ -481,7 +471,15 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		getContentPane().setPreferredSize(new Dimension(iFRAMEWIDTH, iFRAMEDEPTH));
 		this.pack();
 	}
+	public void setThrottleMessage(){
+		throttleMessage.setVisible(true);
+		this.revalidate();
+	}
+	public void unsetThrottleMessage(){
+		throttleMessage.setVisible(false);
 
+		this.revalidate();
+	}
 	private void setButtons(int selectedIndex) {
 		switch (selectedIndex) {
 		case 0:
@@ -639,8 +637,6 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 			}
 			tabs.add(Constants.PARAMETERTITLE, parameterScreen);
 			break;
-		case GETCURRENCYRATES:
-			break;
 		case RESETDISPLAY:
 			if (secPricesModel != null) {
 				secPricesModel.resetNumberFormat();
@@ -667,6 +663,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 				curRatesModel.fireTableDataChanged();
 			}
 			break;
+		case GETCURRENCYRATES:
 		default:
 			break;
 
@@ -706,7 +703,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 					 * Get last price entry
 					 */
 					if (tickerCur != null) {
-						if (!tickerCur.getTickerSymbol().equals("")) {
+						if (tickerCur.getTickerSymbol()!=null && !tickerCur.getTickerSymbol().isEmpty()) {
 							List<CurrencySnapshot> listSnap = tickerCur.getSnapshots();
 							String ticker = tickerCur.getTickerSymbol().trim().toUpperCase();
 							int iSnapIndex = listSnap.size() - 1;
@@ -739,7 +736,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 									} else {
 										dacct.setLastPrice(0.0);
 									}
-									dacct.setPriceDate(ctssLast.getDateInt());
+									dacct.setPriceDate(ctssLast!=null?ctssLast.getDateInt():190101);
 									securitiesTable.put(ticker, dacct);
 								}
 							}
@@ -762,7 +759,8 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		while (currTypeIterator.hasNext()) {
 			CurrencyType currencyType = currTypeIterator.next();
 			if (currencyType.getCurrencyType() == CurrencyType.Type.SECURITY && params.getZero()) {
-				if (!currencyType.getTickerSymbol().equals("") && !currencyType.getHideInUI()) {
+				if (currencyType.getTickerSymbol()!=null &&
+						!currencyType.getTickerSymbol().isEmpty() && !currencyType.getHideInUI()) {
 					listSnap = currencyType.getSnapshots();
 					String ticker = currencyType.getTickerSymbol().trim().toUpperCase();
 					snapIndex = listSnap.size() - 1;
@@ -798,7 +796,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 							} else {
 								securityLine.setLastPrice(0.0);
 							}
-							securityLine.setPriceDate(ctssLast.getDateInt());
+							securityLine.setPriceDate(ctssLast != null ? ctssLast.getDateInt() : 190101);
 							securitiesTable.put(ticker, securityLine);
 						}
 					}
@@ -828,7 +826,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 							dummyCur.setLastPrice(ctssLast.getRate());
 						if (dummyCur.getLastPrice().isInfinite())
 							dummyCur.setLastPrice(1.0);
-						dummyCur.setPriceDate(ctssLast.getDateInt());
+						dummyCur.setPriceDate(ctssLast != null ? ctssLast.getDateInt() : 190101);
 						currenciesTable.put(Constants.CURRENCYID + currencyType.getIDString(), dummyCur);
 					}
 				}
@@ -984,7 +982,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		filename += "priceexport" + dtf.format(LocalDateTime.now()) + ".csv";
 		try {
 			exportFile = new FileOutputStream(filename);
-			exportWriter = new OutputStreamWriter(exportFile, "UTF-8");
+			exportWriter = new OutputStreamWriter(exportFile, StandardCharsets.UTF_8);
 			exportBuffer = new BufferedWriter(exportWriter);
 			exportWriter.write(Constants.EXPORTHEADER);
 			Main.debugInst.debug("MainPriceWindow", "setupExportFile", MRBDebug.DETAILED,
@@ -1095,6 +1093,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 
 	protected void getPrices() {
 		completed = false;
+		Main.isUpdating = true;
 		if (processSecurity) {
 			for (SecurityTableLine line : securitiesTable.values())
 				line.setTickerStatus(0);
@@ -1126,7 +1125,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 			if (processCurrency)
 				getRatesBtn.setEnabled(false);
 		}
-		sourceList = new TreeMap<QuoteSource, List<SecurityPrice>>();
+		sourceList = new TreeMap<>();
 		for (Integer srce : Constants.SOURCELIST) {
 			QuoteSource.findSource(srce).setUuid(UUID.randomUUID().toString());
 			sourceList.put(QuoteSource.findSource(srce), new ArrayList<>());
@@ -1139,7 +1138,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 					continue;
 				QuoteSource qs = QuoteSource.findSource(secLine.getSource());
 				SecurityPrice spLine = new SecurityPrice(secLine.getTicker());
-				if (secLine.getExchange() != "")
+				if (secLine.getExchange()!=null && !secLine.getExchange().isEmpty())
 					spLine.setExchange(secLine.getExchange());
 				else
 					spLine.setExchange(null);
@@ -1176,11 +1175,11 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 
 			else {
 				if (Main.standAloneRequested && processCurrency) {
-					javax.swing.SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+					SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
                             + Constants.RUNSECONDRUNCMD));
 				}
 				else {
-					javax.swing.SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+					SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
                             + Constants.AUTODONECMD));
 				}
 			}
@@ -1199,8 +1198,8 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 			if (sourceList.get(srce) == null || sourceList.get(srce).isEmpty())
 				continue;
 
-			String url = null;
-			String type = "";
+			StringBuilder url = new StringBuilder();
+			String type;
 			String ticker = "";
 			for (SecurityPrice price : sourceList.get(srce)) {
 				if (price.isCurrency()) {
@@ -1254,16 +1253,16 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 						ticker = newTicker;
 					}
 				}
-				if (url == null)
-					url = newPriceUrl(Constants.SOURCES[srce.getSource() - 1], srce.getUuid(), ticker, type,
-							lastPriceDate);
+				if (url.isEmpty())
+					url.append(newPriceUrl(Constants.SOURCES[srce.getSource() - 1], srce.getUuid(), ticker, type,
+							lastPriceDate));
 				else
-					url = url + addPriceUrl(ticker, type, lastPriceDate);
+					url.append(addPriceUrl(ticker, type, lastPriceDate));
 				if (listener != null)
 					listener.started(price.getTicker(), srce.getUuid());
 			}
 			Main.debugInst.debug("MainPriceWindow", "getPrices", MRBDebug.INFO, "URI " + url);
-			Main.context.showURL(url);
+			Main.context.showURL(url.toString());
 		}
 
 	}
@@ -1272,8 +1271,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		String queries = addPriceUrl(stock, type, lastPriceDate);
 		String command = Constants.GETQUOTECMD + "?" + Constants.SOURCETYPE + "=" + source;
 		command += "&" + Constants.TIDCMD + "=" + tid;
-		String url = "moneydance:fmodule:" + Main.extension.serverName + ":" + command + queries;
-		return url;
+		return "moneydance:fmodule:" + Main.extension.serverName + ":" + command + queries;
 	}
 
 	protected String addPriceUrl(String stock, String type, Integer lastPriceDate) {
@@ -1283,13 +1281,13 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 			parameters.add(new BasicNameValuePair(Constants.LASTPRICEDATETYPE, lastPriceDate.toString()));
 		}
 		String charset = "UTF8";
-		String queries = URLEncodedUtils.format(parameters, charset);
-		return "&" + queries;
+		return "&" +  URLEncodedUtils.format(parameters, charset);
 	}
 
 	public void testTicker(String url) {
 		Main.debugInst.debug("MainPriceWindow", "testTicker", MRBDebug.INFO, "URI " + url);
-		URI uri = null;
+		Main.isUpdating = true;
+		URI uri;
 		String convUrl = url.replace("^", "%5E");
 		convUrl = convUrl.replace(" ", "%20");
 		try {
@@ -1322,7 +1320,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 	public synchronized void updatePrices(String url) {
 		String uuid = "";
 		Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.INFO, "URI " + url);
-		URI uri = null;
+		URI uri;
 		String convUrl = url.replace("^", "%5E");
 		convUrl = convUrl.replace(" ", "%20");
 		try {
@@ -1515,11 +1513,11 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 						"moneydance:setprogress?meter=0&label=Quote Loader price " + ticker + " updated");
 		}
 		Double dRate = 1.0;
-		CurrencyType securityCur = null;
+		CurrencyType securityCur;
 		String tradeCur = newPrice.getCurrency();
-		Double stockPrice = 0.0;
-		Double lowPrice = 0.0;
-		Double highPrice = 0.0;
+		Double stockPrice;
+		Double lowPrice;
+		Double highPrice;
 		/*
 		 * check to see if trade currency is in the pseudocurrency file
 		 */
@@ -1587,7 +1585,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		/*
 		 * Assume the price will be displayed in the currency of the security
 		 */
-		multiplier = Math.pow(10.0, Double.valueOf(params.getDecimal()));
+		multiplier = Math.pow(10.0, (double) params.getDecimal());
 		if (!newPrice.isCurrency()) {
 			Main.debugInst.debug("MainPriceWindow", "updatePrice", MRBDebug.DETAILED,
 					"before rounding" + stockPrice);
@@ -1648,7 +1646,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 
 	public synchronized void updateHistory(String url) {
 		String uuid = "";
-		URI uri = null;
+		URI uri;
 		String convUrl = url.replace("^", "%5E");
 		try {
 
@@ -1766,9 +1764,9 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		Double dRate = 1.0;
 		CurrencyType securityCur = null;
 		String tradeCur = newPrice.getCurrency();
-		Double stockPrice = 0.0;
-		Double lowPrice = 0.0;
-		Double highPrice = 0.0;
+		Double stockPrice;
+		Double lowPrice;
+		Double highPrice;
 		SecurityTableLine secLine = null;
 		CurrencyTableLine curLine = null;
 		if (newPrice.isCurrency())
@@ -1829,7 +1827,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 						"quote to security rate " + dRate);
 			}
 		}
-		multiplier = Math.pow(10.0, Double.valueOf(params.getDecimal()));
+		multiplier = Math.pow(10.0, params.getDecimal());
 		if (!newPrice.isCurrency()) {
 			Main.debugInst.debug("MainPriceWindow", "updateHistory", MRBDebug.DETAILED,
 					"before rounding" + stockPrice);
@@ -1843,17 +1841,17 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 			stockPrice = stockPrice * dRate;
 			if (newPrice.isCrypto())
 				stockPrice = 1 / Util.safeRate(stockPrice);
-			List<HistoryPrice> historyList = null;
+			List<HistoryPrice> historyList;
 			if (newPrice.isCurrency()) {
 				historyList = curLine.getHistory();
 				if (historyList == null) {
-					historyList = new ArrayList<HistoryPrice>();
+					historyList = new ArrayList<>();
 					curLine.setHistory(historyList);
 				}
 			} else {
 				historyList = secLine.getHistory();
 				if (historyList == null) {
-					historyList = new ArrayList<HistoryPrice>();
+					historyList = new ArrayList<>();
 					secLine.setHistory(historyList);
 				}
 			}
@@ -1870,7 +1868,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 	public synchronized void failedQuote(String url) {
 		String uuid = "";
 		Main.debugInst.debug("MainPriceWindow", "failedQuote", MRBDebug.INFO, "URI " + url);
-		URI uri = null;
+		URI uri;
 		String convUrl = url.replace("^", "%5E");
 		try {
 			uri = new URI(convUrl.trim());
@@ -1881,7 +1879,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		}
 		List<NameValuePair> results = URLEncodedUtils.parse(uri, charSet);
 		String ticker = "";
-		Boolean currencyFound = false;
+		boolean currencyFound = false;
 		QuoteSource srce=null;
 		for (NameValuePair price : results) {
 			if (price.getName().compareToIgnoreCase(Constants.TIDCMD) == 0) {
@@ -1983,6 +1981,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		int totalQuotes = 0;
 		int successful = 0;
 		int failed = 0;
+		Main.isUpdating=false;
 		/*
 		 * if completed set, ignore message
 		 */
@@ -1991,7 +1990,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 			return;
 		}
 		String uuid = "";
-		URI uri = null;
+		URI uri;
 		try {
 			uri = new URI(url.trim());
 		} catch (URISyntaxException e) {
@@ -2100,13 +2099,8 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 				if (processCurrency)
 					curRatesModel.fireTableDataChanged();
 				this.revalidate();
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-								+ Constants.MANUALDONECMD);
-					}
-				});
+				SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                        + Constants.MANUALDONECMD));
 
 			}
 			if (runtype != Constants.MANUALRUN && runtype != 0) {
@@ -2123,13 +2117,8 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 					main.errorTickers = errorTickers;
 					Main.debugInst.debug("AutomaticRun", "AutomaticRun", MRBDebug.DETAILED, "save data");
 					save();
-					javax.swing.SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-									+ Constants.RUNSECONDRUNCMD);
-						}
-					});
+					SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                            + Constants.RUNSECONDRUNCMD));
 				}
 				else {
 					if (processCurrency)
@@ -2138,13 +2127,8 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 						secPricesModel.selectAll(true);
 					main.errorTickers = errorTickers;
 					save();
-					javax.swing.SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-									+ Constants.AUTODONECMD);
-						}
-					});
+					SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                            + Constants.AUTODONECMD));
 
 				}
 			}
@@ -2217,14 +2201,14 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 			window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
 		}
 	}
-
+/*
 	@Override
 	public void currencyTableModified(CurrencyTable paramCurrencyTable) {
 		Main.debugInst.debug("MainPriceWindow", "currencyTableModified", MRBDebug.DETAILED, "");
 		/*
 		 * do not update if in middle of update
 		 */
-		if (Main.isUpdating)
+/*		if (Main.isUpdating)
 			return;
 		securitiesTable.clear();
 		currenciesTable.clear();
@@ -2249,7 +2233,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		/*
 		 * do not update if in middle of update
 		 */
-		if (Main.isUpdating)
+/*		if (Main.isUpdating)
 			return;
 		securitiesTable.clear();
 		currenciesTable.clear();
@@ -2266,6 +2250,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 			curRatesModel.fireTableDataChanged();
 		}
 
+
 	}
 
 	@Override
@@ -2275,7 +2260,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		/*
 		 * do not update if in middle of update
 		 */
-		if (Main.isUpdating)
+/*		if (Main.isUpdating)
 			return;
 		securitiesTable.clear();
 		currenciesTable.clear();
@@ -2300,7 +2285,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		/*
 		 * do not update if in middle of update
 		 */
-		if (Main.isUpdating)
+/*		if (Main.isUpdating)
 			return;
 		securitiesTable.clear();
 		currenciesTable.clear();
@@ -2325,7 +2310,7 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 		/*
 		 * do not update if in middle of update
 		 */
-		if (Main.isUpdating)
+/*		if (Main.isUpdating)
 			return;
 		securitiesTable.clear();
 		currenciesTable.clear();
@@ -2341,5 +2326,5 @@ public class MainPriceWindow extends JFrame implements TaskListener, AccountList
 			curRatesModel.resetData(currenciesTable);
 			curRatesModel.fireTableDataChanged();
 		}
-	}
+	}*/
 }

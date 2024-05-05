@@ -43,22 +43,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.prefs.Preferences;
 
-import javax.swing.ImageIcon;
-import javax.swing.InputVerifier;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JColorChooser;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.LookAndFeel;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 /*
@@ -85,39 +70,38 @@ public class BudgetValuesWindow extends JFrame {
 	/*
 	 * Identifies the budget being worked on
 	 */
-	public static ReportParameters objReportParms;
-	public static BudgetListExtend objBudgetList;
-	public static BudgetExtend objBudget;
-	public static BudgetParameters objParams;
+	public static ReportParameters reportParms;
+	public static BudgetListExtend budgetList;
+	public static BudgetExtend budget;
+	public static BudgetParameters params;
 	public boolean bError = false;
-	private MRBReportViewer objViewer=null;
-	private BudgetReport objBudgetReport = null;
-	private MRBReport objReport=null; 
+	private MRBReportViewer reportViewer =null;
+	private BudgetReport budgetReport = null;
+	private MRBReport report=null; 
 	private JList<String> listIncomeMissing;
 	private JList<String> listExpenseMissing;
 	private JList<String> listIncomeSelect;
 	private JList<String> listExpenseSelect;
-	private MyListModel mylmIncomeMissing;
-	private MyListModel mylmIncomeSelect;
-	private MyListModel mylmExpenseMissing;
-	private MyListModel mylmExpenseSelect;
+	private MyListModel incomeMissing;
+	private MyListModel incomeSelect;
+	private MyListModel expenseMissing;
+	private MyListModel expenseSelect;
 	public String strBudget;
 	public String strFileName;
 	/*
 	 * Screen fields
 	 */
-	private JButton btnGenerate;
-	private JButton btnClose;
-	private JButton btnSave;
-	private JButton btnChoose;
+	private JButton generateBtn;
+	private JButton closeBtn;
+	private JButton saveBtn;
+	private JButton chooseBtn;
 	private JComboBox<String> boxBudget;
 	private JCheckBox chkRoll;
 	private JTextField txtFileName;
 	private MoneydanceUI mdGUI;
 	private com.moneydance.apps.md.controller.Main mdMain;
 	private JButton helpBtn;
-	@SuppressWarnings("unused")
-	private LookAndFeel previousLF;
+
 	private JFileChooser fileChooser;
 	private File fParameters;
 	/*
@@ -134,9 +118,9 @@ public class BudgetValuesWindow extends JFrame {
 	/*
 	 * Preferences and window sizes
 	 */
-	private Preferences objPref;
-	private Preferences objRoot;
-	private MRBPreferences2 objPreferences;
+	private Preferences pref;
+	private Preferences root;
+	private MRBPreferences2 preferences;
 	public int iFRAMEWIDTH = Constants.FRAMEWIDTH;
 	public int iFRAMEDEPTH = Constants.FRAMEDEPTH;
 	private int iTOPWIDTH;
@@ -175,7 +159,7 @@ public class BudgetValuesWindow extends JFrame {
 		fileChooser = new JFileChooser();
 		context = extension.getUnprotectedContext();
 		MRBPreferences2.loadPreferences(context);
-		objPreferences = MRBPreferences2.getInstance();
+		preferences = MRBPreferences2.getInstance();
 		/*
 		 * set up dates for periods (Fiscal Start date is set when BudgetExtend
 		 * is created)
@@ -208,45 +192,45 @@ public class BudgetValuesWindow extends JFrame {
 		 * 
 		 * First get last budget/file used
 		 */
-		objReportParms = new ReportParameters(context);
-		strBudget = objReportParms.getBudget();
-		strFileName = objReportParms.getFile();
+		reportParms = new ReportParameters(context);
+		strBudget = reportParms.getBudget();
+		strFileName = reportParms.getFile();
 		if (strFileName.isEmpty())
 			strFileName = Constants.DEFAULTFILE;
-		objParams = new BudgetParameters(context, strFileName, jdtFiscalStart,
+		params = new BudgetParameters(context, strFileName, jdtFiscalStart,
 				jdtFiscalEnd);
-		objBudgetList = new BudgetListExtend(context);
-		objBudget = objBudgetList.getBudget(strBudget);
-		if (objBudget == null){
+		budgetList = new BudgetListExtend(context);
+		budget = budgetList.getBudget(strBudget);
+		if (budget == null){
 			JFrame fTemp = new JFrame();
 			JOptionPane.showMessageDialog(fTemp,
 					"No Budgets have been declared for this File");
 			bError = true;
 			return;
 		}
-		objReportParms.setBudget(objBudget.getName());
-		ccHeadersBG = objParams.getColourHeaders();
-		ccBudgetBG = objParams.getColourBudget();
-		ccActualBG = objParams.getColourActual();
-		ccPositiveBG = objParams.getColourPositive();
-		ccNegativeBG = objParams.getColourNegative();
-		ccPositiveFG = objParams.getColourFGPositive();
-		ccNegativeFG = objParams.getColourFGNegative();
+		reportParms.setBudget(budget.getName());
+		ccHeadersBG = params.getColourHeaders();
+		ccBudgetBG = params.getColourBudget();
+		ccActualBG = params.getColourActual();
+		ccPositiveBG = params.getColourPositive();
+		ccNegativeBG = params.getColourNegative();
+		ccPositiveFG = params.getColourFGPositive();
+		ccNegativeFG = params.getColourFGNegative();
 		/*
 		 * set up lists for scroll panes
 		 */
-		mylmIncomeMissing = new MyListModel(objParams, Constants.INCOME_SCREEN,
+		incomeMissing = new MyListModel(params, Constants.INCOME_SCREEN,
 				Constants.MISSING);
-		mylmExpenseMissing = new MyListModel(objParams,
+		expenseMissing = new MyListModel(params,
 				Constants.EXPENSE_SCREEN, Constants.MISSING);
-		mylmIncomeSelect = new MyListModel(objParams, Constants.INCOME_SCREEN,
+		incomeSelect = new MyListModel(params, Constants.INCOME_SCREEN,
 				Constants.SELECTED);
-		mylmExpenseSelect = new MyListModel(objParams,
+		expenseSelect = new MyListModel(params,
 				Constants.EXPENSE_SCREEN, Constants.SELECTED);
-		listIncomeMissing = new JList<>(mylmIncomeMissing);
-		listExpenseMissing = new JList<>(mylmExpenseMissing);
-		listIncomeSelect = new JList<>(mylmIncomeSelect);
-		listExpenseSelect = new JList<>(mylmExpenseSelect);
+		listIncomeMissing = new JList<>(incomeMissing);
+		listExpenseMissing = new JList<>(expenseMissing);
+		listIncomeSelect = new JList<>(incomeSelect);
+		listExpenseSelect = new JList<>(expenseSelect);
 		/*
 		 * start of screen
 		 */
@@ -294,18 +278,22 @@ public class BudgetValuesWindow extends JFrame {
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
 		// Select Budget
-		objBudgetList = new BudgetListExtend(context);
-		String[] strNames = objBudgetList.getBudgetNames();
+		budgetList = new BudgetListExtend(context);
+		String[] strNames = budgetList.getBudgetNames();
 		boxBudget = new JComboBox<>(strNames);
 		boxBudget.setToolTipText("Select the Moneydance Budget you wish to report against");
 		boxBudget.addActionListener(e -> {
-            JComboBox<String> cbBudgetT = ((JComboBox<String>) e
-                    .getSource());
-            objBudget.refreshData(objBudgetList
-                    .refreshData((String) (cbBudgetT.getSelectedItem())));
-            objReportParms.setBudget(objBudget.getName());
-            objReportParms.saveParams();
-        });
+			JComboBox<?> budgettmp=null;
+			if (e.getSource() instanceof JComboBox)
+            	budgettmp = (JComboBox<?>)(e.getSource());
+			if(budgettmp != null) {
+				if (budgettmp.getSelectedItem() != null)
+					budget.refreshData(budgetList
+							.refreshData((String) (budgettmp.getSelectedItem())));
+				reportParms.setBudget(budget.getName());
+				reportParms.saveParams();
+			}
+			});
 		panTop.add(boxBudget,  GridC.getc(1,0).fillx().west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 		/*
@@ -322,28 +310,28 @@ public class BudgetValuesWindow extends JFrame {
 		panTop.add(txtFileName, GridC.getc(1,1).fillx().west().colspan(3).insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
-		btnChoose = new JButton();
-		Image img = getIcon("Search-Folder-icon.jpg");
+		chooseBtn = new JButton();
+		Image img = getIcon();
 		if (img == null) {
-			btnChoose.setText("Find");
-			btnChoose.setBorder(javax.swing.BorderFactory.createLineBorder(panTop
+			chooseBtn.setText("Find");
+			chooseBtn.setBorder(BorderFactory.createLineBorder(panTop
 					.getBackground()));
 		}
 		else {
-			btnChoose.setIcon(new ImageIcon(img));
-			btnChoose.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+			chooseBtn.setIcon(new ImageIcon(img));
+			chooseBtn.setBorder(BorderFactory.createEmptyBorder());
 		}
-		btnChoose.setToolTipText("Click to browse for file");
-		panTop.add(btnChoose, GridC.getc(4,1).insets(Constants.TOPINSET, Constants.LEFTINSET,
+		chooseBtn.setToolTipText("Click to browse for file");
+		panTop.add(chooseBtn, GridC.getc(4,1).insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
-		btnChoose.addActionListener(e -> chooseFile());
+		chooseBtn.addActionListener(e -> chooseFile());
 		/*
 		 * Start Date
 		 */
 		JLabel lblDatesStart = new JLabel("Dates - Start :");
 		panTop.add(lblDatesStart, GridC.getc(0,2).east().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
-		jdtStartDate.setDateInt(objParams.getStartDate());
+		jdtStartDate.setDateInt(params.getStartDate());
 		jdtStartDate.setDisabledTextColor(Color.BLACK);
 		jdtStartDate.setToolTipText("Enter the start date for the report");
 		panTop.add(jdtStartDate, GridC.getc(1,2).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
@@ -362,7 +350,7 @@ public class BudgetValuesWindow extends JFrame {
 							"End Date must be after Start Date");
 					return false;
 				}
-				objParams.setStartDate(jdtStart.getDateInt());
+				params.setStartDate(jdtStart.getDateInt());
 				return true;
 			}
 		});
@@ -373,7 +361,7 @@ public class BudgetValuesWindow extends JFrame {
 		panTop.add(lblEnd,GridC.getc(2,2).east().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
-		jdtEndDate.setDateInt(objParams.getEndDate());
+		jdtEndDate.setDateInt(params.getEndDate());
 		jdtEndDate.setDisabledTextColor(Color.BLACK);
 		jdtEndDate.setToolTipText("Enter the end date for the report");
 		panTop.add(jdtEndDate, GridC.getc(3,2).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
@@ -392,7 +380,7 @@ public class BudgetValuesWindow extends JFrame {
 							"End Date must be after start date");
 					return false;
 				}
-				objParams.setEndDate(jdtEnd.getDateInt());
+				params.setEndDate(jdtEnd.getDateInt());
 				return true;
 			}
 		});
@@ -404,7 +392,7 @@ public class BudgetValuesWindow extends JFrame {
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
 		chkRoll = new JCheckBox();
-		chkRoll.setSelected(objParams.getRollup());
+		chkRoll.setSelected(params.getRollup());
 		chkRoll.setToolTipText("Click if you want actuals rolled up into parent categories");
 		panTop.add(chkRoll, GridC.getc(5,2).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
@@ -424,19 +412,7 @@ public class BudgetValuesWindow extends JFrame {
 		JLabel lblHeaders = new JLabel("Headers");
 		panTop.add(lblHeaders, GridC.getc(1,4).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
-		JButton btnHeaderColour = new JButton("           ");
-		btnHeaderColour.setBackground(ccHeadersBG);
-		btnHeaderColour.setContentAreaFilled(false);
-		btnHeaderColour.setOpaque(true);
-		btnHeaderColour.setBorder(brdButtons);
-		btnHeaderColour.setToolTipText("Click to select background colour for the header lines");
-		btnHeaderColour.addActionListener(e -> {
-            JButton btnTemp = (JButton) e.getSource();
-            ccHeadersBG = JColorChooser.showDialog(panTop,
-                    "Choose Header Colour", ccHeadersBG);
-            btnTemp.setBackground(ccHeadersBG);
-            objParams.setColourHeaders(ccHeadersBG);
-        });
+		JButton btnHeaderColour = getjButton(brdButtons);
 		panTop.add(btnHeaderColour, GridC.getc(2,4).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
@@ -454,7 +430,7 @@ public class BudgetValuesWindow extends JFrame {
             ccBudgetBG = JColorChooser.showDialog(panTop,
                     "Choose Budget Line Colour", ccBudgetBG);
             btnTemp.setBackground(ccBudgetBG);
-            objParams.setColourBudget(ccBudgetBG);
+            params.setColourBudget(ccBudgetBG);
         });
 		panTop.add(btnBudgetColour, GridC.getc(2,5).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
@@ -473,7 +449,7 @@ public class BudgetValuesWindow extends JFrame {
             ccActualBG = JColorChooser.showDialog(panTop,
                     "Choose Actual Line Colour", ccActualBG);
             btnTemp.setBackground(ccActualBG);
-            objParams.setColourActual(ccActualBG);
+            params.setColourActual(ccActualBG);
         });
 		panTop.add(btnActualColour, GridC.getc(2,6).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
@@ -492,7 +468,7 @@ public class BudgetValuesWindow extends JFrame {
             ccPositiveBG = JColorChooser.showDialog(panTop,
                     "Choose Colour for Positive Differences", ccPositiveBG);
             btnTemp.setBackground(ccPositiveBG);
-            objParams.setColourPositive(ccPositiveBG);
+            params.setColourPositive(ccPositiveBG);
         });
 		panTop.add(btnPositiveColour, GridC.getc(2,7).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
@@ -511,7 +487,7 @@ public class BudgetValuesWindow extends JFrame {
             ccNegativeBG = JColorChooser.showDialog(panTop,
                     "Choose Colour for Negative Differences", ccNegativeBG);
             btnTemp.setBackground(ccNegativeBG);
-            objParams.setColourNegative(ccNegativeBG);
+            params.setColourNegative(ccNegativeBG);
         });
 		panTop.add(btnNegativeColour, GridC.getc(2,8).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
@@ -526,7 +502,7 @@ public class BudgetValuesWindow extends JFrame {
             ccPositiveFG = JColorChooser.showDialog(panTop,
                     "Choose Colour for Positive Differences", ccPositiveFG);
             btnTemp.setBackground(ccPositiveFG);
-            objParams.setColourFGPositive(ccPositiveFG);
+            params.setColourFGPositive(ccPositiveFG);
         });
 		panTop.add(btnPositiveColourFG, GridC.getc(3,7).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
@@ -542,35 +518,35 @@ public class BudgetValuesWindow extends JFrame {
             ccNegativeFG = JColorChooser.showDialog(panTop,
                     "Choose Colour for Negative Differences", ccNegativeFG);
             btnTemp.setBackground(ccNegativeFG);
-            objParams.setColourFGNegative(ccNegativeFG);
+            params.setColourFGNegative(ccNegativeFG);
         });
 		panTop.add(btnNegativeColourFG, GridC.getc(3,8).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 		/*
 		 * Button 1 - Save
 		 */
-		btnSave = new JButton("Save Parameters");
-		btnSave.setToolTipText("Click to save parameters.  You will be asked for a file name");
-		btnSave.addActionListener(e -> save());
-		panTop.add(btnSave, GridC.getc(0,9).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
+		saveBtn = new JButton("Save Parameters");
+		saveBtn.setToolTipText("Click to save parameters.  You will be asked for a file name");
+		saveBtn.addActionListener(e -> save());
+		panTop.add(saveBtn, GridC.getc(0,9).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
 		/*
 		 * Button 2 - Generate values
 		 */
-		btnGenerate = new JButton("Generate");
-		btnGenerate.setToolTipText("Click to generate the report");
-		btnGenerate.addActionListener(e -> generate());
-		panTop.add(btnGenerate, GridC.getc(1,9).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
+		generateBtn = new JButton("Generate");
+		generateBtn.setToolTipText("Click to generate the report");
+		generateBtn.addActionListener(e -> generate());
+		panTop.add(generateBtn, GridC.getc(1,9).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 
 		/*
 		 * Button 3 - Close
 		 */
-		btnClose = new JButton("Close");
-		btnClose.setToolTipText("<html>Click to close the extension.  <br>If there are unsaved changes to the parameters, <br>you will be asked if you wish to continue</html>");
-		btnClose.addActionListener(e -> close());
-		panTop.add(btnClose, GridC.getc(2,9).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
+		closeBtn = new JButton("Close");
+		closeBtn.setToolTipText("<html>Click to close the extension.  <br>If there are unsaved changes to the parameters, <br>you will be asked if you wish to continue</html>");
+		closeBtn.addActionListener(e -> close());
+		panTop.add(closeBtn, GridC.getc(2,9).west().insets(Constants.TOPINSET, Constants.LEFTINSET,
 				Constants.BOTTOMINSET, Constants.RIGHTINSET));
 		/*
 		 * Button 4 - Help
@@ -654,10 +630,27 @@ public class BudgetValuesWindow extends JFrame {
 		/*
 		 * Set dirty back to false so real changes are caught
 		 */
-		objParams.resetDirty();
+		params.resetDirty();
 		getContentPane().setPreferredSize(
 				new Dimension(iFRAMEWIDTH, iFRAMEDEPTH));
 		this.pack();
+	}
+
+	private JButton getjButton(Border brdButtons) {
+		JButton btnHeaderColour = new JButton("           ");
+		btnHeaderColour.setBackground(ccHeadersBG);
+		btnHeaderColour.setContentAreaFilled(false);
+		btnHeaderColour.setOpaque(true);
+		btnHeaderColour.setBorder(brdButtons);
+		btnHeaderColour.setToolTipText("Click to select background colour for the header lines");
+		btnHeaderColour.addActionListener(e -> {
+            JButton btnTemp = (JButton) e.getSource();
+            ccHeadersBG = JColorChooser.showDialog(panTop,
+                    "Choose Header Colour", ccHeadersBG);
+            btnTemp.setBackground(ccHeadersBG);
+            params.setColourHeaders(ccHeadersBG);
+        });
+		return btnHeaderColour;
 	}
 
 	/*
@@ -675,28 +668,28 @@ public class BudgetValuesWindow extends JFrame {
 					fParameters.getName().lastIndexOf('.')));
 		}
 		if (!txtFileName.getText().equals(strFileName)) {
-			objParams.refreshData(context, txtFileName.getText(),
+			params.refreshData(context, txtFileName.getText(),
 					jdtFiscalStart, jdtFiscalEnd);
-			jdtStartDate.setDateInt(objParams.getStartDate());
-			jdtEndDate.setDateInt(objParams.getEndDate());
-			chkRoll.setSelected(objParams.getRollup());
-			mylmIncomeMissing.update();
-			mylmIncomeSelect.update();
-			mylmExpenseMissing.update();
-			mylmExpenseSelect.update();
+			jdtStartDate.setDateInt(params.getStartDate());
+			jdtEndDate.setDateInt(params.getEndDate());
+			chkRoll.setSelected(params.getRollup());
+			incomeMissing.update();
+			incomeSelect.update();
+			expenseMissing.update();
+			expenseSelect.update();
 			panScreen.revalidate();
 			strFileName = txtFileName.getText();
-			objReportParms.setFile(strFileName);
-			objReportParms.saveParams();
+			reportParms.setFile(strFileName);
+			reportParms.saveParams();
 		}
 	}
 
-	private Image getIcon(String icon) {
+	private Image getIcon() {
 		try {
 			ClassLoader cl = getClass().getClassLoader();
 			java.io.InputStream in = cl
 					.getResourceAsStream("/com/moneydance/modules/features/budgetreport/"
-							+ icon);
+							+ "Search-Folder-icon.jpg");
 			if (in != null) {
 				ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
 				byte[] buf = new byte[256];
@@ -720,13 +713,13 @@ public class BudgetValuesWindow extends JFrame {
 	 * Generate Report
 	 */
 	private void generate() {
-		objBudgetReport = new BudgetReport(objParams, objBudget.getName());
-		objReport = objBudgetReport.getReport();
+		budgetReport = new BudgetReport(params, budget.getName());
+		report = budgetReport.getReport();
 		JFrame frame = new JFrame("Budget Report");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		objViewer = new MRBReportViewer(objReport);
-		objViewer.setReport(objReport);
-		frame.getContentPane().add(objViewer);
+		reportViewer = new MRBReportViewer(report);
+		reportViewer.setReport(report);
+		frame.getContentPane().add(reportViewer);
 		frame.setTitle("Report - Build "+Main.strBuild);
 		if (Main.imgIcon != null)
 			frame.setIconImage(Main.imgIcon);
@@ -740,7 +733,7 @@ public class BudgetValuesWindow extends JFrame {
 	 * save the data
 	 */
 	public void close() {
-		if (objParams.isDirty()) {
+		if (params.isDirty()) {
 			JFrame fTemp = new JFrame();
 			int iResult = JOptionPane
 					.showConfirmDialog(fTemp,
@@ -749,14 +742,14 @@ public class BudgetValuesWindow extends JFrame {
 				String strFileName = txtFileName.getText();
 				if (!strFileName.equals(Constants.CANCELLED)) {
 					strFileName = askForFileName(strFileName);
-					objParams.saveParams(strFileName);
+					params.saveParams(strFileName);
 				}
 			}
 		}
-		if (objBudgetReport !=null)
-			objBudgetReport.close();
-		if (objViewer != null)
-			objViewer.close();
+		if (budgetReport !=null)
+			budgetReport.close();
+		if (reportViewer != null)
+			reportViewer.close();
 		panScreen.setVisible(false);
 		this.dispose();
 	}
@@ -768,7 +761,7 @@ public class BudgetValuesWindow extends JFrame {
 		String strFileName = txtFileName.getText();
 		strFileName = askForFileName(strFileName);
 		if (!strFileName.equals(Constants.CANCELLED)) {
-			objParams.saveParams(strFileName);
+			params.saveParams(strFileName);
 			txtFileName.setText(strFileName);
 		}
 	}
@@ -780,14 +773,14 @@ public class BudgetValuesWindow extends JFrame {
 		int[] iSelected = listIncomeMissing.getSelectedIndices();
 		if (iSelected.length != 0) {
 			for (int iRow : iSelected) {
-				mylmIncomeSelect.addElement(mylmIncomeMissing.getLineKey(iRow));
+				incomeSelect.addElement(incomeMissing.getLineKey(iRow));
 			}
 			for (int i = iSelected.length - 1; i > -1; i--)
-				mylmIncomeMissing.remove(iSelected[i]);
+				incomeMissing.remove(iSelected[i]);
 		}
-		objParams.resetLists();
-		mylmIncomeMissing.update();
-		mylmIncomeSelect.update();
+		params.resetLists();
+		incomeMissing.update();
+		incomeSelect.update();
 		listIncomeMissing.clearSelection();
 		panScreen.revalidate();
 	}
@@ -799,14 +792,14 @@ public class BudgetValuesWindow extends JFrame {
 		int[] iSelected = listIncomeSelect.getSelectedIndices();
 		if (iSelected.length != 0) {
 			for (int iRow : iSelected) {
-				mylmIncomeMissing.addElement(mylmIncomeSelect.getLineKey(iRow));
+				incomeMissing.addElement(incomeSelect.getLineKey(iRow));
 			}
 			for (int i = iSelected.length - 1; i > -1; i--)
-				mylmIncomeSelect.remove(iSelected[i]);
+				incomeSelect.remove(iSelected[i]);
 		}
-		objParams.resetLists();
-		mylmIncomeMissing.update();
-		mylmIncomeSelect.update();
+		params.resetLists();
+		incomeMissing.update();
+		incomeSelect.update();
 		listIncomeSelect.clearSelection();
 		panScreen.revalidate();
 
@@ -819,15 +812,15 @@ public class BudgetValuesWindow extends JFrame {
 		int[] iSelected = listExpenseMissing.getSelectedIndices();
 		if (iSelected.length != 0) {
 			for (int iRow : iSelected) {
-				mylmExpenseSelect.addElement(mylmExpenseMissing
+				expenseSelect.addElement(expenseMissing
 						.getLineKey(iRow));
 			}
 			for (int i = iSelected.length - 1; i > -1; i--)
-				mylmExpenseMissing.remove(iSelected[i]);
+				expenseMissing.remove(iSelected[i]);
 		}
-		objParams.resetLists();
-		mylmExpenseMissing.update();
-		mylmExpenseSelect.update();
+		params.resetLists();
+		expenseMissing.update();
+		expenseSelect.update();
 		listIncomeSelect.clearSelection();
 		panScreen.revalidate();
 
@@ -840,15 +833,15 @@ public class BudgetValuesWindow extends JFrame {
 		int[] iSelected = listExpenseSelect.getSelectedIndices();
 		if (iSelected.length != 0) {
 			for (int iRow : iSelected) {
-				mylmExpenseMissing.addElement(mylmExpenseSelect
+				expenseMissing.addElement(expenseSelect
 						.getLineKey(iRow));
 			}
 			for (int i = iSelected.length - 1; i > -1; i--)
-				mylmExpenseSelect.remove(iSelected[i]);
+				expenseSelect.remove(iSelected[i]);
 		}
-		objParams.resetLists();
-		mylmExpenseMissing.update();
-		mylmExpenseSelect.update();
+		params.resetLists();
+		expenseMissing.update();
+		expenseSelect.update();
 		listIncomeSelect.clearSelection();
 		panScreen.revalidate();
 
@@ -897,14 +890,14 @@ public class BudgetValuesWindow extends JFrame {
 	 * preferences
 	 */
 	private void setPreferences() {
-		iFRAMEWIDTH = objPreferences.getInt(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEWIDTH,-1);
-		iFRAMEDEPTH = objPreferences.getInt(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEDEPTH,-1);
+		iFRAMEWIDTH = preferences.getInt(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEWIDTH,-1);
+		iFRAMEDEPTH = preferences.getInt(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEDEPTH,-1);
 		if (iFRAMEWIDTH < 0 || iFRAMEDEPTH < 0) {
-			objRoot = Preferences.userRoot();
-			objPref = objRoot
+			root = Preferences.userRoot();
+			pref = root
 					.node("com.moneydance.modules.features.budgetreport.budgetvalueswindow");
-			iFRAMEWIDTH = objPref.getInt(Constants.CRNTFRAMEWIDTH, Constants.FRAMEWIDTH);
-			iFRAMEDEPTH = objPref.getInt(Constants.CRNTFRAMEDEPTH, Constants.FRAMEDEPTH);
+			iFRAMEWIDTH = pref.getInt(Constants.CRNTFRAMEWIDTH, Constants.FRAMEWIDTH);
+			iFRAMEDEPTH = pref.getInt(Constants.CRNTFRAMEDEPTH, Constants.FRAMEDEPTH);
 		}
 		iTOPWIDTH = iFRAMEWIDTH - 100;
 		iMIDWIDTH = iFRAMEWIDTH;
@@ -914,8 +907,8 @@ public class BudgetValuesWindow extends JFrame {
 	}
 
 	private void updatePreferences(Dimension objDim) {
-		objPreferences.put(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEWIDTH, objDim.width);
-		objPreferences.put(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEDEPTH, objDim.height);
-		objPreferences.isDirty();
+		preferences.put(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEWIDTH, objDim.width);
+		preferences.put(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEDEPTH, objDim.height);
+		preferences.isDirty();
 	}
 }

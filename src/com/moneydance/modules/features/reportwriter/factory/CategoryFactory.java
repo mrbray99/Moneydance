@@ -37,7 +37,6 @@ import com.infinitekind.moneydance.model.Account;
 import com.infinitekind.moneydance.model.Account.AccountType;
 import com.infinitekind.moneydance.model.AccountUtil;
 import com.infinitekind.moneydance.model.AcctFilter;
-import com.moneydance.apps.md.view.gui.DefaultAcctSearch;
 import com.moneydance.modules.features.reportwriter.Constants;
 import com.moneydance.modules.features.reportwriter.Main;
 import com.moneydance.modules.features.reportwriter.RWException;
@@ -45,7 +44,7 @@ import com.moneydance.modules.features.reportwriter.databeans.CategoryBean;
 import com.moneydance.modules.features.reportwriter.view.DataDataRow;
 import com.moneydance.modules.features.reportwriter.view.DataParameter;
 
-public class CategoryFactory extends DefaultAcctSearch {
+public class CategoryFactory extends AcctFilter {
 	private DataDataRow dataParams;
 	private List<Account> allCats;
 	private List<String> selectedCats = null;

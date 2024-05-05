@@ -39,6 +39,8 @@ import java.net.MalformedURLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -236,7 +238,7 @@ public class GetFTHDQuote extends GetQuoteTask {
 	}
 		
 	private void findDate(Element topDiv, QuotePrice quotePrice) throws IOException {
-		Date date;
+		ZonedDateTime date;
 		ScanDate scanD = new ScanDate();
 		String dateText = topDiv.child(0).child(0).text();
 		SimpleDateFormat simpleFormat = new SimpleDateFormat("EEE, MMM dd,yyyy", Locale.ENGLISH);
@@ -246,8 +248,7 @@ public class GetFTHDQuote extends GetQuoteTask {
 		catch (IOException e) {
 				throw new IOException("Trade Date parse error "+e.getMessage());
 		}
-		quotePrice.setTradeDateInt(DateUtil.convertDateToInt(date));
-		simpleFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-		quotePrice.setTradeDate(simpleFormat.format(date));
+		quotePrice.setTradeDateInt(DateUtil.convertDateToInt(Date.from(date.toInstant())));
+		quotePrice.setTradeDate(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")));
 	}
 }

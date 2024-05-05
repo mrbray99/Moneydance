@@ -198,7 +198,9 @@ public class FileSelectWindow extends JPanel implements TreeSelectionListener {
         x++;
         this.add(accountsCB, GridC.getc(x, y).insets(5, 0, 0, 0));
         accountsCB.addActionListener(e->{
-            JComboBox<String> accountsT = (JComboBox<String>)e.getSource();
+            JComboBox<?> accountsT;
+            if (e.getSource() instanceof JComboBox)
+                accountsT= (JComboBox<?>)e.getSource();
         });
         JLabel txnTypeLbl = new JLabel("Select Transaction Type Field");
         x = 1;
@@ -208,9 +210,12 @@ public class FileSelectWindow extends JPanel implements TreeSelectionListener {
         x++;
         txnTypeField.addItem("Please Select a Field");
         txnTypeField.addActionListener(e -> {
-            JComboBox<Integer> cbReferenceT = (JComboBox<Integer>) e.getSource();
-            dirty=true;
-            params.setReference((String) cbReferenceT.getSelectedItem());
+            JComboBox<?> referenceT;
+            if (e.getSource() instanceof JComboBox) {
+                referenceT = (JComboBox<?>) (e.getSource());
+                dirty = true;
+                params.setReference((String) referenceT.getSelectedItem());
+            }
         });
         this.add(txnTypeField, GridC.getc(x, y).insets(5, 5, 5, 5).west());
         JLabel lblLTicker = new JLabel("Select Ticker Field");
@@ -221,9 +226,12 @@ public class FileSelectWindow extends JPanel implements TreeSelectionListener {
         x++;
         tickerField.addItem("Please Select a Field");
         tickerField.addActionListener(e -> {
-            JComboBox<Integer> cbTick = (JComboBox<Integer>) e.getSource();
-            dirty=true;
-            params.setTicker((String) cbTick.getSelectedItem());
+            JComboBox<?> tickT;
+            if (e.getSource() instanceof JComboBox) {
+                tickT = (JComboBox<?>) (e.getSource());
+                dirty = true;
+                params.setTicker((String) tickT.getSelectedItem());
+            }
         });
         this.add(tickerField, GridC.getc(x, y).insets(5, 5, 5, 5).west());
         JLabel lblLExch = new JLabel("Remove Exchange from Ticker?");
@@ -245,7 +253,7 @@ public class FileSelectWindow extends JPanel implements TreeSelectionListener {
         dateField = new JComboBox<>();
         dateField.addItem("Please Select a Field");
         dateField.addActionListener(e -> {
-            JComboBox<Integer> cbDateT = (JComboBox<Integer>) e.getSource();
+            JComboBox<?> cbDateT = (JComboBox<?>) (e.getSource());
             dirty=true;
             params.setDate((String) cbDateT.getSelectedItem());
         });
@@ -258,9 +266,12 @@ public class FileSelectWindow extends JPanel implements TreeSelectionListener {
         valueField = new JComboBox<>();
         valueField.addItem("Please Select a Field");
         valueField.addActionListener(e -> {
-            JComboBox<Integer> cbValueT = (JComboBox<Integer>) e.getSource();
-            dirty=true;
-            params.setValue((String) cbValueT.getSelectedItem());
+            JComboBox<?> valueT;
+            if (e.getSource() instanceof JComboBox) {
+                valueT = (JComboBox<?>) (e.getSource());
+                dirty = true;
+                params.setValue((String) valueT.getSelectedItem());
+            }
         });
         this.add(valueField, GridC.getc(x, y).insets(5, 5, 5, 5).west());
         x = 1;
@@ -271,9 +282,12 @@ public class FileSelectWindow extends JPanel implements TreeSelectionListener {
         descField = new JComboBox<>();
         descField.addItem("Please Select a Field");
         descField.addActionListener(e -> {
-            JComboBox<Integer> cbDescT = (JComboBox<Integer>) e.getSource();
-            dirty=true;
-            params.setDesc((String) cbDescT.getSelectedItem());
+            JComboBox<?> descT;
+            if (e.getSource() instanceof JComboBox) {
+                descT = (JComboBox<?>) (e.getSource());
+                dirty = true;
+                params.setDesc((String) descT.getSelectedItem());
+            }
         });
         this.add(descField, GridC.getc(x, y).insets(5, 5, 5, 5).west());
         x = 1;
@@ -284,10 +298,13 @@ public class FileSelectWindow extends JPanel implements TreeSelectionListener {
         unitField = new JComboBox<>();
         unitField.addItem("Please Select a Field");
         unitField.addActionListener(e -> {
-            JComboBox<Integer> cbUnitT = (JComboBox<Integer>) e.getSource();
-            dirty=true;
-            params.setUnitsField((String) cbUnitT.getSelectedItem());
-            unitsPresent=cbUnitT.getSelectedIndex()>0;
+            JComboBox<?> unitT;
+            if (e.getSource() instanceof JComboBox) {
+                unitT = (JComboBox<?>) (e.getSource());
+                dirty = true;
+                params.setUnitsField((String) unitT.getSelectedItem());
+                unitsPresent = unitT.getSelectedIndex() > 0;
+            }
 
         });
         this.add(unitField, GridC.getc(x, y).insets(5, 5, 5, 5).west());    x = 1;

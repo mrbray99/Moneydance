@@ -35,7 +35,7 @@ import java.util.SortedMap;
 import com.infinitekind.moneydance.model.Account;
 import com.infinitekind.moneydance.model.Account.AccountType;
 import com.infinitekind.moneydance.model.AccountUtil;
-import com.moneydance.apps.md.view.gui.DefaultAcctSearch;
+import com.infinitekind.moneydance.model.AcctFilter;
 import com.infinitekind.util.DateUtil;
 import com.moneydance.modules.features.reportwriter.Constants;
 import com.moneydance.modules.features.reportwriter.Main;
@@ -44,7 +44,7 @@ import com.moneydance.modules.features.reportwriter.databeans.AccountBean;
 import com.moneydance.modules.features.reportwriter.view.DataDataRow;
 import com.moneydance.modules.features.reportwriter.view.DataParameter;
 
-public class AccountFactory extends DefaultAcctSearch {
+public class AccountFactory extends AcctFilter {
 
 	private DataDataRow dataParams;
 	private List<Account> selectedAccts;

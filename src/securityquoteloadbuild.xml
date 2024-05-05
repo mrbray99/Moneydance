@@ -3,7 +3,6 @@
 	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath"  destdir="${build}"
 	      includes="com/moneydance/modules/features/securityquoteload/**"/>
-
 	    <jar destfile="${dist}/securityquoteload.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/securityquoteload/meta_info.dict
@@ -26,7 +25,7 @@
 			<arg value="securityquoteload"/>
 			<arg line="${dist}/securityquoteload.mxt"/>
 		</java>
-		<move file="${src}/s-budgetgen.mxt" tofile="${dist}/budgetgen.mxt"/>
+		<move file="${src}/s-securityquoteload.mxt" tofile="${dist}/securityquoteload.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	</target> 
 	<target name="cleansecurityquoteload">

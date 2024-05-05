@@ -1,5 +1,5 @@
 <project name="budgetgen" basedir=".">
-	<target name="budgetgen" >
+	<target name="budgetgen" depends="mrbutil">
 	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath"  destdir="${build}"
 	      includes="com/moneydance/modules/features/budgetgen/**"/>
@@ -11,8 +11,10 @@
 	             com/moneydance/modules/features/budgetgen/*.jpg
                  com/moneydance/modules/features/budgetgen/*.png
 	             com/moneydance/modules/features/budgetgen/*.jpeg"/>
-	      <fileset dir="${build}" includes="com/moneydance/modules/features/budgetgen/**"/>
-	      <zipgroupfileset  dir="${lib}" includes="**/mrbutil.jar" />
+			<fileset dir="${build}">
+			 <include name="com/moneydance/modules/features/budgetgen/**"/>
+	         <include name="com/moneydance/modules/features/mrbutil/**"/>
+			</fileset>
 	    </jar>
 
 		<java newenvironment="true"
@@ -27,7 +29,7 @@
 		<move file="${src}/s-budgetgen.mxt" tofile="${dist}/budgetgen.mxt"/>
 	<echo level="info">the current time is ${TODAY_UK}</echo>
 	</target>
-	<target name="cleanbudgetgen">
+	<target name="cleanbudgetgen" depends="cleanmrbutil">
 		<delete>
 			<fileset dir="${build}">
 			    <include name="com/moneydance/modules/features/budgetgen/*.class"/>

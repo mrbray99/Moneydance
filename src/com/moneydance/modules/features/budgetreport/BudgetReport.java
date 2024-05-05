@@ -57,7 +57,7 @@ public class BudgetReport extends MRBReportGenerator implements MRBPopup {
 		iStartDate = objParams.getStartDate();
 		iEndDate = objParams.getEndDate();
 		DateRange drTemp = new DateRange(iStartDate,iEndDate);
-		switch (BudgetValuesWindow.objBudget.getPeriodOrder()) {
+		switch (BudgetValuesWindow.budget.getPeriodOrder()) {
 		case Constants.PERIODWEEKLY :
 			iPeriods = (int) drTemp.getNumWeeks();
 			iIncrement = 7;
@@ -165,7 +165,7 @@ public class BudgetReport extends MRBReportGenerator implements MRBPopup {
 			/*
 			 * get current budget items, add to totals
 			 */
-			long [] arrTemp = BudgetValuesWindow.objBudget.getCurrentValues(objLine.getCategory(),arrDates);
+			long [] arrTemp = BudgetValuesWindow.budget.getCurrentValues(objLine.getCategory(),arrDates);
 			listCurrentData.add(arrTemp);
 			for (int i=0;i<iPeriods+1;i++) {
 				arrTotalCurrIncome[i] += arrTemp[i];
@@ -185,7 +185,7 @@ public class BudgetReport extends MRBReportGenerator implements MRBPopup {
 			/*
 			 * get current budget items, add to totals
 			 */
-			long [] arrTemp = BudgetValuesWindow.objBudget.getCurrentValues(objLine.getCategory(),arrDates);
+			long [] arrTemp = BudgetValuesWindow.budget.getCurrentValues(objLine.getCategory(),arrDates);
 			listCurrentData.add(arrTemp);
 			for (int i=0;i<iPeriods+1;i++) {
 				arrTotalCurrExpenses[i] += arrTemp[i];

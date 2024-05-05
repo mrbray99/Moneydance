@@ -40,8 +40,6 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
 import java.util.SortedMap;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
@@ -52,7 +50,6 @@ import com.moneydance.modules.features.reportwriter.Parameters;
 
 public class DataDataRow {
 	private String name;
-	@JsonIgnore
 	private String fileName;
 	private String selectionGroup;
 	private SortedMap<String,DataParameter> parameters;
@@ -77,7 +74,7 @@ public class DataDataRow {
 	public boolean loadRow(String name,Parameters paramsp) {
 		String dir = paramsp.getDataDirectory();
 		fileName = dir+"/"+name+Constants.DATAEXTENSION;
-		DataDataRow row = new DataDataRow();
+		DataDataRow row;
 		try {
 			JsonReader reader = new JsonReader(new FileReader(fileName));
 			row = new Gson().fromJson(reader,DataDataRow.class);

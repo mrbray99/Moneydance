@@ -43,6 +43,8 @@ import java.time.LocalDate;
 import java.nio.charset.StandardCharsets;
 
 
+import com.infinitekind.moneydance.model.CurrencyTable;
+import com.moneydance.modules.features.securityquoteload.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -50,10 +52,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 
 
 import com.moneydance.modules.features.mrbutil.MRBDebug;
-import com.moneydance.modules.features.securityquoteload.Constants;
-import com.moneydance.modules.features.securityquoteload.Parameters;
-import com.moneydance.modules.features.securityquoteload.QuotePrice;
-import com.moneydance.modules.features.securityquoteload.ScanDate;
 
 public class GetYahooHistQuote extends GetQuoteTask {
 
@@ -66,8 +64,9 @@ public class GetYahooHistQuote extends GetQuoteTask {
     private ScanDate scanDate = new ScanDate();
     private Parameters params;
 
-    public GetYahooHistQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp, String tickerTypep, String tidp, Integer lastPriceDatep) {
-        super(tickerp, listenerp, httpClientp, tickerTypep, tidp);
+    public GetYahooHistQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,
+                             String tickerTypep, String tidp, Integer lastPriceDatep, boolean throttleRequired) {
+        super(tickerp, listenerp, httpClientp, tickerTypep, tidp,throttleRequired);
         params = Parameters.getParameters();
         LocalDate now = LocalDate.now();
         LocalDate historyDate = now.minusMonths(params.getAmtHistory() + 1);
@@ -79,7 +78,7 @@ public class GetYahooHistQuote extends GetQuoteTask {
         }
         convTicker = ticker.replace("^", "%5E");
         if (tickerType.equals(Constants.STOCKTYPE))
-            url = yahooSecURL + convTicker + "/history?p=" + convTicker;
+            url = yahooSecURL + convTicker + "/history";
         if (tickerType.equals(Constants.CURRENCYTYPE))
             url = yahooCurrURL + convTicker + "/history?p=" + convTicker;
         debugInst.debug("GetYahooHistQuote", "GetYahooHistQuote", MRBDebug.DETAILED, "Executing :" + url);
@@ -147,6 +146,11 @@ public class GetYahooHistQuote extends GetQuoteTask {
             throw new IOException("Can not find currency");
         String rest = buffer.substring(currIndex);
         currency = rest.substring(12, 15);
+        if (!params.getPseudoCurrencies().containsKey(currency)) {
+            CurrencyTable currencies = Main.context.getCurrentAccountBook().getCurrencies();
+            if (currencies.getCurrencyByIDString(currency) == null)
+                throw new IOException("Unknown currency");
+        }
         quotePrice.setCurrency(currency);
         int start = rest.indexOf("<tbody>");
         if (start < 0)
@@ -173,8 +177,6 @@ public class GetYahooHistQuote extends GetQuoteTask {
                 continue;
             }
             historyDate = scanDate.parseYahooDate(value);
-            if (historyDate < lastPriceDate)
-                break;
 
             restRow = row.substring(column.length());
             column = getColumn(restRow); // open
@@ -258,17 +260,20 @@ public class GetYahooHistQuote extends GetQuoteTask {
                 quotePrice.setVolume(volume);
                 priceFound = true;
             } else {
-                if (params.getHistory() && lastPriceDate != null) {
-                    QuotePrice historyPrice = new QuotePrice();
-                    historyPrice.setTradeDateInt(historyDate);
-                    historyPrice.setTradeDate(historyDate + "T00:00");
-                    historyPrice.setPrice(price);
-                    historyPrice.setHighPrice(highValue);
-                    historyPrice.setLowPrice(lowValue);
-                    historyPrice.setVolume(volume);
-                    quotePrice.addHistory(historyPrice.getTradeDateInt(), historyPrice.getPrice(), historyPrice.getHighPrice(),
-                            historyPrice.getLowPrice(), historyPrice.getVolume());
-                }
+                if (!params.getHistory() || lastPriceDate == null)
+                    break;
+                if (historyDate <= lastPriceDate)
+                    break;
+                QuotePrice historyPrice = new QuotePrice();
+                historyPrice.setTradeDateInt(historyDate);
+                historyPrice.setTradeDate(historyDate + "T00:00");
+                historyPrice.setPrice(price);
+                historyPrice.setHighPrice(highValue);
+                historyPrice.setLowPrice(lowValue);
+                historyPrice.setVolume(volume);
+                quotePrice.addHistory(historyPrice.getTradeDateInt(), historyPrice.getPrice(), historyPrice.getHighPrice(),
+                        historyPrice.getLowPrice(), historyPrice.getVolume());
+
             }
             if (rest.indexOf("</tr>") > 0)
                 rest = rest.substring(rest.indexOf("</tr>") + 5);

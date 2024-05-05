@@ -49,12 +49,12 @@ public class BudgetLine implements java.io.Serializable, Comparable<BudgetLine> 
 	 */
 	@Serial
 	private static final long serialVersionUID = 2L;
-	private transient Account objCategory;
-	private transient String strParent;
-	private transient boolean bSelect;
-	private transient boolean bDirty;
-	private transient Calendar dtStartDate = Calendar.getInstance();
-	private transient int iArraySize = 0;
+	private transient Account category;
+	private transient String parent;
+	private transient boolean select;
+	private transient boolean dirty;
+	private transient Calendar startDate = Calendar.getInstance();
+	private transient int arraySize = 0;
 
 	/*
 	 * fields to be stored
@@ -82,16 +82,17 @@ public class BudgetLine implements java.io.Serializable, Comparable<BudgetLine> 
 		iType = iTypep;
 		strIndentedName = strName;
 		String[] arrPath = strName.substring(1).split(Constants.chSeperator);
-		strCategory = "";
 		int i;
+		StringBuilder tmpBuilder = new StringBuilder();
 		for (i= 0;i<arrPath.length-1;i++)
-			strCategory += "   ";
-		strCategory += arrPath[i];
-		objCategory = objObject;
-		bSelect = false;
+			tmpBuilder.append("   ");
+		tmpBuilder.append(arrPath[i]);
+		strCategory = tmpBuilder.toString();
+		category = objObject;
+		select = false;
 		bRollup = false;
-		bDirty = false;
-		strParent = "";
+		dirty = false;
+		parent = "";
 		/*
 		 * forces set up of dtStartDate
 		 */
@@ -110,16 +111,16 @@ public class BudgetLine implements java.io.Serializable, Comparable<BudgetLine> 
 	 * returns dirty status
 	 */
 	public boolean isDirty() {
-		return bDirty;
+		return dirty;
 	}
 	/*
 	 * gets
 	 */
 	public boolean getSelect () {
-		return bSelect;
+		return select;
 	}
 	public Account getCategory () {
-		return objCategory;
+		return category;
 	}
 	public String getCategoryName () {
 		return strCategory;
@@ -131,7 +132,7 @@ public class BudgetLine implements java.io.Serializable, Comparable<BudgetLine> 
 		return lAmount;
 	}
 	public String getParent() {
-		return strParent;
+		return parent;
 	}
 	public int getPeriod () {
 		return iPeriod;
@@ -171,64 +172,60 @@ public class BudgetLine implements java.io.Serializable, Comparable<BudgetLine> 
 	 * sets
 	 */
 	public void setSelect (boolean bSel) {
-		bDirty = true;
-		bSelect = bSel;
+		dirty = true;
+		select = bSel;
 	}
 	public void setCategory (Account acct) {
-		bDirty = true;
-		objCategory = acct;
-	}
-	public void setCategoryName (String strAcct) {
-		bDirty = true;
-		strCategory = strAcct;
+		dirty = true;
+		category = acct;
 	}
 	public void setAmount(long lAmt) {
-		bDirty = true;
+		dirty = true;
 		lAmount = lAmt;
 	}
 	public void setParent(String strParentp){
-		strParent = strParentp;
+		parent = strParentp;
 	}
 			
 	public void setPeriod (int iPer) {
-		bDirty = true;
+		dirty = true;
 		iPeriod = iPer;
 	}
 	public void setStartDate (int iStr) {
-		bDirty = true;
+		dirty = true;
 		iStartDate = iStr;
 		int iYear = iStr/10000;
 		int iMonth = (iStr- iYear*10000)/100;
 		int iDay = iStr-iYear*10000 - iMonth*100;
-		if (dtStartDate == null)
-			dtStartDate = Calendar.getInstance();
-		dtStartDate.set(iYear, iMonth-1,iDay);
+		if (startDate == null)
+			startDate = Calendar.getInstance();
+		startDate.set(iYear, iMonth-1,iDay);
 	}
 	public void setRollup (boolean bRollupp) {
-		bDirty = true;
+		dirty = true;
 		bRollup = bRollupp;
 	}
 	public void setRPI (double dRPIp) {
-		bDirty = true;
+		dirty = true;
 		dRPI = dRPIp;
 	}
 	public void setYear1Amt (long iBud) {
-		bDirty = true;
+		dirty = true;
 		lYear1Amt = iBud;
 	}
 	public void setYear2Amt (long iBud) {
-		bDirty = true;
+		dirty = true;
 		lYear2Amt = iBud;
 	}
 	public void setYear3Amt (long iBud) {
-		bDirty = true;
+		dirty = true;
 		lYear3Amt = iBud;
 	}
 	public void setType(int iTypep){
 		iType = iTypep;
 	}
 	public void setDirty(boolean bParm) {
-		bDirty = bParm;
+		dirty = bParm;
 	}
 	public void setNumPeriods(int iNumPeriodsp) {
 		if (iNumPeriods != iNumPeriodsp) {
@@ -245,7 +242,7 @@ public class BudgetLine implements java.io.Serializable, Comparable<BudgetLine> 
 			arrlYear3 = new long[iNumPeriods];
 	}
 	public void setPeriod (int iPeriod, int iYear, long lPeriodAmt) {
-		bDirty = true;
+		dirty = true;
 		switch (iYear) {
 		case 1:
 			arrlYear1[iPeriod] = lPeriodAmt;
@@ -368,7 +365,7 @@ public class BudgetLine implements java.io.Serializable, Comparable<BudgetLine> 
 			 * move the start date to the first week boundary on or after the line start date
 			 */
 			dtStart.setTime(BudgetValuesWindow.weekStart.getTime());
-			while (dtStartDate.after(dtStart)) {
+			while (startDate.after(dtStart)) {
 				dtStart.add(Calendar.DAY_OF_YEAR, 7);
 			}
 			iDateInc = 7;
@@ -399,7 +396,7 @@ public class BudgetLine implements java.io.Serializable, Comparable<BudgetLine> 
 			 * move the start date to the first bi-week boundary on or after the line start date
 			 */
 			dtStart.setTime(BudgetValuesWindow.weekStart.getTime());
-			while (dtStartDate.after(dtStart)) {
+			while (startDate.after(dtStart)) {
 				dtStart.add(Calendar.DAY_OF_YEAR, 14);
 			}
 			iDateInc = 14;
@@ -427,7 +424,7 @@ public class BudgetLine implements java.io.Serializable, Comparable<BudgetLine> 
 		case Constants.PERIODMONTHLY:
 			dtStart.setTime(dtBudgetStart.getTime());
 			dtStart.set(Calendar.DAY_OF_MONTH, 1);
-			while (dtStartDate.after(dtStart)) {
+			while (startDate.after(dtStart)) {
 				dtStart.add(Calendar.MONTH, 1);
 			}
 			iDateInc = -1;
@@ -454,7 +451,7 @@ public class BudgetLine implements java.io.Serializable, Comparable<BudgetLine> 
 		case Constants.PERIODANNUAL:
 			iDateInc = -12;
 			dtStart = Calendar.getInstance();
-			dtStart.setTime(dtStartDate.getTime());
+			dtStart.setTime(startDate.getTime());
             lAmtInc = switch (Constants.arrPeriod[iPeriod]) {
                 case Constants.PERIOD_WEEK -> lAmount * 52;
                 case Constants.PERIOD_BIWEEK -> lAmount * 26;
@@ -466,15 +463,15 @@ public class BudgetLine implements java.io.Serializable, Comparable<BudgetLine> 
 			
 			break;
 		}
-		iArraySize = arrPeriods.length;
-		setNumPeriods(iArraySize);
+		arraySize = arrPeriods.length;
+		setNumPeriods(arraySize);
 		Double dTemp;
 		JDateField jdtStart = new JDateField(Main.cdate);
 		int i = 0;
 		int iCount = 0;
 		if (objParams.getPeriod()==Constants.PERIODANNUAL) {
 			if (!Objects.equals(Constants.arrPeriod[iPeriod], Constants.PERIOD_YEAR) &&
-					!dtBudgetStart.equals(dtStartDate)) {
+					!dtBudgetStart.equals(startDate)) {
 				/*
 				 * If budget is Annual, the line period is not annual and the start date
 				 * does not match budget start - Pro rata the amount based on start dates
@@ -492,7 +489,7 @@ public class BudgetLine implements java.io.Serializable, Comparable<BudgetLine> 
 			arrlYear3[i] = dTemp.intValue();			
 		}
 		else {
-			while (i< iArraySize) {
+			while (i< arraySize) {
 				arrlYear1[i] = 0;
 				arrlYear2[i] = 0;
 				arrlYear3[i] = 0;

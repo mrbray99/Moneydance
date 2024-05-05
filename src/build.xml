@@ -12,7 +12,7 @@ http://jakarta.apache.org/ant/index.html
     <property name="target" value="17"/>
     <property name="srccode" value="17"/>
     <property name="lib" value="../lib"/>
-    <property name="md_ext_lib_dir" value="c:/Program Files/Moneydance20235064/lib"/>
+    <property name="md_ext_lib_dir" value="../lib2"/>
     <property environment="env"/>
     <property name="privkeyfile" value="${src}/priv_key"/>
     <property name="pubkeyfile" value="${src}/pub_key"/>

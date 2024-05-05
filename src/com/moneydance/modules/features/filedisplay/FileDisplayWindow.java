@@ -25,7 +25,6 @@ import javax.swing.SwingConstants;
 
 import com.infinitekind.util.CustomDateFormat;
 import com.moneydance.apps.md.view.MoneydanceUI;
-import com.moneydance.awt.AwtUtil;
 import com.moneydance.awt.GridC;
 import com.moneydance.awt.JDateField;
 

@@ -1,6 +1,8 @@
 package com.moneydance.modules.features.securityquoteload;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -74,7 +76,7 @@ public class ScanDate {
 		}
 		return yearInt*10000+(monthEntry.getMonth()+1)*100+dayInt;
 	}
-	public Date parseString(String dateStr) throws IOException{
+	public ZonedDateTime parseString(String dateStr) throws IOException{
 		String [] parts= new String[5];
 		String month;
 		String dayStr="";
@@ -112,9 +114,8 @@ public class ScanDate {
 			throw new IOException("Invalid date \""+dateStr+"\"");
 		}
 		
-		Calendar cal = Calendar.getInstance();
-		cal.set(year, monthEntry.getMonth(),day);
-		return new Date(cal.getTimeInMillis());
+
+		return ZonedDateTime.of(year,monthEntry.getMonth()+1,day,0,0,0,0, ZoneId.systemDefault());
 	}
 
 }

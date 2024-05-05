@@ -45,7 +45,7 @@ import com.infinitekind.moneydance.model.TxnSet;
 import com.infinitekind.tiksync.SyncRecord;
 import com.moneydance.apps.md.controller.UserPreferences;
 import com.moneydance.awt.GridC;
-import com.moneydance.util.CustomDateFormat;
+import com.infinitekind.util.CustomDateFormat;
 /**
  *  Creates a view over specific transactions
  * @author Mike Bray

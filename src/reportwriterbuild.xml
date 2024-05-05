@@ -1,6 +1,7 @@
 <project name="reportwriter" basedir=".">
-	<target name="reportwriter">
-			<javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}" classpathref="classpath" destdir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
+	<target name="reportwriter" depends="mrbutil">
+			<javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
+				   classpathref="classpath" destdir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
 		<jar destfile="${dist}/reportwriter.mxt">
 			<fileset dir="${src}" includes="
 	             com/moneydance/modules/features/reportwriter/meta_info.dict
@@ -12,8 +13,10 @@
 	             com/moneydance/modules/features/reportwriter/resources/*.db
 	             com/moneydance/modules/features/reportwriter/resources/*.xml
 	             com/moneydance/modules/features/reportwriter/resources/*.jpeg" />
-			<fileset dir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
-			<zipgroupfileset dir="${lib}" includes="**/mrbutil.jar" />
+			<fileset dir="${build}">
+				<include name="com/moneydance/modules/features/reportwriter/**"/>
+				<include name="com/moneydance/modules/features/mrbutil/**"/>
+			</fileset>
 			<zipgroupfileset dir="${lib}" includes="**/h2-1.4.200.jar" />
 			<zipgroupfileset dir="${lib}" includes="**/opencsv-5.2.jar" />
 			<zipgroupfileset dir="${lib}" includes="**/poi-4.1.2.jar" />
@@ -31,19 +34,20 @@
 			<zipgroupfileset dir="${lib}" includes="**/org.apache.commons.io.jar" />
 			<zipgroupfileset dir="${lib}" includes="**/xmlbeans-3.1.0.jar" />
 		</jar>
-		<java newenvironment="true" classpathref="signmxtpath" classname="SignMxt" fork="yes">
-			<arg value="signextjar" />
-			<arg value="${privkeyfile}" />
-			<arg value="${privkeyid}" />
-			<arg value="reportwriter" />
-			<arg line="${dist}/reportwriter.mxt" />
+		<java newenvironment="true"
+			  classpathref="classpath"
+			  classname="com.moneydance.admin.KeyAdmin">
+			<arg value="signextjar"/>
+			<arg value="${privkeyfile}"/>
+			<arg value="${privkeyid}"/>
+			<arg value="reportwriter"/>
+			<arg line="${dist}/reportwriter.mxt"/>
 		</java>
-		<copy file="./s-reportwriter.mxt" tofile="${install}/reportwriter.mxt" verbose="true" failonerror="false" />
-		<copy file="${install}/reportwriter.mxt" tofile="${dist}/reportwriter.mxt" verbose="true" failonerror="false" />
-		<delete file="./s-reportwriter.mxt" />
+		<copy file="${src}/s-reportwriter.mxt" tofile="${dist}/reportwriter.mxt"/>
+		<delete file="${src}/s-reportwriter.mxt" />
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	</target>
-	<target name="cleanreportwriter" >
+	<target name="cleanreportwriter" depends="cleanmrbutil">
 		<delete>
 			<fileset dir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
 		</delete>
