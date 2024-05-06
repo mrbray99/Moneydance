@@ -472,12 +472,15 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		this.pack();
 	}
 	public void setThrottleMessage(){
+		if (runtype != Constants.MANUALRUN && runtype != 0)
+			return;
 		throttleMessage.setVisible(true);
 		this.revalidate();
 	}
 	public void unsetThrottleMessage(){
+		if (runtype != Constants.MANUALRUN && runtype != 0)
+			return;
 		throttleMessage.setVisible(false);
-
 		this.revalidate();
 	}
 	private void setButtons(int selectedIndex) {

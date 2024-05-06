@@ -6,12 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="MIS-290 Yahoo Throttling">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/budgetreport.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/budgetreport.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/loadsectrans.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/loadsectrans.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securityhistoryload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityhistoryload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securitypriceload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securitypriceload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securityquoteload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityquoteload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Utilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/reportwriter/Utilities.java" afterDir="false" />
     </list>
     <list id="515d24e9-28b0-477a-9756-57997cfa20ab" name="Not to be deployed" comment="">
       <change beforePath="$PROJECT_DIR$/bin/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/bin/.gitignore" afterDir="false" />
@@ -24,7 +18,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Merge.Settings">
-    <option name="BRANCH" value="3209" />
+    <option name="BRANCH" value="3211" />
   </component>
   <component name="Git.Settings">
     <favorite-branches>
@@ -42,7 +36,7 @@
     </favorite-branches>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="3211" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -75,7 +69,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;jdk.selected.JAVA_MODULE&quot;: &quot;temurin-21&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib2&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/Patches/MIS-292_Loadsectrans_under_unix.patch&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
@@ -204,7 +198,15 @@
       <option name="project" value="LOCAL" />
       <updated>1714219969416</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="MIS-292 Loadsectrans under unix">
+      <option name="closed" value="true" />
+      <created>1714907492065</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1714907492065</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -233,6 +235,7 @@
     <MESSAGE value="Build 3209 for quote loader" />
     <MESSAGE value="Build 3210 remove use of runtime in SecurityPriceLoad and SecurityHistoryLoad" />
     <MESSAGE value="Build 3210 remove unneeded files, update build files to remove warnings" />
-    <option name="LAST_COMMIT_MESSAGE" value="Build 3210 remove unneeded files, update build files to remove warnings" />
+    <MESSAGE value="MIS-292 Loadsectrans under unix" />
+    <option name="LAST_COMMIT_MESSAGE" value="MIS-292 Loadsectrans under unix" />
   </component>
 </project>
