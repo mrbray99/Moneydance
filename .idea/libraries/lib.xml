@@ -18,8 +18,13 @@
       <root url="jar://$PROJECT_DIR$/lib/poi-ooxml-schemas-4.1.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/SparseBitSet-1.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/xmlbeans-3.1.0.jar!/" />
+      <root url="file://$PROJECT_DIR$/lib" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/lib" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" type="SOURCES" />
   </library>
 </component>
