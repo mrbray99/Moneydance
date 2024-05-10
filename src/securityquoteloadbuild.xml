@@ -12,8 +12,9 @@
 	             com/moneydance/modules/features/securityquoteload/resources/*.jpg
                  com/moneydance/modules/features/securityquoteload/resources/*.png
 	             com/moneydance/modules/features/securityquoteload/resources/*.jpeg"/>
-	      <fileset dir="${build}" includes="com/moneydance/modules/features/securityquoteload/**"/>
-		      <zipgroupfileset  dir="${lib}" includes="**/mrbutil.jar" />
+	      <fileset dir="${build}" includes="
+	             com/moneydance/modules/features/securityquoteload/**
+	             com/moneydance/modules/features/mrbutil/**"/>
 		      <zipgroupfileset  dir="${lib}" includes="**/jsoup-1.11.3.jar" />
 		</jar>
 		<java newenvironment="true"
