@@ -2,7 +2,7 @@
   "vendor" = "Mike Bray"
   "module_build" = "3210"
 "minbuild" = "1820"
-  "vendor.url" = "http://bitbucket.org/mikerb/wiki/Home"
+  "vendor.url" = "https://bitbucket.org/mikerb/wiki/Home"
   "module_name" =   "Security Price Load"
   "module_desc" = "<html><body><title>Security Price Load</title>><p>Loads the price of securities/currencies from a file and updates the current price in the Moneydance file
 </body></html>"

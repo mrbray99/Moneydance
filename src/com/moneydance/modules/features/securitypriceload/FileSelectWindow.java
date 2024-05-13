@@ -1006,7 +1006,7 @@ public class FileSelectWindow extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent aeMenu) {
 		JMenuItem miSource = (JMenuItem)(aeMenu.getSource());
 		if (miSource == miOnline) {
-			String url = "http://github.com/mrbray99/moneydanceproduction/wiki/Security-Price-and-History-Load";
+			String url = "https://github.com/mrbray99/moneydanceproduction/wiki/Security-Price-and-History-Load";
 			mdGUI.showInternetURL(url);
 		    }
 		if (miSource == rbOff){

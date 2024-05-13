@@ -363,7 +363,7 @@ public class FileDisplayWindow extends JFrame {
 	private void openIcons() {
 		   if (Desktop.isDesktopSupported()) {
 			      try {
-			        Desktop.getDesktop().browse(new URI("http://icons8.com"));
+			        Desktop.getDesktop().browse(new URI("https://icons8.com"));
 			      } catch (IOException | URISyntaxException e) { /* TODO: error handling */ }
 			    } else { /* TODO: error handling */ }
 	}
