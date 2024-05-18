@@ -6,7 +6,6 @@
     <buildFile url="file://$PROJECT_DIR$/src/build.xml" />
     <buildFile url="file://$PROJECT_DIR$/src/filedisplaybuild.xml" />
     <buildFile url="file://$PROJECT_DIR$/src/loadsectransbuild.xml" />
-    <buildFile url="file://$PROJECT_DIR$/src/mrbutilbuild.xml" />
     <buildFile url="file://$PROJECT_DIR$/src/qifloaderbuild.xml" />
     <buildFile url="file://$PROJECT_DIR$/src/reportwriterbuild.xml" />
     <buildFile url="file://$PROJECT_DIR$/src/securityhistoryloadbuild.xml" />
