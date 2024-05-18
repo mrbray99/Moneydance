@@ -1,5 +1,5 @@
 <project name="securitypriceload"  basedir=".">
-	<target name="securitypriceload"  depends="mrbutil">
+	<target name="securitypriceload">
 	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath"  destdir="${build}"
 	      includes="com/moneydance/modules/features/securitypriceload/**"/>

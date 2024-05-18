@@ -4,8 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="MIS-290 Yahoo Throttling">
+    <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="MIS-291 Table Reset whilst updating from MD+">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/loadsectrans.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/loadsectrans.mxt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/securityquoteload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityquoteload.mxt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/budgetgenbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/budgetgenbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/budgetreportbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/budgetreportbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/build.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/build.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/loadsectransbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/loadsectransbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mrbutilbuild.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/qifloaderbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/qifloaderbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reportwriterbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/reportwriterbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/securityhistoryloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/securityhistoryloadbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/securitypriceloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/securitypriceloadbuild.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/securityquoteloadbuild.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/securityquoteloadbuild.xml" afterDir="false" />
     </list>
     <list id="515d24e9-28b0-477a-9756-57997cfa20ab" name="Not to be deployed" comment="">
       <change beforePath="$PROJECT_DIR$/bin/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/bin/.gitignore" afterDir="false" />
@@ -36,7 +48,7 @@
     </favorite-branches>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="3211" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -63,19 +75,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;temurin-21&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/Patches/MIS-292_Loadsectrans_under_unix.patch&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propDebugger&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "jdk.selected.JAVA_MODULE": "temurin-21",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/Patches/MD2020/initialsetup.patch",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.keymap"
   }
-}</component>
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -206,7 +218,23 @@
       <option name="project" value="LOCAL" />
       <updated>1714907492065</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="MIS-290 Yahoo Throttling">
+      <option name="closed" value="true" />
+      <created>1714985810970</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1714985810970</updated>
+    </task>
+    <task id="LOCAL-00017" summary="MIS-291 Table Reset whilst updating from MD+">
+      <option name="closed" value="true" />
+      <created>1714986459250</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1714986459250</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -236,6 +264,8 @@
     <MESSAGE value="Build 3210 remove use of runtime in SecurityPriceLoad and SecurityHistoryLoad" />
     <MESSAGE value="Build 3210 remove unneeded files, update build files to remove warnings" />
     <MESSAGE value="MIS-292 Loadsectrans under unix" />
-    <option name="LAST_COMMIT_MESSAGE" value="MIS-292 Loadsectrans under unix" />
+    <MESSAGE value="MIS-290 Yahoo Throttling" />
+    <MESSAGE value="MIS-291 Table Reset whilst updating from MD+" />
+    <option name="LAST_COMMIT_MESSAGE" value="MIS-291 Table Reset whilst updating from MD+" />
   </component>
 </project>
