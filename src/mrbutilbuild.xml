@@ -4,17 +4,17 @@
 	      classpathref="classpath"  destdir="${build}"
 	      includes="com/moneydance/modules/features/mrbutil/**"
 	      excludes="com/moneydance/modules/features/mrbutil/Graph**"/>
-
-	    <jar destfile="${lib}/mrbutil.jar">
-	      <fileset dir="${src}" includes="
-	             com/moneydance/modules/features/mrbutil/meta_info.dict
-   		         com/moneydance/modules/features/mrbutil/strings/*.dict
-  	 	         com/moneydance/modules/features/mrbutil/resources/*.gif
-	             com/moneydance/modules/features/mrbutil/resources/*.jpg
-                 com/moneydance/modules/features/mrbutil/resources/*.png
-	             com/moneydance/modules/features/mrbutil/resources/*.jpeg"/>
-	      <fileset dir="${build}" includes="com/moneydance/modules/features/mrbutil/**"/>
-	    </jar>
+		
+<!--	    <jar destfile="${lib}/mrbutil.jar">-->
+<!--	      <fileset dir="${src}" includes="-->
+<!--	             com/moneydance/modules/features/mrbutil/meta_info.dict-->
+<!--   		         com/moneydance/modules/features/mrbutil/strings/*.dict-->
+<!--  	 	         com/moneydance/modules/features/mrbutil/resources/*.gif-->
+<!--	             com/moneydance/modules/features/mrbutil/resources/*.jpg-->
+<!--                 com/moneydance/modules/features/mrbutil/resources/*.png-->
+<!--	             com/moneydance/modules/features/mrbutil/resources/*.jpeg"/>-->
+<!--	      <fileset dir="${build}" includes="com/moneydance/modules/features/mrbutil/**"/>-->
+<!--	    </jar>-->
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 
 	</target> 

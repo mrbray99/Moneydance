@@ -14,7 +14,7 @@
       <fileset dir="${build}" includes="com/moneydance/modules/features/filedisplay/**"/>
     </jar>
 
-        <java newenvironment="true"
+        <java newenvironment="false"
               classpathref="classpath"
               classname="com.moneydance.admin.KeyAdmin">
             <arg value="signextjar"/>

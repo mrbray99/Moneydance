@@ -17,7 +17,7 @@
 	             com/moneydance/modules/features/mrbutil/**"/>
 		      <zipgroupfileset  dir="${lib}" includes="**/jsoup-1.11.3.jar" />
 		</jar>
-		<java newenvironment="true"
+		<java newenvironment="false"
 			  classpathref="classpath"
 			  classname="com.moneydance.admin.KeyAdmin">
 			<arg value="signextjar"/>

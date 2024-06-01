@@ -34,7 +34,7 @@
 			<zipgroupfileset dir="${lib}" includes="**/org.apache.commons.io.jar" />
 			<zipgroupfileset dir="${lib}" includes="**/xmlbeans-3.1.0.jar" />
 		</jar>
-		<java newenvironment="true"
+		<java newenvironment="false"
 			  classpathref="classpath"
 			  classname="com.moneydance.admin.KeyAdmin">
 			<arg value="signextjar"/>
