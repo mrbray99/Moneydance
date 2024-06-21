@@ -2,7 +2,8 @@
 	<target name="securityquoteload">
 	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath"  destdir="${build}"
-	      includes="com/moneydance/modules/features/securityquoteload/**"/>
+	      includes="com/moneydance/modules/features/securityquoteload/**,
+	      com/moneydance/modules/features/mrbutil/**"/>
 	    <jar destfile="${dist}/securityquoteload.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/securityquoteload/meta_info.dict
@@ -12,10 +13,12 @@
 	             com/moneydance/modules/features/securityquoteload/resources/*.jpg
                  com/moneydance/modules/features/securityquoteload/resources/*.png
 	             com/moneydance/modules/features/securityquoteload/resources/*.jpeg"/>
-	      <fileset dir="${build}" includes="com/moneydance/modules/features/securityquoteload/**"/>
-		      <zipgroupfileset  dir="${lib}" includes="**/mrbutil.jar" />
+	      <fileset dir="${build}" includes="
+	               com/moneydance/modules/features/securityquoteload/**
+                   com/moneydance/modules/features/mrbutil/**"/>
 		      <zipgroupfileset  dir="${lib}" includes="**/jsoup-1.11.3.jar" />
 		</jar>
+		<echo level="info" message="SIGNING securityquoteload.mxt using key ${extprivkeyfile} (ID: ${privkeyid}):" />
 		<java newenvironment="true"
 			  classpathref="classpath"
 			  classname="com.moneydance.admin.KeyAdmin">
