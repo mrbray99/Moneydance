@@ -9,8 +9,8 @@ http://jakarta.apache.org/ant/index.html
     <property file="${src}/user.properties"/>
     <property name="build" value="./build"/>
     <property name="build.compiler" value="modern"/>
-    <property name="target" value="15"/>
-    <property name="srccode" value="15"/>
+    <property name="target" value="14"/>
+    <property name="srccode" value="14"/>
     <property name="lib" value="../lib"/>
     <property name="md_ext_lib_dir" value="../MD2021lib2"/>
     <property environment="env"/>
