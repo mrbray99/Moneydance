@@ -44,7 +44,7 @@ import com.moneydance.modules.features.reportwriter.databeans.CategoryBean;
 import com.moneydance.modules.features.reportwriter.view.DataDataRow;
 import com.moneydance.modules.features.reportwriter.view.DataParameter;
 
-public class CategoryFactory extends AcctFilter {
+public class CategoryFactory implements AcctFilter {
 	private DataDataRow dataParams;
 	private List<Account> allCats;
 	private List<String> selectedCats = null;

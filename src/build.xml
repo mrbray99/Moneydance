@@ -27,10 +27,13 @@ http://jakarta.apache.org/ant/index.html
     <property name="debug" value="on"/>
     <property name="optimize" value="off"/>
     <property name="install" value="C:\Users\mrbmo\.moneydance\fmodules"/>
-
     <path id="classpath">
       <fileset dir="${md_ext_lib_dir}" includes="*.jar"/>
       <fileset dir="${lib}" includes="*.jar"/>
+    </path>
+    <path id ="keyadminlib">
+        <fileset dir= "../MDKey/" includes="*.jar"/>
+        <path refid="classpath"/>
     </path>
     <target name="init">
         <mkdir dir="${dist}"/>
@@ -49,7 +52,7 @@ http://jakarta.apache.org/ant/index.html
     <import file="securityquoteloadbuild.xml"/>
     <import file="reportwriterbuild.xml"/>
     <target name="genkeys">
-        <java classpathref="classpath" classname="com.moneydance.admin.KeyAdmin">
+        <java classpathref="keyadminlib" classname="com.moneydance.admin.KeyAdmin">
             <arg value="genkey"/>
             <arg value="${privkeyfile}"/>
             <arg value="${pubkeyfile}"/>

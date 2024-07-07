@@ -68,8 +68,7 @@ public class BudgetExtend {
 	 */
 	private Map<Account,List<Pair<DateRange,BudgetItem>>> mapItems = new HashMap<>();
 
-	public record Pair<S, T>(S x, T y) {
-	}
+
 	/*
 	 * Map for previous items
 	 */

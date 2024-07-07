@@ -20,7 +20,7 @@
 		</jar>
 		<echo level="info" message="SIGNING securityquoteload.mxt using key ${extprivkeyfile} (ID: ${privkeyid}):" />
 		<java newenvironment="true"
-			  classpathref="classpath"
+			  classpathref="keyadminlib"
 			  classname="com.moneydance.admin.KeyAdmin">
 			<arg value="signextjar"/>
 			<arg value="${privkeyfile}"/>

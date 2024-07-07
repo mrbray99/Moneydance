@@ -82,7 +82,8 @@ public class GetYahooQuote extends GetQuoteTask {
         try {
             InputStream stream = entity.getContent();
             String buffer = getJsonString(stream);
-            JsonObject nodes = JsonParser.parseString(buffer).getAsJsonObject();
+            JsonParser parser = new JsonParser();
+            JsonObject nodes = parser.parse(buffer).getAsJsonObject();
             try {
                 parseDoc(nodes, quotePrice);
             } catch (IOException a) {

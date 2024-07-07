@@ -44,7 +44,7 @@ import com.moneydance.modules.features.reportwriter.databeans.AccountBean;
 import com.moneydance.modules.features.reportwriter.view.DataDataRow;
 import com.moneydance.modules.features.reportwriter.view.DataParameter;
 
-public class AccountFactory extends AcctFilter {
+public class AccountFactory implements AcctFilter {
 
 	private DataDataRow dataParams;
 	private List<Account> selectedAccts;

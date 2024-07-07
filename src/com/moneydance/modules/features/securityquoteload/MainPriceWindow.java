@@ -1201,7 +1201,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 			if (sourceList.get(srce) == null || sourceList.get(srce).isEmpty())
 				continue;
 
-			StringBuilder url = new StringBuilder();
+			String url = "";
 			String type;
 			String ticker = "";
 			for (SecurityPrice price : sourceList.get(srce)) {
@@ -1257,10 +1257,10 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 					}
 				}
 				if (url.isEmpty())
-					url.append(newPriceUrl(Constants.SOURCES[srce.getSource() - 1], srce.getUuid(), ticker, type,
-							lastPriceDate));
+					url+=newPriceUrl(Constants.SOURCES[srce.getSource() - 1], srce.getUuid(), ticker, type,
+							lastPriceDate);
 				else
-					url.append(addPriceUrl(ticker, type, lastPriceDate));
+					url+=addPriceUrl(ticker, type, lastPriceDate);
 				if (listener != null)
 					listener.started(price.getTicker(), srce.getUuid());
 			}

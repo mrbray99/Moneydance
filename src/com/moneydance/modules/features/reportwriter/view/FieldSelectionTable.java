@@ -132,7 +132,7 @@ public class FieldSelectionTable extends JTable{
 
             return this.editor;
         }
-        static public class MouseEventReposter extends MouseAdapter {
+       public class MouseEventReposter extends MouseAdapter {
 
             private Component dispatchComponent;
             private JTableHeader header;
