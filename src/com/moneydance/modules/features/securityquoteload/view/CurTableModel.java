@@ -384,7 +384,7 @@ public class CurTableModel extends DefaultTableModel {
 			if (key.contains(Constants.TICKEREXTID))
 				continue;
 			entry.getValue().setSource(source);
-			debugInst.debug("MyTableModel", "setValueAt", MRBDebug.DETAILED,
+			debugInst.debug("MyTableModel", "updateAllSources", MRBDebug.DETAILED,
 					"Source updated " + key + " " + source);
 		}
 		this.fireTableDataChanged();

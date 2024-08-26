@@ -69,6 +69,7 @@ public abstract class Constants {
 	public static final String SPLITPERCENT="splitpercent";
 	public static final String SELECTALL="Select All Lines";
 	public static final String DESELECTALL="Deselect All Lines";
+	public static final String SORTCOLUMN="sortcolumn";
 	
 
     /*
@@ -77,7 +78,6 @@ public abstract class Constants {
 	public static final String EXCHANGEFILE = "stockexchanges.dict";
 	public static final String CURRENCYFILE = "pseudocurrency.dict";
 	public static final String PROGRAMNAME = "securityquoteload";
-	public static final String PACKAGEPATH = "com/moneydance/modules/features/securityquoteload";
 	public static final String RESOURCEPATH = "com/moneydance/modules/features/securityquoteload/resources";
 	public static final String PARAMETERFILE1 =  PROGRAMNAME+".bpam";
 	public static final String PARAMETERFILE2 = PROGRAMNAME+".bpam2";
@@ -103,12 +103,9 @@ public abstract class Constants {
 	public static final String SOURCEFT = "ft";
 	public static final String SOURCEFTHIST = "fth";
 	public static final String[] SOURCES = {SOURCEYAHOO,SOURCEFT,SOURCEYAHOOHIST,SOURCEFTHIST};
-	public static final Long TIMEOUT=20L;
 	public static final Long OVERALLTIMEOUT=20L;
 	public static final int TIMEOUTCOUNT=12;
 	public static final String SHOWCONSOLECMD = "showconsole";
-	public static final String HELLOCMD = "showconsole";
-	public static final String IAMHERECMD = "iamhere";
 	public static final String LOADPRICECMD = "loadPrice";
 	public static final String LOADHISTORYCMD = "loadHistory";
 	public static final String ERRORQUOTECMD = "errorQuote";
@@ -167,10 +164,7 @@ public abstract class Constants {
 	public static final String CRNTCOLWIDTH = "columnwidth";
 	public static final int FRAMEWIDTH = 800;	
 	public static final int FRAMEHEIGHT = 800;
-	public static final int LOADSCREENWIDTH = 1000;
 	public static final int LOADSCREENHEIGHT = 800;
-	public static final int POPUPSCREENHEIGHT = 300;
-	public static final int POPUPSCREENWIDTH = 300;
 	public static final String SELECTEDSECURITY= "SEC";
 	public static final String SELECTEDCURRENCY= "CUR";
 	public static final String SELECTEDSECCUR= "SECCUR";
@@ -193,8 +187,6 @@ public abstract class Constants {
 	public static final String SECRUNPARAM = "runparam";
 	public static final String CURRUNPARAM = "currunparam";
 	public static final String STARTTIME = "starttime";
-	public static final String LASTRUNTIME = "lastruntime";
-	public static final String NEXTRUNTIME = "nextruntime";
 	public static final String RUNDAILY = "rundaily";
 	public static final String RUNWEEKLY = "runweekly";
 	public static final String RUNMONTHLY = "runmonthly";
@@ -222,35 +214,11 @@ public abstract class Constants {
 	public static final int[]  DEFAULTCOLWIDTH = {40,100,100,100,300,80,80,80,80,80,80,80,80,80};
 	public static final int[]  DEFAULTCURCOLWIDTH = {40,100,300,80,80,80,80,80,80,80};
 	/*
-	 * Load screen panel sizes
-	 */
-	public static final int LOADBOTWIDTH = LOADSCREENWIDTH-50;
-	public static final int LOADBOTDEPTH = (LOADSCREENHEIGHT)/8;
-	public static final int LOADTOPWIDTH = LOADSCREENWIDTH-50;
-	public static final int LOADTOPDEPTH = (LOADSCREENHEIGHT)/8;
-	public static final int LOADMIDWIDTH = LOADSCREENWIDTH-50;
-	public static final int LOADMIDDEPTH = LOADSCREENHEIGHT-LOADTOPDEPTH-LOADBOTDEPTH-50;
-	public static final int LOADSELECTPREFWIDTH = 40;
-	public static final int LOADSELECTMINWIDTH = 20;
-	public static final int LOADCATPREFWIDTH = 200;
-	public static final int LOADCATMINWIDTH = 100;
-	public static final int LOADAMOUNTWIDTH = 80;
-	/*
 	 * Currency identifier
 	 */
 	private static final String str7f = String.valueOf('\u007F');
 	public static final String CURRENCYID = str7f+str7f+str7f;
 	public static final String CURRENCYTICKER = "=X";
-	/*
-	 * Number preferences
-	 */
-    public static final String PREF_MINIMUM_FRACTION_DIGITS = "minimumFractionDigits";
-    public static final int PREF_MINIMUM_FRACTION_DIGITS_DEFAULT = 4;
-
-    public static final String PREFMAXIMUMFRACTIONDIGITS = "maximumFractionDigits";
-    public static final int PREFMAXIMUMFRACTIONDIGITS_DEFAULT = 8;
-    private static final Class<com.moneydance.modules.features.securityquoteload.Constants> PREFS_CLASS = com.moneydance.modules.features.securityquoteload.Constants.class;
-    public static final Preferences PREFS = Preferences.userNodeForPackage(PREFS_CLASS);
     /*
      * task status
      */

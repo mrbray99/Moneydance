@@ -29,7 +29,9 @@
  */ 
 package com.moneydance.modules.features.budgetgen;
 
+
 import com.infinitekind.moneydance.model.Account;
+
 public class AccountDetails {
 	private Account acct;
 	private String parent;

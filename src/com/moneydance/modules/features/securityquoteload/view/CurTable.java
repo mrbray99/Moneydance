@@ -37,22 +37,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.TableColumnModelEvent;
-import javax.swing.event.TableColumnModelListener;
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
@@ -237,7 +227,7 @@ public class CurTable extends JTable {
 			return checkBox;
 		}
 	}
-	private class DoubleComparator implements Comparator<String>{
+	public class DoubleComparator implements Comparator<String>{
 		public int compare(String o1, String o2) {
 			if (o1.isBlank())
 				o1="-999999999.99";
@@ -253,7 +243,7 @@ public class CurTable extends JTable {
 			}
 		}
 	}
-	private class DateComparator implements Comparator<String>{
+	public class DateComparator implements Comparator<String>{
 		public int compare(String o1, String o2) {
 			if (o1.endsWith("++"))
 				o1=o1.substring(0,o1.length()-2);
@@ -334,6 +324,21 @@ public class CurTable extends JTable {
 		setRowHeight(20);
 		this.setAutoCreateRowSorter(false);
 		this.setRowSorter(trs);
+		trs.addRowSorterListener(e->{
+			if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED){
+				List<RowSorter.SortKey> keys = (List<RowSorter.SortKey>) e.getSource().getSortKeys();
+				if (!keys.isEmpty()){
+					RowSorter.SortKey key = keys.get(0);
+					int col = key.getColumn();
+					if (col >-1 && col < dm.getColumnCount()){
+						String order = key.getSortOrder()==SortOrder.ASCENDING?"A":
+								key.getSortOrder()==SortOrder.DESCENDING?"D":"U";
+						String colSorter = String.valueOf(col+"/"+order);
+						Main.preferences.put(Constants.PROGRAMNAME + ".CUR." + Constants.SORTCOLUMN,colSorter);
+					}
+				}
+			}
+		});
 		this.setFillsViewportHeight(true);
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.setCellSelectionEnabled(true);
@@ -412,6 +417,18 @@ public class CurTable extends JTable {
 		this.getColumnModel().getColumn(tradeDateCol).setPreferredWidth(columnWidths[tradeDateCol]);
 		this.getColumnModel().getColumn(tradeDateCol).setCellRenderer(rightRender);
 		trs.setComparator(tradeDateCol,new DateComparator());
+		/*
+		 Set up sorter after columns comparators have been set
+		 */
+		String sortOrder = Main.preferences.getString(Constants.PROGRAMNAME + ".CUR." + Constants.SORTCOLUMN,"");
+		if (!sortOrder.isEmpty()){
+			Integer col = Integer.parseInt(sortOrder.substring(0,sortOrder.indexOf("/")));
+			String seq = sortOrder.substring(sortOrder.indexOf("/")+1);
+			SortOrder order = seq.equals("A")?SortOrder.ASCENDING: seq.equals("D")?SortOrder.DESCENDING:SortOrder.UNSORTED;
+			List<RowSorter.SortKey> keys = new ArrayList<>(2);
+			keys.add(new RowSorter.SortKey(col,order));
+			trs.setSortKeys(keys);
+		}
 		/*
 		 * pop up menu
 		 */
@@ -545,7 +562,7 @@ public class CurTable extends JTable {
 			if (SwingUtilities.isRightMouseButton(e) || e.isControlDown())
 				showPopup(e);
 			else {
-				debugInst.debug("MouseListener", "mouseReleased", MRBDebug.DETAILED, "width started ");
+				debugInst.debug("MouseListener", "mousePressed", MRBDebug.DETAILED, "width started ");
 				if (e.getSource() instanceof JTableHeader) {
 					TableColumn tc = ((JTableHeader) e.getSource()).getResizingColumn();
 					if (tc != null) {
@@ -557,7 +574,7 @@ public class CurTable extends JTable {
 					}
 				}
 
-				debugInst.debug("MouseListener", "mouseReleased", MRBDebug.DETAILED,
+				debugInst.debug("MouseListener", "mousePressed", MRBDebug.DETAILED,
 						"column " + resizingColumn + " oldWidth " + oldWidth);
 			}
 		}

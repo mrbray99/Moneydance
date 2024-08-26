@@ -82,11 +82,10 @@ public class SecTableModel extends DefaultTableModel {
 		super();
 		this.params = params;
 		this.controller = controller;
-		savedAccounts=new TreeMap<String, SecurityTableLine>();
-		for (Entry<String, SecurityTableLine> line : accounts.entrySet())
-			savedAccounts.put(line.getKey(),line.getValue());
+		savedAccounts= new TreeMap<>();
+        savedAccounts.putAll(accounts);
 		resetIncluded();
-		listAccounts = new ArrayList<Entry<String, SecurityTableLine>>(this.accounts.entrySet());
+		listAccounts = new ArrayList<>(this.accounts.entrySet());
 		arrSource = params.getSourceArray();
 		baseCurrency = Main.context.getCurrentAccountBook().getCurrencies().getBaseType();
 		resetNumberFormat();
@@ -94,12 +93,11 @@ public class SecTableModel extends DefaultTableModel {
 	}
 
 	public void resetNumberFormat() {
-		multiplier = Math.pow(10.0, Double.valueOf(params.getDecimal()));
-		String strDec = "#,##0.00";
+		multiplier = Math.pow(10.0, params.getDecimal());
+		StringBuilder strDec = new StringBuilder("#,##0.00");
 		int iDec = params.getDecimal() - 2;
 		if (iDec > 0) {
-			for (int i = 0; i < iDec; i++)
-				strDec += "0";
+            strDec.append("0".repeat(iDec));
 		}
 		debugInst.debug("SecTableModel", "ResetNumberFormat", MRBDebug.DETAILED, "Decimal Format " + strDec);
 
@@ -107,22 +105,21 @@ public class SecTableModel extends DefaultTableModel {
 		dfSymbols.setDecimalSeparator(Main.decimalChar);
 		if (Main.decimalChar == ',')
 			dfSymbols.setGroupingSeparator('.');
-		dfNumbers = new DecimalFormat(strDec, dfSymbols);
+		dfNumbers = new DecimalFormat(strDec.toString(), dfSymbols);
 
 	}
 
 	public void resetData(SortedMap<String, SecurityTableLine> mapAccounts) {
 		if (savedAccounts==null)
-			savedAccounts=new TreeMap<String, SecurityTableLine>();
+			savedAccounts= new TreeMap<>();
 		else
 			savedAccounts.clear();
-		for (Entry<String, SecurityTableLine> line : mapAccounts.entrySet())
-			savedAccounts.put(line.getKey(),line.getValue());
+        savedAccounts.putAll(mapAccounts);
 		for (SecurityTableLine line : savedAccounts.values())
 			line.setSelected(false);
 		resetIncluded();
 		if (listAccounts == null)
-			listAccounts = new ArrayList<Entry<String, SecurityTableLine>>(this.accounts.entrySet());
+			listAccounts = new ArrayList<>(this.accounts.entrySet());
 		else {
 			listAccounts.clear();
 			listAccounts.addAll(this.accounts.entrySet());
@@ -135,9 +132,9 @@ public class SecTableModel extends DefaultTableModel {
 			line.setHistory(null);
 	}
 	public void switchDisplay() {
-		includeDonotload = includeDonotload?false:true;
+		includeDonotload = !includeDonotload;
 		resetIncluded();
-		listAccounts = new ArrayList<Entry<String, SecurityTableLine>>(this.accounts.entrySet());
+		listAccounts = new ArrayList<>(this.accounts.entrySet());
 	}
 	public void resetPrices() {
 		for (SecurityTableLine priceEntry : savedAccounts.values()) {
@@ -153,7 +150,7 @@ public class SecTableModel extends DefaultTableModel {
 	}
 	public void resetIncluded() {
 		if (accounts==null)
-			accounts=new TreeMap<String, SecurityTableLine>();
+			accounts= new TreeMap<>();
 		else accounts.clear();
 		for (Entry<String, SecurityTableLine> line :savedAccounts.entrySet()) {
 			if (line.getValue().getSource()==0 && !line.getValue().getTicker().contains(Constants.TICKEREXTID)) {
@@ -175,7 +172,6 @@ public class SecTableModel extends DefaultTableModel {
 	}
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Class getColumnClass(int c) {
 		if (c == 0)
 			return Boolean.class;
@@ -194,7 +190,6 @@ public class SecTableModel extends DefaultTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-
 		CurrencyType cellCur;
 		CurrencyType relativeCur;
 		SecurityTableLine rowData = listAccounts.get(rowIndex).getValue();
@@ -299,7 +294,7 @@ public class SecTableModel extends DefaultTableModel {
 		 */
 		case 12:
 			String quoteCurrency = rowData.getTradeCur();
-			if (quoteCurrency == null || quoteCurrency.equals(""))
+			if (quoteCurrency == null || quoteCurrency.isEmpty())
 				return "";
 			CurrencyType securityCurrency = rowData.getRelativeCurrencyType();
 			if (securityCurrency == null)
@@ -325,13 +320,9 @@ public class SecTableModel extends DefaultTableModel {
 		switch (col) {
 		case 2:
 		case 3:
-			if (rowData.getSource() == 0 || rowData.getTicker().indexOf(Constants.TICKEREXTID)>0)
-				return false;
-			return true;
+            return rowData.getSource() != 0 && rowData.getTicker().indexOf(Constants.TICKEREXTID) <= 0;
 		case 5:
-			if (rowData.getTicker().indexOf(Constants.TICKEREXTID)>0)
-				return false;
-			return true;
+                return rowData.getTicker().indexOf(Constants.TICKEREXTID) <= 0;
 		case 0:
 		case 8:
 		case 11:

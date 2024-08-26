@@ -42,23 +42,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.TableColumnModelEvent;
-import javax.swing.event.TableColumnModelListener;
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
@@ -133,7 +122,7 @@ public class SecTable extends JTable {
 	        return rComp;
 	    }
 
-	public class PriceRenderer extends DefaultTableCellRenderer {
+	private class PriceRenderer extends DefaultTableCellRenderer {
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 				boolean hasFocus, int row, int column) {
@@ -214,85 +203,6 @@ public class SecTable extends JTable {
 			return this;
 		}
 	}
-	private class DoubleComparator implements Comparator<String>{
-		public int compare(String o1, String o2) {
-			if (o1.isBlank())
-				o1="-999999999.99";
-			if (o2.isBlank())
-				o2="-999999999.99";
-			try {
-			Double d1 = Double.valueOf(stripNonNum(o1));
-			Double d2=Double.valueOf(stripNonNum(o2));
-			return d1.compareTo(d2);
-			}
-			catch (NumberFormatException e) {
-				return 0;
-			}
-		}
-	}
-	private class DateComparator implements Comparator<String>{
-		public int compare(String o1, String o2) {
-			if (o1.endsWith("++"))
-				o1=o1.substring(0,o1.length()-2);
-			if (o2.endsWith("++"))
-				o2=o2.substring(0,o2.length()-2);
-			Integer i1 = 0;
-			Integer i2 = 0;;
-			if (o1.isBlank())
-				i1=19000101;
-			else {
-				i1= Main.cdate.parseInt(o1);
-			}
-			if (o2.isBlank())
-				i2=19000101;
-			else {
-				i2=Main.cdate.parseInt(o2);
-			}
-			return i1.compareTo(i2);
-		}
-	}
-	private class IntComparator implements Comparator<String>{
-		public int compare(String o1, String o2) {
-			Integer d1;
-			Integer d2;
-			if (o1.isBlank() || o2.isBlank())
-				return 0;
-			try {
-				d1= Integer.valueOf(o1);
-				d2=Integer.valueOf(o2);
-			}
-			catch (NumberFormatException e) {
-				return 0;
-			}
-			return d1.compareTo(d2);
-		}
-	}
-	private String stripNonNum(String number) {
-		String output="";
-		for (int i=0;i<number.length();i++) {
-			if (number.charAt(i)==Main.decimalChar) {
-				output+=number.charAt(i);
-				continue;
-			}
-			switch (number.charAt(i)) {
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-			case '-':
-			case '+':
-				output+=number.charAt(i);
-			}
-		}
-		return output;
-	}
-
 	private int getBrightness(Color c) {
 		return (int) Math.sqrt(c.getRed() * c.getRed() * .241 + c.getGreen() * c.getGreen() * .691
 				+ c.getBlue() * c.getBlue() * .068);
@@ -358,8 +268,27 @@ public class SecTable extends JTable {
 		rightRender.setHorizontalAlignment(JLabel.RIGHT);
 		selectRenderer = new TableCheckBox(this, this.getDefaultRenderer(Boolean.class),
 				this.getDefaultRenderer(Object.class));
+		/*
+		Set up row sorter, if preferences contain saved sequence set up sequnce
+		 */
 		this.setAutoCreateRowSorter(false);
 		this.setRowSorter(trs);
+		trs.addRowSorterListener(e->{
+			if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED){
+				List<RowSorter.SortKey> keys = (List<RowSorter.SortKey>) e.getSource().getSortKeys();
+				if (!keys.isEmpty()){
+					RowSorter.SortKey key = keys.get(0);
+					int col = key.getColumn();
+					if (col >-1 && col < dm.getColumnCount()){
+						String order = key.getSortOrder()==SortOrder.ASCENDING?"A":
+								key.getSortOrder()==SortOrder.DESCENDING?"D":"U";
+						String colSorter = String.valueOf(col+"/"+order);
+						Main.preferences.put(Constants.PROGRAMNAME + ".SEC." + Constants.SORTCOLUMN,colSorter);
+					}
+				}
+			}
+		});
+
 		setRowHeight(20);
 		this.setFillsViewportHeight(true);
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -431,7 +360,7 @@ public class SecTable extends JTable {
 		this.getColumnModel().getColumn(newPriceCol).setCellRenderer(new PriceRenderer());
 		trs.setComparator(newPriceCol,new DoubleComparator());
 		/*
-		 * /* % change
+		 * % change
 		 */
 		this.getColumnModel().getColumn(perChangeCol).setResizable(true);
 		this.getColumnModel().getColumn(perChangeCol).setPreferredWidth(columnWidths[perChangeCol]);
@@ -465,6 +394,18 @@ public class SecTable extends JTable {
 		this.getColumnModel().getColumn(volumeCol).setPreferredWidth(columnWidths[volumeCol]);
 		this.getColumnModel().getColumn(volumeCol).setCellRenderer(rightRender);
 		trs.setComparator(volumeCol,new IntComparator());
+		/*
+		 Set up sorter after columns comparators have been set
+		 */
+		String sortOrder = Main.preferences.getString(Constants.PROGRAMNAME + ".SEC." + Constants.SORTCOLUMN,"");
+		if (!sortOrder.isEmpty()){
+			Integer col = Integer.parseInt(sortOrder.substring(0,sortOrder.indexOf("/")));
+			String seq = sortOrder.substring(sortOrder.indexOf("/")+1);
+			SortOrder order = seq.equals("A")?SortOrder.ASCENDING: seq.equals("D")?SortOrder.DESCENDING:SortOrder.UNSORTED;
+			List<RowSorter.SortKey> keys = new ArrayList<>(2);
+			keys.add(new RowSorter.SortKey(col,order));
+			trs.setSortKeys(keys);
+		}
 		/*
 		 * pop up menu
 		 */

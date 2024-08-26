@@ -699,7 +699,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 	protected void loadAccounts(Account parentAcct) {
 		List<Account> acctList = parentAcct.getSubAccounts();
 		for (Account acct : acctList) {
-			if (acct.getAccountType() == Account.AccountType.SECURITY) {
+			if (acct.getAccountType() == Account.AccountType.SECURITY && !acct.getAccountIsInactive()) {
 				if ((acct.getBalance() != 0L) || (params.getZero())) {
 					CurrencyType tickerCur = acct.getCurrencyType();
 					/*

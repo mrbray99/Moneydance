@@ -78,7 +78,6 @@ final class GetQuotesProgressMonitor {
 		if (ticker.startsWith(Constants.CURRENCYID)) {
 			cur = currencyTab.get(ticker);
 			cur.setTickerStatus(Constants.TASKSTARTED);
-//			ticker = ticker.substring(3);
 		}
 		else {
 			acct = accountsTab.get(ticker);
