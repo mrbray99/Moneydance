@@ -5,25 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e31fe38f-80ef-42ef-bfa7-d26c393db14f" name="Changes" comment="321100 sort table and inactive flag">
-      <change afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/DateComparator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/DoubleComparator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/IntComparator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/budgetgen.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/budgetgen.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/budgetreport.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/budgetreport.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/loadsectrans.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/loadsectrans.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securityhistoryload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securityhistoryload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/securitypriceload.mxt" beforeDir="false" afterPath="$PROJECT_DIR$/dist/securitypriceload.mxt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Moneydance Released Extensions.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Moneydance Released Extensions.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/AccountDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/budgetgen/AccountDetails.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/Constants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/GetQuotesProgressMonitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/GetQuotesProgressMonitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/MainPriceWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/MainPriceWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/meta_info.dict" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/meta_info.dict" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/CurTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/CurTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/CurTableModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/CurTableModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecTableModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/moneydance/modules/features/securityquoteload/view/SecTableModel.java" afterDir="false" />
     </list>
     <list id="515d24e9-28b0-477a-9756-57997cfa20ab" name="Not to be deployed" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -32,7 +14,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Merge.Settings">
-    <option name="BRANCH" value="3211" />
+    <option name="BRANCH" value="origin/321100" />
   </component>
   <component name="Git.Settings">
     <favorite-branches>
@@ -78,19 +60,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "jdk.selected.JAVA_MODULE": "temurin-21",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib2",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "project.propDebugger"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;temurin-21&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/F/mrbmo/eclipse-workspace/Moneydance Released Extensions/lib2&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propDebugger&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -221,7 +203,15 @@
       <option name="project" value="LOCAL" />
       <updated>1714907492065</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="321100 sort table and inactive flag">
+      <option name="closed" value="true" />
+      <created>1724678878935</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1724678878935</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -251,6 +241,7 @@
     <MESSAGE value="Build 3210 remove use of runtime in SecurityPriceLoad and SecurityHistoryLoad" />
     <MESSAGE value="Build 3210 remove unneeded files, update build files to remove warnings" />
     <MESSAGE value="MIS-292 Loadsectrans under unix" />
-    <option name="LAST_COMMIT_MESSAGE" value="MIS-292 Loadsectrans under unix" />
+    <MESSAGE value="321100 sort table and inactive flag" />
+    <option name="LAST_COMMIT_MESSAGE" value="321100 sort table and inactive flag" />
   </component>
 </project>

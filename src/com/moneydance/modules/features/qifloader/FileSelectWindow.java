@@ -188,6 +188,7 @@ public class FileSelectWindow extends JPanel {
         }
         acct = mapNames.get(accountsCB.getSelectedItem());
         if (loadFile(fileName)) {
+            listTrans.clear();
             for (QIFEntry entry : transactions) {
                 entry.setAmount(entry.getAmount() * -1.0);
                 Long amount = Math.round(entry.getAmount() * 100);
@@ -302,8 +303,6 @@ public class FileSelectWindow extends JPanel {
      * try to load selected file
      */
     private boolean loadFile(JTextField txtFileName) {
-        @SuppressWarnings("unused")
-        String fileType;
         try {
             FileReader frPrices = new FileReader(txtFileName.getText());
             BufferedReader brPrices = new BufferedReader(frPrices);
@@ -311,14 +310,13 @@ public class FileSelectWindow extends JPanel {
              * Get the file type
              */
             String strLine = brPrices.readLine();
-            if (strLine.charAt(0) == '!')
-                fileType = strLine.substring(1);
-            else {
+            if (strLine.charAt(0) != '!') {
                 JFrame fTemp = new JFrame();
                 JOptionPane.showMessageDialog(fTemp, "File Type missing");
                 return false;
             }
             QIFEntry entry = new QIFEntry();
+            transactions.clear();
             while ((strLine = brPrices.readLine()) != null) {
                 switch (strLine.charAt(0)) {
                     case 'D':
