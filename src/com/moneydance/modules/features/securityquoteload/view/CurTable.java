@@ -618,6 +618,8 @@ public class CurTable extends JTable {
 			JTable tc = (JTable) e.getSource();
 			Point p = e.getPoint();
 			int row = tc.rowAtPoint(p);
+			if (row < 0 || row>=dm.getRowCount())
+				return;
 			int modRow = tableObj.convertRowIndexToModel(row);
 			if (tc.getSelectedColumn() == tickerCol) {
 				if (e.getClickCount() == 2) {

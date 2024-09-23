@@ -226,7 +226,7 @@ public class GetYahooHistQuote extends GetQuoteTask {
                 try {
                     price = Double.parseDouble(value);
                 } catch (NumberFormatException e) {
-                    debugInst.debug("GetYahooHistQuote", "parseDoc", MRBDebug.INFO, "Error in low value  " + convTicker);
+                    debugInst.debug("GetYahooHistQuote", "parseDoc", MRBDebug.INFO, "Error in close value  " + convTicker);
                     price = 0.0;
                 }
             }
@@ -246,7 +246,7 @@ public class GetYahooHistQuote extends GetQuoteTask {
                 try {
                     volume = Long.parseLong(value);
                 } catch (NumberFormatException e) {
-                    debugInst.debug("GetYahooHistQuote", "parseDoc", MRBDebug.INFO, "Error in low value  " + convTicker);
+                    debugInst.debug("GetYahooHistQuote", "parseDoc", MRBDebug.INFO, "Error in volume value  " + convTicker);
                     volume = 0L;
                 }
             }
@@ -306,6 +306,8 @@ public class GetYahooHistQuote extends GetQuoteTask {
             value.append(column.charAt(i));
             i++;
         }
+        if (value.toString().equals("-"))
+            return "0";
         return value.toString();
 
     }
