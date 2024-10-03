@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="stockexchanges">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/lib" />
+      <root url="file://C:/Program Files/Java/javafx-sdk-16/javafx-sdk-16/lib" />
+      <root url="file://C:/Program Files/Moneydance20235064/lib" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://C:/Program Files/Java/javafx-sdk-16/javafx-sdk-16/lib" />
+    </SOURCES>
+    <jarDirectory url="file://C:/Program Files/Java/javafx-sdk-16/javafx-sdk-16/lib" recursive="false" />
+    <jarDirectory url="file://C:/Program Files/Moneydance20235064/lib" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
+    <jarDirectory url="file://C:/Program Files/Java/javafx-sdk-16/javafx-sdk-16/lib" recursive="false" type="SOURCES" />
+  </library>
+</component>
