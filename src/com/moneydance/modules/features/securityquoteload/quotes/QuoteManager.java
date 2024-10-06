@@ -312,12 +312,12 @@ public class QuoteManager implements QuoteListener {
 					timeout = 480L;
 			}
 			for (String stock : stocks) {
-				GetQuoteTask task = new GetYahooHistQuote(stock, this, httpClient,Constants.STOCKTYPE,tid,lastPriceDate.get(stock),throttleRequired);
+				GetQuoteTask task = new GetYahooQuote(stock, this, httpClient,Constants.STOCKTYPE,tid,lastPriceDate.get(stock),throttleRequired, true);
 				tasks.add(task);
 				totalQuotes++;
 			}
 			for (String currency : currencies) {
-				GetQuoteTask task = new GetYahooHistQuote(currency, this, httpClient,Constants.CURRENCYTYPE,tid,lastPriceDate.get(currency),throttleRequired);
+				GetQuoteTask task = new GetYahooQuote(currency, this, httpClient,Constants.CURRENCYTYPE,tid,lastPriceDate.get(currency),throttleRequired, true);
 				tasks.add(task);
 				totalQuotes++;
 			}

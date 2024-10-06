@@ -57,18 +57,37 @@ import com.google.gson.JsonParser;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.securityquoteload.Constants;
 import com.moneydance.modules.features.securityquoteload.QuotePrice;
+import org.h2.util.json.JSONArray;
 
 public class GetYahooQuote extends GetQuoteTask {
 
     private String yahooSecURL = "https://query1.finance.yahoo.com/v8/finance/chart/";
     private String yahooCurrURL = "https://query1.finance.yahoo.com/v8/finance/chart/";
     private SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private boolean history=false;
+    private JsonArray timestamps;
+    private List<String> volumes;
+    private List<String> closes;
+    private List<String> lows;
+    private List<String> highs;
+    Integer lastPriceDate;
 
     public GetYahooQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp, String tickerTypep, String tidp,boolean throttleRequired) {
         super(tickerp, listenerp, httpClientp, tickerTypep, tidp, throttleRequired);
         String convTicker = ticker.replace("^", "%5E");
         if (tickerType == Constants.STOCKTYPE)
             url = yahooSecURL + convTicker + "?p=" + convTicker + "&.tscr=fin-srch";
+        if (tickerType == Constants.CURRENCYTYPE)
+            url = yahooCurrURL + convTicker + "?p=" + convTicker;
+        debugInst.debug("GetYahooQuote", "GetYahooQuote", MRBDebug.DETAILED, "Executing :" + url);
+    }
+    public GetYahooQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp, String tickerTypep, String tidp,Integer lastPriceDate,boolean throttleRequired,boolean history) {
+        super(tickerp, listenerp, httpClientp, tickerTypep, tidp, throttleRequired);
+        this.history = history;
+        this.lastPriceDate = lastPriceDate;
+        String convTicker = ticker.replace("^", "%5E");
+        if (tickerType == Constants.STOCKTYPE)
+            url = yahooSecURL + convTicker + "?metrics=Close&interval=1d&range=1y";
         if (tickerType == Constants.CURRENCYTYPE)
             url = yahooCurrURL + convTicker + "?p=" + convTicker;
         debugInst.debug("GetYahooQuote", "GetYahooQuote", MRBDebug.DETAILED, "Executing :" + url);
@@ -135,9 +154,10 @@ public class GetYahooQuote extends GetQuoteTask {
         String timeZoneStr = "";
         Calendar tradeDateCal;
         String tradeDateStr = "";
-        String highValue;
-        String lowValue;
-        String volume;
+        double highValue;
+        double lowValue;
+        long volume;
+        double price;
         quoteNode = doc.get("chart");
         if (quoteNode == null || !(quoteNode instanceof JsonObject))
             throw new IOException("Cannot parse response for " + ticker);
@@ -207,7 +227,7 @@ public class GetYahooQuote extends GetQuoteTask {
             try {
                 quotePrice.setLowPrice(itemNode.getAsDouble());
             } catch (ClassCastException | IllegalStateException e) {
-                debugInst.debug("GetQuoteTask", "parseDoc", MRBDebug.INFO, "Invalid Market High ");
+                debugInst.debug("GetQuoteTask", "parseDoc", MRBDebug.INFO, "Invalid Market Low ");
                 quotePrice.setLowPrice(0.0D);
             }
         }
@@ -215,8 +235,84 @@ public class GetYahooQuote extends GetQuoteTask {
             throw new IOException("Cannot find trade date for " + ticker);
         tradeDateCal = getLastTrade(tradeDateStr, timeZoneStr);
         quotePrice.setTradeDate(dFormat.format(tradeDateCal.getTime()) + "T00:00");
+        if (!history || !params.getHistory())
+            return;
+        JsonElement timestampsNode = ((JsonObject)meta).get("timestamp");
+        if (timestampsNode == null || !(timestampsNode instanceof JsonArray))
+            throw new IOException("Cannot parse response for " + ticker);
+        JsonElement indicatorsNode = ((JsonObject)meta).get("indicators");
+        if (indicatorsNode == null)
+            throw new IOException("Cannot parse response for " + ticker);
+        JsonElement quoteHistNode = ((JsonObject)indicatorsNode).get("quote");
+        if (quoteHistNode == null)
+            throw new IOException("Cannot parse response for " + ticker);
+        JsonArray volumesNode;
+        JsonArray closesNode;
+        JsonArray lowsNode;
+        JsonArray highsNode;
+        if (!(quoteHistNode instanceof JsonArray))
+            throw new IOException("Cannot parse response for " + ticker);
+        JsonArray tmpArray =quoteHistNode.getAsJsonArray();
+        JsonElement tmpObj = tmpArray.get(0);
+        volumesNode = tmpObj.getAsJsonObject().get("volume").getAsJsonArray();
+        if (volumesNode == null)
+            throw new IOException("Cannot parse response for " + ticker);
+        closesNode =  tmpObj.getAsJsonObject().get("close").getAsJsonArray();
+        if (closesNode == null)
+            throw new IOException("Cannot parse response for " + ticker);
+        lowsNode =  tmpObj.getAsJsonObject().get("low").getAsJsonArray();
+        if (lowsNode == null)
+            throw new IOException("Cannot parse response for " + ticker);
+        highsNode =  tmpObj.getAsJsonObject().get("high").getAsJsonArray();
+        if (highsNode == null)
+            throw new IOException("Cannot parse response for " + ticker);
+        JsonArray timestampsArray = (JsonArray)timestampsNode;
+        for (int i = timestampsArray.size()-1;i>=0;i--){
+            int crntDate=0;
+            Calendar timeStamp = getLastTrade(timestampsArray.get(i).getAsString(),timeZoneStr);
+            if (timeStamp != null){
+                crntDate = timeStamp.get(Calendar.YEAR)*10000;
+                crntDate += (timeStamp.get(Calendar.MONTH)+1)*100;
+                crntDate += timeStamp.get(Calendar.DAY_OF_MONTH);
+                if (crntDate < lastPriceDate)
+                    break;
+            }
 
-        return;
+            lowValue=0.0;
+            price=0.0;
+            highValue=0.0;
+            volume = 0L;
+            boolean priceFound=false;
+            if (i<volumesNode.size()){
+                if (!volumesNode.get(i).isJsonNull())
+                    volume = volumesNode.get(i).getAsLong();
+            }
+            if (i < lowsNode.size()){
+                if (!lowsNode.get(i).isJsonNull())
+                    lowValue = lowsNode.get(i).getAsDouble();
+            }
+            if (i<highsNode.size()){
+                if (!highsNode.get(i).isJsonNull())
+                    highValue = highsNode.get(i).getAsDouble();
+            }
+            if (i<closesNode.size()){
+                if (!closesNode.get(i).isJsonNull()) {
+                    price = closesNode.get(i).getAsDouble();
+                    priceFound = true;
+                }
+            }
+            if (priceFound) {
+                QuotePrice historyPrice = new QuotePrice();
+                historyPrice.setTradeDateInt(crntDate);
+                historyPrice.setTradeDate(crntDate + "T00:00");
+                historyPrice.setPrice(price);
+                historyPrice.setHighPrice(highValue);
+                historyPrice.setLowPrice(lowValue);
+                historyPrice.setVolume(volume);
+                quotePrice.addHistory(historyPrice.getTradeDateInt(), historyPrice.getPrice(), historyPrice.getHighPrice(),
+                        historyPrice.getLowPrice(), historyPrice.getVolume());
+            }
+        }
     }
 
     private Calendar getLastTrade(String regularMarketTime, String exchangeTimezoneName) throws IOException {
