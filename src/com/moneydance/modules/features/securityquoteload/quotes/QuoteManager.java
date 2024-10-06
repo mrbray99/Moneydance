@@ -230,8 +230,8 @@ public class QuoteManager implements QuoteListener {
 		if (source.equals(Constants.SOURCEYAHOO)) {
 			Long timeout;
 			if ((stocks.size()+currencies.size()) > 59) {
-				throttleRequired = true;
-				Main.extension.frame.setThrottleMessage();
+				throttleRequired = false;
+				//Main.extension.frame.setThrottleMessage();
 				timeout = (stocks.size()+currencies.size())*10l;
 			}
 			else {
@@ -297,8 +297,8 @@ public class QuoteManager implements QuoteListener {
 		if (source.equals(Constants.SOURCEYAHOOHIST)) {
 			Long timeout;
 			if ((stocks.size()+currencies.size()) > 59) {
-				throttleRequired = true;
-				Main.extension.frame.setThrottleMessage();
+				throttleRequired = false;
+				//Main.extension.frame.setThrottleMessage();
 				timeout = (stocks.size()+currencies.size())*10l;
 			}
 			else {

@@ -48,6 +48,8 @@ import java.util.*;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.infinitekind.util.DateUtil;
+import com.moneydance.util.DateUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -269,6 +271,8 @@ public class GetYahooQuote extends GetQuoteTask {
         for (int i = timestampsArray.size()-1;i>=0;i--){
             int crntDate=0;
             Calendar timeStamp = getLastTrade(timestampsArray.get(i).getAsString(),timeZoneStr);
+            if (DateUtil.convertCalToInt(timeStamp) ==(DateUtil.convertCalToInt(tradeDateCal)))
+                continue;
             if (timeStamp != null){
                 crntDate = timeStamp.get(Calendar.YEAR)*10000;
                 crntDate += (timeStamp.get(Calendar.MONTH)+1)*100;
