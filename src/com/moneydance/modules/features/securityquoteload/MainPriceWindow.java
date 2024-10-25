@@ -1665,15 +1665,33 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		List<NameValuePair> results = URLEncodedUtils.parse(uri, charSet);
 		SecurityPrice newPrice = null;
 		NumberFormat nf = NumberFormat.getNumberInstance();
+		QuoteSource srce = null;
 		for (NameValuePair price : results) {
 			if (price.getName().compareToIgnoreCase(Constants.STOCKTYPE) == 0) {
 				newPrice = new SecurityPrice(price.getValue());
 			}
 			if (price.getName().compareToIgnoreCase(Constants.CURRENCYTYPE) == 0) {
 				String ticker = price.getValue();
-				if (ticker.endsWith(Constants.CURRENCYTICKER))
-					ticker = Constants.CURRENCYID
-							+ ticker.substring(3, ticker.indexOf(Constants.CURRENCYTICKER));
+				if (ticker.endsWith(Constants.CURRENCYTICKER)) {
+					switch (srce) {
+						case FT:
+						case FTHD:
+							ticker = Constants.CURRENCYID
+									+ ticker.substring(3, ticker.indexOf(Constants.CURRENCYTICKER));
+							break;
+						case YAHOO:
+						case YAHOOHD:
+							if (baseCurrencyID.equals("USD"))
+								ticker = Constants.CURRENCYID
+										+ ticker.substring(0, ticker.indexOf(Constants.CURRENCYTICKER));
+							else
+								ticker = Constants.CURRENCYID
+										+ ticker.substring(3, ticker.indexOf(Constants.CURRENCYTICKER));
+							break;
+						default:
+							break;
+					}
+				}
 				else {
 					if (ticker.contains("-")) {
 						ticker = Constants.CURRENCYID + ticker.substring(0, ticker.indexOf('-') + 1);
@@ -1705,6 +1723,12 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 			}
 			if (price.getName().compareToIgnoreCase(Constants.TIDCMD) == 0) {
 				uuid = price.getValue();
+				for (QuoteSource srcet : QuoteSource.values()) {
+					if (uuid.equals(srcet.getUuid())) {
+						srce = srcet;
+						break;
+					}
+				}
 			}
 			if (price.getName().compareToIgnoreCase(Constants.VOLUMETYPE) == 0) {
 				newPrice.setVolume(Long.parseLong(price.getValue()));

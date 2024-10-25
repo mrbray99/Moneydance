@@ -91,7 +91,7 @@ public class GetYahooQuote extends GetQuoteTask {
         if (tickerType == Constants.STOCKTYPE)
             url = yahooSecURL + convTicker + "?metrics=Close&interval=1d&range=1y";
         if (tickerType == Constants.CURRENCYTYPE)
-            url = yahooCurrURL + convTicker + "?p=" + convTicker;
+            url = yahooCurrURL + convTicker + "?p=" + convTicker+"&metrics=Close&interval=1d&range=1y";
         debugInst.debug("GetYahooQuote", "GetYahooQuote", MRBDebug.DETAILED, "Executing :" + url);
     }
 
@@ -277,7 +277,7 @@ public class GetYahooQuote extends GetQuoteTask {
                 crntDate = timeStamp.get(Calendar.YEAR)*10000;
                 crntDate += (timeStamp.get(Calendar.MONTH)+1)*100;
                 crntDate += timeStamp.get(Calendar.DAY_OF_MONTH);
-                if (crntDate < lastPriceDate)
+                if (crntDate <= lastPriceDate)
                     break;
             }
 

@@ -317,7 +317,7 @@ public class QuoteManager implements QuoteListener {
 				totalQuotes++;
 			}
 			for (String currency : currencies) {
-				GetQuoteTask task = new GetYahooQuote(currency, this, httpClient,Constants.CURRENCYTYPE,tid,lastPriceDate.get(currency),throttleRequired, true);
+					GetQuoteTask task = new GetYahooQuote(currency, this, httpClient,Constants.CURRENCYTYPE,tid,lastPriceDate.get(currency),throttleRequired, true);
 				tasks.add(task);
 				totalQuotes++;
 			}

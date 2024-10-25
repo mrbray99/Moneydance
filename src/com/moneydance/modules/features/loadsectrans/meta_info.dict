@@ -1,6 +1,6 @@
 {
   "vendor" = "Mike Bray"
-  "module_build" = "321101"
+  "module_build" = "321402"
 "minbuild" = "1820"
   "vendor.url" = "https://github.com/mrbray99/moneydanceproduction/wiki"
   "module_name" = "Load Security Transactions"
