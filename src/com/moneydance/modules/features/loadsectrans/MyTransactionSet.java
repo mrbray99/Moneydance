@@ -45,12 +45,12 @@ public class MyTransactionSet implements TxnSearch, TransactionListener {
 	private Map<Integer,List<AbstractTxn>> transactionDates;
 	private Parameters2 params;
 	private  List<TableListener> listListeners = new ArrayList<>();
-	private SortedSet<SecLine> setLine;
-	public MyTransactionSet(Account root, Account acctp, Parameters2 params, SortedSet<SecLine> setLine) {
+	private List<SecLine> listLine;
+	public MyTransactionSet(Account root, Account acctp, Parameters2 params, List<SecLine> listLine) {
 		acct = acctp;
 		this.params = params;
 		txnSet = Main.tranSet.getTransactions(this);
-		this.setLine = setLine;
+		this.listLine = listLine;
 		Main.tranSet.addTransactionListener(this);
 		/*
 		 * Create map of transactions by date
@@ -137,7 +137,7 @@ public class MyTransactionSet implements TxnSearch, TransactionListener {
 	@Override
 	public void transactionModified(AbstractTxn txnLine){
 		long lTxnValue = txnLine.getValue();
-		for (SecLine slTran : setLine) {
+		for (SecLine slTran : listLine) {
 			long lValue = slTran.getValue();
 			lValue = (lValue < 0 ? lValue*-1 : lValue);
 			lTxnValue = (lTxnValue < 0 ? lTxnValue*-1 : lTxnValue);

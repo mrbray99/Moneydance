@@ -56,7 +56,7 @@ import com.moneydance.awt.GridC;
 import com.moneydance.awt.JDateField;
 
 public class loadPricesWindow extends JPanel implements TableListener {
-    private SortedSet<SecLine> setLine;
+    private List<SecLine> listLine;
     private Account acct;
     private MyTableModel pricesModel;
     private MyTable pricesTab;
@@ -77,12 +77,12 @@ public class loadPricesWindow extends JPanel implements TableListener {
 	public loadPricesWindow(JTextField txtFileName,Account acctp, Parameters2 objParmsp) {
 		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
 		mdGUI = mdMain.getUI();
-		setLine = new TreeSet<>(new SecLineCompare());
+		listLine = new ArrayList<>();
 		acct = acctp;
 		params = objParmsp;
 		
 		loadFile (txtFileName);
-		pricesModel = new MyTableModel (setLine, Main.mapAccounts);
+		pricesModel = new MyTableModel (listLine, Main.mapAccounts);
 		pricesTab = new MyTable (pricesModel);
 		/*
 		 * Start of screen
@@ -157,7 +157,7 @@ public class loadPricesWindow extends JPanel implements TableListener {
 	 private void loadFile(JTextField fileName) {
 			String exchange;
 			String ticker;
-		 	Main.generatedTranSet = new MyTransactionSet(Main.root, acct,params,setLine);
+		 	Main.generatedTranSet = new MyTransactionSet(Main.root, acct,params,listLine);
 		 	Main.generatedTranSet.addListener(this);
 			try {
 				FileReader frPrices = new FileReader(fileName.getText());
@@ -276,7 +276,7 @@ public class loadPricesWindow extends JPanel implements TableListener {
 							objLine.getTicker().equals(Constants.NOTICKER))
 							objLine.setValid(false);
 					Main.generatedTranSet.findTransaction(objLine);
-					setLine.add(objLine);
+					listLine.add(objLine);
 				}
 				brPrices.close();
 			}
@@ -304,7 +304,7 @@ public class loadPricesWindow extends JPanel implements TableListener {
 	      //Create and set up the window.
 	      JFrame frame = new JFrame(" Load Security Prices - Build "+Main.buildStr);
 	      frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	      generateWindow = new GenerateWindow(setLine,acct,params);
+	      generateWindow = new GenerateWindow(listLine,acct,params);
 	      frame.getContentPane().add(generateWindow);
 
 	      //Display the window.

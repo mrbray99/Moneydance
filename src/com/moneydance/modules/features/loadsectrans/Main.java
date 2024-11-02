@@ -174,7 +174,7 @@ extends FeatureModule
 
 	@Override
 	public String getName() {
-		return "Security Transaction Loader";
+		return "AJ's Security Transaction Loader";
 	}
 
 	private synchronized void showConsole() {
@@ -182,7 +182,7 @@ extends FeatureModule
 		acctBook = context.getCurrentAccountBook();
 		mapAccounts = new TreeMap<>();
 		tranSet = acctBook.getTransactionSet();
-		JFrame frame = new JFrame("Load Security Transactions - Build "+buildStr);
+		JFrame frame = new JFrame("AJ's Load Security Transactions - Build "+buildStr);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		panScreen = new FileSelectWindow();
 		frame.getContentPane().add(panScreen);

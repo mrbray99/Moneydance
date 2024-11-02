@@ -44,9 +44,9 @@ public class MyTableModel extends DefaultTableModel {
     private List<SecLine>listLines;
 	private static String[] arrColumns = {"Select","Ticker","Settle","C","Reference","Description","Value","Units"};
 
-	public MyTableModel(Set<SecLine> setLinesp,SortedMap<String,Account> mapAccountsp){
+	public MyTableModel(List<SecLine> listLinesp,SortedMap<String,Account> mapAccountsp){
 		super();
-		listLines = new ArrayList<>(setLinesp);
+		listLines = new ArrayList<>(listLinesp);
 	}
 
 	@Override

@@ -38,7 +38,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.SortedSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -54,7 +55,7 @@ import com.moneydance.apps.md.view.MoneydanceUI;
 import com.moneydance.awt.GridC;
 
 public class GenerateWindow extends JPanel {
-	private SortedSet<SecLine> setLine;
+	private List<SecLine> listLine;
 	private Account acct;
 	private GenerateTable transTab;
 	private GenerateTableModel transModel;
@@ -72,10 +73,10 @@ public class GenerateWindow extends JPanel {
 
 	private JScrollPane transScrollPane;
 	private Parameters2 params;
-	public GenerateWindow(SortedSet<SecLine> setLine, Account acct, Parameters2 params) {
+	public GenerateWindow(List<SecLine> listLine, Account acct, Parameters2 params) {
 		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
 		mdGUI = mdMain.getUI();
-		this.setLine = setLine;
+		this.listLine = listLine;
 		this.acct = acct;
 		this.params = params;
 		transModel = new GenerateTableModel();
@@ -177,7 +178,7 @@ public class GenerateWindow extends JPanel {
 			
 	}
 	private void generateTrans() {
-		for (SecLine secLine :setLine) {
+		for (SecLine secLine :listLine) {
 			if (!secLine.getSelect())
 				continue;
 			FieldLine objMatch = params.matchType(secLine.getTranType());
@@ -382,8 +383,8 @@ public class GenerateWindow extends JPanel {
 		  *   3. redisplay window 
 		  */
 		 Main.tranSet = Main.acctBook.getTransactionSet();
-		 Main.generatedTranSet = new MyTransactionSet(Main.root, acct, params,setLine);
-		 for (SecLine objLine :setLine) {
+		 Main.generatedTranSet = new MyTransactionSet(Main.root, acct, params, listLine);
+		 for (SecLine objLine :listLine) {
 			if (!objLine.getSelect())
 				continue;
 			objLine.setProcessed(false);
