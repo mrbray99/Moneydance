@@ -49,25 +49,21 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
 
 import javax.swing.*;
 
 
+import com.moneydance.modules.features.securityquoteload.quotes.QuoteException;
+import com.moneydance.modules.features.securityquoteload.view.*;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 
 import com.infinitekind.moneydance.model.Account;
 import com.infinitekind.moneydance.model.AccountBook;
-import com.infinitekind.moneydance.model.AccountListener;
-import com.infinitekind.moneydance.model.CurrencyListener;
 import com.infinitekind.moneydance.model.CurrencySnapshot;
 import com.infinitekind.moneydance.model.CurrencyTable;
 import com.infinitekind.moneydance.model.CurrencyType;
@@ -76,17 +72,10 @@ import com.moneydance.apps.md.controller.Util;
 import com.moneydance.apps.md.view.MoneydanceUI;
 import com.moneydance.awt.GridC;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
+import com.moneydance.modules.features.mrbutil.MRBEDTInvoke;
 import com.moneydance.modules.features.securityquoteload.Constants.QuoteSource;
-import com.moneydance.modules.features.securityquoteload.view.CurTable;
-import com.moneydance.modules.features.securityquoteload.view.CurTableModel;
-import com.moneydance.modules.features.securityquoteload.view.CurrencyTab;
-import com.moneydance.modules.features.securityquoteload.view.CurrencyTableLine;
-import com.moneydance.modules.features.securityquoteload.view.ParameterTab;
-import com.moneydance.modules.features.securityquoteload.view.SecTable;
-import com.moneydance.modules.features.securityquoteload.view.SecTableModel;
-import com.moneydance.modules.features.securityquoteload.view.SecurityCurrencyTab;
-import com.moneydance.modules.features.securityquoteload.view.SecurityTab;
-import com.moneydance.modules.features.securityquoteload.view.SecurityTableLine;
+
+import static com.moneydance.modules.features.securityquoteload.Constants.QuoteSource.ALPHAVAN;
 
 public class MainPriceWindow extends JFrame implements TaskListener {
 	/**
@@ -154,21 +143,21 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 	protected ParameterTab parameterScreen = null;
 	private String selectedTab;
 	private boolean selectAllReturned = true;
-//	private boolean getPricesRunning=false;
 
 	public MainPriceWindow(Main main, int runtype) {
+		Main.debugInst.debug("MainPriceWindow", "MainPriceWindow", MRBDebug.DETAILED,
+				"Started");
 		this.runtype = runtype;
 		if (runtype != Constants.MANUALRUN && runtype != 0)
 			return;
+		Main.debugInst.debug("MainPriceWindow", "MainPriceWindow", MRBDebug.DETAILED,
+				"Setup reached");
 		mdMain = com.moneydance.apps.md.controller.Main.mainObj;
 		mdGUI = mdMain.getUI();
 
 		this.main = main;
 		params = Parameters.getParameters();
 		errorTickers = null;
-		AccountBook book = Main.context.getCurrentAccountBook();
-	//	book.addAccountListener(this);
-	//	book.getCurrencies().addCurrencyListener(this);
 		/*
 		 * start of screen, set up tabs
 		 */
@@ -451,7 +440,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		helpBtn = new JButton("Help");
 		helpBtn.setToolTipText("Display help information");
 		helpBtn.addActionListener(e -> {
-            String url = "https://github.com/mrbray99/moneydanceproduction/wiki/New-Quote-Loader";
+            String url = "http://github.com/mrbray99/moneydanceproduction/wiki/New-Quote-Loader";
             mdGUI.showInternetURL(url);
         });
 		buttonsPanel.add(helpBtn, GridC.getc(gridX++, gridY).west().insets(10, 10, 10, 10));
@@ -570,6 +559,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 						line.setExchange(security.getExchange());
 						line.setFtAlternate(security.getFtAlternate());
 						line.setYahooAlternate(security.getYahooAlternate());
+						line.setAlphaAlternate(security.getAlphaAlterate());
 					} else
 						accountSources.remove(security.getTicker());
 				} else {
@@ -580,6 +570,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 						newLine.setExchange(security.getExchange());
 						newLine.setFtAlternate(security.getFtAlternate());
 						newLine.setYahooAlternate(security.getYahooAlternate());
+						newLine.setAlphaAlternate(security.getAlphaAlterate());
 						accountSources.put(security.getTicker(), newLine);
 					}
 				}
@@ -725,12 +716,13 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 									dacct.setExchange(line.getExchange());
 									dacct.setFtAlternate(line.getFtAlternate());
 									dacct.setYahooAlternate(line.getYahooAlternate());
+									dacct.setAlphaAlternate(line.getAlphaAlternate());
 									dacct.setSource(line.getSource());
 								} else
 									dacct.setSource(0);
 								if (iSnapIndex < 0) {
 									dacct.setLastPrice(1.0);
-									dacct.setPriceDate(0);
+									dacct.setPriceDate(19010101);
 									securitiesTable.put(ticker, dacct);
 								} else {
 									CurrencySnapshot ctssLast = listSnap.get(iSnapIndex);
@@ -739,7 +731,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 									} else {
 										dacct.setLastPrice(0.0);
 									}
-									dacct.setPriceDate(ctssLast!=null?ctssLast.getDateInt():190101);
+									dacct.setPriceDate(ctssLast!=null?ctssLast.getDateInt():19010101);
 									securitiesTable.put(ticker, dacct);
 								}
 							}
@@ -781,11 +773,13 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 							securityLine.setExchange(sourceLine.getExchange());
 							securityLine.setFtAlternate(sourceLine.getFtAlternate());
 							securityLine.setYahooAlternate(sourceLine.getYahooAlternate());
+							securityLine.setAlphaAlternate(sourceLine.getAlphaAlternate());
 							securityLine.setSource(sourceLine.getSource());
 						} else {
 							securityLine.setSource(0);
 							securityLine.setExchange(null);
 							securityLine.setFtAlternate(null);
+							securityLine.setAlphaAlternate(null);
 							securityLine.setYahooAlternate(null);
 						}
 						if (snapIndex < 0) {
@@ -799,7 +793,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 							} else {
 								securityLine.setLastPrice(0.0);
 							}
-							securityLine.setPriceDate(ctssLast != null ? ctssLast.getDateInt() : 190101);
+							securityLine.setPriceDate(ctssLast != null ? ctssLast.getDateInt() : 19010101);
 							securitiesTable.put(ticker, securityLine);
 						}
 					}
@@ -1097,6 +1091,239 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 	protected void getPrices() {
 		completed = false;
 		Main.isUpdating = true;
+		getPricesSetup();
+		/**
+		 *
+		 * Sort Tables according to chosen column
+		 *
+		 */
+		if (processSecurity) {
+			/*
+				Need to sort table into saved sort sequence
+			 */
+			List<String> sortedList = new ArrayList<>(securitiesTable.keySet());
+			String sortOrder = Main.preferences.getString(Constants.PROGRAMNAME + ".SEC." + Constants.SORTCOLUMN,"");
+			int col=1;
+			String seq="A";
+			if (!sortOrder.isEmpty()) {
+				col = Integer.parseInt(sortOrder.substring(0, sortOrder.indexOf("/")));
+				seq = sortOrder.substring(sortOrder.indexOf("/") + 1);
+			}
+			if (seq.equals("D")) {
+				Main.debugInst.debug("MainPriceWindow", "getPrices", MRBDebug.INFO,
+						"Security Quotes executed in Descending sequence on " + secPricesModel.getColumnName(col));
+				SortSecColumns compare = new SortSecColumns(col);
+				sortedList.sort(Collections.reverseOrder(compare));
+			}
+			else {
+				Main.debugInst.debug("MainPriceWindow", "getPrices", MRBDebug.INFO,
+						"Security Quotes executed in Ascending sequence on " + secPricesModel.getColumnName(col));
+				SortSecColumns compare = new SortSecColumns(col);
+				sortedList.sort(compare);
+			}
+			/*
+			sortedList is a list of tickers sorted according to the chosen column.
+			 */
+			for (String ticker : sortedList) {
+				SecurityTableLine secLine = securitiesTable.get(ticker);
+				if (secLine.getSource() == 0)
+					continue;
+				if (secLine.getTicker().indexOf(Constants.TICKEREXTID)>0)
+					continue;
+				QuoteSource qs = QuoteSource.findSource(secLine.getSource());
+				SecurityPrice spLine = new SecurityPrice(secLine.getTicker());
+				if (secLine.getExchange()!=null && !secLine.getExchange().isEmpty())
+					spLine.setExchange(secLine.getExchange());
+				else
+					spLine.setExchange(null);
+				spLine.setAlternate(secLine.getAlternateTicker());
+				sourceList.get(qs).add(spLine);
+			}
+
+		}
+		/**
+		 *
+		 *  Sort currency table
+		 */
+		if (processCurrency) {
+			List<String> sortedList = new ArrayList<>(currenciesTable.keySet());
+			String sortOrder = Main.preferences.getString(Constants.PROGRAMNAME + ".CUR." + Constants.SORTCOLUMN,"");
+			int col=1;
+			String seq="A";
+			if (!sortOrder.isEmpty()) {
+				col = Integer.parseInt(sortOrder.substring(0, sortOrder.indexOf("/")));
+				seq = sortOrder.substring(sortOrder.indexOf("/") + 1);
+			}
+			if (seq.equals("D")) {
+				Main.debugInst.debug("MainPriceWindow", "getPrices", MRBDebug.INFO,
+						"Currency Quotes executed in Descending sequence on " + curRatesModel.getColumnName(col));
+				SortCurColumns compare = new SortCurColumns(col);
+				sortedList.sort(Collections.reverseOrder(compare));
+			}
+			else {
+				Main.debugInst.debug("MainPriceWindow", "getPrices", MRBDebug.INFO,
+						"Currency Quotes executed in Ascending sequence on " + curRatesModel.getColumnName(col));
+				SortCurColumns compare = new SortCurColumns(col);
+				sortedList.sort(compare);
+			}
+			/*
+			sortedList is a list of tickers sorted according to the chosen column.
+			 */
+			for (String ticker : sortedList) {
+				CurrencyTableLine curLine = currenciesTable.get(ticker);
+				if (curLine.getSource() == 0)
+					continue;
+				QuoteSource qs = QuoteSource.findSource(curLine.getSource());
+				SecurityPrice spLine = new SecurityPrice(curLine.getTicker());
+				spLine.setExchange(null);
+				sourceList.get(qs).add(spLine);
+			}
+		}
+		/**
+		 *  Check for number of quotes
+		 *  	If Manual run and no quotes reset buttons and return
+		 *  	If autorun check to see if second run needed
+		 */
+		int totalQuotes = 0;
+		for (List<SecurityPrice> item : sourceList.values())
+			totalQuotes += item.size();
+		if (totalQuotes == 0) {
+			if (runtype == Constants.MANUALRUN) {
+				if (tabs.getSelectedIndex() == 0) {
+					getPricesBtn.setEnabled(true);
+					if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME)
+						getRatesBtn.setEnabled(true);
+				}
+				if (tabs.getSelectedIndex() == 1) {
+					if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE)
+						getRatesBtn.setEnabled(true);
+				}
+			}
+
+			else {
+				if (Main.standAloneRequested && processCurrency) {
+					MRBEDTInvoke.showURL(Main.context,"moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                            + Constants.RUNSECONDRUNCMD);
+				}
+				else {
+					MRBEDTInvoke.showURL(Main.context,"moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                            + Constants.AUTODONECMD);
+				}
+			}
+
+			return;
+		}
+		listener.setSubTaskSize(totalQuotes);
+		completed = false;
+		/*
+		 * let main process know we are starting a quote
+		 */
+		MRBEDTInvoke.showURL(Main.context,"moneydance:fmodule:" + Constants.PROGRAMNAME + ":" + Constants.STARTQUOTECMD
+				+ "?numquotes=" + totalQuotes);
+		Integer lastPriceDate = -1;
+		for (QuoteSource srce : QuoteSource.values()) {
+			if (sourceList.get(srce) == null || sourceList.get(srce).isEmpty())
+				continue;
+			if (srce.equals(ALPHAVAN)&&!checkAlphaKey()) // The API Key must be set if source is Alpha Vantage
+				return;
+			StringBuilder url = new StringBuilder();
+			String type;
+			String ticker = "";
+			String tradeCur= "";
+			for (SecurityPrice price : sourceList.get(srce)) {
+				if (price.isCurrency()) {
+					/**
+					 * set up currency fields
+					 */
+					type = Constants.CURRENCYTYPE;
+					String currency = price.getCurrency();
+					CurrencyTableLine currLine = currenciesTable.get(price.getTicker());
+					if (currency.endsWith("-"))
+						ticker = currency + baseCurrencyID;
+					else {
+						switch (srce) {
+						case FT:
+						case FTHD:
+							ticker = baseCurrencyID + currency;
+							lastPriceDate = currLine.getPriceDate();
+							break;
+						case YAHOO:
+						case YAHOOHD:
+							if (baseCurrencyID.equals("USD"))
+								ticker = currency + Constants.CURRENCYTICKER;
+							else
+								ticker = baseCurrencyID + currency + Constants.CURRENCYTICKER;
+							lastPriceDate = currLine.getPriceDate();
+							break;
+						case ALPHAVAN:
+							ticker=baseCurrencyID+"/"+currency;
+							tradeCur = currency;
+							lastPriceDate=-1;
+						default:
+							break;
+						}
+					}
+				} else {
+					/**
+					 * set up security fields
+					 */
+					type = Constants.STOCKTYPE;
+					ticker = price.getTicker();
+					String newTicker = params.getNewTicker(ticker, price.getExchange(), price.getAlternate(),
+							srce.getSource());
+					SecurityTableLine line = securitiesTable.get(ticker);
+					switch (srce) {
+					case YAHOOHD:
+					case FTHD:
+						lastPriceDate = line.getPriceDate();
+						break;
+					case FT:
+					case YAHOO:
+					case ALPHAVAN:
+						if (price.getExchange()!=null && !price.getExchange().isEmpty()){
+							tradeCur = params.getExchangeCurrency(price.getExchange());
+							if (tradeCur == null)
+								tradeCur = securitiesTable.get(ticker).getRelativeCurrencyType().getIDString();
+						}
+						else
+							tradeCur = securitiesTable.get(ticker).getRelativeCurrencyType().getIDString();
+						lastPriceDate = line.getPriceDate();
+						break;
+					default:
+						break;
+
+					}
+					if (!newTicker.equals(ticker)) {
+						alteredTickers.put(newTicker, ticker);
+						Main.debugInst.debug("MainPriceWindow", "getPrices", MRBDebug.DETAILED,
+								"Ticker changed from " + ticker + " to " + newTicker);
+						ticker = newTicker;
+					}
+				}
+				if (srce.equals(QuoteSource.ALPHAVAN)){
+					if (url.isEmpty())
+							url.append(newPriceAlphaUrl(Constants.SOURCES[srce.getSource() - 1], srce.getUuid(), ticker, tradeCur,type,
+									lastPriceDate));
+						else
+							url.append(addPriceAlphaUrl(ticker, tradeCur, type, lastPriceDate));
+				}
+				else {
+					if (url.isEmpty())
+						url.append(newPriceUrl(Constants.SOURCES[srce.getSource() - 1], srce.getUuid(), ticker, type,
+								lastPriceDate));
+					else
+						url.append(addPriceUrl(ticker, type, lastPriceDate));
+				}
+				if (listener != null)
+					listener.started(price.getTicker(), srce.getUuid());
+
+			}
+			Main.debugInst.debug("MainPriceWindow", "getPrices", MRBDebug.INFO, "URI " + url);
+			MRBEDTInvoke.showURL(Main.context,url.toString());
+		}
+
+	}
+	private void getPricesSetup(){
 		if (processSecurity) {
 			for (SecurityTableLine line : securitiesTable.values())
 				line.setTickerStatus(0);
@@ -1133,141 +1360,17 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 			QuoteSource.findSource(srce).setUuid(UUID.randomUUID().toString());
 			sourceList.put(QuoteSource.findSource(srce), new ArrayList<>());
 		}
-		if (processSecurity) {
-			for (SecurityTableLine secLine : securitiesTable.values()) {
-				if (secLine.getSource() == 0)
-					continue;
-				if (secLine.getTicker().indexOf(Constants.TICKEREXTID)>0)
-					continue;
-				QuoteSource qs = QuoteSource.findSource(secLine.getSource());
-				SecurityPrice spLine = new SecurityPrice(secLine.getTicker());
-				if (secLine.getExchange()!=null && !secLine.getExchange().isEmpty())
-					spLine.setExchange(secLine.getExchange());
-				else
-					spLine.setExchange(null);
-				spLine.setAlternate(secLine.getAlternateTicker());
-				sourceList.get(qs).add(spLine);
-			}
-
+	}
+	private boolean checkAlphaKey(){
+		if (params.getAlphaAPIKey()==null || params.getAlphaAPIKey().isEmpty()){
+			SwingUtilities.invokeLater(new Runnable(){
+				public void run(){
+					JOptionPane.showMessageDialog(null,"Alpha Vantage Api key not set.  Please add in the parameter screen");
+				}
+			});
+			return false;
 		}
-		if (processCurrency) {
-			for (CurrencyTableLine curLine : currenciesTable.values()) {
-				if (curLine.getSource() == 0)
-					continue;
-				QuoteSource qs = QuoteSource.findSource(curLine.getSource());
-				SecurityPrice spLine = new SecurityPrice(curLine.getTicker());
-				spLine.setExchange(null);
-				sourceList.get(qs).add(spLine);
-			}
-		}
-		int totalQuotes = 0;
-		for (List<SecurityPrice> item : sourceList.values())
-			totalQuotes += item.size();
-		if (totalQuotes == 0) {
-			if (runtype == Constants.MANUALRUN) {
-				if (tabs.getSelectedIndex() == 0) {
-					getPricesBtn.setEnabled(true);
-					if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME)
-						getRatesBtn.setEnabled(true);
-				}
-				if (tabs.getSelectedIndex() == 1) {
-					if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE)
-						getRatesBtn.setEnabled(true);
-				}
-			}
-
-			else {
-				if (Main.standAloneRequested && processCurrency) {
-					SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-                            + Constants.RUNSECONDRUNCMD));
-				}
-				else {
-					SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-                            + Constants.AUTODONECMD));
-				}
-			}
-
-			return;
-		}
-		listener.setSubTaskSize(totalQuotes);
-		completed = false;
-		/*
-		 * let main process know we are starting a quote
-		 */
-		Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":" + Constants.STARTQUOTECMD
-				+ "?numquotes=" + totalQuotes);
-		Integer lastPriceDate = -1;
-		for (QuoteSource srce : QuoteSource.values()) {
-			if (sourceList.get(srce) == null || sourceList.get(srce).isEmpty())
-				continue;
-
-			StringBuilder url = new StringBuilder();
-			String type;
-			String ticker = "";
-			for (SecurityPrice price : sourceList.get(srce)) {
-				if (price.isCurrency()) {
-					type = Constants.CURRENCYTYPE;
-					String currency = price.getCurrency();
-					CurrencyTableLine currLine = currenciesTable.get(price.getTicker());
-					if (currency.endsWith("-"))
-						ticker = currency + baseCurrencyID;
-					else {
-						switch (srce) {
-						case FT:
-						case FTHD:
-							ticker = baseCurrencyID + currency;
-							lastPriceDate = currLine.getPriceDate();
-							break;
-						case YAHOO:
-						case YAHOOHD:
-							if (baseCurrencyID.equals("USD"))
-								ticker = currency + Constants.CURRENCYTICKER;
-							else
-								ticker = baseCurrencyID + currency + Constants.CURRENCYTICKER;
-							lastPriceDate = currLine.getPriceDate();
-							break;
-						default:
-							break;
-						}
-					}
-				} else {
-					type = Constants.STOCKTYPE;
-					ticker = price.getTicker();
-					String newTicker = params.getNewTicker(ticker, price.getExchange(), price.getAlternate(),
-							srce.getSource());
-					SecurityTableLine line = securitiesTable.get(ticker);
-					switch (srce) {
-					case YAHOOHD:
-					case FTHD:
-						lastPriceDate = line.getPriceDate();
-						break;
-					case FT:
-					case YAHOO:
-						lastPriceDate = -1;
-						break;
-					default:
-						break;
-
-					}
-					if (!newTicker.equals(ticker)) {
-						alteredTickers.put(newTicker, ticker);
-						Main.debugInst.debug("MainPriceWindow", "getPrices", MRBDebug.DETAILED,
-								"Ticker changed from " + ticker + " to " + newTicker);
-						ticker = newTicker;
-					}
-				}
-				if (url.isEmpty())
-					url.append(newPriceUrl(Constants.SOURCES[srce.getSource() - 1], srce.getUuid(), ticker, type,
-							lastPriceDate));
-				else
-					url.append(addPriceUrl(ticker, type, lastPriceDate));
-				if (listener != null)
-					listener.started(price.getTicker(), srce.getUuid());
-			}
-			Main.debugInst.debug("MainPriceWindow", "getPrices", MRBDebug.INFO, "URI " + url);
-			Main.context.showURL(url.toString());
-		}
-
+		return true;
 	}
 
 	protected String newPriceUrl(String source, String tid, String stock, String type, Integer lastPriceDate) {
@@ -1286,9 +1389,26 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		String charset = "UTF8";
 		return "&" +  URLEncodedUtils.format(parameters, charset);
 	}
+	protected String newPriceAlphaUrl(String source, String tid, String stock, String tradeCur,String type, Integer lastPriceDate) {
+		String queries = addPriceAlphaUrl(stock, tradeCur,type, lastPriceDate);
+		String command = Constants.GETQUOTECMD + "?" + Constants.SOURCETYPE + "=" + source;
+		command += "&" + Constants.TIDCMD + "=" + tid;
+		return "moneydance:fmodule:" + Main.extension.serverName + ":" + command + queries;
+	}
+
+	protected String addPriceAlphaUrl(String stock, String tradeCur, String type, Integer lastPriceDate) {
+		List<NameValuePair> parameters = new ArrayList<>();
+		parameters.add(new BasicNameValuePair(type, stock));
+		parameters.add(new BasicNameValuePair(Constants.TRADECURRTYPE,tradeCur));
+		if (lastPriceDate > -1 && params.getHistory()) {
+			parameters.add(new BasicNameValuePair(Constants.LASTPRICEDATETYPE, lastPriceDate.toString()));
+		}
+		String charset = "UTF8";
+		return "&" +  URLEncodedUtils.format(parameters, charset);
+	}
 
 	public void testTicker(String url) {
-		Main.debugInst.debug("MainPriceWindow", "testTicker", MRBDebug.INFO, "URI " + url);
+		Main.debugInst.debug("MainPriceWindow", "testTicker", MRBDebug.INFO, "Requested URI " + url);
 		Main.isUpdating = true;
 		URI uri;
 		String convUrl = url.replace("^", "%5E");
@@ -1316,13 +1436,13 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 			testTicker = ticker;
 			String testurl = newPriceUrl(source, testTID, ticker, Constants.STOCKTYPE, 0);
 			Main.debugInst.debug("MainPriceWindow", "testTicker", MRBDebug.DETAILED, "URI " + testurl);
-			Main.context.showURL(testurl);
+			MRBEDTInvoke.showURL(Main.context,testurl);
 		}
 	}
 
-	public synchronized void updatePrices(String url) {
+	public synchronized void updatePrices(String url) throws QuoteException {
 		String uuid = "";
-		Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.INFO, "URI " + url);
+		Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.INFO, "Requested URI " + url);
 		URI uri;
 		String convUrl = url.replace("^", "%5E");
 		convUrl = convUrl.replace(" ", "%20");
@@ -1332,7 +1452,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		} catch (URISyntaxException e) {
 			Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.DETAILED, "URI invalid " + convUrl);
 			e.printStackTrace();
-			return;
+			throw new QuoteException("Invalid URL");
 		}
 		/*
 		 * capture data from returned url
@@ -1351,6 +1471,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 					switch (srce) {
 					case FT:
 					case FTHD:
+					case ALPHAVAN:
 						ticker = Constants.CURRENCYID
 								+ ticker.substring(3, ticker.indexOf(Constants.CURRENCYTICKER));
 						break;
@@ -1381,6 +1502,12 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 								ticker = Constants.CURRENCYID + ticker.substring(0, 2);
 							else
 								ticker = Constants.CURRENCYID + ticker.substring(3);
+							break;
+						case ALPHAVAN:
+							int slash = ticker.indexOf("/");
+							String fromTicker= ticker.substring(0,slash);
+							String toTicker = ticker.substring (slash+1);
+							ticker = Constants.CURRENCYID+toTicker;
 							break;
 						default:
 							break;
@@ -1460,10 +1587,17 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		if (newPrice.getTicker().equals(testTicker) && testTID.equals(uuid)) {
 			Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.DETAILED, "Test Ticker returned");
 			testTicker = "";
-			testTID = "";
-			String message = "Test of security " + newPrice.getTicker() + " was successful. Price "
+			final String message;
+			message = "Test of security " + newPrice.getTicker() + " was successful. Price "
 					+ newPrice.getSecurityPrice() + " Currency " + newPrice.getCurrency();
-			JOptionPane.showMessageDialog(null, message);
+			if (EventQueue.isDispatchThread()) {
+				JOptionPane.showMessageDialog(null, message);
+			}
+			else {
+				SwingUtilities.invokeLater(() -> {
+					JOptionPane.showMessageDialog(null, message);
+				});
+			}
 			return;
 		}
 		/*
@@ -1476,22 +1610,24 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		}
 		if (completed) {
 			Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.INFO, "Late message");
-			return;
+			throw new QuoteException("Late message");
+
 		}
 		if (listener == null) {
 			Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.INFO,
 					"Update received after close " + uuid);
-			return;
+			throw new QuoteException("Message received after close");
+
 		}
 		if (!listener.checkTid(uuid)) {
 			Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.INFO,
 					"Update received after close " + uuid);
-			return;
+			throw new QuoteException("Update received after close");
 		}
 		if (newPrice.getSecurityPrice() == 0.0) {
 			Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.INFO,
 					"No price returned for " + newPrice.getTicker());
-			return;
+			throw new QuoteException("No price returned for " + newPrice.getTicker());
 		}
 
 		/*
@@ -1507,14 +1643,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		else
 			secLine = securitiesTable.get(ticker);
 
-		if (runtype != Constants.MANUALRUN && runtype != 0) {
-			if (newPrice.isCurrency())
-				Main.context.showURL("moneydance:setprogress?meter=0&label=Quote Loader price "
-						+ newPrice.getCurrency() + " updated");
-			else
-				Main.context.showURL(
-						"moneydance:setprogress?meter=0&label=Quote Loader price " + ticker + " updated");
-		}
+
 		Double dRate = 1.0;
 		CurrencyType securityCur;
 		String tradeCur = newPrice.getCurrency();
@@ -1590,12 +1719,12 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		 */
 		multiplier = Math.pow(10.0, (double) params.getDecimal());
 		if (!newPrice.isCurrency()) {
-			Main.debugInst.debug("MainPriceWindow", "updatePrice", MRBDebug.DETAILED,
+			Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.DETAILED,
 					"before rounding" + stockPrice);
 			stockPrice = Math.round(stockPrice * multiplier) / multiplier;
 			lowPrice = Math.round(lowPrice * multiplier) / multiplier;
 			highPrice = Math.round(highPrice * multiplier) / multiplier;
-			Main.debugInst.debug("MainPriceWindow", "updatePrice", MRBDebug.DETAILED,
+			Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.DETAILED,
 					"after rounding" + stockPrice);
 		}
 		double amtChg;
@@ -1645,9 +1774,17 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		}
 		if (listener != null)
 			listener.ended(newPrice.getTicker(), uuid);
+		if (runtype != Constants.MANUALRUN && runtype != 0) {
+			if (newPrice.isCurrency())
+				MRBEDTInvoke.showURL(Main.context,"moneydance:setprogress?meter=0&label=Quote Loader price "
+						+ newPrice.getCurrency() + " updated");
+			else
+				MRBEDTInvoke.showURL(Main.context,
+						"moneydance:setprogress?meter=0&label=Quote Loader price " + ticker + " updated");
+		}
 	}
 
-	public synchronized void updateHistory(String url) {
+	public synchronized void updateHistory(String url) throws QuoteException{
 		String uuid = "";
 		URI uri;
 		String convUrl = url.replace("^", "%5E");
@@ -1657,7 +1794,8 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		} catch (URISyntaxException e) {
 			Main.debugInst.debug("MainPriceWindow", "updateHistory", MRBDebug.DETAILED, "URI invalid " + convUrl);
 			e.printStackTrace();
-			return;
+			throw new QuoteException("Invalid url");
+
 		}
 		/*
 		 * capture data from returned url
@@ -1695,8 +1833,17 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 				else {
 					if (ticker.contains("-")) {
 						ticker = Constants.CURRENCYID + ticker.substring(0, ticker.indexOf('-') + 1);
-					} else
-						ticker = Constants.CURRENCYID + ticker.substring(3);
+					} else {
+						if (srce.equals(ALPHAVAN)){
+							int slash = ticker.indexOf("/");
+							String fromTicker= ticker.substring(0,slash);
+							String toTicker = ticker.substring (slash+1);
+							ticker = Constants.CURRENCYID+toTicker;
+						}
+						else
+							ticker = Constants.CURRENCYID + ticker.substring(3);
+					}
+
 				}
 
 				newPrice = new SecurityPrice(ticker);
@@ -1779,7 +1926,8 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		if (newPrice.getSecurityPrice() == 0.0) {
 			Main.debugInst.debug("MainPriceWindow", "updateHistory", MRBDebug.INFO,
 					"No price returned for " + newPrice.getTicker());
-			return;
+			throw new QuoteException("No price returned for " + newPrice.getTicker());
+
 		}
 
 		/*
@@ -1894,7 +2042,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 	 */
 	public synchronized void failedQuote(String url) {
 		String uuid = "";
-		Main.debugInst.debug("MainPriceWindow", "failedQuote", MRBDebug.INFO, "URI " + url);
+		Main.debugInst.debug("MainPriceWindow", "failedQuote", MRBDebug.INFO, "Requested URI " + url);
 		URI uri;
 		String convUrl = url.replace("^", "%5E");
 		try {
@@ -1974,10 +2122,10 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		}
 		if (runtype != Constants.MANUALRUN && runtype != 0) {
 			if (currencyFound)
-				Main.context.showURL("moneydance:setprogress?meter=0&label=Quote Loader price " + ticker
+				MRBEDTInvoke.showURL(Main.context,"moneydance:setprogress?meter=0&label=Quote Loader price " + ticker
 						+ " failed currency");
 			else
-				Main.context.showURL("moneydance:setprogress?meter=0&label=Quote Loader price " + ticker
+				MRBEDTInvoke.showURL(Main.context,"moneydance:setprogress?meter=0&label=Quote Loader price " + ticker
 						+ " failed stock");
 		}
 		/*
@@ -2041,8 +2189,9 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 			}
 		}
 		Main.debugInst.debug("MainPriceWindow", "doneQuote", MRBDebug.INFO, "Finished quote " + uuid);
-		if (listener != null)
+		if (listener != null){
 			listener.done(uuid, totalQuotes, successful, failed);
+			}
 
 	}
 
@@ -2126,8 +2275,8 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 				if (processCurrency)
 					curRatesModel.fireTableDataChanged();
 				this.revalidate();
-				SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-                        + Constants.MANUALDONECMD));
+				MRBEDTInvoke.showURL(Main.context,"moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                        + Constants.MANUALDONECMD);
 
 			}
 			if (runtype != Constants.MANUALRUN && runtype != 0) {
@@ -2144,8 +2293,8 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 					main.errorTickers = errorTickers;
 					Main.debugInst.debug("AutomaticRun", "AutomaticRun", MRBDebug.DETAILED, "save data");
 					save();
-					SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-                            + Constants.RUNSECONDRUNCMD));
+					MRBEDTInvoke.showURL(Main.context,"moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                            + Constants.RUNSECONDRUNCMD);
 				}
 				else {
 					if (processCurrency)
@@ -2154,14 +2303,13 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 						secPricesModel.selectAll(true);
 					main.errorTickers = errorTickers;
 					save();
-					SwingUtilities.invokeLater(() -> Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-                            + Constants.AUTODONECMD));
+					MRBEDTInvoke.showURL(Main.context,"moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
+                            + Constants.AUTODONECMD);
 
 				}
 			}
 		}
 	}
-
 	@Override
 	public synchronized void Update() {
 		Main.debugInst.debug("MainPriceWindow", "Update", MRBDebug.DETAILED, "Progress Bar Updated");
@@ -2228,130 +2376,72 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 			window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
 		}
 	}
-/*
-	@Override
-	public void currencyTableModified(CurrencyTable paramCurrencyTable) {
-		Main.debugInst.debug("MainPriceWindow", "currencyTableModified", MRBDebug.DETAILED, "");
-		/*
-		 * do not update if in middle of update
-		 */
-/*		if (Main.isUpdating)
-			return;
-		securitiesTable.clear();
-		currenciesTable.clear();
-		loadAccounts(Main.context.getRootAccount());
-		baseCurrency = Main.context.getCurrentAccountBook().getCurrencies().getBaseType();
-		baseCurrencyID = baseCurrency.getIDString();
-		loadCurrencies(Main.context.getCurrentAccountBook());
-		if (secPricesModel != null) {
-			secPricesModel.resetData(securitiesTable);
-			secPricesModel.fireTableDataChanged();
+	public class SortSecColumns implements Comparator<String>{
+
+		private IntComparator intComparator = new IntComparator();
+		private DoubleComparator doubleComparator = new DoubleComparator();
+		private int col;
+		private SecurityTableLine aLine;
+		private SecurityTableLine bLine;
+
+		public SortSecColumns(int col){
+			this.col = col;
 		}
-		if (curRatesModel != null) {
-			curRatesModel.resetData(currenciesTable);
-			curRatesModel.fireTableDataChanged();
+		public int compare(String a, String b){
+			aLine = securitiesTable.get(a);
+			bLine = securitiesTable.get(b);
+			switch (col){
+				case 0: return 0;
+				case 1: return (aLine.getTicker().compareTo(bLine.getTicker()));
+				case 2: return (aLine.getAlternateTicker().compareTo(bLine.getAlternateTicker()));
+				case 3: return (aLine.getExchange().compareTo(bLine.getExchange()));
+				case 4: return (aLine.getAccountName().compareTo(bLine.getAccountName()));
+				case 5: return intComparator.compare(aLine.getSource().toString(), bLine.getSource().toString());
+				case 6: return doubleComparator.compare(aLine.getLastPrice().toString(), bLine.getLastPrice().toString());
+				case 7: return intComparator.compare(aLine.getPriceDate().toString(), bLine.getPriceDate().toString());
+				case 8: return doubleComparator.compare(aLine.getNewPrice().toString(), bLine.getNewPrice().toString());
+				case 9: return doubleComparator.compare(aLine.getPercentChg().toString(), bLine.getPercentChg().toString());
+				case 10: return doubleComparator.compare(aLine.getAmtChg().toString(), bLine.getAmtChg().toString());
+				case 11: return intComparator.compare(aLine.getTradeDate().toString(), bLine.getTradeDate().toString());
+				case 12: return aLine.getTradeCur().compareTo(bLine.getTradeCur().toString());
+				case 13: return intComparator.compare(aLine.getVolume().toString(), bLine.getVolume().toString());
+			}
+			return 0;
+		}
+		public void setCol(int col){
+			this.col=col;
 		}
 	}
+	public class SortCurColumns implements Comparator<String>{
 
-	@Override
-	public void accountModified(Account modifiedAccount) {
-		Main.debugInst.debug("MainPriceWindow", "accountModified", MRBDebug.DETAILED,
-				"Account - " + modifiedAccount.getAccountName());
-		/*
-		 * do not update if in middle of update
-		 */
-/*		if (Main.isUpdating)
-			return;
-		securitiesTable.clear();
-		currenciesTable.clear();
-		loadAccounts(Main.context.getRootAccount());
-		baseCurrency = Main.context.getCurrentAccountBook().getCurrencies().getBaseType();
-		baseCurrencyID = baseCurrency.getIDString();
-		loadCurrencies(Main.context.getCurrentAccountBook());
-		if (secPricesModel != null) {
-			secPricesModel.resetData(securitiesTable);
-			secPricesModel.fireTableDataChanged();
+		private IntComparator intComparator = new IntComparator();
+		private DoubleComparator doubleComparator = new DoubleComparator();
+		private int col;
+		private CurrencyTableLine aLine;
+		private CurrencyTableLine bLine;
+
+		public SortCurColumns(int col){
+			this.col = col;
 		}
-		if (curRatesModel != null) {
-			curRatesModel.resetData(currenciesTable);
-			curRatesModel.fireTableDataChanged();
+		public int compare(String a, String b){
+			aLine = currenciesTable.get(a);
+			bLine = currenciesTable.get(b);
+			switch (col){
+				case 0: return 0;
+				case 1: return (aLine.getTicker().compareTo(bLine.getTicker()));
+				case 2: return (aLine.getCurrencyName().compareTo(bLine.getCurrencyName()));
+				case 3: return intComparator.compare(aLine.getSource().toString(), bLine.getSource().toString());
+				case 4: return doubleComparator.compare(aLine.getLastPrice().toString(), bLine.getLastPrice().toString());
+				case 5: return intComparator.compare(aLine.getPriceDate().toString(), bLine.getPriceDate().toString());
+				case 6: return doubleComparator.compare(aLine.getNewPrice().toString(), bLine.getNewPrice().toString());
+				case 7: return doubleComparator.compare(aLine.getPercentChg().toString(), bLine.getPercentChg().toString());
+				case 8: return doubleComparator.compare(aLine.getAmtChg().toString(), bLine.getAmtChg().toString());
+				case 9: return intComparator.compare(aLine.getTradeDate().toString(), bLine.getTradeDate().toString());
+			}
+			return 0;
 		}
-
-
-	}
-
-	@Override
-	public void accountBalanceChanged(Account modifiedAccount) {
-		Main.debugInst.debug("MainPriceWindow", "accountBalanceChanged", MRBDebug.DETAILED,
-				"Account - " + modifiedAccount.getAccountName());
-		/*
-		 * do not update if in middle of update
-		 */
-/*		if (Main.isUpdating)
-			return;
-		securitiesTable.clear();
-		currenciesTable.clear();
-		loadAccounts(Main.context.getRootAccount());
-		baseCurrency = Main.context.getCurrentAccountBook().getCurrencies().getBaseType();
-		baseCurrencyID = baseCurrency.getIDString();
-		loadCurrencies(Main.context.getCurrentAccountBook());
-		if (secPricesModel != null) {
-			secPricesModel.resetData(securitiesTable);
-			secPricesModel.fireTableDataChanged();
-		}
-		if (curRatesModel != null) {
-			curRatesModel.resetData(currenciesTable);
-			curRatesModel.fireTableDataChanged();
+		public void setCol(int col){
+			this.col=col;
 		}
 	}
-
-	@Override
-	public void accountDeleted(Account parentAccount, Account deletedAccount) {
-		Main.debugInst.debug("MainPriceWindow", "accountDeleted", MRBDebug.DETAILED,
-				"Account - " + deletedAccount.getAccountName());
-		/*
-		 * do not update if in middle of update
-		 */
-/*		if (Main.isUpdating)
-			return;
-		securitiesTable.clear();
-		currenciesTable.clear();
-		loadAccounts(Main.context.getRootAccount());
-		baseCurrency = Main.context.getCurrentAccountBook().getCurrencies().getBaseType();
-		baseCurrencyID = baseCurrency.getIDString();
-		loadCurrencies(Main.context.getCurrentAccountBook());
-		if (secPricesModel != null) {
-			secPricesModel.resetData(securitiesTable);
-			secPricesModel.fireTableDataChanged();
-		}
-		if (curRatesModel != null) {
-			curRatesModel.resetData(currenciesTable);
-			curRatesModel.fireTableDataChanged();
-		}
-	}
-
-	@Override
-	public void accountAdded(Account parentAccount, Account newAccount) {
-		Main.debugInst.debug("MainPriceWindow", "accountAdded", MRBDebug.DETAILED,
-				"Account - " + newAccount.getAccountName());
-		/*
-		 * do not update if in middle of update
-		 */
-/*		if (Main.isUpdating)
-			return;
-		securitiesTable.clear();
-		currenciesTable.clear();
-		loadAccounts(Main.context.getRootAccount());
-		baseCurrency = Main.context.getCurrentAccountBook().getCurrencies().getBaseType();
-		baseCurrencyID = baseCurrency.getIDString();
-		loadCurrencies(Main.context.getCurrentAccountBook());
-		if (secPricesModel != null) {
-			secPricesModel.resetData(securitiesTable);
-			secPricesModel.fireTableDataChanged();
-		}
-		if (curRatesModel != null) {
-			curRatesModel.resetData(currenciesTable);
-			curRatesModel.fireTableDataChanged();
-		}
-	}*/
 }

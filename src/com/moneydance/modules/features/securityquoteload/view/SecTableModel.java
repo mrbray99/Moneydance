@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-//import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -66,14 +65,14 @@ public class SecTableModel extends DefaultTableModel {
 	private SortedMap<String, SecurityTableLine> savedAccounts;
 	private List<Entry<String, SecurityTableLine>> listAccounts;
 	private CurrencyType baseCurrency;
-	private DecimalFormat dfNumbers;
-	private DecimalFormatSymbols dfSymbols;
+	private DecimalFormat numberFormat;
+	private DecimalFormatSymbols decimalFormat;
 	private Double multiplier;
-	private String[] arrSource;
+	private String[] secSources;
 	private MainPriceWindow controller;
 	private MRBDebug debugInst = Main.debugInst;
 	private Boolean includeDonotload = true;
-	private static String[] arrColumns = { "Select", "Ticker", "Alt Ticker", "Exch Mod", "Name", "Source->>",
+	private static String[] columnNames = { "Select", "Ticker", "Alt Ticker", "Exch Mod", "Name", "Source->>",
 			"Last Price", "Price Date", "New Price", "% chg", "Amt chg", "Trade Date", "Trade Currency",
 			"Volume" };
 
@@ -86,7 +85,7 @@ public class SecTableModel extends DefaultTableModel {
         savedAccounts.putAll(accounts);
 		resetIncluded();
 		listAccounts = new ArrayList<>(this.accounts.entrySet());
-		arrSource = params.getSourceArray();
+		secSources = params.getSourceArray();
 		baseCurrency = Main.context.getCurrentAccountBook().getCurrencies().getBaseType();
 		resetNumberFormat();
 
@@ -101,11 +100,11 @@ public class SecTableModel extends DefaultTableModel {
 		}
 		debugInst.debug("SecTableModel", "ResetNumberFormat", MRBDebug.DETAILED, "Decimal Format " + strDec);
 
-		dfSymbols = new DecimalFormatSymbols();
-		dfSymbols.setDecimalSeparator(Main.decimalChar);
+		decimalFormat = new DecimalFormatSymbols();
+		decimalFormat.setDecimalSeparator(Main.decimalChar);
 		if (Main.decimalChar == ',')
-			dfSymbols.setGroupingSeparator('.');
-		dfNumbers = new DecimalFormat(strDec.toString(), dfSymbols);
+			decimalFormat.setGroupingSeparator('.');
+		numberFormat = new DecimalFormat(strDec.toString(), decimalFormat);
 
 	}
 
@@ -180,12 +179,12 @@ public class SecTableModel extends DefaultTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return arrColumns.length;
+		return columnNames.length;
 	}
 
 	@Override
 	public String getColumnName(int c) {
-		return arrColumns[c];
+		return columnNames[c];
 	}
 
 	@Override
@@ -216,7 +215,6 @@ public class SecTableModel extends DefaultTableModel {
 		 */
 		case 3:
 			return rowData.getExchange();
-
 		/*
 		 * Account Name
 		 */
@@ -229,11 +227,9 @@ public class SecTableModel extends DefaultTableModel {
 			int source = rowData.getSource();
 			if (rowData.getTicker().indexOf(Constants.TICKEREXTID)>0)
 				return "Copy from primary";
-			if (source==5)
-				return arrSource[1];
-			if (source > -1 && source < arrSource.length)
-				return arrSource[source];
-			return arrSource[0];
+			if (source > -1 && source < secSources.length)
+				return secSources[source];
+			return secSources[0];
 		/*
 		 * last price
 		 */
@@ -247,7 +243,7 @@ public class SecTableModel extends DefaultTableModel {
 			dValue = Math.round(dValue * multiplier) / multiplier;
 			if (dValue.isInfinite())
 				dValue = 1.0;
-			return cellCur.getPrefix() + dfNumbers.format(dValue) + cellCur.getSuffix();
+			return cellCur.getPrefix() + numberFormat.format(dValue) + cellCur.getSuffix();
 		/*
 		 * last Price Date
 		 */
@@ -264,21 +260,21 @@ public class SecTableModel extends DefaultTableModel {
 			Double newValue = Math.round(rowData.getNewPrice() * multiplier) / multiplier;
 			if (newValue.isInfinite())
 				newValue = 0.0;
-			return dfNumbers.format(newValue);
+			return numberFormat.format(newValue);
 		/*
 		 * % Change
 		 */
 		case 9:
 			if (rowData.getPercentChg() == 0.0 || rowData.getPercentChg().isInfinite())
 				return "";
-			return dfNumbers.format(rowData.getPercentChg());
+			return numberFormat.format(rowData.getPercentChg());
 		/*
 		 * Amount Changed
 		 */
 		case 10:
 			if (rowData.getAmtChg() == 0.0 || rowData.getAmtChg().isInfinite())
 				return "";
-			return dfNumbers.format(rowData.getAmtChg());
+			return numberFormat.format(rowData.getAmtChg());
 		/*
 		 * Trade Date
 		 */
@@ -300,7 +296,7 @@ public class SecTableModel extends DefaultTableModel {
 			if (securityCurrency == null)
 				return quoteCurrency;
 			if (!securityCurrency.getIDString().equals(quoteCurrency)) {
-				return quoteCurrency + "(" + dfNumbers.format(rowData.getQuotedPrice()) + ")";
+				return quoteCurrency + "(" + numberFormat.format(rowData.getQuotedPrice()) + ")";
 			}
 			return rowData.getTradeCur();
 		/*
@@ -389,8 +385,8 @@ public class SecTableModel extends DefaultTableModel {
 		 */
 		case 5:
 
-			for (int i = 0; i < arrSource.length; i++) {
-				if (((String) value).contentEquals(arrSource[i])) {
+			for (int i = 0; i < secSources.length; i++) {
+				if (((String) value).contentEquals(secSources[i])) {
 					rowData.setSource(i);
 					debugInst.debug("MyTableModel", "setValueAt", MRBDebug.DETAILED,
 							"Source updated " + rowData.getTicker() + " " + i);
@@ -695,6 +691,7 @@ public class SecTableModel extends DefaultTableModel {
 			}
 			ctTicker.syncItem();
 		}
+		// update screen data
 		acct.setLastPrice(acct.getNewPrice());
 		acct.setPriceDate(acct.getTradeDate());
 		acct.setNewPrice(0.0);

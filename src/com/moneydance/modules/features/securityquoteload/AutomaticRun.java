@@ -44,6 +44,8 @@ public class AutomaticRun extends MainPriceWindow{
 		public AutomaticRun (Main mainp, int runtype)
 		{
 			super(mainp,runtype);
+			Main.debugInst.debug("AutomaticRun", "AutomaticRun", MRBDebug.DETAILED,
+					"Started");
 			errorsFound = false;
 			errorTickers = new ArrayList<>();
 			main = mainp;

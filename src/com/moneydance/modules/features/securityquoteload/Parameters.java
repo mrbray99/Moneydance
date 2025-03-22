@@ -66,8 +66,8 @@ public class Parameters{
 	public  static Integer [] decimals = {2,3,4,5,6,7,8};
 	public  static String [] maximums = {"No Limit","6","7","8","9"};
 	private  MRBDebug debugInst = Main.debugInst;
-	private  String[] arrSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT,Constants.YAHOOHIST,Constants.FTHIST};
-	private  String[] curSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.YAHOOHIST,Constants.FT};
+	private  String[] secSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.FT,Constants.YAHOOHIST,Constants.FTHIST,Constants.ALPHAVAN};
+	private  String[] curSource = {Constants.DONOTLOAD,Constants.YAHOO,Constants.YAHOOHIST,Constants.FT,Constants.ALPHAVAN};
 	private  List<NewAccountLine>listNewAccounts;
 	private SortedMap<String, NewAccountLine> savedAccounts;
 	private  NewParameters newParams;
@@ -85,6 +85,7 @@ public class Parameters{
 	private  Integer displayOption;
 	private  Integer amtHistory;
 	private  Integer timeOfRun;
+	private String alphaAPIKey;
 	private  char[] HEX_CHARS = "0123456789abcdef".toCharArray();
 
 	private int noDecimals;
@@ -109,7 +110,7 @@ public class Parameters{
 				JsonReader reader = new JsonReader(new FileReader(fileName,StandardCharsets.UTF_8));
 				debugInst.debug("Parameters", "Parameters", MRBDebug.DETAILED, "Parameters found "+fileName);
 				newParams = new Gson().fromJson(reader,NewParameters.class);
-				listNewAccounts = newParams.getListAccounts();
+					listNewAccounts = newParams.getListAccounts();
 				reader.close();
 			}
 			catch (JsonParseException e) {
@@ -230,6 +231,7 @@ public class Parameters{
 		this.overridePrice = newParams.isOverridePrice();
 		this.amtHistory= newParams.getAmtHistory();
 		this.displayOption=newParams.getDisplayOption();
+		this.alphaAPIKey = newParams.getAlphaAPIKey();
 
 		savedAccounts = new TreeMap<>();
 		buildAccounts();
@@ -447,7 +449,7 @@ public class Parameters{
 		isDirty=true;
 	}
 	public String [] getSourceArray() {
-		return arrSource;
+		return secSource;
 	}
 	public String [] getCurSourceArray() {
 		return curSource;
@@ -459,6 +461,19 @@ public class Parameters{
 		return mapExchangeLines;
 	}
 	/*
+  	 * Alpha Vantage API Key
+	 */
+
+	public String getAlphaAPIKey() {
+		return alphaAPIKey;
+	}
+
+	public void setAlphaAPIKey(String alphaAPIKey) {
+		this.alphaAPIKey = alphaAPIKey;
+		isDirty=true;
+	}
+
+	/*
 	 * Accounts
 	 * 
 	 * Only valid sources are stored.   'Do Not Load' is not stored
@@ -467,7 +482,7 @@ public class Parameters{
 		if (listNewAccounts == null)
 			listNewAccounts = new ArrayList<>();
 		for (NewAccountLine alTemp:listNewAccounts) {
-			if (alTemp.getSource()!= 0 || alTemp.getFtAlternate()!=null || alTemp.getYahooAlternate()!=null|| alTemp.getExchange()!=null) {
+			if (alTemp.getSource()!= 0 || alTemp.getFtAlternate()!=null || alTemp.getYahooAlternate()!=null|| alTemp.getAlphaAlternate()!=null || alTemp.getExchange()!=null) {
 				savedAccounts.put(alTemp.getName(),alTemp);
 			}
 		}
@@ -490,14 +505,20 @@ public class Parameters{
 			return newTicker;
 		ExchangeLine line = mapExchangeLines.get(exchange);
 		if (line!=  null) {
-			if (source == Constants.YAHOOINDEX || source == Constants.YAHOOHISTINDEX || source == 5)
+			if (source == Constants.YAHOOINDEX || source == Constants.YAHOOHISTINDEX)
 				newTicker = line.getYahooPrefix()+newTicker+line.getYahooSuffix();
 			if (source == Constants.FTINDEX || source ==Constants.FTHISTINDEX)
 				newTicker = line.getFtPrefix()+newTicker+line.getFtSuffix();
+			if (source == Constants.ALPHAINDEX)
+				newTicker = line.getAlphaPrefix()+newTicker+line.getAlphaSuffix();
 		}
 		return newTicker;
 	}
-
+	public String getExchangeCurrency(String exchange){
+		ExchangeLine line = mapExchangeLines.get(exchange);
+		if (line!=  null) return line.getCurrency();
+		return null;
+	}
 	public void setDirty(boolean dirty) {
 		this.isDirty=dirty;
 	}
@@ -528,6 +549,7 @@ public class Parameters{
 			newLine.setCurrency(crntLine.isCurrency());
 			newLine.setFtAlternate(crntLine.getFtAlternate());
 			newLine.setYahooAlternate(crntLine.getYahooAlternate());
+			newLine.setAlphaAlternate(crntLine.getAlphaAlternate());
 			newLine.setExchange(crntLine.getExchange());
 			newLine.setSource(crntLine.getSource());
 			newList.add(newLine);
@@ -568,6 +590,7 @@ public class Parameters{
 		newParams.setAmtHistory(amtHistory);
 		newParams.setDisplayOption(displayOption);
 		newParams.setListAccounts(listNewAccounts);
+		newParams.setAlphaAPIKey(alphaAPIKey);
 
 		/*
 		 * create the file
@@ -600,6 +623,7 @@ public class Parameters{
 		this.roundPrices = newParams.isRoundPrices();
 		this.overridePrice = newParams.isOverridePrice();
 		this.amtHistory= newParams.getAmtHistory();
+		this.alphaAPIKey= newParams.getAlphaAPIKey();
 		this.displayOption=newParams.getDisplayOption();
 		isDirty=false;
 	}

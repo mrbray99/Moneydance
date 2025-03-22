@@ -54,18 +54,18 @@ public abstract class QuoteTask<V> implements Callable<V> {
 	protected String tickerType;
 	protected String tid;
 	protected String rawTicker = "";
-	public QuoteTask(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp, String tickerTypep,String tidp) {
+	public QuoteTask(String ticker, QuoteListener listener, CloseableHttpClient httpClient, String tickerType,String tid) {
 		try {
-			rawTicker = tickerp;
-			ticker = URLEncoder.encode(tickerp,"UTF-8");
+			rawTicker = ticker;
+			this.ticker = URLEncoder.encode(ticker,"UTF-8");
 		}
 		catch (UnsupportedEncodingException e ) {
 			ticker = "";
 		}
-		listener = listenerp;
-		httpClient = httpClientp;
-		tickerType = tickerTypep;
-		tid = tidp;
+		this.listener = listener;
+		this.httpClient = httpClient;
+		this.tickerType = tickerType;
+		this.tid = tid;
 	}
 	@Override
 	public V call() throws Exception {

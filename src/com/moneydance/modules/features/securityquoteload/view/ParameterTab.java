@@ -42,20 +42,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import com.infinitekind.util.DateUtil;
 import com.moneydance.apps.md.view.gui.MDColors;
@@ -105,6 +94,8 @@ public class ParameterTab extends DisplayTab {
 	private MDColors colors;
 	private JLabel runLbl=new JLabel();
 	private Boolean saveAutoChange;
+	private JLabel alphaLbl;
+	private JTextField alphaKey;
 
 	public ParameterTab(Parameters params, Main main, MainPriceWindow controller) {
 		super(params, main, controller);
@@ -366,7 +357,7 @@ public class ParameterTab extends DisplayTab {
 		autoResetBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
 						Main.autoSettingsChanged=false;
@@ -510,7 +501,7 @@ public class ParameterTab extends DisplayTab {
 		});
 		mainPanel.add(historyCB, GridC.getc(gridx, gridy).west().insets(5, 5, 5, 0));
 		gridx++;
-		JLabel historyLbl = new JLabel("Amount of Yahoo History to collect");
+		JLabel historyLbl = new JLabel("Amount of Yahoo/AlphaVantage History to collect");
 		mainPanel.add(historyLbl, GridC.getc(gridx, gridy).west().colspan(2).insets(5, 5, 5, 0));
 		gridx += 2;
 		historyPeriod = new JComboBox<String>(Constants.HISTORYLIST);
@@ -744,6 +735,21 @@ public class ParameterTab extends DisplayTab {
 		mainPanel.add(consolePane, GridC.getc(gridx, gridy).west().colspan(3).insets(5, 5, 5, 0));
 		gridx = 1;
 		gridy++;
+		alphaLbl = new JLabel("API Key for Alpha Vantage");
+		alphaKey = new JTextField();
+		alphaKey.setText(params.getAlphaAPIKey());
+		alphaKey.getDocument().addDocumentListener(new DocumentListener(){
+			@Override
+			public void insertUpdate(DocumentEvent e) {params.setAlphaAPIKey(alphaKey.getText());}
+			@Override
+			public void removeUpdate(DocumentEvent e) {params.setAlphaAPIKey(alphaKey.getText());}
+			@Override
+			public void changedUpdate(DocumentEvent e) {params.setAlphaAPIKey(alphaKey.getText());}
+		});
+		alphaKey.setPreferredSize(new Dimension(150,20));
+		mainPanel.add(alphaLbl, GridC.getc(gridx++, gridy).insets(5,5,5,5));
+		mainPanel.add(alphaKey, GridC.getc(gridx, gridy++).insets(5,5,5,5));
+		gridx=1;
 		saveParams = new JButton("Save Parameters");
 		saveParams.setToolTipText("Click to save parameters");
 		saveParams.addActionListener(new ActionListener() {
@@ -803,7 +809,7 @@ public class ParameterTab extends DisplayTab {
 		addVolumeCB.setSelected(params.getAddVolume());
 		overridePriceCB.setSelected(params.isOverridePrice());
 		historyCB.setSelected(params.getHistory());
-		historyPeriod.setSelectedIndex(params.getAmtHistory());
+			historyPeriod.setSelectedIndex(params.getAmtHistory());
 		currencyCB.setSelected(params.getCurrency());
 		if (params.getCurrency()) {
 			curSamePage.setVisible(true);

@@ -45,13 +45,15 @@ public abstract class Constants {
 	public static final String YAHOOHIST ="Yahoo HD";
 	public static final String FT ="FT";
 	public static final String FTHIST ="FT HD";
-	public static final String[] SOURCELITS= {YAHOO,FT,YAHOOHIST,FTHIST};
+	public static final String ALPHAVAN = "AlphaVantage HD";
+	public static final String[] SOURCELITS= {YAHOO,FT,YAHOOHIST,FTHIST,ALPHAVAN};
 	public static final String DONOTLOAD ="Do not load";
 	public static final Integer YAHOOINDEX = 1;
 	public static final Integer FTINDEX = 2;
 	public static final Integer YAHOOHISTINDEX = 3;
 	public static final Integer FTHISTINDEX = 4;
-	public static final Integer[] SOURCELIST= {YAHOOINDEX, FTINDEX, YAHOOHISTINDEX, FTHISTINDEX};
+	public static final Integer ALPHAINDEX= 5;
+	public static final Integer[] SOURCELIST= {YAHOOINDEX, FTINDEX, YAHOOHISTINDEX, FTHISTINDEX, ALPHAINDEX};
 	public static final String[] AUTOTEXT = {"Manual Only","Daily","Weekly","Monthly","Quarterly","Yearly"};
 	public static final String[] HISTORYLIST= {"1 Month","2 Months","3 Months"};
 	public static final String[] TIMETEXT = {"At Start Up","02:00","04:00","06:00","08:00","09:00","11:00","13:00","15:00","17:00","19:00","21:00","22:00","23:00","24:00"};
@@ -102,7 +104,8 @@ public abstract class Constants {
 	public static final String SOURCEYAHOO = "yahoo";
 	public static final String SOURCEFT = "ft";
 	public static final String SOURCEFTHIST = "fth";
-	public static final String[] SOURCES = {SOURCEYAHOO,SOURCEFT,SOURCEYAHOOHIST,SOURCEFTHIST};
+	public static final String SOURCEALPHA = "alpha";
+	public static final String[] SOURCES = {SOURCEYAHOO,SOURCEFT,SOURCEYAHOOHIST,SOURCEFTHIST,SOURCEALPHA};
 	public static final Long OVERALLTIMEOUT=20L;
 	public static final int TIMEOUTCOUNT=12;
 	public static final String SHOWCONSOLECMD = "showconsole";
@@ -120,11 +123,10 @@ public abstract class Constants {
 	public static final String AUTODONECMD = "autodone";
 	public static final String STANDALONEDONE="standalonedone";
 	public static final String MANUALDONECMD = "manualdone";
-	public static final String GETBUILDNUM ="getbuildnum";
-	public static final String RETURNBUILD ="buildnums";
 	public static final String RUNSECONDRUNCMD = "runsecondrun";
 	public static final String RUNSTANDALONECMD="runstandalone";
-	public static final String STANDALONEREQUESTED="standalonerequested";	
+	public static final String STANDALONEREQUESTED="standalonerequested";
+	public static final String CLOSEDOWNCMD="closedown";
 	public static final int NORUN=0;
 	public static final int MANUALRUN = 1;
 	public static final int SECAUTORUN = 2;
@@ -248,7 +250,8 @@ public abstract class Constants {
 	    FT(FTINDEX),
 	    FTHD(FTHISTINDEX),
 	    YAHOO(YAHOOINDEX),
-	    YAHOOHD(YAHOOHISTINDEX);
+	    YAHOOHD(YAHOOHISTINDEX),
+		ALPHAVAN(ALPHAINDEX);
 	    private Integer source;
 	    private String uuid="";
 	    QuoteSource(Integer sourceValue){

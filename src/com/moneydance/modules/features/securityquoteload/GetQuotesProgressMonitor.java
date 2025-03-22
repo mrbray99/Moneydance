@@ -33,12 +33,14 @@
  */
 package com.moneydance.modules.features.securityquoteload;
 
+import java.awt.*;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.swing.JProgressBar;
+import javax.swing.*;
 
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.securityquoteload.view.CurrencyTableLine;
@@ -61,9 +63,9 @@ final class GetQuotesProgressMonitor {
 	private Integer failedCount=0;
 	private SecurityTableLine acct;
 	private CurrencyTableLine cur;
-	public GetQuotesProgressMonitor(JProgressBar progressBar, TaskListener objWindow, SortedMap<String,SecurityTableLine> accountsTab, SortedMap<String, CurrencyTableLine>currencyTab) {
+	public GetQuotesProgressMonitor(JProgressBar progressBar, TaskListener window, SortedMap<String,SecurityTableLine> accountsTab, SortedMap<String, CurrencyTableLine>currencyTab) {
 		this.progressBar = progressBar;
-		this.window = objWindow;
+		this.window = window;
 		this.accountsTab = accountsTab;
 		this.currencyTab = currencyTab;
 		uuidStatus = new TreeMap<String,TaskCounts>();
@@ -128,11 +130,10 @@ final class GetQuotesProgressMonitor {
 	}
 
 	public synchronized void ended(String ticker,String uuid) {
-		completedTasks.getAndIncrement();
 		if (ticker.startsWith(Constants.CURRENCYID)) {
 			cur = currencyTab.get(ticker);
 			if (cur !=null && cur.getTickerStatus() == Constants.TASKSTARTED){
-				debugInst.debug("GetQuotesProgressMonitor","Completed Count Incremented",MRBDebug.SUMMARY,"> ENDED currency=" + ticker.substring(3));
+				debugInst.debug("GetQuotesProgressMonitor","ended",MRBDebug.SUMMARY,"> ENDED currency=" + ticker.substring(3));
 				completedTasks.getAndIncrement();
 				cur.setTickerStatus( Constants.TASKCOMPLETED);
 				if (uuidStatus.containsKey(uuid.toString())) {
@@ -145,7 +146,7 @@ final class GetQuotesProgressMonitor {
 		else {
 			acct = accountsTab.get(ticker);
 			if (acct!=null &&acct.getTickerStatus() == Constants.TASKSTARTED){
-				debugInst.debug("GetQuotesProgressMonitor","Completed Count Incremented",MRBDebug.SUMMARY,"> ENDED B stock=" + ticker);
+				debugInst.debug("GetQuotesProgressMonitor","ended",MRBDebug.SUMMARY,"> ENDED B stock=" + ticker);
 				completedTasks.getAndIncrement();
 				acct.setTickerStatus( Constants.TASKCOMPLETED);
 				if (uuidStatus.containsKey(uuid.toString())) {
@@ -184,15 +185,19 @@ final class GetQuotesProgressMonitor {
 			window.TasksCompleted();       
 		}
 	}
-	private void updateProgress() {
-		int percentage = completedTasks.get() * 100 / 
-				subTaskSize.get();
-		debugInst.debug("GetQuotesProgressMonitor","ended-run",MRBDebug.DETAILED,"  progressBar % " + percentage);
-		debugInst.debug("GetQuotesProgressMonitor","ended-run",MRBDebug.DETAILED,"Size=" + subTaskSize.get()+" completed="+completedTasks.get());
-		if (progressBar != null) {
-			progressBar.setValue(percentage);
-			window.Update();
-		}
+	private synchronized void updateProgress() {
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run() {
+				int percentage = completedTasks.get() * 100 /
+						subTaskSize.get();
+				debugInst.debug("GetQuotesProgressMonitor","updateProgress",MRBDebug.DETAILED,"  progressBar % " + percentage);
+				debugInst.debug("GetQuotesProgressMonitor","updateProgress",MRBDebug.DETAILED,"Size=" + subTaskSize.get()+" completed="+completedTasks.get());
+				if (progressBar != null) {
+					progressBar.setValue(percentage);
+					window.Update();
+				}
+			}
+		});
 	}
 	public boolean checkTid(String uuid){
 		debugInst.debug("GetQuotesProgressMonitor","checkTid",MRBDebug.DETAILED,"  checking " + uuid);

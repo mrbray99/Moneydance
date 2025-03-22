@@ -68,10 +68,10 @@ public class GetFTHDQuote extends GetQuoteTask {
 	private String ftSecURL = "https://markets.ft.com/data/etfs/tearsheet/historical?";
 	private Integer lastPriceDate;
 	private Parameters params;
-	public GetFTHDQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep,String tidp,Integer lastPriceDatep) {
-		super(tickerp, listenerp, httpClientp,tickerTypep,tidp);
+	public GetFTHDQuote(String ticker, QuoteListener listener, CloseableHttpClient httpClient,String tickerType,String tid,Integer lastPriceDate) {
+		super(ticker, listener, httpClient,tickerType,tid);
 		params=Parameters.getParameters();
-		lastPriceDate = lastPriceDatep;
+		this.lastPriceDate = lastPriceDate;
 		if (tickerType == Constants.STOCKTYPE)
 			url = ftSecURL+"s="+ticker;
 	}
@@ -99,7 +99,9 @@ public class GetFTHDQuote extends GetQuoteTask {
 			throw (new IOException (e));
 		} catch (IOException e) {
 			throw (new IOException (e));
-		} 
+		} catch (Exception e){
+			throw (new IOException (e));
+		}
 
 		finally {
 
@@ -144,11 +146,11 @@ public class GetFTHDQuote extends GetQuoteTask {
 			}
 			query = "tr";
 			Element itemLine = items.first();
-			Element rowLine = itemLine.child(0);
-			if (rowLine == null) {
+			if (itemLine.childNodeSize()<=0){
 				throw new IOException("Cannot find first row");
 			}
-	
+			Element rowLine = itemLine.child(0);
+
 			findDate(rowLine,quotePrice);
 			findPrice(rowLine,quotePrice);
 			Integer index = 1;
@@ -166,12 +168,12 @@ public class GetFTHDQuote extends GetQuoteTask {
 					quotePrice.addHistory(historyPrice.getTradeDateInt(), historyPrice.getPrice(),0.0,0.0,0L);
 					index++;
 				}
-				
+
 			}
 	
 			return;
 		} catch (IOException e) {
-			throw new IOException("Cannot parse response for symbol=" + ticker + e.getMessage(),e);
+			throw new IOException("Cannot parse response for symbol=" + ticker + " " +e.getMessage(),e);
 		}
 	}
 	private void findCurrency(Element topDiv, QuotePrice quotePrice) throws IOException {

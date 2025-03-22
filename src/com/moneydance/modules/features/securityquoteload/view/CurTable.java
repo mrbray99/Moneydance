@@ -76,6 +76,7 @@ public class CurTable extends JTable {
 	private JMenuItem sourceYahooTD;
 	private JMenuItem sourceYahooHist;
 	private JMenuItem sourceFT;
+	private JMenuItem sourceAlpha;
 	private JComboBox<String> currencySources;
 	private TableCheckBox selectRenderer;
 	public static int selectCol = 0;
@@ -444,16 +445,16 @@ public class CurTable extends JTable {
 					dm.updateAllSources(3);
 					return;
 				}
-				if (strAction.contains("Yahoo + TD")) {
-					dm.updateAllSources(5);
-					return;
-				}
 				if (strAction.contains("Yahoo")) {
 					dm.updateAllSources(1);
 					return;
 				}
 				if (strAction.contains("FT")) {
 					dm.updateAllSources(2);
+					return;
+				}
+				if (strAction.contains("Alpha")){
+					dm.updateAllSources(5);
 					return;
 				}
 			}
@@ -475,6 +476,10 @@ public class CurTable extends JTable {
 		sourceFT.setText("Set all to FT");
 		sourcePopup.add(sourceFT);
 		sourceFT.addActionListener(popupListener);
+		sourceAlpha = new JMenuItem();
+		sourceAlpha.setText("Set all to AlphaVantage HD");
+		sourcePopup.add(sourceAlpha);
+		sourceAlpha.addActionListener(popupListener);
 	}
 
 	@Override
@@ -624,7 +629,7 @@ public class CurTable extends JTable {
 			if (tc.getSelectedColumn() == tickerCol) {
 				if (e.getClickCount() == 2) {
 					CurrencyTableLine acct = dm.getRowCurrency(modRow);
-					javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
 							Main.context.showURL(

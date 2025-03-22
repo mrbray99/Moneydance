@@ -72,6 +72,7 @@ public class SecurityTableLine {
 	private Integer tickerStatus = 0;
 	private String ftAlternate;
 	private String yahooAlternate;
+	private String alphaAlternate;
 
 	/*
 	 * Display fields getters and setters
@@ -118,6 +119,8 @@ public class SecurityTableLine {
 			alternateTicker=ftAlternate;
 		if ((source == Constants.YAHOOINDEX ||source==Constants.YAHOOHISTINDEX)&& yahooAlternate != null)
 				alternateTicker=yahooAlternate;
+		if ((source == Constants.ALPHAINDEX)&& alphaAlternate !=null)
+			alternateTicker = alphaAlternate;
 			
 	}
 	public Double getLastPrice() {
@@ -244,6 +247,12 @@ public class SecurityTableLine {
 	public void setYahooAlternate(String yahooAlternate) {
 		this.yahooAlternate = yahooAlternate;
 	}
+	public String getAlphaAlterate() {
+		return alphaAlternate;}
+
+	public void setAlphaAlternate(String alphaAlternate){
+		this.alphaAlternate = alphaAlternate;
+	}
 	public void setAlternate(String alternate) {
 		QuoteSource sourceType = QuoteSource.findSource(source);
 		switch (sourceType) {
@@ -254,6 +263,9 @@ public class SecurityTableLine {
 		case YAHOO:
 		case YAHOOHD:
 			yahooAlternate = alternate;
+			break;
+		case ALPHAVAN :
+			alphaAlternate= alternate;
 		}
 	}
 

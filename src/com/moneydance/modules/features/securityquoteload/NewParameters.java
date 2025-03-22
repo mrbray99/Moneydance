@@ -47,6 +47,7 @@ public class NewParameters {
 	private Integer	displayOption;
 	private Integer amtHistory;
 	private String exportFolder;
+	private String alphaAPIKey;
 	private List<NewAccountLine> listAccounts;
 
 	public  NewParameters(){
@@ -59,6 +60,7 @@ public class NewParameters {
 		overridePrice= false;
 		displayOption = 0;
 		amtHistory=0;
+		alphaAPIKey="";
 		listAccounts = new ArrayList<>();
 	}
 	/**
@@ -104,15 +106,17 @@ public class NewParameters {
 		return displayOption;
 	}
 	/**
+	 * @return alpha vantage api key
+	 */
+	public String getAlphaAPIKey() {
+		return alphaAPIKey;
+	}
+
+	/**
 	 * @return the listAccounts
 	 */
 	public List<NewAccountLine> getListAccounts() {
-		// remove YAHOOTD from source arrays;
-		for(NewAccountLine line : listAccounts){
-			if (line.getSource()==5)
-				line.setSource(Constants.YAHOOINDEX);
-		}
-		return listAccounts;
+			return listAccounts;
 	}
 	/**
 	 * @param noDecimals the noDecimals to set
@@ -190,9 +194,9 @@ public class NewParameters {
 	public void setDisplayOption(Integer displayOption) {
 		this.displayOption = displayOption;
 	}
-	public void setAmtHistory(Integer amtHistory) {
-		this.amtHistory = amtHistory;
+	public void setAmtHistory(Integer amtHistory) {	this.amtHistory = amtHistory;}
+
+	public void setAlphaAPIKey(String alphaAPIKey) {
+		this.alphaAPIKey = alphaAPIKey;
 	}
-	
-	
 }

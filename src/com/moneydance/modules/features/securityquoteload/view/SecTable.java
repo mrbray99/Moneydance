@@ -43,7 +43,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.*;
@@ -54,7 +53,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
-
 import com.moneydance.apps.md.view.gui.MDColors;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.mrbutil.MRBPlatform;
@@ -85,6 +83,7 @@ public class SecTable extends JTable {
 	private JMenuItem sourceFT;
 	private JMenuItem sourceFTHD;
 	private JMenuItem excludeSource;
+	private JMenuItem sourceAlpha;
 	private JComboBox<String> allSources;
 	private TableCheckBox selectRenderer;
 	public static int selectCol = 0;
@@ -437,6 +436,11 @@ public class SecTable extends JTable {
 					dm.updateAllSources(2);
 					return;
 				}
+				if (strAction.contains("Alpha")){
+					dm.updateAllSources(5);
+					return;
+				}
+
 				if (strAction.contains("Exclude")) {
 					dm.switchDisplay();
 					dm.fireTableDataChanged();
@@ -471,6 +475,10 @@ public class SecTable extends JTable {
 		sourceFTHD.setText("Set all to FT HD");
 		sourcePopup.add(sourceFTHD);
 		sourceFTHD.addActionListener(popupListener);
+		sourceAlpha = new JMenuItem();
+		sourceAlpha.setText("Set all to AlphaVantage HD");
+		sourcePopup.add(sourceAlpha);
+		sourceAlpha.addActionListener(popupListener);
 		excludeSource= new JMenuItem();
 		excludeSource.setText("Exclude 'Do not load'");
 		sourcePopup.add(excludeSource);
@@ -705,7 +713,7 @@ public class SecTable extends JTable {
 				if (e.getClickCount() == 2) {
 					int modRow=tableObj.convertRowIndexToModel(row);
 					SecurityTableLine acct = dm.getRowAccount(modRow);
-					javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
 							Main.context.showURL(

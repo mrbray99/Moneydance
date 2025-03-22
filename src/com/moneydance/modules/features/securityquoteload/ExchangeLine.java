@@ -33,10 +33,13 @@ package com.moneydance.modules.features.securityquoteload;
 public class ExchangeLine {
 	private String exchange;
 	private String name;
+	private String currency;
 	private String ftPrefix;
 	private String ftSuffix;
 	private String yahooPrefix;
 	private String yahooSuffix;
+	private String alphaPrefix;
+	private String alphaSuffix;
 	private Double multiplier;
 	public ExchangeLine () {
 		
@@ -59,6 +62,15 @@ public class ExchangeLine {
 		else
 			return name;
 	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
 	/**
 	 * @return the ftPrefix
 	 */
@@ -141,6 +153,23 @@ public class ExchangeLine {
 	public void setYahooSuffix(String yahooSuffix) {
 		this.yahooSuffix = yahooSuffix;
 	}
+
+	public String getAlphaPrefix() {
+		return alphaPrefix;
+	}
+
+	public void setAlphaPrefix(String alphaPrefix) {
+		this.alphaPrefix = alphaPrefix;
+	}
+
+	public String getAlphaSuffix() {
+		return alphaSuffix;
+	}
+
+	public void setAlphaSuffix(String alphaSuffix) {
+		this.alphaSuffix = alphaSuffix;
+	}
+
 	/**
 	 * @param multiplier the multiplier to set
 	 */

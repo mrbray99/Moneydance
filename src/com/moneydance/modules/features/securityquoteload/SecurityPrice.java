@@ -45,6 +45,7 @@ public class SecurityPrice {
 	private Boolean isCrypto;
 	private String exchange;
 	private String alternate;
+	private String tradeCurrency;
 	
 	public SecurityPrice (String tickerp) {
 		ticker = tickerp;
@@ -160,5 +161,13 @@ public class SecurityPrice {
 	}
 	public void setCrypto(Boolean isCryptop){
 		isCrypto = isCryptop;
+	}
+
+	public String getTradeCurrency() {
+		return tradeCurrency;
+	}
+
+	public void setTradeCurrency(String tradeCurrency) {
+		this.tradeCurrency = tradeCurrency;
 	}
 }

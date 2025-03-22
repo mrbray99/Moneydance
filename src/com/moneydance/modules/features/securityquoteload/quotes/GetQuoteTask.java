@@ -53,18 +53,10 @@ import com.moneydance.modules.features.securityquoteload.QuotePrice;
 
 public class GetQuoteTask extends QuoteTask<QuotePrice> {
 	Parameters params;
-	boolean throttleRequired;
-	public GetQuoteTask (String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep,String tidp) {
-		super(tickerp,listenerp, httpClientp,tickerTypep,tidp);
+	public GetQuoteTask (String ticker, QuoteListener listener, CloseableHttpClient httpClient,String tickerType,String tid) {
+		super(ticker,listener, httpClient,tickerType,tid);
 		params=Parameters.getParameters();
-		throttleRequired = false;
 	}
-	public GetQuoteTask (String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp,String tickerTypep,String tidp, boolean throttleRequired) {
-		super(tickerp,listenerp, httpClientp,tickerTypep,tidp);
-		params=Parameters.getParameters();
-		this.throttleRequired = throttleRequired;
-	}
-
 	@Override
 	public QuotePrice call() throws Exception {
 		QuotePrice quotePrice = null;
@@ -77,15 +69,13 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 		URI uri=null;
 		try {
 			uri= new URI(url.trim());
-			debugInst.debugThread("GetQuoteTask", "call", MRBDebug.INFO, "Processing  "+ticker+" URI:"+uri.toASCIIString());
-			if (throttleRequired)
-				TimeUnit.SECONDS.sleep(2);
+			debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "Processing  "+ticker+" URI:"+uri.toASCIIString());
 			HttpGet httpGet = new HttpGet(uri);
 			httpGet.addHeader("Accept-Language","en");
 			httpGet.addHeader("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36");
 			response = httpClient.execute(httpGet);
 			quotePrice=null; 
-			debugInst.debugThread("GetQuoteTask", "call", MRBDebug.DETAILED, "Return stats for  "+ticker+" "+response.getStatusLine().getStatusCode() );		
+			debugInst.debug("GetQuoteTask", "call", MRBDebug.DETAILED, "Return stats for  "+ticker+" "+response.getStatusLine().getStatusCode() );
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				try {
 					quotePrice = analyseResponse(response);

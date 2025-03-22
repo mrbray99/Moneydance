@@ -135,7 +135,7 @@ public class GetFTQuote extends GetQuoteTask {
 	
 			return;
 		} catch (IOException e) {
-			throw new IOException("Cannot parse response for symbol=" + ticker + e.getMessage(),e);
+			throw new IOException("Cannot parse response for symbol=" + ticker+" " + e.getMessage(),e);
 		}
 	}
 

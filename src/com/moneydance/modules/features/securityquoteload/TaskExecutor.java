@@ -95,7 +95,7 @@ public class TaskExecutor
 		debugInst.debug("TaskExecutor", "stop", MRBDebug.DETAILED, "time "+now.getHour()+" "+now.getMinute());
        executorService.shutdownNow();
         try {
-            executorService.awaitTermination(1, TimeUnit.DAYS);
+            executorService.awaitTermination(2, TimeUnit.MINUTES);
             LocalTime now2 = LocalTime.now();
     		debugInst.debug("TaskExecutor", "stopped", MRBDebug.DETAILED, "time "+now2.getHour()+" "+now2.getMinute());
        } catch (InterruptedException ex) {

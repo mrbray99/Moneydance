@@ -42,6 +42,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -49,7 +50,7 @@ import java.util.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.infinitekind.util.DateUtil;
-import com.moneydance.util.DateUtils;
+import com.moneydance.modules.features.securityquoteload.Main;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -74,8 +75,8 @@ public class GetYahooQuote extends GetQuoteTask {
     private List<String> highs;
     Integer lastPriceDate;
 
-    public GetYahooQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp, String tickerTypep, String tidp,boolean throttleRequired) {
-        super(tickerp, listenerp, httpClientp, tickerTypep, tidp, throttleRequired);
+    public GetYahooQuote(String ticker, QuoteListener listener, CloseableHttpClient httpClient, String tickerType, String tid) {
+        super(ticker, listener, httpClient, tickerType, tid);
         String convTicker = ticker.replace("^", "%5E");
         if (tickerType == Constants.STOCKTYPE)
             url = yahooSecURL + convTicker + "?p=" + convTicker + "&.tscr=fin-srch";
@@ -83,10 +84,17 @@ public class GetYahooQuote extends GetQuoteTask {
             url = yahooCurrURL + convTicker + "?p=" + convTicker;
         debugInst.debug("GetYahooQuote", "GetYahooQuote", MRBDebug.DETAILED, "Executing :" + url);
     }
-    public GetYahooQuote(String tickerp, QuoteListener listenerp, CloseableHttpClient httpClientp, String tickerTypep, String tidp,Integer lastPriceDate,boolean throttleRequired,boolean history) {
-        super(tickerp, listenerp, httpClientp, tickerTypep, tidp, throttleRequired);
+    public GetYahooQuote(String ticker, QuoteListener listener, CloseableHttpClient httpClient, String tickerType, String tid,Integer lastPriceDate,boolean history) {
+        super(ticker, listener, httpClient, tickerType, tid);
         this.history = history;
-        this.lastPriceDate = lastPriceDate;
+        LocalDate now = LocalDate.now();
+        LocalDate historyDate = now.minusMonths(params.getAmtHistory()+1);
+        int  historyDateInt = historyDate.getYear() * 10000 + (historyDate.getMonthValue()) * 100 + historyDate.getDayOfMonth();
+        this.lastPriceDate = (lastPriceDate == null ? 0 : lastPriceDate);
+        if (this.lastPriceDate < historyDateInt) {
+            this.lastPriceDate = historyDateInt;
+            Main.debugInst.debug("GetYahooQuote", "construct", MRBDebug.DETAILED, "History date restricted to  " + lastPriceDate);
+        }
         String convTicker = ticker.replace("^", "%5E");
         if (tickerType == Constants.STOCKTYPE)
             url = yahooSecURL + convTicker + "?metrics=Close&interval=1d&range=1y";
@@ -94,7 +102,11 @@ public class GetYahooQuote extends GetQuoteTask {
             url = yahooCurrURL + convTicker + "?p=" + convTicker+"&metrics=Close&interval=1d&range=1y";
         debugInst.debug("GetYahooQuote", "GetYahooQuote", MRBDebug.DETAILED, "Executing :" + url);
     }
-
+    private int decrementQuarter(int intDate){
+        LocalDate tempDate = DateUtil.convertIntToLocalDate(intDate);
+        tempDate = tempDate.minusMonths(3);
+        return DateUtil.convertLocalDateToInt(tempDate);
+    }
     @Override
     synchronized public QuotePrice analyseResponse(CloseableHttpResponse response) throws IOException {
 
