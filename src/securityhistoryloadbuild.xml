@@ -25,7 +25,7 @@
 			<arg value="securityhistoryload"/>
 			<arg line="${dist}/securityhistoryload.mxt"/>
 		</java>
-		<move file="${src}/s-securityhistoryload.mxt" tofile="${dist}/securityhistoryload.mxt"/>
+		<move file="${dist}/s-securityhistoryload.mxt" tofile="${dist}/securityhistoryload.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target> 
 	<target name="cleansecurityhistoryload" depends="cleanmrbutil">

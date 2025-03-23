@@ -22,6 +22,7 @@ import com.moneydance.modules.features.reportwriter.Main;
 import com.moneydance.modules.features.reportwriter.Parameters;
 import com.moneydance.modules.features.reportwriter.RWException;
 import com.moneydance.modules.features.reportwriter.OptionMessage;
+import com.moneydance.util.Platform;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
@@ -58,10 +59,7 @@ public class FirstRun {
 		stage = new JDialog();
 		stage.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 		pane = new JPanel(new GridBagLayout());
-
-//TODO		Main.accels.setSceneSave(scene, this::saveData);
 		
-//TODO		Main.accels.setSceneClose(scene, () -> stage.close());
 		stage.add(pane);
 		stage.setTitle("Parameter Settings");
 		this.params = params;
@@ -344,23 +342,37 @@ public class FirstRun {
 	 * Select a file
 	 */
 	private String chooseFile() {
+		FileDialog dialog;
 		String strDirectory = Main.preferences.getString(Constants.PROGRAMNAME+"."+Constants.FIRSTRUNDIR,System.getProperty("user.home"));
-		fileChooser = new JFileChooser();
-		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		if (!(strDirectory == null || strDirectory.isEmpty() )) {
-			try {
-				fileChooser.setCurrentDirectory(new File(strDirectory));
-			}
-			catch (Exception e) {
-				Main.rwDebugInst.debug("FirstRun", "chooseFile", MRBDebug.DETAILED, "Error browsing "+strDirectory);
-				e.printStackTrace();
-			}
+		if (Platform.isMac()) {
+			JFrame parent = null;
+			String oldValue = System.getProperty("apple.awt.fileDialogForDirectories");
+			System.setProperty("apple.awt.fileDialogForDirectories","true");
+			dialog = new FileDialog(parent, "Choose a Directory", FileDialog.LOAD);
+			if (!(strDirectory == null || strDirectory.isEmpty()))
+				dialog.setDirectory(strDirectory);
+			dialog.setVisible(true);
+			strDirectory = dialog.getDirectory()+dialog.getFile();
+			System.setProperty("apple.awt.fileDialogForDirectories",oldValue);
 		}
-		int result = fileChooser.showDialog(null,"Select Directory");
-		if (result == JFileChooser.APPROVE_OPTION)
-			strDirectory = fileChooser.getSelectedFile().getAbsolutePath();
-		else
-			strDirectory = null;
+		else {
+			fileChooser = new JFileChooser();
+			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			if (!(strDirectory == null || strDirectory.isEmpty())) {
+				try {
+					fileChooser.setCurrentDirectory(new File(strDirectory));
+				} catch (Exception e) {
+					Main.rwDebugInst.debug("FirstRun", "chooseFile", MRBDebug.DETAILED, "Error browsing " + strDirectory);
+					e.printStackTrace();
+				}
+			}
+			int result = fileChooser.showDialog(null, "Select Directory");
+			if (result == JFileChooser.APPROVE_OPTION)
+				strDirectory = fileChooser.getSelectedFile().getAbsolutePath();
+			else
+				strDirectory = null;
+		}
+
 		Main.preferences.put(Constants.PROGRAMNAME+"."+Constants.FIRSTRUNDIR, strDirectory);
 		Main.preferences.isDirty();
 		return strDirectory;

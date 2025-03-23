@@ -183,7 +183,7 @@ public class OutputSpreadsheet extends OutputFactory {
 				break;
 			}
 		} catch (NumberFormatException e) {
-			Main.rwDebugInst.debugThread("OutputSpreadsheet", "setField", MRBDebug.DETAILED,
+			Main.rwDebugInst.debug("OutputSpreadsheet", "setField", MRBDebug.DETAILED,
 					"Number error for " + type.toString() + " - " + field);
 			cell.setCellValue(field);
 		}

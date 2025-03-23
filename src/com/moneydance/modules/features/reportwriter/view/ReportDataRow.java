@@ -145,14 +145,14 @@ public class ReportDataRow {
 			setGenerate(row.getGenerate());
 			setDelimiter(row.getDelimiter());
 			setTargetExcel(row.getTargetExcel());
-			Main.rwDebugInst.debugThread("ReportDataRow", "loadRow", MRBDebug.DETAILED, "Row loaded "+name);
+			Main.rwDebugInst.debug("ReportDataRow", "loadRow", MRBDebug.DETAILED, "Row loaded "+name);
 		}
 		catch (JsonParseException e) {
-			Main.rwDebugInst.debugThread("ReportDataRow", "loadRow", MRBDebug.DETAILED, "Parse Exception "+e.getMessage());
+			Main.rwDebugInst.debug("ReportDataRow", "loadRow", MRBDebug.DETAILED, "Parse Exception "+e.getMessage());
 			return false;
 		}
 		catch (IOException e){
-			Main.rwDebugInst.debugThread("ReportDataRow", "loadRow", MRBDebug.DETAILED, "IO Exception "+e.getMessage());
+			Main.rwDebugInst.debug("ReportDataRow", "loadRow", MRBDebug.DETAILED, "IO Exception "+e.getMessage());
 			return false;
 		}
 		return true;
@@ -176,12 +176,12 @@ public class ReportDataRow {
 	public void delete(Parameters paramsp) {
 		String dir = paramsp.getDataDirectory();
 		String fileName = dir+"/"+getName()+Constants.REPORTEXTENSION;
-		Main.rwDebugInst.debugThread("ReportDataRow", "delete", MRBDebug.SUMMARY, "Delete "+fileName);
+		Main.rwDebugInst.debug("ReportDataRow", "delete", MRBDebug.SUMMARY, "Delete "+fileName);
 		File file = new File(fileName);
 		if (file.delete())
-			Main.rwDebugInst.debugThread("ReportDataRow", "delete", MRBDebug.SUMMARY, "Deleted "+fileName);
+			Main.rwDebugInst.debug("ReportDataRow", "delete", MRBDebug.SUMMARY, "Deleted "+fileName);
 		else
-			Main.rwDebugInst.debugThread("ReportDataRow", "delete", MRBDebug.SUMMARY, "Delete failed "+fileName);
+			Main.rwDebugInst.debug("ReportDataRow", "delete", MRBDebug.SUMMARY, "Delete failed "+fileName);
 
 	}
 	public void renameRow(String newName,Parameters paramsp) {

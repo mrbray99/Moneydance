@@ -82,10 +82,10 @@ public class DataDataRow {
 			setName(row.getName());
 			setSelectionGroup(row.getSelectionGroup());
 			setParameters(row.getParameters());
-			Main.rwDebugInst.debugThread("DataDataRow", "loadRow", MRBDebug.DETAILED, "Row loaded "+name);
+			Main.rwDebugInst.debug("DataDataRow", "loadRow", MRBDebug.DETAILED, "Row loaded "+name);
 		}
 		catch (JsonParseException e) {
-			Main.rwDebugInst.debugThread("DataDataRow", "loadRow", MRBDebug.DETAILED, "Parse Exception "+e.getMessage());
+			Main.rwDebugInst.debug("DataDataRow", "loadRow", MRBDebug.DETAILED, "Parse Exception "+e.getMessage());
 			return false;
 		}
 		catch (IOException e){
@@ -114,22 +114,22 @@ public class DataDataRow {
 			   String jsonString = new Gson().toJson(this);
 			   writer.write(jsonString);
 			   writer.close();	
-			   Main.rwDebugInst.debugThread("DataDataRow", "saveRow", MRBDebug.DETAILED, "Row Saved "+name);
+			   Main.rwDebugInst.debug("DataDataRow", "saveRow", MRBDebug.DETAILED, "Row Saved "+name);
           }
 			 catch (IOException i) {
-				 Main.rwDebugInst.debugThread("DataDataRow", "saveRow", MRBDebug.DETAILED, "IO Exception "+i.getMessage());
+				 Main.rwDebugInst.debug("DataDataRow", "saveRow", MRBDebug.DETAILED, "IO Exception "+i.getMessage());
 					   i.printStackTrace();
           }
 	}
 	public void delete(Parameters paramsp) {
 		String dir = paramsp.getDataDirectory();
 		String fileName = dir+"/"+getName()+Constants.DATAEXTENSION;
-		Main.rwDebugInst.debugThread("DataDataRow", "delete", MRBDebug.SUMMARY, "Delete "+fileName);
+		Main.rwDebugInst.debug("DataDataRow", "delete", MRBDebug.SUMMARY, "Delete "+fileName);
 		File file = new File(fileName);
 		if (file.delete())
-			Main.rwDebugInst.debugThread("DataDataRow", "delete", MRBDebug.SUMMARY, "Deleted "+fileName);
+			Main.rwDebugInst.debug("DataDataRow", "delete", MRBDebug.SUMMARY, "Deleted "+fileName);
 		else
-			Main.rwDebugInst.debugThread("DataDataRow", "delete", MRBDebug.SUMMARY, "Delete failed "+fileName);
+			Main.rwDebugInst.debug("DataDataRow", "delete", MRBDebug.SUMMARY, "Delete failed "+fileName);
 
 	}
 

@@ -13,7 +13,7 @@ import com.moneydance.modules.features.reportwriter.Constants;
 import com.moneydance.modules.features.reportwriter.Main;
 
 public class BeanSelectionPanel {
-    private JDialog stage;
+    private JDialog dialog;
     private BeanSelectionTable table;
     private BeanSelectionTableModel tableModel;
     private List<BeanSelectionRow> listModel;
@@ -34,9 +34,9 @@ public class BeanSelectionPanel {
 
     }
     public void display() {
-        stage = new JDialog();
-        stage.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        stage.addComponentListener(new ComponentListener(){
+        dialog = new JDialog();
+        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.addComponentListener(new ComponentListener(){
 
             @Override
             public void componentResized(ComponentEvent e) {
@@ -64,8 +64,8 @@ public class BeanSelectionPanel {
             }
         });
         panDisplay = new JPanel();
-        stage.add(panDisplay);
-        stage.setTitle(title);
+        dialog.add(panDisplay);
+        dialog.setTitle(title);
         panDisplay.setLayout(new GridBagLayout());
         listModel =list;
         for (BeanSelectionRow row : listModel)
@@ -88,14 +88,14 @@ public class BeanSelectionPanel {
                 if (row.isSelected())
                     selected.add(row.getRowId());
             }
-            stage.setVisible(false);
+            dialog.setVisible(false);
         });
         JButton cancelBtn = new JButton();
         if (Main.loadedIcons.cancelImg == null)
             cancelBtn.setText("Cancel");
         else
             cancelBtn.setIcon(new ImageIcon(Main.loadedIcons.cancelImg));
-        cancelBtn.addActionListener(e -> stage.setVisible(false));
+        cancelBtn.addActionListener(e -> dialog.setVisible(false));
         JButton selectAllBtn = new JButton("Select All");
         selectAllBtn.addActionListener(e -> selectAll());
         JButton deSelectAllBtn = new JButton("Deselect All");
@@ -113,9 +113,9 @@ public class BeanSelectionPanel {
         panDisplay.add(okBtn,GridC.getc(ix++, iy).insets(10,10,10,10));
         panDisplay.add(cancelBtn,GridC.getc(ix, iy).insets(10,10,10,10));
         resize();
-        stage.pack();
+        dialog.pack();
         setLocation();
-        stage.setVisible(true);
+        dialog.setVisible(true);
     }
     public List<String> getSelected(){
         return selected;
@@ -163,7 +163,7 @@ public class BeanSelectionPanel {
         int mainHeight = Main.frame.getHeight();
         int locationX = (mainWidth-SCREENWIDTH)/2;
         int locationY = (mainHeight-SCREENHEIGHT)/2;
-        stage.setLocation(locationX,locationY);
+        dialog.setLocation(locationX,locationY);
     }
     public void resize() {
         SCREENWIDTH = Main.preferences.getInt(Constants.PROGRAMNAME + "." + Constants.CRNTBEANPANEWIDTH,
@@ -171,8 +171,8 @@ public class BeanSelectionPanel {
         SCREENHEIGHT = Main.preferences.getInt(Constants.PROGRAMNAME + "." + Constants.CRNTBEANPANEHEIGHT,
                 Constants.BEANSCREENHEIGHT);
         Main.rwDebugInst.debug("BeanSelectionPanel","resize", MRBDebug.DETAILED,"size set to "+SCREENWIDTH+"/"+SCREENHEIGHT);
-        if (stage != null) {
-            stage.setPreferredSize(new Dimension(SCREENWIDTH,SCREENHEIGHT));
+        if (dialog != null) {
+            dialog.setPreferredSize(new Dimension(SCREENWIDTH,SCREENHEIGHT));
             scroll.setPreferredSize(new Dimension(SCREENWIDTH-20,SCREENHEIGHT-100));
             scroll.setMinimumSize(new Dimension(SCREENWIDTH-20,SCREENHEIGHT-100));
             Main.rwDebugInst.debug("BeanSelectionPanel","resize", MRBDebug.DETAILED,"scroll size set to "+scroll.getWidth()+"/"+scroll.getHeight());

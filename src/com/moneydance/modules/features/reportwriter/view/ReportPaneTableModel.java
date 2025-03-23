@@ -73,5 +73,7 @@ public class ReportPaneTableModel extends DefaultTableModel {
         this.data = data;
     }
     public ReportRow getRow(int index) {
+        if (index < 0)
+            return null;
         return data.get(index);
     }}

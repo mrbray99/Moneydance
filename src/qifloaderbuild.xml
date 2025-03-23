@@ -25,7 +25,7 @@
 			<arg value="qifloader"/>
 			<arg line="${dist}/qifloader.mxt"/>
 		</java>
-		<move file="${src}/s-qifloader.mxt" tofile="${dist}/qifloader.mxt"/>
+		<move file="${dist}/s-qifloader.mxt" tofile="${dist}/qifloader.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanqifloader" depends="cleanmrbutil">

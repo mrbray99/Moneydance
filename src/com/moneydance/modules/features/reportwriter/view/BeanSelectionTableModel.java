@@ -60,9 +60,16 @@ public class BeanSelectionTableModel extends DefaultTableModel {
             default -> " ";
         };
     }
+    @Override
+    public void setValueAt(Object value,int row, int col){
+
+        if (col==0)
+            data.get(row).setSelected((Boolean) value);
+    }
 
     @Override
     public boolean isCellEditable(int row, int col) {
+        if (col==0) return true;
         return false;
     }
     public void resetData(List<BeanSelectionRow> data){

@@ -98,7 +98,7 @@ public class MyReport extends JFrame {
             public void componentResized(ComponentEvent e) {
                 int width = mainScreen.getWidth();
                 int height = mainScreen.getHeight();
-                Main.rwDebugInst.debugThread("MyReport", "MyReport", MRBDebug.SUMMARY,
+                Main.rwDebugInst.debug("MyReport", "MyReport", MRBDebug.SUMMARY,
                         "Component New size " + width + "/" + height);
                 Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEWIDTH, width);
                 Main.preferences.put(Constants.PROGRAMNAME + "." + Constants.CRNTFRAMEHEIGHT, height);
@@ -266,7 +266,7 @@ public class MyReport extends JFrame {
             reportPan.resize();
         if (dataPan != null)
             dataPan.resize();
-        Main.rwDebugInst.debugThread("MyReport", "updatePreferences", MRBDebug.DETAILED,
+        Main.rwDebugInst.debug("MyReport", "updatePreferences", MRBDebug.DETAILED,
                 "New size " + width + "/" + height + "/" + dataWidth + "/" + dataHeight);
     }
 

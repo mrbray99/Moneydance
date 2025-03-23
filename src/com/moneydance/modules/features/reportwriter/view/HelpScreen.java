@@ -118,7 +118,7 @@ public class HelpScreen {
 		pane.add(debugInfo, GridC.getc(0, 3).insets(10,10,10,10).west());
 		pane.add(debugSummary, GridC.getc(0, 4).insets(10,10,10,10).west());
 		pane.add(debugDetailed,GridC.getc( 0, 5).insets(10,10,10,10).west());
-		String about = "<html>"+Constants.ABOUT1+Constants.ABOUT2+Constants.ABOUT3+Main.buildNo+"."+Main.minorBuildNo+"<br><br>"+Constants.ABOUT4+"</html>";
+		String about = "<html>"+Constants.ABOUT1+Constants.ABOUT2+Constants.ABOUT3+Main.buildNo+"."+"<br><br>"+Constants.ABOUT4+"</html>";
 		JLabel aboutLbl = new JLabel(about);
 		pane.add(aboutLbl,GridC.getc(1,0).insets(20,20,20,20).rowspan(5));
 		stage.pack();

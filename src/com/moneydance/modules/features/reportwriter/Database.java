@@ -77,7 +77,7 @@ public class Database {
 			conn = DriverManager.getConnection("jdbc:h2:tcp://localhost/"+outputDirectory+"/"+filename+";AUTOCOMMIT=OFF", "sa","sa");
 		}
 		catch (ClassNotFoundException |SQLException e) {
-			Main.rwDebugInst.debugThread("Database", "Init", MRBDebug.DETAILED, "SQL exception connecting to database");
+			Main.rwDebugInst.debug("Database", "Init", MRBDebug.DETAILED, "SQL exception connecting to database");
 			e.printStackTrace();
 			throw new RWException ("Could not connect to database"+e.getLocalizedMessage());
 		}
@@ -94,7 +94,7 @@ public class Database {
 			outStream.close();
 		} catch (Throwable e) { 
 			e.printStackTrace();
-			Main.rwDebugInst.debugThread("Database", "copyBlankDatabase", MRBDebug.DETAILED, "Error copying default database ");
+			Main.rwDebugInst.debug("Database", "copyBlankDatabase", MRBDebug.DETAILED, "Error copying default database ");
 			throw new RWException("Error copying blank database");
 		}
 	}
@@ -109,7 +109,7 @@ public class Database {
 		catch (SQLException e) {
 			OptionMessage.displayMessage("Could not drop "+bean.getTableName()+" Table");
 			e.printStackTrace();
-			Main.rwDebugInst.debugThread("Database", "createTable", MRBDebug.DETAILED, "SQL exception "+sql);
+			Main.rwDebugInst.debug("Database", "createTable", MRBDebug.DETAILED, "SQL exception "+sql);
 			throw new RWException("Could not create "+bean.getTableName()+" Table");
 		}
 		sql = bean.createTable();
@@ -121,7 +121,7 @@ public class Database {
 		catch (SQLException e) {
 			OptionMessage.displayMessage("Could not create "+bean.getTableName()+" Table");
 			e.printStackTrace();
-			Main.rwDebugInst.debugThread("Database", "createTable", MRBDebug.DETAILED, "SQL exception "+sql);
+			Main.rwDebugInst.debug("Database", "createTable", MRBDebug.DETAILED, "SQL exception "+sql);
 			throw new RWException("Could not create "+bean.getTableName()+" Table");
 		}
 	}
@@ -135,7 +135,7 @@ public class Database {
 			OptionMessage.displayMessage("SQL failed. See error log for more dewtails ");
 			e.printStackTrace();
 			rs = 0;
-			Main.rwDebugInst.debugThread("Database", "executeUpdate", MRBDebug.DETAILED, "SQL exception "+sql);
+			Main.rwDebugInst.debug("Database", "executeUpdate", MRBDebug.DETAILED, "SQL exception "+sql);
 			throw new RWException ("Database error on update "+e.getLocalizedMessage());
 		}
 		return rs;

@@ -214,7 +214,7 @@ public abstract class Utilities {
 			public void run() {
 				Main.context.showURL("moneydance:setprogress?meter=0&label="+
 				         message);
-				Main.rwDebugInst.debugThread("Utilities", "notifyUser", MRBDebug.DETAILED, message);
+				Main.rwDebugInst.debug("Utilities", "notifyUser", MRBDebug.DETAILED, message);
 
 			}
 		});

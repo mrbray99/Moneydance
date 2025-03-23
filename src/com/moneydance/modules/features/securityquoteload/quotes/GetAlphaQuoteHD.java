@@ -202,7 +202,7 @@ public class GetAlphaQuoteHD extends GetQuoteTask{
     private void fillValues(Set<Map.Entry<String, JsonElement>> members, QuotePrice quotePrice){
         for (Map.Entry<String, JsonElement> entry : members){
             String test = entry.getKey().substring(0,1);
-           switch (entry.getKey().substring(0,2)){
+            switch (entry.getKey().substring(0,2)){
                 case "2." -> {
                     quotePrice.setHighPrice(entry.getValue().getAsDouble());
                 }

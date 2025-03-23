@@ -66,12 +66,12 @@ public class ReportRow {
 	}
 
 	public void delete() {
-		Main.rwDebugInst.debugThread("ReportRow", "delete", MRBDebug.SUMMARY, "Delete "+fileName);
+		Main.rwDebugInst.debug("ReportRow", "delete", MRBDebug.SUMMARY, "Delete "+fileName);
 		File file = new File(fileName);
 		if (file.delete())
-			Main.rwDebugInst.debugThread("SelectionRow", "delete", MRBDebug.SUMMARY, "Deleted "+fileName);
+			Main.rwDebugInst.debug("SelectionRow", "delete", MRBDebug.SUMMARY, "Deleted "+fileName);
 		else
-			Main.rwDebugInst.debugThread("SelectionRow", "delete", MRBDebug.SUMMARY, "Delete failed "+fileName);
+			Main.rwDebugInst.debug("SelectionRow", "delete", MRBDebug.SUMMARY, "Delete failed "+fileName);
 
 	}
 }

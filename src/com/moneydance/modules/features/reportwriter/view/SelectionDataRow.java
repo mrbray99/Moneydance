@@ -241,10 +241,10 @@ public class SelectionDataRow {
 			setCurrencyRates(row.getCurrencyRates());
 			setReminders(row.getReminders());
 			setParameters(row.getParameters());
-			Main.rwDebugInst.debugThread("SelectionDataRow", "loadRow", MRBDebug.DETAILED, "Row loaded "+name);
+			Main.rwDebugInst.debug("SelectionDataRow", "loadRow", MRBDebug.DETAILED, "Row loaded "+name);
 		}
 		catch (JsonParseException e) {
-			Main.rwDebugInst.debugThread("SelectionDataRow", "loadRow", MRBDebug.DETAILED, "Parse Exception "+e.getMessage());
+			Main.rwDebugInst.debug("SelectionDataRow", "loadRow", MRBDebug.DETAILED, "Parse Exception "+e.getMessage());
 			return false;
 		}
 		catch (IOException e){
@@ -279,12 +279,12 @@ public class SelectionDataRow {
 	public void delete(Parameters paramsp) {
 		String dir = paramsp.getDataDirectory();
 		String fileName = dir+"/"+getName()+Constants.SELEXTENSION;
-		Main.rwDebugInst.debugThread("SelectionDataRow", "delete", MRBDebug.SUMMARY, "Delete "+fileName);
+		Main.rwDebugInst.debug("SelectionDataRow", "delete", MRBDebug.SUMMARY, "Delete "+fileName);
 		File file = new File(fileName);
 		if (file.delete())
-			Main.rwDebugInst.debugThread("SelectionDataRow", "delete", MRBDebug.SUMMARY, "Deleted "+fileName);
+			Main.rwDebugInst.debug("SelectionDataRow", "delete", MRBDebug.SUMMARY, "Deleted "+fileName);
 		else
-			Main.rwDebugInst.debugThread("SelectionDataRow", "delete", MRBDebug.SUMMARY, "Delete failed "+fileName);
+			Main.rwDebugInst.debug("SelectionDataRow", "delete", MRBDebug.SUMMARY, "Delete failed "+fileName);
 
 	}
 	public void renameRow(String newName,Parameters paramsp) {

@@ -23,7 +23,7 @@
             <arg value="filedisplay"/>
             <arg line="${dist}/filedisplay.mxt"/>
         </java>
-        <move file="${src}/s-filedisplay.mxt" tofile="${dist}/filedisplay.mxt"/>
+        <move file="${dist}/s-filedisplay.mxt" tofile="${dist}/filedisplay.mxt"/>
 	<echo level="info">the current time is ${TODAY_UK}</echo>
  </target>
 	<target name="cleanfiledisplay" >

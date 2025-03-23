@@ -62,6 +62,11 @@ public class FieldSelectionTableModel extends DefaultTableModel {
                 return " ";
         }
     }
+    @Override
+    public void setValueAt(Object value,int row, int col){
+        if (col==1)
+            data.get(row).setSelected((Boolean) value);
+    }
     public void setAllIncluded(boolean value){
         for (FieldSelectionRow row :data)
             row.setSelected(value);
@@ -69,6 +74,8 @@ public class FieldSelectionTableModel extends DefaultTableModel {
 
     @Override
     public boolean isCellEditable(int row, int col) {
+        if (col==1)
+            return true;
         return false;
     }
     public void resetData(List<FieldSelectionRow> data){

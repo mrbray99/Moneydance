@@ -1,13 +1,10 @@
 <component name="libraryTable">
   <library name="lib2">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../eclipse-workspace/Moneydance Released Extensions/lib2" />
+      <root url="file://C:/Program Files/Moneydance20245253/lib" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="file://$PROJECT_DIR$/../../eclipse-workspace/Moneydance Released Extensions/lib2" />
-    </SOURCES>
-    <jarDirectory url="file://$PROJECT_DIR$/../../eclipse-workspace/Moneydance Released Extensions/lib2" recursive="false" />
-    <jarDirectory url="file://$PROJECT_DIR$/../../eclipse-workspace/Moneydance Released Extensions/lib2" recursive="false" type="SOURCES" />
+    <SOURCES />
+    <jarDirectory url="file://C:/Program Files/Moneydance20245253/lib" recursive="false" />
   </library>
 </component>

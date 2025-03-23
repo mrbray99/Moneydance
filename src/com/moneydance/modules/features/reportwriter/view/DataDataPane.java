@@ -383,7 +383,7 @@ public class DataDataPane extends ScreenDataPane {
             if (selLoan.isSelected())
                 addAccounts(list,Main.extension.loanAccounts);
             if (list.isEmpty()) {
-                OptionMessage.displayMessage("Please select at least one type of account");
+                OptionMessage.displayMessage("No accounts available for the selected types");
                 return;
             }
             for (String acct : selected) {

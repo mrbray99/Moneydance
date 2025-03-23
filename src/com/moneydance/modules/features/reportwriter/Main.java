@@ -91,7 +91,6 @@ import com.moneydance.modules.features.reportwriter.view.SwingAccelerator;
 
 public class Main extends FeatureModule implements AccountListener, BudgetListener, CurrencyListener
 {
-	public static String minorBuildNo = "00";
 	public static String databaseChanged = "20210121";
 
 	public static CustomDateFormat cdate;
@@ -171,7 +170,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 			rwDebugInst = new MRBDebug();
 			rwDebugInst.setExtension(Constants.EXTENSIONNAME);
 			rwDebugInst.setDebugLevel(MRBDebug.INFO);
-			rwDebugInst.debug(Constants.EXTENSIONNAME, "Init", MRBDebug.INFO, "Started Build "+buildNo+"."+minorBuildNo);
+			rwDebugInst.debug(Constants.EXTENSIONNAME, "Init", MRBDebug.INFO, "Started Build "+buildNo);
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -461,7 +460,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 		book.getBudgets().addListener(this);
 		book.getCurrencies().addCurrencyListener(this);
 		frame = new MyReport();
-		frame.setTitle(Constants.EXTENSIONNAME+" "+buildNo+"."+minorBuildNo);
+		frame.setTitle(Constants.EXTENSIONNAME+" "+buildNo);
 		frame.setIconImage(mainIcon);
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		//Display the window.
@@ -498,7 +497,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 			public void componentMoved(ComponentEvent e) {
 				Component c = (Component)e.getSource();
 				Point currentLocation = c.getLocationOnScreen();
-				Main.rwDebugInst.debugThread("Main", "createAndShowGUI", MRBDebug.SUMMARY, "Component moved "+currentLocation.x+"/"+currentLocation.y);
+				Main.rwDebugInst.debug("Main", "createAndShowGUI", MRBDebug.SUMMARY, "Component moved "+currentLocation.x+"/"+currentLocation.y);
 				Main.preferences.put(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEX, currentLocation.x);
 				Main.preferences.put(Constants.PROGRAMNAME+"."+Constants.CRNTFRAMEY, currentLocation.y);
 				Main.preferences.isDirty();
@@ -645,7 +644,7 @@ public class Main extends FeatureModule implements AccountListener, BudgetListen
 			row.setSortText(acct.getFullAccountName());
 			row.setDepth(0);
 			switch (acct.getAccountType()) {
-			case ASSET :
+				case ASSET :
 				row.setType("Asset");
 				assetAccounts.add(row);
 				break;

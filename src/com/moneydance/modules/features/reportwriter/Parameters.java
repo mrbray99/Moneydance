@@ -78,11 +78,11 @@ public class Parameters implements Serializable{
 			JsonReader reader = new JsonReader(new FileReader(fileName));
 			newParams = new Gson().fromJson(reader,NewParameters.class);
 			reader.close();
-			Main.rwDebugInst.debugThread("Parameters", "Parameters", MRBDebug.SUMMARY, "File found "+fileName);
+			Main.rwDebugInst.debug("Parameters", "Parameters", MRBDebug.SUMMARY, "File found "+fileName);
 
 		}
 		catch (JsonParseException e) {
-			Main.rwDebugInst.debugThread("Parameters", "Parameters", MRBDebug.DETAILED, "Parse Exception "+e.getMessage());
+			Main.rwDebugInst.debug("Parameters", "Parameters", MRBDebug.DETAILED, "Parse Exception "+e.getMessage());
 		}
 		catch (IOException e){
 			/*
@@ -101,7 +101,7 @@ public class Parameters implements Serializable{
 			   String jsonString = new Gson().toJson(newParams);
 			   writer.write(jsonString);
 			   writer.close();
-			   Main.rwDebugInst.debugThread("Parameters", "Parameters", MRBDebug.SUMMARY, "File created "+fileName);
+			   Main.rwDebugInst.debug("Parameters", "Parameters", MRBDebug.SUMMARY, "File created "+fileName);
 
              }
 			 catch (IOException i) {
@@ -120,7 +120,7 @@ public class Parameters implements Serializable{
 		return thisObj;
 	}
 	public void setDataTemplates() {
-		Main.rwDebugInst.debugThread("Parameters", "setDataTemplates", MRBDebug.SUMMARY, "Data Directory "+dataDirectory);
+		Main.rwDebugInst.debug("Parameters", "setDataTemplates", MRBDebug.SUMMARY, "Data Directory "+dataDirectory);
 		if (dataDirectory == null || dataDirectory.equals(Constants.NODIRECTORY))
 			return;
 		dataList.clear();
@@ -133,7 +133,7 @@ public class Parameters implements Serializable{
             for (File file : files) {
                 if (file.isFile()) {
                     String fileName = file.getName();
-                    Main.rwDebugInst.debugThread("Parameters", "setDataTemplates", MRBDebug.SUMMARY, "Processing " + fileName);
+                    Main.rwDebugInst.debug("Parameters", "setDataTemplates", MRBDebug.SUMMARY, "Processing " + fileName);
                     if (fileName.toLowerCase().endsWith(Constants.DATAEXTENSION)) {
                         DataRow newRow = new DataRow();
                         newRow.setName(fileName.substring(0, fileName.lastIndexOf(".")));
@@ -176,7 +176,7 @@ public class Parameters implements Serializable{
                         newRow.setFileName(file.getAbsolutePath());
                         ReportDataRow dataRow = new ReportDataRow();
                         if (!dataRow.loadRow(newRow.getName(), this)) {
-                            Main.rwDebugInst.debugThread("Parameters", "setReportTemplates", MRBDebug.SUMMARY, "Processing " + fileName);
+                            Main.rwDebugInst.debug("Parameters", "setReportTemplates", MRBDebug.SUMMARY, "Processing " + fileName);
                             OptionMessage.displayErrorMessage("Could not load data for data row " + newRow.getName());
                             continue;
                         }

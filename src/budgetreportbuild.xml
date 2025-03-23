@@ -25,7 +25,7 @@
 			<arg value="budgetreport"/>
 			<arg line="${dist}/budgetreport.mxt"/>
 		</java>
-		<move file="${src}/s-budgetreport.mxt" tofile="${dist}/budgetreport.mxt"/>
+		<move file="${dist}/s-budgetreport.mxt" tofile="${dist}/budgetreport.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanbudgetreport" depends="cleanmrbutil">

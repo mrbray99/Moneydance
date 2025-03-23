@@ -771,10 +771,10 @@ public class DetailedFileDisplayWindow extends JPanel implements
 		case '5':
 			// list memorized items
 			ReportSpecManager lm = objAcctBook.getMemorizedItems();
-			List<ReportSpec> lmgraphsBase = lm.getAllGraphs();
+			List<ReportSpec> lmgraphsBase = lm.getGraphs();
 			List<ReportSpec> lmgraphs =  new ArrayList<ReportSpec>(lmgraphsBase);
 			lmgraphs.sort((ReportSpec a1,ReportSpec a2)-> a1.getName().compareToIgnoreCase(a2.getName()));
-			List<ReportSpec> lmreportsBase = lm.getAllReports();
+			List<ReportSpec> lmreportsBase = lm.getReports();
 			List<ReportSpec> lmreports =  new ArrayList<ReportSpec>(lmreportsBase);
 			lmreports.sort((ReportSpec a1,ReportSpec a2)-> a1.getName().compareToIgnoreCase(a2.getName()));
 			/*
@@ -1090,7 +1090,7 @@ public class DetailedFileDisplayWindow extends JPanel implements
 			detailmodel.addRow(vmsync);
 			Vector<String> vmid = new Vector<String>();
 			vmid.add("ID");
-			vmid.add(stitem.getReportID());
+			vmid.add(stitem.getReportGeneratorID());
 			detailmodel.addRow(vmid);
 			Vector<String> vmmem = new Vector<String>();
 			vmmem.add("Is memorized");

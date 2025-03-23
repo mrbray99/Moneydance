@@ -43,8 +43,7 @@
 			<arg value="reportwriter"/>
 			<arg line="${dist}/reportwriter.mxt"/>
 		</java>
-		<copy file="${src}/s-reportwriter.mxt" tofile="${dist}/reportwriter.mxt"/>
-		<delete file="${src}/s-reportwriter.mxt" />
+		<move file="${dist}/s-reportwriter.mxt" tofile="${dist}/reportwriter.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	</target>
 	<target name="cleanreportwriter" depends="cleanmrbutil">

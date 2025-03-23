@@ -48,12 +48,12 @@ public class SelectionRow {
 		this.lastUsed = lastUsed;
 	}
 	public void delete() {
-		Main.rwDebugInst.debugThread("SelectionRow", "delete", MRBDebug.SUMMARY, "Delete "+fileName);
+		Main.rwDebugInst.debug("SelectionRow", "delete", MRBDebug.SUMMARY, "Delete "+fileName);
 		File file = new File(fileName);
 		if (file.delete())
-			Main.rwDebugInst.debugThread("SelectionRow", "delete", MRBDebug.SUMMARY, "Deleted "+fileName);
+			Main.rwDebugInst.debug("SelectionRow", "delete", MRBDebug.SUMMARY, "Deleted "+fileName);
 		else
-			Main.rwDebugInst.debugThread("SelectionRow", "delete", MRBDebug.SUMMARY, "Delete failed "+fileName);
+			Main.rwDebugInst.debug("SelectionRow", "delete", MRBDebug.SUMMARY, "Delete failed "+fileName);
 
 	}
 	public static List<String> getSelections(Parameters params){
@@ -68,7 +68,7 @@ public class SelectionRow {
 		for (int i=0;i<files.length;i++) {
 			if (files[i].isFile()) {
 				String fileName = files[i].getName();
-				Main.rwDebugInst.debugThread("SelectionRow", "getSelections", MRBDebug.SUMMARY, "Processing "+fileName);
+				Main.rwDebugInst.debug("SelectionRow", "getSelections", MRBDebug.SUMMARY, "Processing "+fileName);
 				if (fileName.toLowerCase().endsWith(Constants.SELEXTENSION)) {
 					list.add(fileName.substring(0,fileName.lastIndexOf(".")));
 				}

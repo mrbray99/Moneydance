@@ -25,7 +25,7 @@
 			<arg value="securitypriceload"/>
 			<arg line="${dist}/securitypriceload.mxt"/>
 		</java>
-		<move file="${src}/s-securitypriceload.mxt" tofile="${dist}/securitypriceload.mxt"/>
+		<move file="${dist}/s-securitypriceload.mxt" tofile="${dist}/securitypriceload.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target> 
 	<target name="cleansecuritypriceload" depends="cleanmrbutil">
