@@ -87,9 +87,7 @@ public class GetYahooQuote extends GetQuoteTask {
     public GetYahooQuote(String ticker, QuoteListener listener, CloseableHttpClient httpClient, String tickerType, String tid,Integer lastPriceDate,boolean history) {
         super(ticker, listener, httpClient, tickerType, tid);
         this.history = history;
-        LocalDate now = LocalDate.now();
-        LocalDate historyDate = now.minusMonths(params.getAmtHistory()+1);
-        int  historyDateInt = historyDate.getYear() * 10000 + (historyDate.getMonthValue()) * 100 + historyDate.getDayOfMonth();
+        int  historyDateInt = DateUtil.incrementDate(Main.today,0,-(params.getAmtHistory()+1),0);
         this.lastPriceDate = (lastPriceDate == null ? 0 : lastPriceDate);
         if (this.lastPriceDate < historyDateInt) {
             this.lastPriceDate = historyDateInt;

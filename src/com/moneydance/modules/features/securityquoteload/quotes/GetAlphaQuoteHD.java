@@ -3,6 +3,7 @@ package com.moneydance.modules.features.securityquoteload.quotes;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.infinitekind.util.DateUtil;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.securityquoteload.Constants;
 import com.moneydance.modules.features.securityquoteload.Main;
@@ -33,9 +34,7 @@ public class GetAlphaQuoteHD extends GetQuoteTask{
     public GetAlphaQuoteHD(String ticker, String tradeCurrency, QuoteListener listener, CloseableHttpClient httpClient, String tickerType, String tid,Integer lastPriceDate) {
         super(ticker, listener, httpClient, tickerType, tid);
         this.tradeCurrency = tradeCurrency;
-        LocalDate now = LocalDate.now();
-        LocalDate historyDate = now.minusMonths(params.getAmtHistory() + 1);
-        historyDateInt = historyDate.getYear() * 10000 + (historyDate.getMonthValue()) * 100 + historyDate.getDayOfMonth();
+        int  historyDateInt = DateUtil.incrementDate(Main.today,0,-(params.getAmtHistory()+1),0);
         this.lastPriceDate = (lastPriceDate == null ? 0 : lastPriceDate);
         if (this.lastPriceDate < historyDateInt) {
             this.lastPriceDate = historyDateInt;
