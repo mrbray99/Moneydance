@@ -33,6 +33,8 @@
 		<delete>
 			<fileset dir="${build}">
 			    <include name="com/moneydance/modules/features/securityquoteload/*.class"/>
+				<include name="com/moneydance/modules/features/securityquoteload/quotes/*.class"/>
+				<include name="com/moneydance/modules/features/securityquoteload/view/*.class"/>
 			</fileset>
 		</delete>
 	</target>

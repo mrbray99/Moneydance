@@ -49,6 +49,10 @@
 	<target name="cleanreportwriter" depends="cleanmrbutil">
 		<delete>
 			<fileset dir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
+			<fileset dir="${build}" includes="com/moneydance/modules/features/reportwriter/databeans/**" />
+			<fileset dir="${build}" includes="com/moneydance/modules/features/reportwriter/factory/**" />
+			<fileset dir="${build}" includes="com/moneydance/modules/features/reportwriter/samples/**" />
+			<fileset dir="${build}" includes="com/moneydance/modules/features/reportwriter/view/**" />
 		</delete>
 	</target>	
 
