@@ -1,19 +1,10 @@
  package com.moneydance.modules.features.securitypriceload;
 
-import java.awt.Desktop;
-import java.awt.FileDialog;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.HeadlessException;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -22,20 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.moneydance.apps.md.view.MoneydanceUI;
@@ -162,7 +140,12 @@ public class FileSelectWindow extends JPanel implements ActionListener{
 				loadFile();
 			}
 		});
-		JButton btnChoose = new JButton("Choose File");
+		JButton btnChoose = new JButton();
+		Image img = getIcon("Search-Folder-icon.jpg");
+		if (img == null)
+			btnChoose.setText("Choose File");
+		else
+			btnChoose.setIcon(new ImageIcon(img));
 		GridBagConstraints gbc_btnChoose = new GridBagConstraints();
 		btnChoose.setToolTipText("Click on this button to open the File Explorer");
 		gbc_btnChoose.insets = new Insets(10, 10, 10, 10);
@@ -1031,6 +1014,23 @@ public class FileSelectWindow extends JPanel implements ActionListener{
 
 
 		
+	}
+	private Image getIcon(String icon) {
+		try {
+			ClassLoader cl = getClass().getClassLoader();
+			java.io.InputStream in =
+					cl.getResourceAsStream("/com/moneydance/modules/features/securitypriceload/" + icon);
+			if (in != null) {
+				ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
+				byte buf[] = new byte[256];
+				int n = 0;
+				while ((n = in.read(buf, 0, buf.length)) >= 0)
+					bout.write(buf, 0, n);
+				return Toolkit.getDefaultToolkit().createImage(bout.toByteArray());
+			}
+		} catch (Throwable e) {
+		}
+		return null;
 	}
 
 }
