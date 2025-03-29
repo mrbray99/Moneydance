@@ -17,7 +17,7 @@
 	    </jar>
 
 		<java newenvironment="false"
-			  classpathref="classpath"
+			  classpathref="signpath"
 			  classname="com.moneydance.admin.KeyAdmin">
 			<arg value="signextjar"/>
 			<arg value="${privkeyfile}"/>
@@ -25,7 +25,7 @@
 			<arg value="qifloader"/>
 			<arg line="${dist}/qifloader.mxt"/>
 		</java>
-		<move file="${dist}/s-qifloader.mxt" tofile="${dist}/qifloader.mxt"/>
+		<move file="${src}/s-qifloader.mxt" tofile="${dist}/qifloader.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanqifloader" depends="cleanmrbutil">

@@ -1,7 +1,7 @@
 <project name="reportwriter" basedir=".">
 	<target name="reportwriter" depends="mrbutil">
-			<javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
-				   classpathref="classpath" destdir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
+			<javac release="${release}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
+				   classpathref="classpath24" destdir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
 		<jar destfile="${src}/reportwriter.mxt">
 			<fileset dir="${src}" includes="
 	             com/moneydance/modules/features/reportwriter/meta_info.dict
@@ -35,7 +35,7 @@
 			<zipgroupfileset dir="${lib}" includes="**/xmlbeans-3.1.0.jar" />
 		</jar>
 		<java newenvironment="false"
-			  classpathref="classpath"
+			  classpathref="signpath"
 			  classname="com.moneydance.admin.KeyAdmin">
 			<arg value="signextjar"/>
 			<arg value="${privkeyfile}"/>

@@ -18,7 +18,7 @@
 		      <zipgroupfileset  dir="${lib}" includes="**/jsoup-1.11.3.jar" />
 		</jar>
 		<java newenvironment="false"
-			  classpathref="classpath"
+			  classpathref="signpath"
 			  classname="com.moneydance.admin.KeyAdmin">
 			<arg value="signextjar"/>
 			<arg value="${privkeyfile}"/>
@@ -26,7 +26,7 @@
 			<arg value="securityquoteload"/>
 			<arg line="${dist}/securityquoteload.mxt"/>
 		</java>
-		<move file="${dist}/s-securityquoteload.mxt" tofile="${dist}/securityquoteload.mxt"/>
+		<move file="${src}/s-securityquoteload.mxt" tofile="${dist}/securityquoteload.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	</target> 
 	<target name="cleansecurityquoteload">

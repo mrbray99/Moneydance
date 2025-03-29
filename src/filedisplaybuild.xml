@@ -1,6 +1,6 @@
  <project name="filedisplay">
  	<target name="filedisplay">
-    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
+    <javac release="${release}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
       classpathref="classpath"  destdir="${build}"
       includes="com/moneydance/modules/features/filedisplay/**"/>
 
@@ -15,7 +15,7 @@
     </jar>
 
         <java newenvironment="false"
-              classpathref="classpath"
+              classpathref="signpath"
               classname="com.moneydance.admin.KeyAdmin">
             <arg value="signextjar"/>
             <arg value="${privkeyfile}"/>
@@ -23,7 +23,7 @@
             <arg value="filedisplay"/>
             <arg line="${dist}/filedisplay.mxt"/>
         </java>
-        <move file="${dist}/s-filedisplay.mxt" tofile="${dist}/filedisplay.mxt"/>
+        <move file="${src}/s-filedisplay.mxt" tofile="${dist}/filedisplay.mxt"/>
 	<echo level="info">the current time is ${TODAY_UK}</echo>
  </target>
 	<target name="cleanfiledisplay" >

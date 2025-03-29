@@ -52,7 +52,6 @@ import com.moneydance.modules.features.reportwriter.RWException;
 import com.moneydance.modules.features.reportwriter.samples.DownloadException;
 
 import com.moneydance.modules.features.reportwriter.OptionMessage;
-import com.moneydance.modules.features.securityquoteload.MainPriceWindow;
 
 
 import javax.swing.*;

@@ -17,7 +17,7 @@
 	    </jar>
 
 		<java newenvironment="false"
-			  classpathref="classpath"
+			  classpathref="signpath"
 			  classname="com.moneydance.admin.KeyAdmin">
 			<arg value="signextjar"/>
 			<arg value="${privkeyfile}"/>
@@ -25,7 +25,7 @@
 			<arg value="loadsectrans"/>
 			<arg line="${dist}/loadsectrans.mxt"/>
 		</java>
-		<move file="${dist}/s-loadsectrans.mxt" tofile="${dist}/loadsectrans.mxt"/>
+		<move file="${src}/s-loadsectrans.mxt" tofile="${dist}/loadsectrans.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanloadsectrans" depends="cleanmrbutil">

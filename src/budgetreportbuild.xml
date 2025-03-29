@@ -1,6 +1,6 @@
 <project name="budgetreport"  basedir=".">
 	<target name="budgetreport" depends="mrbutil">
-	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
+	    <javac release="${release}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath"  destdir="${build}"
 	      includes="com/moneydance/modules/features/budgetreport/**"/>
 	    <jar destfile="${dist}/budgetreport.mxt">
@@ -17,7 +17,7 @@
 	    </jar>
 
 		<java newenvironment="false"
-			  classpathref="classpath"
+			  classpathref="signpath"
 			  classname="com.moneydance.admin.KeyAdmin">
 			<arg value="signextjar"/>
 			<arg value="${privkeyfile}"/>
@@ -25,7 +25,7 @@
 			<arg value="budgetreport"/>
 			<arg line="${dist}/budgetreport.mxt"/>
 		</java>
-		<move file="${dist}/s-budgetreport.mxt" tofile="${dist}/budgetreport.mxt"/>
+		<move file="${src}/s-budgetreport.mxt" tofile="${dist}/budgetreport.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanbudgetreport" depends="cleanmrbutil">

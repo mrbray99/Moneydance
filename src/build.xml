@@ -11,8 +11,11 @@ http://jakarta.apache.org/ant/index.html
     <property name="build.compiler" value="modern"/>
     <property name="target" value="17"/>
     <property name="srccode" value="17"/>
+    <property name="release" value="17"/>
     <property name="lib" value="../lib"/>
-    <property name="md_ext_lib_dir" value="../lib2"/>
+    <property name="lib2" value="../lib2"/>
+    <property name="md_ext_lib_dir" value="c:\Program Files\moneydance4097\lib"/>
+    <property name="md_ext_lib_dir24" value="c:\Program Files\moneydance20245253\lib"/>
     <property environment="env"/>
     <property name="privkeyfile" value="${src}/priv_key"/>
     <property name="pubkeyfile" value="${src}/pub_key"/>
@@ -31,6 +34,13 @@ http://jakarta.apache.org/ant/index.html
     <path id="classpath">
       <fileset dir="${md_ext_lib_dir}" includes="*.jar"/>
       <fileset dir="${lib}" includes="*.jar"/>
+    </path>
+    <path id="classpath24">
+        <fileset dir="${md_ext_lib_dir24}" includes="*.jar"/>
+        <fileset dir="${lib}" includes="*.jar"/>
+    </path>
+    <path id="signpath">
+        <fileset dir ="${lib2}" includes="*.jar"/>
     </path>
     <target name="init">
         <mkdir dir="${dist}"/>
