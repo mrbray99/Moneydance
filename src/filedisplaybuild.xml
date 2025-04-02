@@ -1,7 +1,7 @@
  <project name="filedisplay">
  	<target name="filedisplay">
     <javac release="${release}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
-      classpathref="classpath"  destdir="${build}"
+      classpathref="classpath_old"  destdir="${build}"
       includes="com/moneydance/modules/features/filedisplay/**"/>
 
     <jar destfile="${dist}/filedisplay.mxt">
@@ -23,7 +23,7 @@
             <arg value="filedisplay"/>
             <arg line="${dist}/filedisplay.mxt"/>
         </java>
-        <move file="${src}/s-filedisplay.mxt" tofile="${dist}/filedisplay.mxt"/>
+        <move file="./s-filedisplay.mxt" tofile="${dist}/filedisplay.mxt"/>
 	<echo level="info">the current time is ${TODAY_UK}</echo>
  </target>
 	<target name="cleanfiledisplay" >

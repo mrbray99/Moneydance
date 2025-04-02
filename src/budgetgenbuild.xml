@@ -1,7 +1,7 @@
 <project name="budgetgen" basedir=".">
 	<target name="budgetgen" depends="mrbutil">
 	    <javac release="${release}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
-	      classpathref="classpath"  destdir="${build}"
+	      classpathref="classpath_old"  destdir="${build}"
 	      includes="com/moneydance/modules/features/budgetgen/**"/>
 
 	    <jar destfile="${dist}/budgetgen.mxt">
@@ -26,7 +26,7 @@
 			<arg value="budgetgen"/>
 			<arg line="${dist}/budgetgen.mxt"/>
 		</java>
-		<move file="${src}/s-budgetgen.mxt" tofile="${dist}/budgetgen.mxt"/>
+		<move file="./s-budgetgen.mxt" tofile="${dist}/budgetgen.mxt"/>
 	<echo level="info">the current time is ${TODAY_UK}</echo>
 	</target>
 	<target name="cleanbudgetgen" depends="cleanmrbutil">

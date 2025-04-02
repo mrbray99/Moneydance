@@ -1,7 +1,7 @@
 <project name="mrbutil" basedir=".">
 	<target name="mrbutil">
 	    <javac target="${target}" release="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
-	      classpathref="classpath"  destdir="${build}"
+	      classpathref="classpath_old"  destdir="${build}"
 	      includes="com/moneydance/modules/features/mrbutil/**"
 	      excludes="com/moneydance/modules/features/mrbutil/Graph**"/>
 		

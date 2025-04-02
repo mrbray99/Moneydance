@@ -1,7 +1,7 @@
 <project name="qifloader"  basedir=".">
 	<target name="qifloader" depends="mrbutil">
 	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
-	      classpathref="classpath"  destdir="${build}"
+	      classpathref="classpath_old"  destdir="${build}"
 	      includes="com/moneydance/modules/features/qifloader/**" />
 	    <jar destfile="${dist}/qifloader.mxt">
 	      <fileset dir="${src}" includes="
@@ -25,7 +25,7 @@
 			<arg value="qifloader"/>
 			<arg line="${dist}/qifloader.mxt"/>
 		</java>
-		<move file="${src}/s-qifloader.mxt" tofile="${dist}/qifloader.mxt"/>
+		<move file="./s-qifloader.mxt" tofile="${dist}/qifloader.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanqifloader" depends="cleanmrbutil">

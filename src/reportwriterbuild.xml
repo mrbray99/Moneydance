@@ -1,7 +1,7 @@
 <project name="reportwriter" basedir=".">
 	<target name="reportwriter" depends="mrbutil">
 			<javac release="${release}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
-				   classpathref="classpath24" destdir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
+				   classpathref="classpath" destdir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
 		<jar destfile="${src}/reportwriter.mxt">
 			<fileset dir="${src}" includes="
 	             com/moneydance/modules/features/reportwriter/meta_info.dict
@@ -43,7 +43,7 @@
 			<arg value="reportwriter"/>
 			<arg line="${src}/reportwriter.mxt"/>
 		</java>
-		<move file="${src}/s-reportwriter.mxt" tofile="${dist}/reportwriter.mxt"/>
+		<move file="./s-reportwriter.mxt" tofile="${dist}/reportwriter.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	</target>
 	<target name="cleanreportwriter" depends="cleanmrbutil">
