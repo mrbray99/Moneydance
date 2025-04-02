@@ -3,6 +3,7 @@
 	    <javac target="${target}" release="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath_old"  destdir="${build}"
 	      includes="com/moneydance/modules/features/securityquoteload/**"/>
+		<delete file="${dist}/securityquoteload.mxt" />
 	    <jar destfile="${dist}/securityquoteload.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/securityquoteload/meta_info.dict

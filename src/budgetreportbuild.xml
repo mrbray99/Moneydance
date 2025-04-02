@@ -3,6 +3,7 @@
 	    <javac release="${release}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath_old"  destdir="${build}"
 	      includes="com/moneydance/modules/features/budgetreport/**"/>
+		<delete file="${dist}/budgetreport.mxt" />
 	    <jar destfile="${dist}/budgetreport.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/budgetreport/meta_info.dict

@@ -4,6 +4,7 @@
 	      classpathref="classpath_old"  destdir="${build}"
 	      includes="com/moneydance/modules/features/securityhistoryload/**"/>
 
+		<delete file="${dist}/securityhistoryload.mxt" />
 	    <jar destfile="${dist}/securityhistoryload.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/securityhistoryload/meta_info.dict

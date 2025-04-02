@@ -3,6 +3,7 @@
 	    <javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
 	      classpathref="classpath_old"  destdir="${build}"
 	      includes="com/moneydance/modules/features/qifloader/**" />
+		<delete file="${dist}/qifloader.mxt" />
 	    <jar destfile="${dist}/qifloader.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/qifloader/meta_info.dict
