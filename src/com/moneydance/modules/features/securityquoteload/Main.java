@@ -118,6 +118,7 @@ public class Main extends FeatureModule {
     private MoneydanceUI mdGUI;
     private com.moneydance.apps.md.controller.Main mdMain;
     private Thread processor = null;
+    private boolean autoRunNeeded = false;
 
 
     /*
@@ -248,35 +249,26 @@ public class Main extends FeatureModule {
             debug = "OFF";
         debugInst.debug("Quote Load", "HandleEventFileOpened", MRBDebug.INFO, "Debug level set to " + debug);
         context = getContext();
-        String serverType = Constants.USESTANDALONE;
-        debugInst.debug("Quote Load", "HandleEventFileOpened", MRBDebug.DETAILED, "Servertype " + serverType);
         serverName = Constants.PROGRAMNAME;
-        debugInst.debug("Quote Load", "HandleEventFileOpened", MRBDebug.SUMMARY, "Using Standalone ");
-        sendAuto();
+        Timer autoDelayStart = new Timer(1, ((ae) -> javax.swing.SwingUtilities.invokeLater(() -> {
+            sendAuto();
+        })));
+        autoDelayStart.setInitialDelay(20000);
+        autoDelayStart.setRepeats(false);
+        autoDelayStart.start();
+        debugInst.debug("Quote Load", "handleEventFileOpened", MRBDebug.INFO,
+                "Autorun delayed for 20 seconds ");
     }
 
     public void sendAuto() {
-        debugInst.debug("Quote Load", "sendAuto", MRBDebug.DETAILED, "checking syncing ");
-        if (context != null && context.getCurrentAccountBook().getSyncer().isSyncing()) {
-            debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO, "Syncing - delay set ");
-            if (autoDelay == null) {
-                autoDelay = new Timer(1, ((ae) -> SwingUtilities.invokeLater(() -> {
-                    debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO,
-                            "Check Auto Sync after delay ");
-                    MRBEDTInvoke.showURL(context, "moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-                            + Constants.CHECKAUTOSYNC);
-                })));
-                autoDelay.setInitialDelay(30000);
-            }
-            autoDelay.start();
-            return;
-        }
         if (standAloneRequested) {
             MRBEDTInvoke.showURL(context, "moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
                     + Constants.STANDALONEREQUESTED);
         } else {
-            debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO, "Check Auto without delay ");
-            MRBEDTInvoke.showURL(context, "moneydance:fmodule:" + Constants.PROGRAMNAME + ":" + Constants.CHECKAUTOCMD);
+            debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO, "Check Auto");
+            javax.swing.SwingUtilities.invokeLater(()-> {
+               MRBEDTInvoke.showURL(context, "moneydance:fmodule:" + Constants.PROGRAMNAME + ":" + Constants.CHECKAUTOCMD);
+            });
         }
     }
 
@@ -317,7 +309,7 @@ public class Main extends FeatureModule {
         LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), next);
         if (dateTime.isBefore(LocalDateTime.now()))
             dateTime.plusDays(1L);
-        debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO,
+        debugInst.debug("Quote Load", "resetAutoRun", MRBDebug.INFO,
                 "now " + now + " next " + dateTime);
         autoRun.startExecutionAt(dateTime);
     }
@@ -571,6 +563,10 @@ public class Main extends FeatureModule {
         if (params != null)
             Parameters.closeParameters();
         params = null;
+        if (autoRunNeeded && !closingRequested){
+            sendAuto();
+            autoRunNeeded = false;
+        }
     }
 
     /**
@@ -630,7 +626,12 @@ public class Main extends FeatureModule {
 						return;
 					}
 					standAloneRequested = true;
-					sendAuto();
+                    Timer autoDelayStart = new Timer(1, ((ae) -> javax.swing.SwingUtilities.invokeLater(() -> {
+                        sendAuto();
+                    })));
+                    autoDelayStart.setInitialDelay(20000);
+                    autoDelayStart.setRepeats(false);
+                    autoDelayStart.start();
 					return;
 				}
 				case Constants.STANDALONEREQUESTED -> {
@@ -641,13 +642,6 @@ public class Main extends FeatureModule {
 				}
 				case Constants.RUNAUTOCMD -> {
 					frame = new AutomaticRun(Main.this, runtype);
-					return;
-				}
-				case Constants.CHECKAUTOSYNC -> {
-					if (autoDelay != null) {
-						autoDelay.stop();
-					}
-					sendAuto();
 					return;
 				}
 				case Constants.CHECKAUTOCMD -> {
@@ -693,53 +687,57 @@ public class Main extends FeatureModule {
 							Constants.RUNSTARTUP);
 					if (secRunAuto || curRunAuto) {
 						if (startTime != Constants.RUNSTARTUP) {
-							/*
-							 * Not a run at startup - check if time has been reached
-							 */
-							LocalTime now = LocalTime.now();
-							LocalTime runTime = LocalTime.of(23, 59);
-							for (int i = 0; i < Constants.TIMEVALUES.length; i++) {
-								if (Constants.TIMEVALUES[i] == startTime) {
-									if (Constants.TIMESTART[i] != 24)
-										runTime = LocalTime.of(Constants.TIMESTART[i], 0);
-								}
-							}
+                            /*
+                             * Not a run at startup - check if time has been reached
+                             */
+                            LocalTime now = LocalTime.now();
+                            LocalTime runTime = LocalTime.of(23, 59);
+                            for (int i = 0; i < Constants.TIMEVALUES.length; i++) {
+                                if (Constants.TIMEVALUES[i] == startTime) {
+                                    if (Constants.TIMESTART[i] != 24)
+                                        runTime = LocalTime.of(Constants.TIMESTART[i], 0);
+                                }
+                            }
 
-							LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), runTime);
-							if (dateTime.isBefore(LocalDateTime.now()))
-								dateTime.plusDays(1L);
-							debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
-									"Time check - Sec " + secRunAuto + " " + secNextrun + " " + startUp);
-							debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
-									"Time check - Cur " + curRunAuto + " " + curNextrun + " " + startUp);
-							debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
-									"Time check - run time " + runTime + " " + now);
-							if (!((secRunAuto && secNextrun < today && startUp)
-									|| (curRunAuto && curNextrun < today && startUp))) {
-								if (runTime.isAfter(now)) {
-									/*
-									 * start time not reached - reset auto run
-									 */
-									resetAutoRun();
-									return;
-								}
-								startUp = false;
-							}
-						}
-						if (secRunAuto || curRunAuto) {
-							if (frame != null && runtype == Constants.MANUALRUN) {
-								/*
-								 * check to see if Quote Loader is open
-								 */
-								SwingUtilities.invokeLater(() -> {
-									JOptionPane.showMessageDialog(frame,
-											"Quote Loader is trying to run an Automatic update. It will be delayed until the next time.");
-								});
-								resetAutoRun();
-								return;
-							}
-						}
-						/*
+                            LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), runTime);
+                            if (dateTime.isBefore(LocalDateTime.now()))
+                                dateTime.plusDays(1L);
+                            debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
+                                    "Time check - Sec " + secRunAuto + " " + secNextrun + " " + startUp);
+                            debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
+                                    "Time check - Cur " + curRunAuto + " " + curNextrun + " " + startUp);
+                            debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
+                                    "Time check - run time " + runTime + " " + now);
+                            if (!((secRunAuto && secNextrun < today && startUp)
+                                    || (curRunAuto && curNextrun < today && startUp))) {
+                                if (runTime.isAfter(now)) {
+                                    /*
+                                     * start time not reached - reset auto run
+                                     */
+                                    resetAutoRun();
+                                    return;
+                                }
+                                startUp = false;
+                            }
+                            debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
+                                    "frame " + String.valueOf(frame == null) + " runtype " + runtype);
+                        }
+
+                        if (secRunAuto || curRunAuto) {
+                            if (frame != null && runtype == Constants.MANUALRUN) {
+                                /*
+                                 * check to see if Quote Loader is open
+                                 */
+                                debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED,
+                                        "Quote Loader is open, autorun cannot run");
+                                autoRunNeeded=true;
+                                frame.setStatusMessage();
+                                return;
+                            }
+                        }
+
+
+                        /*
 						 * determine what type of run
 						 */
 						if (secRunAuto && !curRunAuto)

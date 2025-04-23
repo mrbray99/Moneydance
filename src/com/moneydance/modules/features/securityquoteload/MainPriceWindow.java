@@ -121,7 +121,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 	private JButton exportBtn;
 	private JButton selectAll;
 	private JButton helpBtn;
-	private JLabel throttleMessage;
+	private JLabel statusMessage;
 	private Charset charSet = StandardCharsets.UTF_8;
 	private MoneydanceUI mdGUI;
 	private com.moneydance.apps.md.controller.Main mdMain;
@@ -271,10 +271,10 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		buttonsPanel = new JPanel(new GridBagLayout());
 		gridX = 0;
 		gridY = 0;
-		throttleMessage = new JLabel("Yahoo Throttling Active. Call speed reduced");
-		throttleMessage.setForeground(Color.RED);
-		buttonsPanel.add(throttleMessage, GridC.getc(gridX++, gridY).insets(10, 10, 10, 10));
-		unsetThrottleMessage();
+		statusMessage = new JLabel("Quote Loader Autorun delayed. It will start when you close Quote Loader");
+		statusMessage.setForeground(Color.RED);
+		buttonsPanel.add(statusMessage, GridC.getc(gridX++, gridY).insets(10, 10, 10, 10));
+		unsetStatusMessage();
 
 		if (selectAllReturned)
 			selectAll = new JButton(Constants.SELECTALL);
@@ -460,16 +460,12 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		getContentPane().setPreferredSize(new Dimension(iFRAMEWIDTH, iFRAMEDEPTH));
 		this.pack();
 	}
-	public void setThrottleMessage(){
-		if (runtype != Constants.MANUALRUN && runtype != 0)
-			return;
-		throttleMessage.setVisible(true);
+	public void setStatusMessage(){
+		statusMessage.setVisible(true);
 		this.revalidate();
 	}
-	public void unsetThrottleMessage(){
-		if (runtype != Constants.MANUALRUN && runtype != 0)
-			return;
-		throttleMessage.setVisible(false);
+	public void unsetStatusMessage(){
+		statusMessage.setVisible(false);
 		this.revalidate();
 	}
 	private void setButtons(int selectedIndex) {
