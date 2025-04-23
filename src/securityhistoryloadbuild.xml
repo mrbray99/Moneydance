@@ -1,9 +1,10 @@
 <project name="securityhistoryload" basedir=".">
 	<target name="securityhistoryload"  depends="mrbutil">
 	    <javac release="${release}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
-	      classpathref="classpath"  destdir="${build}"
+	      classpathref="classpath_old"  destdir="${build}"
 	      includes="com/moneydance/modules/features/securityhistoryload/**"/>
 
+		<delete file="${dist}/securityhistoryload.mxt" />
 	    <jar destfile="${dist}/securityhistoryload.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/securityhistoryload/meta_info.dict
@@ -25,7 +26,7 @@
 			<arg value="securityhistoryload"/>
 			<arg line="${dist}/securityhistoryload.mxt"/>
 		</java>
-		<move file="${src}/s-securityhistoryload.mxt" tofile="${dist}/securityhistoryload.mxt"/>
+		<move file="./s-securityhistoryload.mxt" tofile="${dist}/securityhistoryload.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target> 
 	<target name="cleansecurityhistoryload" depends="cleanmrbutil">

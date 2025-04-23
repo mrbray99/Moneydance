@@ -1,8 +1,9 @@
 <project name="loadsectrans"  basedir=".">
 	<target name="loadsectrans" depends="mrbutil">
 	    <javac target="${target}" release="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
-	      classpathref="classpath"  destdir="${build}"
+	      classpathref="classpath_old"  destdir="${build}"
 	      includes="com/moneydance/modules/features/loadsectrans/**"/>
+		<delete file="${dist}/loadsectrans.mxt" />
 	    <jar destfile="${dist}/loadsectrans.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/loadsectrans/meta_info.dict
@@ -25,7 +26,7 @@
 			<arg value="loadsectrans"/>
 			<arg line="${dist}/loadsectrans.mxt"/>
 		</java>
-		<move file="${src}/s-loadsectrans.mxt" tofile="${dist}/loadsectrans.mxt"/>
+		<move file="./s-loadsectrans.mxt" tofile="${dist}/loadsectrans.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanloadsectrans" depends="cleanmrbutil">

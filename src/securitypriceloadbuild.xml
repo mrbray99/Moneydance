@@ -1,9 +1,10 @@
 <project name="securitypriceload"  basedir=".">
 	<target name="securitypriceload"  depends="mrbutil">
 	    <javac release="${release}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
-	      classpathref="classpath"  destdir="${build}"
+	      classpathref="classpath_old"  destdir="${build}"
 	      includes="com/moneydance/modules/features/securitypriceload/**"/>
 
+		<delete file="${dist}/securitypriceload.mxt" />
 	    <jar destfile="${dist}/securitypriceload.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/securitypriceload/meta_info.dict
@@ -25,7 +26,7 @@
 			<arg value="securitypriceload"/>
 			<arg line="${dist}/securitypriceload.mxt"/>
 		</java>
-		<move file="${src}/s-securitypriceload.mxt" tofile="${dist}/securitypriceload.mxt"/>
+		<move file="./s-securitypriceload.mxt" tofile="${dist}/securitypriceload.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target> 
 	<target name="cleansecuritypriceload" depends="cleanmrbutil">

@@ -1,8 +1,9 @@
 <project name="budgetreport"  basedir=".">
 	<target name="budgetreport" depends="mrbutil">
 	    <javac release="${release}" srcdir="${src}" debug="${debug}" optimize="${optimize}"
-	      classpathref="classpath"  destdir="${build}"
+	      classpathref="classpath_old"  destdir="${build}"
 	      includes="com/moneydance/modules/features/budgetreport/**"/>
+		<delete file="${dist}/budgetreport.mxt" />
 	    <jar destfile="${dist}/budgetreport.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/budgetreport/meta_info.dict
@@ -25,7 +26,7 @@
 			<arg value="budgetreport"/>
 			<arg line="${dist}/budgetreport.mxt"/>
 		</java>
-		<move file="${src}/s-budgetreport.mxt" tofile="${dist}/budgetreport.mxt"/>
+		<move file="./s-budgetreport.mxt" tofile="${dist}/budgetreport.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	 	</target>
 	<target name="cleanbudgetreport" depends="cleanmrbutil">

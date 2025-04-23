@@ -4,6 +4,7 @@
 	      classpathref="classpath"  destdir="${build}"
 	      includes="com/moneydance/modules/features/budgetgen/**"/>
 
+		<delete file="${dist}/budgetgen.mxt" />
 	    <jar destfile="${dist}/budgetgen.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/budgetgen/meta_info.dict

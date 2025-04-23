@@ -1,6 +1,7 @@
 <project name="reportwriter" basedir=".">
 	<target name="reportwriter">
 			<javac target="${target}" source="${srccode}" srcdir="${src}" debug="${debug}" optimize="${optimize}" classpathref="classpath" destdir="${build}" includes="com/moneydance/modules/features/reportwriter/**" />
+		<delete file="${dist}/reportwriter.mxt" />
 		<jar destfile="${dist}/reportwriter.mxt">
 			<fileset dir="${src}" includes="
 	             com/moneydance/modules/features/reportwriter/meta_info.dict

@@ -4,6 +4,7 @@
 	      classpathref="classpath"  destdir="${build}"
 	      includes="com/moneydance/modules/features/securitypriceload/**"/>
 
+		<delete file="${dist}/securitypriceload.mxt" />
 	    <jar destfile="${dist}/securitypriceload.mxt">
 	      <fileset dir="${src}" includes="
 	             com/moneydance/modules/features/securitypriceload/meta_info.dict
