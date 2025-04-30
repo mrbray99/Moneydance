@@ -616,7 +616,7 @@ public class Main extends FeatureModule {
         }
 
         public synchronized void processCommand(String command, String uri) {
-            debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED, "process command invoked " + command);
+              debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED, "process command invoked " + command);
 			Integer totalQuotes;
             switch (command) {
 				case Constants.RUNSTANDALONECMD -> {

@@ -1197,7 +1197,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 			}
 
 			else {
-				if (Main.standAloneRequested && processCurrency) {
+				if (Main.secondRunRequired) {
 					MRBEDTInvoke.showURL(Main.context,"moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
                             + Constants.RUNSECONDRUNCMD);
 				}
@@ -1463,6 +1463,11 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 			}
 			if (price.getName().compareToIgnoreCase(Constants.CURRENCYTYPE) == 0) {
 				String ticker = price.getValue();
+				if (srce==null){
+					Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.INFO,
+							"Invalid URL returned " +uri);
+					break;
+				}
 				if (ticker.endsWith(Constants.CURRENCYTICKER)) {
 					switch (srce) {
 					case FT:
@@ -1577,6 +1582,12 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 					newPrice.setLowPrice(newNum.doubleValue());
 			}
 		}
+		if (newPrice == null || newPrice.getSecurityPrice()==0.0) {
+			Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.INFO,
+					"Invalid url returned " + uri);
+			return;
+		}
+
 		/*
 		 * data extracted test for test ticker
 		 */
@@ -1806,6 +1817,11 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 			}
 			if (price.getName().compareToIgnoreCase(Constants.CURRENCYTYPE) == 0) {
 				String ticker = price.getValue();
+				if (srce==null){
+					Main.debugInst.debug("MainPriceWindow", "updatePrices", MRBDebug.INFO,
+							"Invalid URL returned " +uri);
+					break;
+				}
 				if (ticker.endsWith(Constants.CURRENCYTICKER)) {
 					switch (srce) {
 						case FT:
@@ -1940,10 +1956,22 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		Double highPrice;
 		SecurityTableLine secLine = null;
 		CurrencyTableLine curLine = null;
-		if (newPrice.isCurrency())
+		if (newPrice.isCurrency()) {
 			curLine = currenciesTable.get(ticker);
-		else
+			if (curLine == null) {
+				Main.debugInst.debug("MainPriceWindow", "updateHistory", MRBDebug.INFO,
+						"Currency " + ticker + " not found. ");
+				return;
+			}
+		}
+		else {
 			secLine = securitiesTable.get(ticker);
+			if (secLine == null) {
+				Main.debugInst.debug("MainPriceWindow", "updateHistory", MRBDebug.INFO,
+						"Security " + ticker + " not found. ");
+				return;
+			}
+		}
 
 		/*
 		 * check to see if trade currency is in the pseudocurrency file
