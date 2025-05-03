@@ -357,16 +357,9 @@ public class ParameterTab extends DisplayTab {
 		autoResetBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Main.autoSettingsChanged=false;
-						runLbl.setForeground(colors.defaultTextForeground);
-						Main.context.showURL("moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-								+ Constants.CHECKAUTOCMD);
-					}
-				});
-
+				main.autoSettingsChanged=false;
+				runLbl.setForeground(colors.defaultTextForeground);
+				main.processCommand(Constants.CHECKAUTOCMD,"");
 			}
 		});
 		mainPanel.add(autoResetBtn, GridC.getc(gridx, gridy).east().insets(5, 5, 5, 0));

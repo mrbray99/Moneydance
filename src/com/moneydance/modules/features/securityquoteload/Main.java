@@ -250,9 +250,7 @@ public class Main extends FeatureModule {
         debugInst.debug("Quote Load", "HandleEventFileOpened", MRBDebug.INFO, "Debug level set to " + debug);
         context = getContext();
         serverName = Constants.PROGRAMNAME;
-        Timer autoDelayStart = new Timer(1, ((ae) -> javax.swing.SwingUtilities.invokeLater(() -> {
-            sendAuto();
-        })));
+        Timer autoDelayStart = new Timer(1, ((ae) -> sendAuto()));
         autoDelayStart.setInitialDelay(20000);
         autoDelayStart.setRepeats(false);
         autoDelayStart.start();
@@ -262,13 +260,10 @@ public class Main extends FeatureModule {
 
     public void sendAuto() {
         if (standAloneRequested) {
-            MRBEDTInvoke.showURL(context, "moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
-                    + Constants.STANDALONEREQUESTED);
+            processCommand(Constants.RUNSTANDALONECMD,"");
         } else {
             debugInst.debug("Quote Load", "sendAuto", MRBDebug.INFO, "Check Auto");
-            javax.swing.SwingUtilities.invokeLater(()-> {
-               MRBEDTInvoke.showURL(context, "moneydance:fmodule:" + Constants.PROGRAMNAME + ":" + Constants.CHECKAUTOCMD);
-            });
+            processCommand(Constants.CHECKAUTOCMD,"");
         }
     }
 
@@ -453,7 +448,7 @@ public class Main extends FeatureModule {
             processCommand(command, uri);
     }
 
-    private synchronized void processCommand(String command, String uri) {
+    public synchronized void processCommand(String command, String uri) {
         if (processor == null) {
             debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED, "starting ProcessWorker");
             processQueue = new LinkedBlockingQueue();
@@ -568,8 +563,7 @@ public class Main extends FeatureModule {
             autoRunNeeded = false;
         }
     }
-
-    /**
+     /**
      * Process Command Argument
      */
     class ProcessCommandArgument {
@@ -626,9 +620,7 @@ public class Main extends FeatureModule {
 						return;
 					}
 					standAloneRequested = true;
-                    Timer autoDelayStart = new Timer(1, ((ae) -> javax.swing.SwingUtilities.invokeLater(() -> {
-                        sendAuto();
-                    })));
+                    Timer autoDelayStart = new Timer(1, ((ae) -> sendAuto()));
                     autoDelayStart.setInitialDelay(20000);
                     autoDelayStart.setRepeats(false);
                     autoDelayStart.start();
@@ -811,7 +803,7 @@ public class Main extends FeatureModule {
 					return;
 				}
 				case Constants.TESTTICKERCMD -> {
-					SwingUtilities.invokeLater(() -> frame.testTicker(uri));
+					frame.testTicker(uri);
 					return;
 				}
 				case Constants.LOADPRICECMD -> {
@@ -852,9 +844,7 @@ public class Main extends FeatureModule {
 					if (frame != null) {
 						timeoutCount = 0;
 						debugInst.debug("Quote Load", "processCommand", MRBDebug.DETAILED, "Done " + uri);
-						SwingUtilities.invokeLater(() -> {
-							frame.doneQuote(uri);
-						});
+						frame.doneQuote(uri);
 
 					}
 					return;
@@ -904,7 +894,6 @@ public class Main extends FeatureModule {
 				case Constants.STANDALONEDONE -> {
 					debugInst.debug("Quote Load", "ProcessCommand", MRBDebug.INFO, "Standalone  run done");
 					SwingUtilities.invokeLater(() -> {
-
 						mdMain = com.moneydance.apps.md.controller.Main.mainObj;
 						mdGUI = mdMain.getUI();
 						mdMain.saveCurrentAccount();
