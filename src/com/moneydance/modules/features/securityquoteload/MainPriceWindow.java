@@ -2282,7 +2282,9 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 					mess += ", prices missing for extended Tickers";
 				if (currencyError)
 					mess += ", extended ticker has different currency";
-				JOptionPane.showMessageDialog(null, mess, "Get Completed", JOptionPane.INFORMATION_MESSAGE);
+				final String message = mess;
+				SwingUtilities.invokeLater(new Runnable() { public void run() { JOptionPane.showMessageDialog(null, message, "Get Completed", JOptionPane.INFORMATION_MESSAGE); } });
+				
 				tasksProgress.setVisible(false);
 				buttonsPanel.remove(tasksProgress);
 				if (tabs.getSelectedIndex() == 0) {
