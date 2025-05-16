@@ -13,7 +13,6 @@ http://jakarta.apache.org/ant/index.html
     <property name="srccode" value="17"/>
     <property name="release" value="17"/>
     <property name="lib" value="../lib"/>
-    <property name="lib2" value="../lib2"/>
     <property name="md_ext_lib_dir_old" value="c:\Program Files\moneydance4097\lib"/>
     <property name="md_ext_lib_dir" value="c:\Program Files\moneydance20245253\lib"/>
     <property environment="env"/>
@@ -37,7 +36,6 @@ http://jakarta.apache.org/ant/index.html
     <path id="classpath_old">
       <fileset dir="${md_ext_lib_dir_old}" includes="*.jar"/>
       <fileset dir="${lib}" includes="*.jar"/>
-        <fileset dir="${lib2}" includes="extadmin.jar" />
     </path>
     <path id="classpath">
         <fileset dir="${md_ext_lib_dir}" includes="*.jar"/>
