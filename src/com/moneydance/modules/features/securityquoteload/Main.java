@@ -461,6 +461,14 @@ public class Main extends FeatureModule {
 
         }
     }
+    public void setThrottleMessage(){
+        if (frame != null)
+            frame.setThrottleMessage();
+    }
+    public void unsetThrottleMessage(){
+        if (frame != null)
+            frame.unsetThrottleMessage();
+    }
 
     /**
      * Return the name of this extension

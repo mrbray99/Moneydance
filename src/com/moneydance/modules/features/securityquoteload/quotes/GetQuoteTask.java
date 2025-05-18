@@ -53,9 +53,16 @@ import com.moneydance.modules.features.securityquoteload.QuotePrice;
 
 public class GetQuoteTask extends QuoteTask<QuotePrice> {
 	Parameters params;
+	boolean throttleRequired;
 	public GetQuoteTask (String ticker, QuoteListener listener, CloseableHttpClient httpClient,String tickerType,String tid) {
 		super(ticker,listener, httpClient,tickerType,tid);
 		params=Parameters.getParameters();
+		throttleRequired=false;
+	}
+	public GetQuoteTask (String ticker, QuoteListener listener, CloseableHttpClient httpClient,String tickerType,String tid,boolean throttleRequired) {
+		super(ticker,listener, httpClient,tickerType,tid);
+		params=Parameters.getParameters();
+		this.throttleRequired = throttleRequired;
 	}
 	@Override
 	public QuotePrice call() throws Exception {
@@ -63,20 +70,27 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 		CloseableHttpResponse response = null;
 		if (ticker.isBlank()) {
 			debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "Invalid Ticker "+rawTicker);
-			sendError();		
+			sendError();
 		}
 			
 		URI uri=null;
+		String userAgent;
 		try {
 			uri= new URI(url.trim());
 			debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "Processing  "+ticker+" URI:"+uri.toASCIIString());
+			if (throttleRequired)
+				TimeUnit.SECONDS.sleep(2);
 			HttpGet httpGet = new HttpGet(uri);
 			httpGet.addHeader("Accept-Language","en");
-			httpGet.addHeader("User-Agent","Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36");
+			if (params.getUaParam().isEmpty())
+				userAgent = UserAgent.getAgent();
+			else
+				userAgent =params.getUaParam();
+			httpGet.addHeader("User-Agent",userAgent);
 			response = httpClient.execute(httpGet);
 			quotePrice=null; 
 			debugInst.debug("GetQuoteTask", "call", MRBDebug.DETAILED, "Return stats for  "+ticker+" "+response.getStatusLine().getStatusCode() );
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK || response.getStatusLine().getStatusCode()==203) {
 				try {
 					quotePrice = analyseResponse(response);
 					String doneUrl ="moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.LOADPRICECMD+"?"+Constants.TIDCMD+"="+tid+"&";
@@ -122,6 +136,8 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 			}
 			else {
 				debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "error returned "+response.getStatusLine().getStatusCode());
+				if (response.getStatusLine().getStatusCode()==429)
+					debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "quote rejected - user agent ="+userAgent);
 				sendError();
 			}
 		} catch (URISyntaxException e) {
@@ -130,7 +146,7 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 		}
 			catch (ClientProtocolException e2) {
 				debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "server returned protocol error for "+ticker);
-				sendError();					
+				sendError();
 			}
 		catch (Exception e3) {
 			debugInst.debug("getQuoteTask", "call", MRBDebug.INFO, "General Error  - "+e3.getMessage());
