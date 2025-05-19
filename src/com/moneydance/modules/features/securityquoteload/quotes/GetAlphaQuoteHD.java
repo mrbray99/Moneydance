@@ -125,7 +125,7 @@ public class GetAlphaQuoteHD extends GetQuoteTask{
             if (!Main.alphaVantageLimitReached) {
                 Main.alphaVantageLimitReached = true;
                 try {
-                    SwingUtilities.invokeAndWait(new Runnable() {
+                    javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
 
                         @Override
                         public void run() {

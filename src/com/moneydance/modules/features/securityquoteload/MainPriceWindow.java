@@ -1373,7 +1373,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 	}
 	private boolean checkAlphaKey(){
 		if (params.getAlphaAPIKey()==null || params.getAlphaAPIKey().isEmpty()){
-			SwingUtilities.invokeLater(new Runnable(){
+			javax.swing.SwingUtilities.invokeLater(new Runnable(){
 				public void run(){
 					JOptionPane.showMessageDialog(null,"Alpha Vantage Api key not set.  Please add in the parameter screen");
 				}
@@ -1615,7 +1615,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 				JOptionPane.showMessageDialog(null, message);
 			}
 			else {
-				SwingUtilities.invokeLater(() -> {
+				javax.swing.SwingUtilities.invokeLater(() -> {
 					JOptionPane.showMessageDialog(null, message);
 				});
 			}
@@ -2301,7 +2301,6 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 					mess += ", extended ticker has different currency";
 				final String message = mess;
 				SwingUtilities.invokeLater(new Runnable() { public void run() { JOptionPane.showMessageDialog(null, message, "Get Completed", JOptionPane.INFORMATION_MESSAGE); } });
-				
 				tasksProgress.setVisible(false);
 				buttonsPanel.remove(tasksProgress);
 				if (tabs.getSelectedIndex() == 0) {

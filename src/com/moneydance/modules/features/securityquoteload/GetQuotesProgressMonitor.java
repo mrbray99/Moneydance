@@ -220,9 +220,6 @@ final class GetQuotesProgressMonitor {
 		}
 	}
 	private synchronized void updateProgress() {
-		/*
-		 * tell the user that getting quotes has progressed	
-		 */
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run() {
 				int percentage = completedTasks.get() * 100 /
