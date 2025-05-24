@@ -37,6 +37,10 @@ import java.util.prefs.Preferences;
  *
  */
 public abstract class Constants {
+
+  /* http */
+  public static final int RATE_LIMITED = 429;
+
 	/*
 	 * General
 	 */
@@ -127,6 +131,7 @@ public abstract class Constants {
 	public static final String RUNSTANDALONECMD="runstandalone";
 	public static final String STANDALONEREQUESTED="standalonerequested";
 	public static final String CLOSEDOWNCMD="closedown";
+	public static final String SAVECMD="save";
 	public static final int NORUN=0;
 	public static final int MANUALRUN = 1;
 	public static final int SECAUTORUN = 2;
