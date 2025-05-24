@@ -328,10 +328,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		 */
 		saveValBtn = new JButton("Save Selected Lines");
 		saveValBtn.setToolTipText("Save the selected prices");
-    saveValBtn.addActionListener(e -> {
-      MRBEDTInvoke.showURL(Main.context, "moneydance:fmodule:" + Constants.PROGRAMNAME + ":" + Constants.SAVECMD);
-      //save();
-    });
+		saveValBtn.addActionListener(e -> save());
 		buttonsPanel.add(saveValBtn, GridC.getc(gridX++, gridY).insets(10, 10, 10, 10));
 
 		/*
@@ -465,13 +462,12 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		getContentPane().setPreferredSize(new Dimension(iFRAMEWIDTH, iFRAMEDEPTH));
 		this.pack();
 	}
-
-  public void setStatusMessage() {
+	public void setStatusMessage(){
 		if (statusMessage != null)
 			statusMessage.setVisible(true);
 		this.revalidate();
 	}
-  public void unsetStatusMessage() {
+	public void unsetStatusMessage(){
 		if (statusMessage != null)
 			statusMessage.setVisible(false);
 		this.revalidate();
@@ -1041,7 +1037,8 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 					else
 						line.setTickerStatus(0);
 				}
-        SwingUtilities.invokeLater(()-> curRatesModel.fireTableDataChanged());
+				curRatesModel.fireTableDataChanged();
+
 			}
 			if (exportFile != null)
 				try {
@@ -1051,15 +1048,13 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 				}
 		} else {
 			if (!pricesFound) {
-        SwingUtilities.invokeLater(() ->
-                                     JOptionPane.showMessageDialog(null,
-                                                                   "No prices have been downloaded.  Use Get Exchange Rates or Get Prices"));
+				JOptionPane.showMessageDialog(null,
+						"No prices have been downloaded.  Use Get Exchange Rates or Get Prices");
 				return;
 			}
 			if (iRowCount < 1) {
-        SwingUtilities.invokeLater(() ->
-                                     JOptionPane.showMessageDialog(null,
-                                                                   "No prices have been selected.  Select individual lines or Select All."));
+				JOptionPane.showMessageDialog(null,
+						"No prices have been selected.  Select individual lines or Select All.");
 				return;
 			}
 			if (params.isExport()) {
@@ -1071,19 +1066,18 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 				secPricesModel.updateLines(exportFile, false);
 				selectAll.setText(Constants.SELECTALL);
 				selectAllReturned = true;
-        SwingUtilities.invokeLater(() ->
-                                     secPricesModel.fireTableDataChanged());
+				secPricesModel.fireTableDataChanged();
 				if (params.getDisplayOption() == Constants.CurrencyDisplay.SAME) {
 					curRatesModel.updateLines(exportFile, false);
-          SwingUtilities.invokeLater(() ->
-                                       curRatesModel.fireTableDataChanged());
+					curRatesModel.fireTableDataChanged();
+
 				}
 				break;
 			case 1:
 				if (params.getDisplayOption() == Constants.CurrencyDisplay.SEPARATE) {
 					curRatesModel.updateLines(exportFile, false);
-          SwingUtilities.invokeLater(() ->
-                                       curRatesModel.fireTableDataChanged());
+					curRatesModel.fireTableDataChanged();
+
 				}
 				selectAllReturned = true;
 				selectAll.setText(Constants.SELECTALL);
@@ -1099,9 +1093,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		 * if an automatic run it is expected that this object will be disposed off
 		 */
 		if (runtype == Constants.MANUALRUN) {
-      int finalIRowCount = iRowCount;
-      SwingUtilities.invokeLater(() ->
-                                   JOptionPane.showMessageDialog(null, finalIRowCount + " prices updated"));
+			JOptionPane.showMessageDialog(null,iRowCount+" prices updated");
 		}
 		Main.isUpdating = false;
 	}
@@ -1381,7 +1373,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 	}
 	private boolean checkAlphaKey(){
 		if (params.getAlphaAPIKey()==null || params.getAlphaAPIKey().isEmpty()){
-			SwingUtilities.invokeLater(new Runnable(){
+			javax.swing.SwingUtilities.invokeLater(new Runnable(){
 				public void run(){
 					JOptionPane.showMessageDialog(null,"Alpha Vantage Api key not set.  Please add in the parameter screen");
 				}
@@ -1623,7 +1615,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 				JOptionPane.showMessageDialog(null, message);
 			}
 			else {
-				SwingUtilities.invokeLater(() -> {
+				javax.swing.SwingUtilities.invokeLater(() -> {
 					JOptionPane.showMessageDialog(null, message);
 				});
 			}
@@ -2101,7 +2093,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		List<NameValuePair> results = URLEncodedUtils.parse(uri, charSet);
 		String ticker = "";
 		String errorCode="";
-    boolean currencyFound = false;
+		boolean currencyFound = false;
 		QuoteSource srce=null;
 		for (NameValuePair price : results) {
 			if (price.getName().compareToIgnoreCase(Constants.TIDCMD) == 0) {
@@ -2195,11 +2187,9 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		errorsFound = true;
 		if (errorTickers != null)
 			errorTickers.add(ticker);
-		//if (listener != null)
-		//	listener.failed(ticker, uuid);
-    if (listener != null)
+		if (listener != null)
 			listener.failed(ticker, uuid, errorCode);
-  }
+	}
 
 	public synchronized void doneQuote(String url) {
 		int totalQuotes = 0;
@@ -2209,12 +2199,12 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 		/*
 		 * if completed set, ignore message
 		 */
-		//unsetThrottleMessage();
+		unsetThrottleMessage();
 		if (completed) {
 			Main.debugInst.debug("MainPriceWindow", "doneQuote", MRBDebug.INFO, "Late message");
 			return;
 		}
-		//unsetThrottleMessage();
+		unsetThrottleMessage();
 		String uuid = "";
 		URI uri;
 		try {
@@ -2311,7 +2301,6 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 					mess += ", extended ticker has different currency";
 				final String message = mess;
 				SwingUtilities.invokeLater(new Runnable() { public void run() { JOptionPane.showMessageDialog(null, message, "Get Completed", JOptionPane.INFORMATION_MESSAGE); } });
-				
 				tasksProgress.setVisible(false);
 				buttonsPanel.remove(tasksProgress);
 				if (tabs.getSelectedIndex() == 0) {
@@ -2345,10 +2334,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 						curRatesModel.selectAll(true);
 					main.errorTickers = errorTickers;
 					Main.debugInst.debug("AutomaticRun", "AutomaticRun", MRBDebug.DETAILED, "save data");
-
-					//save();
-          MRBEDTInvoke.showURL(Main.context, "moneydance:fmodule:" + Constants.PROGRAMNAME + ":" + Constants.SAVECMD);
-
+					save();
 					MRBEDTInvoke.showURL(Main.context,"moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
                             + Constants.RUNSECONDRUNCMD);
 				}
@@ -2358,9 +2344,7 @@ public class MainPriceWindow extends JFrame implements TaskListener {
 					if (processSecurity)
 						secPricesModel.selectAll(true);
 					main.errorTickers = errorTickers;
-
-					//save();
-          MRBEDTInvoke.showURL(Main.context, "moneydance:fmodule:" + Constants.PROGRAMNAME + ":" + Constants.SAVECMD);
+					save();
 					MRBEDTInvoke.showURL(Main.context,"moneydance:fmodule:" + Constants.PROGRAMNAME + ":"
                             + Constants.AUTODONECMD);
 

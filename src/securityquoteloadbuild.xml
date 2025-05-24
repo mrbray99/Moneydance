@@ -27,8 +27,7 @@
 			<arg value="securityquoteload"/>
 			<arg line="${dist}/securityquoteload.mxt"/>
 		</java>
-		<delete file = "${dist}/securityquoteload.mxt"/>
-		<move file="${dist}/s-securityquoteload.mxt" tofile="${dist}/securityquoteload.mxt"/>
+		<move file="s-securityquoteload.mxt" tofile="${dist}/securityquoteload.mxt"/>
 		<echo level="info">the current time is ${TODAY_UK}</echo>
 	</target> 
 	<target name="cleansecurityquoteload">

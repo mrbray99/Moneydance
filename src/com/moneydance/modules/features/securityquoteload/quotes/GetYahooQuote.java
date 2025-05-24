@@ -38,9 +38,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -58,6 +60,7 @@ import com.google.gson.JsonParser;
 import com.moneydance.modules.features.mrbutil.MRBDebug;
 import com.moneydance.modules.features.securityquoteload.Constants;
 import com.moneydance.modules.features.securityquoteload.QuotePrice;
+import org.h2.util.json.JSONArray;
 
 public class GetYahooQuote extends GetQuoteTask {
 
@@ -98,7 +101,7 @@ public class GetYahooQuote extends GetQuoteTask {
         debugInst.debug("GetYahooQuote", "GetYahooQuote", MRBDebug.DETAILED, "Executing :" + url);
     }
     private int decrementQuarter(int intDate){
-        return DateUtil.incrementDate(intDate, 0, -3, 0);
+        return DateUtil.incrementDate(intDate,0,-3,0);
     }
     @Override
     synchronized public QuotePrice analyseResponse(CloseableHttpResponse response) throws IOException {
