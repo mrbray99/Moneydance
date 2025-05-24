@@ -49,7 +49,7 @@ public class NewParameters {
 	private String exportFolder;
 	private String alphaAPIKey;
 	private String uaParam;
-	private List<NewAccountLine> listAccounts;
+  private List<NewAccountLine> listAccounts;
 
 	public  NewParameters(){
 		noDecimals = 0;
@@ -113,12 +113,14 @@ public class NewParameters {
 	public String getAlphaAPIKey() {
 		return alphaAPIKey;
 	}
+
 	/**
 	 * @return User Agent Param
 	 */
 	public String getUaParam() {
 		return uaParam;
 	}
+
 	/**
 	 * @return the listAccounts
 	 */
@@ -206,7 +208,5 @@ public class NewParameters {
 	public void setAlphaAPIKey(String alphaAPIKey) {
 		this.alphaAPIKey = alphaAPIKey;
 	}
-	public void setUaParam(String uaParam) {
-		this.uaParam = uaParam;
-	}
+	public void setUaParam(String uaParam) { this.uaParam = uaParam; }
 }

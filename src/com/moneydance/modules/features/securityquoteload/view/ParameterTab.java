@@ -98,6 +98,7 @@ public class ParameterTab extends DisplayTab {
 	private JTextField alphaKey;
 	private JLabel uaLabel;
 	private JTextField uaParam;
+  private MyCheckBox throttleYahooTF; // readonly setting (for info)
 
 	public ParameterTab(Parameters params, Main main, MainPriceWindow controller) {
 		super(params, main, controller);
@@ -359,7 +360,7 @@ public class ParameterTab extends DisplayTab {
 		autoResetBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
 						Main.autoSettingsChanged=false;
@@ -754,6 +755,7 @@ public class ParameterTab extends DisplayTab {
 		gridx=1;
 		uaLabel = new JLabel("User Agent");
 		uaParam = new JTextField();
+    uaParam.setToolTipText("ADVANCED. Normally blank to use rotating/random user-agent browser header(s). Manually override when using Yahoo as a quote source to bypass 429/rate errors");
 		uaParam.setText(params.getUaParam());
 		uaParam.setPreferredSize(new Dimension(400,20));
 		uaParam.getDocument().addDocumentListener(new DocumentListener(){
@@ -766,6 +768,16 @@ public class ParameterTab extends DisplayTab {
 		});
 		mainPanel.add(uaLabel, GridC.getc(gridx++, gridy).insets(5,5,5,5).west());
 		mainPanel.add(uaParam, GridC.getc(gridx, gridy++).insets(5,5,5,5).colspan(4).west());
+
+    throttleYahooTF = new MyCheckBox();
+		throttleYahooTF.setToolTipText("When enabled then Yahoo connections will be throttled");
+		throttleYahooTF.setAlignmentX(LEFT_ALIGNMENT);
+		throttleYahooTF.setText("Throttle Yahoo connections");
+		throttleYahooTF.setHorizontalTextPosition(SwingConstants.LEFT);
+    throttleYahooTF.setSelected(Main.THROTTLE_YAHOO);  // default is always on - users should not be able to change this
+		throttleYahooTF.setEnabled(false);
+		mainPanel.add(throttleYahooTF, GridC.getc(gridx, gridy++).colspan(2).west().insets(5, 5, 5, 0));
+
 		gridx=1;
 		saveParams = new JButton("Save Parameters");
 		saveParams.setToolTipText("Click to save parameters");

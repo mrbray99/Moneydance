@@ -713,7 +713,7 @@ public class SecTable extends JTable {
 				if (e.getClickCount() == 2) {
 					int modRow=tableObj.convertRowIndexToModel(row);
 					SecurityTableLine acct = dm.getRowAccount(modRow);
-					javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
 							Main.context.showURL(

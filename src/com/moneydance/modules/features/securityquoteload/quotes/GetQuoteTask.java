@@ -36,6 +36,7 @@ package com.moneydance.modules.features.securityquoteload.quotes;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpStatus;
@@ -52,18 +53,19 @@ import com.moneydance.modules.features.securityquoteload.Parameters;
 import com.moneydance.modules.features.securityquoteload.QuotePrice;
 
 public class GetQuoteTask extends QuoteTask<QuotePrice> {
-	Parameters params;
-	boolean throttleRequired;
+	Parameters params = Parameters.getParameters();
+  boolean throttleRequired;
+
 	public GetQuoteTask (String ticker, QuoteListener listener, CloseableHttpClient httpClient,String tickerType,String tid) {
 		super(ticker,listener, httpClient,tickerType,tid);
-		params=Parameters.getParameters();
-		throttleRequired=false;
+    this.throttleRequired = false;
 	}
-	public GetQuoteTask (String ticker, QuoteListener listener, CloseableHttpClient httpClient,String tickerType,String tid,boolean throttleRequired) {
-		super(ticker,listener, httpClient,tickerType,tid);
-		params=Parameters.getParameters();
-		this.throttleRequired = throttleRequired;
-	}
+
+  public GetQuoteTask(String ticker, QuoteListener listener, CloseableHttpClient httpClient, String tickerType, String tid, boolean throttleRequired) {
+    super(ticker, listener, httpClient, tickerType, tid);
+    this.throttleRequired = throttleRequired;
+  }
+
 	@Override
 	public QuotePrice call() throws Exception {
 		QuotePrice quotePrice = null;
@@ -74,23 +76,29 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 		}
 			
 		URI uri=null;
-		String userAgent;
 		try {
 			uri= new URI(url.trim());
 			debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "Processing  "+ticker+" URI:"+uri.toASCIIString());
-			if (throttleRequired)
-				TimeUnit.SECONDS.sleep(2);
+      try {
+        if (throttleRequired)
+          TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(1000, 2001)); // randomized delay between 1 and 2 seconds
+        else
+          TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(100, 251));   // randomized delay between 100 and 250 milliseconds
+      } catch (InterruptedException e) {
+        debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "The task for ticker: '" + ticker + "' has been cancelled during its throttle / sleep... quitting this task");
+        Thread.currentThread().interrupt(); // restore interrupt status
+        return quotePrice;
+      }
 			HttpGet httpGet = new HttpGet(uri);
 			httpGet.addHeader("Accept-Language","en");
-			if (params.getUaParam().isEmpty())
-				userAgent = UserAgent.getAgent();
-			else
-				userAgent =params.getUaParam();
-			httpGet.addHeader("User-Agent",userAgent);
+			//httpGet.addHeader("User-Agent","Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36");
+      String ua = params.getUaParam().isEmpty() ? UserAgent.getAgent() : params.getUaParam();
+      httpGet.addHeader("User-Agent", ua);
+
 			response = httpClient.execute(httpGet);
 			quotePrice=null; 
-			debugInst.debug("GetQuoteTask", "call", MRBDebug.DETAILED, "Return stats for  "+ticker+" "+response.getStatusLine().getStatusCode() );
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK || response.getStatusLine().getStatusCode()==203) {
+			debugInst.debug("GetQuoteTask", "call", MRBDebug.DETAILED, "Return stats for  "+ticker+" "+response.getStatusLine().getStatusCode() + " (user-agent: '" + ua + "')");
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK || response.getStatusLine().getStatusCode() == HttpStatus.SC_NON_AUTHORITATIVE_INFORMATION) {
 				try {
 					quotePrice = analyseResponse(response);
 					String doneUrl ="moneydance:fmodule:" + Constants.PROGRAMNAME + ":"+Constants.LOADPRICECMD+"?"+Constants.TIDCMD+"="+tid+"&";
@@ -135,9 +143,11 @@ public class GetQuoteTask extends QuoteTask<QuotePrice> {
 				}
 			}
 			else {
-				debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "error returned "+response.getStatusLine().getStatusCode());
-				if (response.getStatusLine().getStatusCode()==429)
-					debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "quote rejected - user agent ="+userAgent);
+				debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "error returned "+response.getStatusLine().getStatusCode() + " (user-agent: '"+ua+"')");
+        if (response.getStatusLine().getStatusCode() == Constants.RATE_LIMITED) {
+  				debugInst.debug("GetQuoteTask", "call", MRBDebug.INFO, "RATE LIMITED - Removing from user-agents list (for this session)...");
+          UserAgent.removeInvalidAgent(ua);
+        }
 				sendError();
 			}
 		} catch (URISyntaxException e) {
