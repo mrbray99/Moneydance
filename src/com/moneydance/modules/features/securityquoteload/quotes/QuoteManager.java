@@ -144,7 +144,7 @@ public class QuoteManager implements QuoteListener {
                     timeout = 480L;
                 try {
                     threadPool = Executors.newFixedThreadPool(4);
-                    debugInst.debug("QuoteManager", "getQuotes", MRBDebug.SUMMARY, "Tasks invoking " + tasks.size() + " queries");
+                    debugInst.debug("QuoteManager", "getQuotes", MRBDebug.SUMMARY, "FT Tasks invoking " + tasks.size() + " queries - Currencies: " + currencies.size() + " Securities: " + stocks.size() + " Overall thread-pool timeout: " + timeout + " seconds (with 4 pools)");
                     futures = threadPool.invokeAll(tasks, timeout, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
                     debugInst.debug("QuoteManager", "getQuotes", MRBDebug.INFO, e.getMessage());
@@ -205,7 +205,7 @@ public class QuoteManager implements QuoteListener {
                     timeout = 480L;
                 try {
                     threadPool = Executors.newFixedThreadPool(4);
-                    debugInst.debug("QuoteManager", "getQuotes", MRBDebug.SUMMARY, "FT History Tasks invoking " + tasks.size() + " queries");
+                    debugInst.debug("QuoteManager", "getQuotes", MRBDebug.SUMMARY, "FTHD Tasks invoking " + tasks.size() + " queries - Currencies: " + currencies.size() + " Securities: " + stocks.size() + " Overall thread-pool timeout: " + timeout + " seconds (with 4 pools)");
                     futures = threadPool.invokeAll(tasks, timeout, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
                     debugInst.debug("QuoteManager", "getQuotes", MRBDebug.INFO, e.getMessage());
@@ -243,25 +243,30 @@ public class QuoteManager implements QuoteListener {
                   Main.extension.setThrottleMessage();
                 else
                   Main.extension.unsetThrottleMessage();
+                int minThrottleMS = (throttleRequired) ? 1000 : 0;
+                int maxThrottleMS = (throttleRequired) ? 2000 : 0;
 
                 // overall timeout for the thread-pool invokeAll() is seconds...
                 timeout = Math.max(180, (long) ((stocks.size() + currencies.size()) * (throttleRequired ? 3.5 : 0.25)));
 
+                boolean onFirst = true;
                 for (String stock : stocks) {
-                    GetQuoteTask task = new GetYahooQuote(stock, this, httpClient, Constants.STOCKTYPE, tid, throttleRequired);
+                    GetQuoteTask task = new GetYahooQuote(stock, this, httpClient, Constants.STOCKTYPE, tid, (onFirst) ? 0 : minThrottleMS, (onFirst) ? 0 : maxThrottleMS);
                     tasks.add(task);
                     totalQuotes++;
+                    onFirst = false;
                 }
                 for (String currency : currencies) {
-                    GetQuoteTask task = new GetYahooQuote(currency, this, httpClient, Constants.CURRENCYTYPE, tid, throttleRequired);
+                    GetQuoteTask task = new GetYahooQuote(currency, this, httpClient, Constants.CURRENCYTYPE, tid, (onFirst) ? 0 : minThrottleMS, (onFirst) ? 0 : maxThrottleMS);
                     tasks.add(task);
                     totalQuotes++;
+                    onFirst = false;
                 }
                 List<Future<QuotePrice>> futures = null;
 
                 try {
                   threadPool = Executors.newFixedThreadPool(1);
-                  debugInst.debug("QuoteManager", "getQuotes", MRBDebug.SUMMARY, "Yahoo Tasks invoking " + tasks.size() + " queries");
+                  debugInst.debug("QuoteManager", "getQuotes", MRBDebug.SUMMARY, "Yahoo Tasks invoking " + tasks.size() + " queries - Currencies: " + currencies.size() + " Securities: " + stocks.size() + " Overall thread-pool timeout: " + timeout + " seconds (with 1 pool)");
                   futures = threadPool.invokeAll(tasks, timeout, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
                     debugInst.debug("QuoteManager", "getQuotes", MRBDebug.INFO, e.getMessage());
@@ -299,24 +304,29 @@ public class QuoteManager implements QuoteListener {
                   Main.extension.setThrottleMessage();
                 else
                   Main.extension.unsetThrottleMessage();
+                int minThrottleMS = (throttleRequired) ? 1000 : 0;
+                int maxThrottleMS = (throttleRequired) ? 2000 : 0;
 
                 // overall timeout for the thread-pool invokeAll() is seconds...
                 timeout = Math.max(180, (long) ((stocks.size() + currencies.size()) * (throttleRequired ? 3.5 : 0.25)));
 
+                boolean onFirst = true;
                 for (String stock : stocks) {
-                    GetQuoteTask task = new GetYahooQuote(stock, this, httpClient, Constants.STOCKTYPE, tid, lastPriceDate.get(stock), true, throttleRequired);
+                    GetQuoteTask task = new GetYahooQuote(stock, this, httpClient, Constants.STOCKTYPE, tid, lastPriceDate.get(stock), true, (onFirst) ? 0 : minThrottleMS, (onFirst) ? 0 : maxThrottleMS);
                     tasks.add(task);
                     totalQuotes++;
+                    onFirst = false;
                 }
                 for (String currency : currencies) {
-                    GetQuoteTask task = new GetYahooQuote(currency, this, httpClient, Constants.CURRENCYTYPE, tid, lastPriceDate.get(currency),true, throttleRequired);
+                    GetQuoteTask task = new GetYahooQuote(currency, this, httpClient, Constants.CURRENCYTYPE, tid, lastPriceDate.get(currency),true, (onFirst) ? 0 : minThrottleMS, (onFirst) ? 0 : maxThrottleMS);
                     tasks.add(task);
                     totalQuotes++;
+                    onFirst = false;
                 }
                 List<Future<QuotePrice>> futures = null;
                 try {
                   threadPool = Executors.newFixedThreadPool(1);
-                  debugInst.debug("QuoteManager", "getQuotes", MRBDebug.SUMMARY, "Yahoo History Tasks invoking " + tasks.size() + " queries");
+                  debugInst.debug("QuoteManager", "getQuotes", MRBDebug.SUMMARY, "YahooHD Tasks invoking " + tasks.size() + " queries - Currencies: " + currencies.size() + " Securities: " + stocks.size() + " Overall thread-pool timeout: " + timeout + " seconds (with 1 pool)");
                   futures = threadPool.invokeAll(tasks, timeout, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
                     debugInst.debug("QuoteManager", "getQuotes", MRBDebug.INFO, e.getMessage());
@@ -349,31 +359,39 @@ public class QuoteManager implements QuoteListener {
             }
             case Constants.SOURCEALPHA -> {
                 Long timeout;
-                if ((stocks.size() + currencies.size()) > 59) {
-                    timeout = (stocks.size() + currencies.size()) * 10l;
-                } else {
-                    if ((stocks.size() + currencies.size()) < 100)
-                        timeout = 180L;
-                    else if ((stocks.size() + currencies.size()) > 99 && (stocks.size() + currencies.size()) < 200)
-                        timeout = 360L;
-                    else
-                        timeout = 480L;
-                }
+
+              // Throttle delay (based on API plan)
+              int theoreticalThrottleMS = (60000 / params.getAlphaPlan()) + 10;
+              int minThrottleMS = theoreticalThrottleMS;
+              int maxThrottleMS = theoreticalThrottleMS;
+
+              // Observed latency (used only for timeout estimation)
+              int observedLatencyMS = 1000;
+
+              // Calculate timeout in seconds with 30% buffer
+              double perCallDurationSec = Math.max(observedLatencyMS, theoreticalThrottleMS) / 1000.0;
+              double actualDuration = (stocks.size() + currencies.size()) * perCallDurationSec;
+              timeout = Math.max(180, (long) (actualDuration * 1.3));
+
+              boolean onFirst = true;
                 for (String stock : stocks) {
-                    GetQuoteTask task = new GetAlphaQuoteHD(stock, tradeCurrencies.get(stock),this, httpClient, Constants.STOCKTYPE, tid,lastPriceDate.get(stock));
+                    GetQuoteTask task = new GetAlphaQuoteHD(stock, tradeCurrencies.get(stock),this, httpClient, Constants.STOCKTYPE, tid,lastPriceDate.get(stock), (onFirst) ? 0 : minThrottleMS, (onFirst) ? 0 : maxThrottleMS);
                     tasks.add(task);
                     totalQuotes++;
+                    onFirst = false;
                 }
                 for (String currency : currencies) {
-                    GetQuoteTask task = new GetAlphaQuoteHD(currency, "",this, httpClient, Constants.CURRENCYTYPE, tid,lastPriceDate.get(currency));
+                    GetQuoteTask task = new GetAlphaQuoteHD(currency, "",this, httpClient, Constants.CURRENCYTYPE, tid,lastPriceDate.get(currency), (onFirst) ? 0 : minThrottleMS, (onFirst) ? 0 : maxThrottleMS);
                     tasks.add(task);
                     totalQuotes++;
+                    onFirst = false;
                 }
+
                 List<Future<QuotePrice>> futures = null;
 
                 try {
-                    threadPool = Executors.newFixedThreadPool(4);
-                    debugInst.debug("QuoteManager", "getQuotes", MRBDebug.SUMMARY, "Alpha Tasks invoking " + tasks.size() + " queries");
+                    threadPool = Executors.newFixedThreadPool(1);
+                    debugInst.debug("QuoteManager", "getQuotes", MRBDebug.SUMMARY, "AlphaVantage Tasks invoking " + tasks.size() + " queries - Currencies: " + currencies.size() + " Securities: " + stocks.size() + " Overall thread-pool timeout: " + timeout + " seconds (with 1 pool)");
                     Main.alphaVantageLimitReached=false;
                     futures = threadPool.invokeAll(tasks, timeout, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
