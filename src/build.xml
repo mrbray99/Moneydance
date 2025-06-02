@@ -56,11 +56,8 @@ http://jakarta.apache.org/ant/index.html
     <import file="budgetgenbuild.xml"/>
     <import file="budgetreportbuild.xml"/>
     <import file="loadsectransbuild.xml"/>
-    <import file="securityhistoryloadbuild.xml"/>
-    <import file="securitypriceloadbuild.xml"/>
     <import file="mrbutilbuild.xml"/>
     <import file="qifloaderbuild.xml"/>
-    <import file="securityquoteloadbuild.xml"/>
     <import file="reportwriterbuild.xml"/>
     <target name="genkeys">
         <java classpathref="classpath_old" classname="com.moneydance.admin.KeyAdmin">
@@ -70,7 +67,7 @@ http://jakarta.apache.org/ant/index.html
         </java>
     </target>
     <target name="cleanall"
-            depends="cleanmrbutil, cleanbudgetgen, cleanbudgetreport, cleanfiledisplay, cleanqifloader, cleanloadsectrans, cleansecurityhistoryload, cleansecuritypriceload,cleansecurityquoteload,cleanreportwriter">
+            depends="cleanmrbutil, cleanbudgetgen, cleanbudgetreport, cleanfiledisplay, cleanqifloader, cleanloadsectrans, cleanreportwriter">
     </target>
     <target name="all" description="all targets">
         <antcall target="budgetgen"/>
@@ -78,9 +75,6 @@ http://jakarta.apache.org/ant/index.html
         <antcall target="filedisplay"/>
         <antcall target="loadsectrans"/>
         <antcall target="qifloader"/>
-        <antcall target="securityhistoryload"/>
-        <antcall target="securitypriceload"/>
-        <antcall target="securityquoteload"/>
         <antcall target="reportwriter"/>
     </target>
 
