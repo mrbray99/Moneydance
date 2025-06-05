@@ -52,13 +52,6 @@ http://jakarta.apache.org/ant/index.html
     <tstamp>
         <format property="TODAY_UK" pattern="HH:mm:ss:sss zzz" locale="en,UK"/>
     </tstamp>
-    <import file="filedisplaybuild.xml"/>
-    <import file="budgetgenbuild.xml"/>
-    <import file="budgetreportbuild.xml"/>
-    <import file="loadsectransbuild.xml"/>
-    <import file="mrbutilbuild.xml"/>
-    <import file="qifloaderbuild.xml"/>
-    <import file="reportwriterbuild.xml"/>
     <target name="genkeys">
         <java classpathref="classpath_old" classname="com.moneydance.admin.KeyAdmin">
             <arg value="genkey"/>
@@ -66,16 +59,9 @@ http://jakarta.apache.org/ant/index.html
             <arg value="${pubkeyfile}"/>
         </java>
     </target>
-    <target name="cleanall"
-            depends="cleanmrbutil, cleanbudgetgen, cleanbudgetreport, cleanfiledisplay, cleanqifloader, cleanloadsectrans, cleanreportwriter">
+    <target name="cleanall" depends="">
     </target>
     <target name="all" description="all targets">
-        <antcall target="budgetgen"/>
-        <antcall target="budgetreport"/>
-        <antcall target="filedisplay"/>
-        <antcall target="loadsectrans"/>
-        <antcall target="qifloader"/>
-        <antcall target="reportwriter"/>
     </target>
 
 </project>
